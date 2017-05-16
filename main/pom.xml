@@ -51,8 +51,9 @@
     <name>GlassFish Project</name>
     
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main</developerConnection>
+      <connection>scm:git:git://github.com/javaee/glassfish.git</connection>
+      <developerConnection>scm:git:git://github.com/javaee/glassfish.git</developerConnection>
+      <url>https://github.com/javaee/glassfish</url>
     </scm>
     
     <profiles>
