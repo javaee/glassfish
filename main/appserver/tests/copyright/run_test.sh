@@ -59,7 +59,7 @@ copyright_run(){
 	cat $WORKSPACE/copyright-files-temp-open.txt | sed s@$PWD/@@g > copyright-files.txt
 	echo "#####"
 	cat copyright-files.txt
-        
+	echo "#####"
 }
 
 generate_copyright_results(){
@@ -79,9 +79,10 @@ run_test_id(){
 	source `dirname $0`/../common_test.sh
 	kill_process
   rm main.zip rm version-info.txt || true
-  download_test_resources main.zip version-info.txt
+  download_test_resources main.zip .git.zip version-info.txt
   rm -rf main || true
-  unzip_test_resources $WORKSPACE/bundles/main.zip
+  rm -rf .git
+  unzip_test_resources $WORKSPACE/bundles/main.zip $WORKSPACE/bundles/.git.zip
 	copyright_run
 	generate_copyright_results
   upload_test_results

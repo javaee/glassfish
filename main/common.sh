@@ -542,6 +542,7 @@ zip_tests_workspace(){
 zip_gf_source(){
     printf "\n%s \n\n" "===== ZIP THE SOURCE CODE ====="
     zip -r ${WORKSPACE}/bundles/main.zip main/ -x **/target\* > /dev/null
+    zip -r ${WORKSPACE}/bundles/.git.zip .git/ > /dev/null
 }
 
 zip_tests_maven_repo(){
