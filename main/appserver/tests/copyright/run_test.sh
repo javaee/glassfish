@@ -73,17 +73,17 @@ generate_copyright_results(){
 }
 
 run_test_id(){
-	source `dirname $0`/../common_test.sh
-	kill_process
+  source `dirname $0`/../common_test.sh
+  kill_process
   rm main.zip rm version-info.txt || true
   download_test_resources main.zip .git.zip version-info.txt
   rm -rf main || true
-  rm -rf .git
+  rm -rf .git || true
   unzip_test_resources $WORKSPACE/bundles/main.zip $WORKSPACE/bundles/.git.zip
-	copyright_run
-	generate_copyright_results
+  copyright_run
+  generate_copyright_results
   upload_test_results
-	delete_bundle
+  delete_bundle
 }
 
 
