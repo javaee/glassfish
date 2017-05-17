@@ -70,7 +70,7 @@
     <licenses>
       <license>
         <name>CDDL + GPLv2 with classpath exception</name>
-        <url>http://glassfish.java.net/nonav/public/CDDL+GPL.html</url>
+        <url>https://javaee.github.io/glassfish/LICENSE</url>
         <distribution>repo</distribution>
         <comments>A business-friendly OSS license</comments>
       </license>
