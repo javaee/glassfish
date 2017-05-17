@@ -57,9 +57,6 @@ copyright_run(){
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO --quiet org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright -Pcopyright > $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt | sed s@$PWD/@@g > copyright-files.txt
-	echo "#####"
-	cat copyright-files.txt
-	echo "#####"
 }
 
 generate_copyright_results(){
