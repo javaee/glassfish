@@ -205,7 +205,7 @@ then
     echo -e $USAGE
     exit 0
 fi    
-while getopts ":b:t:g:a:l" opt; do
+while getopts ":b:t:g:al" opt; do
     case "$opt" in
     b)	branch=$OPTARG;;
     t)  test_ids=($OPTARG);;
