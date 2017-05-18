@@ -138,6 +138,18 @@ public class DeleteResourceRef implements AdminCommand, AdminCommandSecurity.Pre
         final ActionReport report = context.getActionReport();
         
         try {
+            if (refName.equals("jdbc/__default")) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(localStrings.getLocalString("delete.resource.ref.jdbc.default",
+                        "default JDBC resource ref cannot be deleted"));
+                return;
+            }
+            if (refName.equals("jms/__defaultConnectionFactory")) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(localStrings.getLocalString("delete.resource.ref.jms.default",
+                        "default JMS connection factory ref cannot be deleted"));
+                return;
+            }
             deleteResourceRef();
             if (refContainer instanceof Cluster) {
 
