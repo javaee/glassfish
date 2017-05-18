@@ -17,7 +17,7 @@ As an open source project, GlassFish is being developed in an open manner. Devel
 
 The reference implementation [downloads for Java EE 7](downloads/ri/index.html)
 
-# Older versions (archive) #
+# Older GlassFish versions (archive) #
 
 * [GF 3.1.1](http://download.oracle.com/glassfish/3.1.1)
 * [GF 3.1.2](http://download.oracle.com/glassfish/3.1.2)
