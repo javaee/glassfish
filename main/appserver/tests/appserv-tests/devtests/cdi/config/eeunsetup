@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 #--- Extract environment properties --- "sed" doesn't work with iastools.zip used in windows
 PASSWORD_FILE=${APS_HOME}/devtests/connector/config/password.txt
 for x in `cat $APS_HOME/devtests/connector/config/ee-config.properties`

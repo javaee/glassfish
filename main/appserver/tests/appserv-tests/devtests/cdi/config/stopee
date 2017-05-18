@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 for x in `cat $APS_HOME/devtests/jdbc/config/ee-config.properties`
 do
     varval=`echo $x |cut -d'=' -f1`

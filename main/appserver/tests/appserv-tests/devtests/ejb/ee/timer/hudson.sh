@@ -38,6 +38,7 @@
 # holder.
 #
 
+
 java -version
 ant -version
 echo `which ant`

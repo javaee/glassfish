@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 # This script creates and starts a domain called "sqe-domain"
 # with a single server instance named "sqe-server".
 

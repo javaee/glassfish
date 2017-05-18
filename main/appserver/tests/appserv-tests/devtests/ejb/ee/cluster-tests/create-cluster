@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 GF_HOME=${S1AS_HOME}
 
 # production systems will not take generation of multicastport and multicastaddress to chance,

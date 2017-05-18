@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 TESTHOME=`pwd`
 GFHOME=$TESTHOME/glassfish5
 export INSTALL_LOC=$HOME/testnode

@@ -162,9 +162,7 @@ appserver/tests/appserv-tests/devtests/web/jspConfigGetServletPath/docroot/subdi
 appserver/tests/appserv-tests/devtests/web/defaultResponseType/docroot/test.xyz
 appserver/tests/appserv-tests/devtests/web/mimeMappingCaseInsensitiveMatch/docroot/foo.HTML
 appserver/tests/appserv-tests/devtests/web/servlet-3.0/multipart/test.txt
-appserver/tests/appserv-tests/devtests/web/servlet-3.0/serveJspAndStaticResourceFromLocalJar/resources/abc.txt
-appserver/tests/appserv-tests/devtests/web/servlet-3.0/serveJspAndStaticResourceFromLocalJar/resources/def.txt
-appserver/tests/appserv-tests/devtests/web/servlet-3.0/serveJspAndStaticResourceFromLocalJar/resources/ghi.txt
+appserver/tests/appserv-tests/devtests/web/servlet-3.0/serveJspAndStaticResourceFromLocalJar/resources/
 appserver/tests/appserv-tests/devtests/web/servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener/descriptor/services/javax.servlet.ServletContainerInitializer
 appserver/tests/appserv-tests/devtests/web/servlet-3.0/resourceURLFromLocalJar/resources/abc.txt
 appserver/tests/appserv-tests/devtests/web/servlet-3.0/resourceURLFromLocalJar/resources/def.txt
@@ -1195,3 +1193,11 @@ appserver/tests/appserv-tests/devtests/web/wrongTransport/build.properties
 appserver/tests/appserv-tests/devtests/web/wrongTransportTarget/build.properties
 appserver/tests/appserv-tests/util/filediff/build.properties
 appserver/tests/appserv-tests/util/reporter/build.properties
+appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntax/docroot/UTF-16BE.jsp
+appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntax/docroot/UTF-8.jsp
+appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntax/docroot/UTF-16LE.jsp
+appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntaxEncodingMismatchJspConfig/docroot/UTF-16BE.jsp
+appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntaxEncodingMismatchPageDir/docroot/encodingMismatch.jsp
+appserver/tests/appserv-tests/devtests/web/jspTagLibraryValidatorXMLViewStaticInclude/docroot/jsp/
+appserver/tests/appserv-tests/devtests/web/servlet-4.0/pushAuthorization/docroot/
+

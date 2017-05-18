@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 FILE=$APS_HOME/test_resultsValid.xml
 #echo "input file=$FILE"
 

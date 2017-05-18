@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 export HUDSON=true
 export ROOT=`pwd`
 if [ -x "/usr/bin/cygpath" ]

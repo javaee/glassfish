@@ -42,7 +42,6 @@
 
 -->
 
-
 <application-client>
   <display-name>sec-ssl-converterClient</display-name>
   <env-entry>

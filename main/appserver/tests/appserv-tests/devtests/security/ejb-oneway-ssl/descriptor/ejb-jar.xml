@@ -42,7 +42,6 @@
 
 -->
 
-
 <ejb-jar>
   <enterprise-beans>
     <session>

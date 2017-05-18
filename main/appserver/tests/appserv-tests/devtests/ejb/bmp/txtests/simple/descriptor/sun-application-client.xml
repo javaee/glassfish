@@ -42,7 +42,6 @@
 
 -->
 
-
 <sun-application-client>
   <ejb-ref>
       <ejb-ref-name>ejb/SimpleBMPHome</ejb-ref-name>

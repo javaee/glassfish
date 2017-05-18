@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 #--- Extract environment properties --- "sed" doesn't work with iastools.zip used in windows
 
 for x in `cat $APS_HOME/devtests/jdbc/config/ee-config.properties`

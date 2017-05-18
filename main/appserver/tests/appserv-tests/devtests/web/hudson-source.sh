@@ -39,6 +39,7 @@
 # holder.
 #
 
+
 . hudson-base.sh
 
 rm -rf $S1AS_HOME/domains/domain1

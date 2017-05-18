@@ -38,6 +38,7 @@
 # holder.
 #
 
+
 if [ -n "$verbose" ]
 then
     set -x

@@ -38,6 +38,7 @@
 # holder.
 #
 
+
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 
 [ "$BASE_PORT" ] || BASE_PORT=40000
