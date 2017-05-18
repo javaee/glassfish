@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,6 +101,9 @@ public abstract class GenericSniffer implements Sniffer {
         ArchiveType archiveType = habitat.getService(ArchiveType.class, context.getArchiveHandler().getArchiveType());
         if (archiveType != null && !supportsArchiveType(archiveType)) {
             return false;
+        }
+        if(archiveType != null) {
+            context.getSource().setExtraData(ArchiveType.class, archiveType);
         }
         return handles(context.getSource());
     }
