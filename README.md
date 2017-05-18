@@ -2,7 +2,7 @@
 
 ## May 18, 2017 - GF 5 Promoted Build 06 ##
 
-GlassFish 6 Promoted Builds 05 are now [available](download). Those are the first post-java.net migration builds!
+GlassFish 6 Promoted Builds 06 are now [available](download). Those are the first post-java.net migration builds!
 
 ## May 11, 2017 - New Java EE Discussion Groups Platform ##
 
