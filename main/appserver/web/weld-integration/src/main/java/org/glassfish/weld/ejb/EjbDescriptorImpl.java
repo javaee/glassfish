@@ -345,11 +345,11 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
 //            }
 //
 //            remoteNames.addAll(extraNames);
-
+             //JJS: 5/17/17 According to ejb spec 3.0 4.6.6 the remote name cannot be the local
             // Include the no-interface Local view
-            if( sessionDesc.isLocalBean() ) {
-                remoteNames.add(sessionDesc.getEjbClassName());
-            }
+            //if( sessionDesc.isLocalBean() ) {
+            //    remoteNames.add(sessionDesc.getEjbClassName());
+            //}
 
 
             for(String remote : remoteNames) {
