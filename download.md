@@ -13,11 +13,11 @@ As an open source project, GlassFish is being developed in an open manner. Devel
 * [Latest GF 5 Nightly Build - Full Platform](http://download.oracle.com/glassfish/5.0/nightly/latest-glassfish.zip)
 * [Browse all GF 5 available builds](http://download.oracle.com/glassfish/5.0/nightly/)
 
-# Java EE 7 RI
+# Java EE 7 RI #
 
 The reference implementation [downloads for Java EE 7](downloads/ri/index.html)
 
-# Older versions (archive)
+# Older versions (archive) #
 
 * [GF 3.1.1](http://download.oracle.com/glassfish/3.1.1)
 * [GF 3.1.2](http://download.oracle.com/glassfish/3.1.2)
