@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -390,7 +390,7 @@ public class SecurityHandler {
             if (grouplist != null && grouplist.contains(","))
                 grouplist = grouplist.replace(',', ':');
             List<String> grpList = new ArrayList();
-            if (grouplist != null && !grouplist.equals(""))
+            if (grouplist != null)
                 grpList.add(grouplist);
             attrs.put("groups", grpList);
             RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
