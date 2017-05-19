@@ -115,6 +115,17 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+           <id>bintray-snaphot</id>
+           <name>Soteria Bintray</name>
+           <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
+           <releases>
+               <enabled>true</enabled>
+           </releases>
+           <snapshots>
+               <enabled>true</enabled>
+           </snapshots>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
