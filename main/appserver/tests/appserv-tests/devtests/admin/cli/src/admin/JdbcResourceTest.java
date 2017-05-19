@@ -136,6 +136,9 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         testListJdbcResourceTargetServer();
         testDeleteJdbcResourceInServer();
 
+        testDeleteDefaultResource();
+        testDeleteDefaultResourceRef();
+
         testCreateJdbcesourceInCluster();
         testListJdbcResourceTargetCluster();
         testListJdbcResourceTargetInstance1();
@@ -555,6 +558,20 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         reportExpectedResult(testName, result);
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
         reportUnexpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, CLUSTER_NAME);
+    }
+
+    public void testDeleteDefaultResource() {
+        String testName = "testDeleteDefaultResource";
+        AsadminReturn result = asadminWithOutput(DELETE_JDBC_RESOURCE, DEFAULT_RESOURCE);
+        reportFailureResultStatus(testName, result);
+        reportExpectedFailureResult(testName, result, "jdbc resource [ jdbc/__default ] cannot be deleted");
+    }
+
+    public void testDeleteDefaultResourceRef() {
+        String testName = "testDeleteDefaultResourceRef";
+        AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF, DEFAULT_RESOURCE);
+        reportFailureResultStatus(testName, result);
+        reportExpectedFailureResult(testName, result, "Default JDBC resource ref cannot be deleted");
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {

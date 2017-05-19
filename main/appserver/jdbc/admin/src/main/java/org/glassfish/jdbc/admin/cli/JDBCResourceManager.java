@@ -232,6 +232,15 @@ public class JDBCResourceManager implements ResourceManager {
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
+        JdbcResource jdbcResource = (JdbcResource) ConnectorsUtil.getResourceByName(resources, JdbcResource.class, jndiName);
+        // ensure we are not deleting resource of the type system-all-req
+        if(ResourceConstants.SYSTEM_ALL_REQ.equals(jdbcResource.getObjectType())){
+            String msg = localStrings.getLocalString("delete.jdbc.resource.system-all-req.object-type",
+                    "The jdbc resource [ {0} ] cannot be deleted as it is required to be configured in the system.",
+                    jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
         if (environment.isDas()) {
 
             if ("domain".equals(target)) {
@@ -261,14 +270,6 @@ public class JDBCResourceManager implements ResourceManager {
         }
 
         try {
-
-            JdbcResource jdbcResource = (JdbcResource) ConnectorsUtil.getResourceByName(resources, JdbcResource.class, jndiName);
-            if(ResourceConstants.SYSTEM_ALL_REQ.equals(jdbcResource.getObjectType())){
-                String msg = localStrings.getLocalString("delete.jdbc.resource.system-all-req.object-type",
-                        "The jdbc resource [ {0} ] cannot be deleted as it is required to be configured in the system.",
-                        jndiName);
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
 
             // delete resource-ref
             resourceUtil.deleteResourceRef(jndiName, target);
