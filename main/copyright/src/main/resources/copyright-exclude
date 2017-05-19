@@ -1200,4 +1200,9 @@ appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntaxEncodingMismatch
 appserver/tests/appserv-tests/devtests/web/jspBomInClassicSyntaxEncodingMismatchPageDir/docroot/encodingMismatch.jsp
 appserver/tests/appserv-tests/devtests/web/jspTagLibraryValidatorXMLViewStaticInclude/docroot/jsp/
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/pushAuthorization/docroot/
+appserver/tests/appserv-tests/devtests/web/servlet-4.0/pushStatic/docroot
+appserver/tests/appserv-tests/devtests/security/ldap/simpleweb/descriptor/web.xml
+appserver/tests/appserv-tests/devtests/security/jdbcrealm/web.xml.template
+appserver/tests/appserv-tests/devtests/web/servlet-3.0/asyncTimeoutNoListener/docroot/error.jsp
+appserver/tests/appserv-tests/devtests/web/jstlHtmlParamOutsideFmtMessage/docroot/jsp/test.jspx
 
