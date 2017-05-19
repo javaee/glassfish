@@ -141,13 +141,13 @@ public class DeleteResourceRef implements AdminCommand, AdminCommandSecurity.Pre
             if (refName.equals("jdbc/__default")) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(localStrings.getLocalString("delete.resource.ref.jdbc.default",
-                        "default JDBC resource ref cannot be deleted"));
+                        "Default JDBC resource ref cannot be deleted."));
                 return;
             }
             if (refName.equals("jms/__defaultConnectionFactory")) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(localStrings.getLocalString("delete.resource.ref.jms.default",
-                        "default JMS connection factory ref cannot be deleted"));
+                        "Default JMS connection factory ref cannot be deleted."));
                 return;
             }
             deleteResourceRef();

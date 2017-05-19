@@ -571,7 +571,7 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteDefaultResourceRef";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF, DEFAULT_RESOURCE);
         reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "default JDBC resource ref cannot be deleted");
+        reportExpectedFailureResult(testName, result, "Default JDBC resource ref cannot be deleted");
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {
