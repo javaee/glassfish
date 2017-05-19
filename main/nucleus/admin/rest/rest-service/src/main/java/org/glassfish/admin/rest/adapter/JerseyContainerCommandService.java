@@ -70,8 +70,8 @@ import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.internal.api.InternalSystemAdministrator;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.jersey.inject.hk2.Hk2ReferencingFactory;
 import org.glassfish.jersey.internal.ServiceFinder;
-import org.glassfish.jersey.internal.inject.ReferencingFactory;
 import org.glassfish.jersey.internal.util.collection.Ref;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.glassfish.jersey.server.ContainerFactory;
@@ -185,7 +185,7 @@ public class JerseyContainerCommandService implements PostConstruct {
             protected void configure() {
                 bindFactory(RestAdapter.SubjectReferenceFactory.class).to(new TypeLiteral<Ref<Subject>>() {
                 }).in(PerLookup.class);
-                bindFactory(ReferencingFactory.<Subject>referenceFactory()).to(new TypeLiteral<Ref<Subject>>() {
+                bindFactory(Hk2ReferencingFactory.<Subject>referenceFactory()).to(new TypeLiteral<Ref<Subject>>() {
                 }).in(RequestScoped.class);
             }
         });
