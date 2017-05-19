@@ -47,6 +47,9 @@ import javax.xml.namespace.QName;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.namespace.beans.DoubleNamespaceTroubleRootBean;
+import org.glassfish.hk2.xml.test.namespace.beans.FooBean;
+import org.glassfish.hk2.xml.test.namespace.beans.XtraAttributesRootBean;
 import org.junit.Assert;
 
 /**
@@ -55,6 +58,7 @@ import org.junit.Assert;
  */
 public class NamespaceCommon {
     public final static String XTRA_ATTRIBUTES_FILE = "xmlns/xtra-attributes.xml";
+    public final static String NAMESPACE_CLASH_FILE = "xmlns/xml-namespace-clash.xml";
     
     private final static String ACME_NS_URI = "http://www.acme.org/jmxoverjms";
     private final static String BOX_NS_URI = "http://www.boxco.com/boxes";
@@ -80,6 +84,10 @@ public class NamespaceCommon {
     private final static String BAR = "bar";
     private final static String GMB = "gumby";
     private final static String FIG = "figaro";
+    
+    public final static String NAMESPACE_A = "NamespaceA";
+    public final static String NAMESPACE_B = "NamespaceB";
+    public final static String NAMESPACE_C = "NamespaceC";
     
     public static void testExtraAttributes(ServiceLocator locator, URI uri) {
         XmlService xmlService = locator.getService(XmlService.class);
@@ -132,6 +140,18 @@ public class NamespaceCommon {
         Assert.assertTrue(foundBar);
         Assert.assertTrue(foundGumby);
         Assert.assertTrue(foundFigaro);
+    }
+    
+    public static void testNamespaceClash(ServiceLocator locator, URI uri) {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<DoubleNamespaceTroubleRootBean> rootHandle = xmlService.unmarshal(uri, DoubleNamespaceTroubleRootBean.class);
+        DoubleNamespaceTroubleRootBean root = rootHandle.getRoot();
+        
+        Assert.assertEquals(FOO, root.getAlice());
+        Assert.assertEquals(BAR, root.getBob());
+        Assert.assertEquals(BAZ, root.getAliceB());
+        Assert.assertEquals(GRAX, root.getAliceC());
     }
 
 }

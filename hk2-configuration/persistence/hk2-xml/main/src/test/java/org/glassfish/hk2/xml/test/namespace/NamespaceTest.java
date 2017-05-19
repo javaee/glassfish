@@ -74,13 +74,45 @@ public class NamespaceTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testExtraAttributesJAXB() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         URL url = getClass().getClassLoader().getResource(NamespaceCommon.XTRA_ATTRIBUTES_FILE);
         URI uri = url.toURI();
         
         NamespaceCommon.testExtraAttributes(locator, uri);
+    }
+    
+    /**
+     * Tests that documents that use namespaces can work,
+     * even if they have the same xml tags
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testNamespaceClashJAXB() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        URL url = getClass().getClassLoader().getResource(NamespaceCommon.NAMESPACE_CLASH_FILE);
+        URI uri = url.toURI();
+        
+        NamespaceCommon.testNamespaceClash(locator, uri);
+    }
+    
+    /**
+     * Tests that documents that use namespaces can work,
+     * even if they have the same xml tags
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testNamespaceClashNative() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        URL url = getClass().getClassLoader().getResource(NamespaceCommon.NAMESPACE_CLASH_FILE);
+        URI uri = url.toURI();
+        
+        NamespaceCommon.testNamespaceClash(locator, uri);
     }
 
 }

@@ -37,23 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.namespace;
+package org.glassfish.hk2.xml.test.namespace.beans;
 
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.namespace.QName;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * 
  * @author jwells
  *
  */
-public interface FooBean {
-    @XmlAttribute(name="attA")
-    public String getAttA();
-    
-    @XmlAnyAttribute
-    public Map<QName, String> getOtherAttributes();
+@Contract
+@XmlRootElement(name="xtra-attributes")
+public interface XtraAttributesRootBean {
+    @XmlElement(name="foo")
+    public FooBean getFoo();
+
 }
