@@ -352,6 +352,7 @@
         <ant dir="servlet-4.0/pushStatic" target="all"/>
         <ant dir="servlet-4.0/pushCacheable" target="all"/>
         <ant dir="servlet-4.0/pushAuthorization" target="all"/>
+        <ant dir="servlet-4.0/pushQueryString" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
