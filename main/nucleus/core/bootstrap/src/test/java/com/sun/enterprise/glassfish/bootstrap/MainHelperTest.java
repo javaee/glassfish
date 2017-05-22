@@ -55,10 +55,9 @@ public class MainHelperTest {
     @Test
     public void parseAsEnvTest() {
         try {
-            Properties asenvProps = new Properties();
-            String currentDir = System.getProperty("user.dir");
-            File installRoot = new File(currentDir);
-            asenvProps = MainHelper.parseAsEnv(installRoot);
+            String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "test";
+            File installRoot = new File(tempDir);
+            Properties asenvProps = MainHelper.parseAsEnv(installRoot);
             assertEquals("value1",asenvProps.getProperty("AbcVar"));
             assertEquals("value2",asenvProps.getProperty("Avar"));
             assertEquals("value3",asenvProps.getProperty("Bvar"));
@@ -71,4 +70,5 @@ public class MainHelperTest {
             e.printStackTrace();
         }
     }
+
 }
