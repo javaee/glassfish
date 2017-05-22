@@ -202,7 +202,7 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
 
         setFieldValue(ELEMENT_APP_NAME, applicationName);
 
-        clickAndWait(ELEMENT_UPLOAD_BUTTON, TRIGGER_APPLICATIONS);
+        clickAndWait(ELEMENT_UPLOAD_BUTTON, TRIGGER_APPLICATIONS, true);
         String conf = "";
         if (isAlertPresent()) {
             conf = getAlertText();

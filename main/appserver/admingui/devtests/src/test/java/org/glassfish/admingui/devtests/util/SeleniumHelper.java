@@ -93,7 +93,7 @@ public class SeleniumHelper {
 
             selenium = new SeleniumWrapper(driver, getBaseUrl());
             selenium.setTimeout("90000");
-            (new BaseSeleniumTestClass()).openAndWait("/", BaseSeleniumTestClass.TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
+            (new BaseSeleniumTestClass()).openAndWaitForHomePage(getBaseUrl(), BaseSeleniumTestClass.TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
         selenium.windowFocus();
