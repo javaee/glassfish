@@ -76,7 +76,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.PushBuilder;
 import java.io.IOException;
 import java.util.*;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 import org.apache.catalina.connector.MappingImpl;
 // END GlassFish 896
 
@@ -136,7 +136,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     public ApplicationHttpRequest(HttpServletRequest request,
                                   Context context,
                                   boolean crossContext,
-                                  ServletMapping mappingForDispatch,
+                                  HttpServletMapping mappingForDispatch,
                                   DispatcherType dispatcherType) {
         super(request);
         this.context = context;
@@ -179,7 +179,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     protected boolean crossContext = false;
     
-    private ServletMapping mappingForDispatch;
+    private HttpServletMapping mappingForDispatch;
 
     /**
      * The dispatcher type.
@@ -536,13 +536,13 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     }
 
     @Override
-    public ServletMapping getServletMapping() {
-        ServletMapping result = null;
+    public HttpServletMapping getHttpServletMapping() {
+        HttpServletMapping result = null;
         switch (dispatcherType) {
         case INCLUDE:
             // Safe to cast because we received this in the ctor 
             // as an HttpServletRequest.
-            result = ((HttpServletRequest)getRequest()).getServletMapping();
+            result = ((HttpServletRequest)getRequest()).getHttpServletMapping();
             break;
         case ASYNC:
         case FORWARD:
@@ -874,7 +874,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                String pathInfo,
                                String queryString) {
         specialAttributes = new HashMap<String, Object>(5);
-        ServletMapping originalMapping;        
+        HttpServletMapping originalMapping;        
 
         switch (dispatcherType) {
         case INCLUDE:
@@ -904,7 +904,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             specialAttributes.put(RequestDispatcher.FORWARD_QUERY_STRING,
                                   queryString);
             // Safe to cast because we received it in the ctor as HttpServletRequest
-            originalMapping = ((HttpServletRequest)getRequest()).getServletMapping();
+            originalMapping = ((HttpServletRequest)getRequest()).getHttpServletMapping();
             specialAttributes.put(RequestDispatcher.FORWARD_MAPPING, originalMapping);
             break;
         case ASYNC:
@@ -915,7 +915,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             specialAttributes.put(AsyncContext.ASYNC_SERVLET_PATH,
                                   servletPath);
             // Safe to cast because we received it in the ctor as HttpServletRequest
-            originalMapping = ((HttpServletRequest)getRequest()).getServletMapping();
+            originalMapping = ((HttpServletRequest)getRequest()).getHttpServletMapping();
             specialAttributes.put(AsyncContext.ASYNC_MAPPING,
                                   originalMapping);
             specialAttributes.put(AsyncContext.ASYNC_PATH_INFO,

@@ -53,7 +53,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 public class AForwardToB extends HttpServlet {
 
@@ -68,15 +68,15 @@ public class AForwardToB extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getServletContext().log(this.getClass().getSimpleName() + " getServletMapping: " 
-                + request.getServletMapping());
-        ServletMapping forwardMapping = (ServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
+        request.getServletContext().log(this.getClass().getSimpleName() + " getHttpServletMapping: " 
+                + request.getHttpServletMapping());
+        HttpServletMapping forwardMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " FORWARD_MAPPING attribute: " 
                 + forwardMapping);
-        ServletMapping includeMapping = (ServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
+        HttpServletMapping includeMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " INCLUDE_MAPPING attribute: " 
                 + includeMapping);
-        ServletMapping asyncMapping = (ServletMapping) request.getAttribute(AsyncContext.ASYNC_MAPPING);
+        HttpServletMapping asyncMapping = (HttpServletMapping) request.getAttribute(AsyncContext.ASYNC_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " ASYNC_MAPPING attribute: " 
                 + asyncMapping);
         RequestDispatcher rd = request.getRequestDispatcher("/BForwardToC");

@@ -76,7 +76,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
@@ -212,7 +212,7 @@ public final class ApplicationDispatcher
      *  else <code>null</code>
      */
     public ApplicationDispatcher
-        (Wrapper wrapper, ServletMapping mappingForDispatch, String requestURI, String servletPath,
+        (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
          String pathInfo, String queryString, String name) {
 
         super();
@@ -285,7 +285,7 @@ public final class ApplicationDispatcher
      */
     private Wrapper wrapper = null;
     
-    private ServletMapping mappingForDispatch;
+    private HttpServletMapping mappingForDispatch;
 
 
     // ------------------------------------------------------------- Properties

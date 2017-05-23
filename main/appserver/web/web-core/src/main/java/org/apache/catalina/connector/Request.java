@@ -147,7 +147,7 @@ import org.glassfish.grizzly.http2.Http2Stream;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.web.valve.GlassFishValve;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 /**
  * Wrapper object for the Coyote request.
@@ -823,8 +823,8 @@ public class Request
     }
 
     @Override
-    public ServletMapping getServletMapping() {
-        ServletMapping result;
+    public HttpServletMapping getHttpServletMapping() {
+        HttpServletMapping result;
         
         result = new MappingImpl(mappingData);
         return result;
@@ -2552,6 +2552,17 @@ public class Request
             return Integer.parseInt(value);
         }
 
+    }
+
+    @Override
+    public Map<String, String> getTrailerFields() {
+        return coyoteRequest.getTrailers();
+    }
+
+    @Override
+    public boolean isTrailerFieldsReady() {
+        //TODO
+        return true;
     }
 
     /**
