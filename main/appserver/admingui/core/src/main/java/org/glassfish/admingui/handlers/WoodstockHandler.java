@@ -104,13 +104,13 @@ public class WoodstockHandler {
                 @HandlerInput(name = "deleteTempFile", type = String.class)})
     public static void deleteFileFromTempDir(HandlerContext handlerCtx) throws IOException {
         Logger logger = GuiUtil.getLogger();
-        String gfHome = System.getProperty("com.sun.aas.installRoot");
+        String tmpDir = System.getProperty("java.io.tmpdir");
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(GuiUtil.getCommonMessage("log.indeleteFileFromTempDir"));
         }
 
         String deleteTempFile = (String) handlerCtx.getInputValue("deleteTempFile");
-        if (deleteTempFile == null  || !deleteTempFile.contains(gfHome)) {
+        if (deleteTempFile == null  || !deleteTempFile.contains(tmpDir)) {
             return;
         }
         Path pathToFile = Paths.get(deleteTempFile);
