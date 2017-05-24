@@ -69,6 +69,7 @@ public class BaseSeleniumTestClass {
     public static final boolean DEBUG = Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"));
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
+    public static final boolean IS_SECURE_ADMIN_ENABLED = Boolean.parseBoolean(System.getProperty("secureAdmin"));
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
@@ -405,9 +406,8 @@ public class BaseSeleniumTestClass {
     }
     
     public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
-        open(url);        
-        String isDocker = System.getProperty("docker");
-        if (Boolean.parseBoolean(isDocker)) {
+        open(url);
+        if (IS_SECURE_ADMIN_ENABLED) {
            waitForLoginPageLoad(timeout);
            handleLogin("admin", "admin", triggerText);
         } else {

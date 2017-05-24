@@ -71,8 +71,7 @@ public class SpecificTestRule implements MethodRule {
                 final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
                 String method = System.getProperty("method");
                 boolean skipTest = false;
-                String type = System.getProperty("docker");
-                if(type.equals("true")) {
+                if(BaseSeleniumTestClass.IS_SECURE_ADMIN_ENABLED) {
                     String className = frameworkMethod.getMethod().getDeclaringClass().getName();
                     if (className.contains(".SecurityTest") ||
                        (className.contains(".AdminServiceTest") && 
