@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -104,13 +104,12 @@ public class WoodstockHandler {
                 @HandlerInput(name = "deleteTempFile", type = String.class)})
     public static void deleteFileFromTempDir(HandlerContext handlerCtx) throws IOException {
         Logger logger = GuiUtil.getLogger();
-        String tmpDir = System.getProperty("java.io.tmpdir");
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(GuiUtil.getCommonMessage("log.indeleteFileFromTempDir"));
         }
 
         String deleteTempFile = (String) handlerCtx.getInputValue("deleteTempFile");
-        if (deleteTempFile == null  || !deleteTempFile.contains(tmpDir)) {
+        if (deleteTempFile == null) {
             return;
         }
         Path pathToFile = Paths.get(deleteTempFile);
