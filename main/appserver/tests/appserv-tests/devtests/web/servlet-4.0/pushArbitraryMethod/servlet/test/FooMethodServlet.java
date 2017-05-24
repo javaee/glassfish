@@ -67,12 +67,14 @@ public class FooMethodServlet extends HttpServlet {
                     if ("/my.css".equals(pathInfo)) {
                             res.getWriter().println("foo: bar");
                             res.setStatus(HttpServletResponse.SC_OK);
+                            return;
 
                     }
             }
             if ("/my.css".equals(pathInfo)) {
                     res.getWriter().println("foo: bar");
                     res.setStatus(HttpServletResponse.SC_OK);
+                    return;
             }
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
