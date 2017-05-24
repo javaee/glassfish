@@ -51,11 +51,17 @@ import java.io.*;
 import java.util.*;
 
 public class MainHelperTest {
-    /* This test is used to test the regex pattern of "parseAsEnv" method of "MainHelper.java"*/
+
+    /* This test is used to test the regex pattern of "parseAsEnv" method of "MainHelper.java".
+       The sample "asenv.conf" and "asenv.bat" (used for testing) files are located in " main/nucleus/core/bootstrap/src/test/resources/config/"  folder.
+       File "pom.xml" copies the test resources to the temp directory "/tmp/MainHelperTest". The path of this temp directory is passed to the "parseAsEnv()" method of "MainHelper.java".
+       The method reads the "asenv.*" file line by line to generate the Properties "asenvProps" whose assertion has been done in this unit test.
+    */
+
     @Test
     public void parseAsEnvTest() {
         try {
-            String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "test";
+            String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "MainHelperTest";
             File installRoot = new File(tempDir);
             Properties asenvProps = MainHelper.parseAsEnv(installRoot);
             assertEquals("value1",asenvProps.getProperty("AbcVar"));
