@@ -10,12 +10,12 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-    or packager/legal/LICENSE.txt.  See the License for the specific
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
     When distributing the software, include this License Header Notice in each
-    file and include the License file at packager/legal/LICENSE.txt.
+    file and include the License file at LICENSE.txt.
 
     GPL Classpath Exception:
     Oracle designates this particular file as subject to the "Classpath"
@@ -94,7 +94,7 @@
         <update_version></update_version>
         <install.dir.name>glassfish5</install.dir.name>
 
-        <javaee.major_version>7</javaee.major_version>
+        <javaee.major_version>8</javaee.major_version>
         <javaee.version_qualifier>-b${build.id}</javaee.version_qualifier>
         <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
 
@@ -121,9 +121,9 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
         <tyrus.version>1.13.1</tyrus.version>
-        <jsonp-api.version>1.1.0-M2</jsonp-api.version>
-        <jsonp-ri.version>1.1.0-M2</jsonp-ri.version>
-        <jsonp-jaxrs.version>1.0</jsonp-jaxrs.version>
+        <jsonp-api.version>1.1</jsonp-api.version>
+        <jsonp-ri.version>1.1</jsonp-ri.version>
+        <jsonp-jaxrs.version>1.1</jsonp-jaxrs.version>
         <concurrent-api.version>1.0</concurrent-api.version>
         <concurrent.version>1.0</concurrent.version>
         <javax.batch-api.version>1.0</javax.batch-api.version>

@@ -66,7 +66,8 @@ public class JobManagerTest {
         //delete jobs.xml incase there were other jobs run
         deleteJobsFile();
         //osgi-cache workaround
-        touchDirectory(nucleusRoot); 
+        File osgiCacheDir = new File(nucleusRoot, "domains"+File.separator+"domain1"+File.separator+"osgi-cache");
+        deleteDirectoryContents(osgiCacheDir);        
         nadmin("start-domain");
 
 
@@ -148,7 +149,7 @@ public class JobManagerTest {
 
        }
 
-       @Test(dependsOnMethods = { "runDetachTest" }, enabled=true)
+       @Test(dependsOnMethods = { "runDetachTest" }, enabled=false)
        public void runConfigureManagedJobsTest() throws InterruptedException {
            try {
                String result = null;

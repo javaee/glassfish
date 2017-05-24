@@ -9,12 +9,12 @@
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -37,6 +37,7 @@
 # and therefore, elected the GPL Version 2 license, then the option applies
 # only if the new code is made subject to such option by the copyright
 # holder.
+#
 
 #
 # Map style.
@@ -173,9 +174,10 @@ find_test_job(){
     return 1
 }
 
-USAGE="Usage: rq -b BRANCH -a ---> For runing all the test ids\n\
-	   or  rq -b BRANCH -g TESTGROUPNAME ---> For runing a TESTGROUPNAME\n\
-	   or  rq -b BRANCH -t TESTIDS ---> For runing a space separated set of TESTIDS"
+USAGE="Usage:\n\n 1. rq.sh -l ---> List all available test identifiers without running them\n\
+	   2. rq.sh -b <branch> -a ---> For running all tests\n\
+	   3. rq.sh -b <branch> -g <test_group_name> ---> For running a test group\n\
+	   4. rq.sh -b <branch> -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests"
 
 list_test_ids(){
 	for runtest in `find . -name run_test\.sh`; do
@@ -199,12 +201,20 @@ OPTIND=1
 output_file=""
 verbose=0
 
-while getopts ":b:t:g:a" opt; do
+if [ $# -eq 0 ];
+then
+    echo -e $USAGE
+    exit 0
+fi    
+while getopts ":b:t:g:al" opt; do
     case "$opt" in
     b)	branch=$OPTARG;;
     t)  test_ids=($OPTARG);;
     a)  test_ids=(`list_test_ids`);;
-	g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	  g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	  l)	test_ids=(`list_test_ids`)
+		echo ${test_ids[@]} | tr " " "\n"
+		exit 0;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
 		exit 1 ;;         
