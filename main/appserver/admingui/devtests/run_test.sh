@@ -45,13 +45,13 @@ list_test_ids(){
 test_run(){
   #test functions goes here, maven test or ant test etc.
   $S1AS_HOME/bin/asadmin start-domain
-  mvn test | tee $TEST_RUN_LOG
+  mvn -Dtest=ConfigTest test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain	
 }
 
 run_test_id(){
   #a common util script located at main/appserver/tests/common_test.sh
-  source `dirname $0`/../../../../common_test.sh
+  source `dirname $0`/../../tests/common_test.sh
   kill_process
   delete_gf
   download_test_resources glassfish.zip version-info.txt
