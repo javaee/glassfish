@@ -355,6 +355,8 @@
         <ant dir="servlet-4.0/pushQueryString" target="all"/>
         <ant dir="servlet-4.0/trailer" target="all"/>
         <ant dir="servlet-4.0/compositeTrailerSupplier" target="all"/>
+        <ant dir="servlet-4.0/pushArbitraryMethod" target="all"/>
+        <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
