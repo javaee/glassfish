@@ -45,6 +45,7 @@ list_test_ids(){
 test_run(){
   #test functions goes here, maven test or ant test etc.
   $S1AS_HOME/bin/asadmin start-domain
+  pwd
   mvn -Dtest=ConfigTest test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain	
 }
