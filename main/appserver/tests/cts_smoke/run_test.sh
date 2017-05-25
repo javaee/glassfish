@@ -152,7 +152,7 @@ test_run_servlet_tck(){
 	> ts.jte
 
 	echo "# Disabling signature tests for CI build pipeline" >> ts.jtx
-	echo "com.sun.ts.tests.signaturetest.servlet.ServletSigTest.java#signatureTest" >> ts.jtx
+	echo "com/sun/ts/tests/signaturetest/servlet/ServletSigTest.java#signatureTest" >> ts.jtx
 
 	cd $S1AS_HOME
 	bin/asadmin start-domain
