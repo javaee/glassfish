@@ -46,6 +46,7 @@ package org.glassfish.hk2.xml.internal;
  *
  */
 public class XmlElementData {
+    private final String namespace;
     private final String name;
     private final String alias;
     private final String defaultValue;
@@ -54,7 +55,15 @@ public class XmlElementData {
     private final boolean isTypeInterface;
     private final String xmlWrapperTag;
     
-    XmlElementData(String name, String alias, String defaultValue, Format format, String type, boolean isTypeInterface, String xmlWrapperTag) {
+    XmlElementData(String namespace,
+            String name,
+            String alias,
+            String defaultValue,
+            Format format,
+            String type,
+            boolean isTypeInterface,
+            String xmlWrapperTag) {
+        this.namespace = namespace;
         this.name = name;
         this.alias = alias;
         this.defaultValue = defaultValue;
@@ -64,6 +73,7 @@ public class XmlElementData {
         this.xmlWrapperTag = xmlWrapperTag;
     }
     
+    public String getNamespace() { return namespace; }
     public String getName() { return name; }
     public String getAlias() { return alias; }
     public String getDefaultValue() { return defaultValue; }
@@ -74,7 +84,8 @@ public class XmlElementData {
     
     @Override
     public String toString() {
-        return "XmlElementData(" + name +
+        return "XmlElementData(" + namespace +
+                "," + name +
                 "," + alias +
                 "," + Utilities.safeString(defaultValue) +
                 "," + format +

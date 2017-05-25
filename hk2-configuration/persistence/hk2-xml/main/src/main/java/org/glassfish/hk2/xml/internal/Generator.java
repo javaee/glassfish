@@ -91,6 +91,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
@@ -184,10 +185,13 @@ public class Generator {
             }
             
             if (XmlRootElement.class.getName().equals(convertMeAnnotation.annotationType())) {
-                String modelRootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
+                QName modelRootName = GeneratorUtilities.convertXmlRootElementName(convertMeAnnotation, convertMe);
                 compiledModel.setRootName(modelRootName);
                 
-                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), modelRootName);
+                String modelRootNameNamespace = QNameUtilities.getNamespace(modelRootName);
+                String modelRootNameKey = modelRootName.getLocalPart();
+                
+                XmlRootElement replacement = new XmlRootElementImpl(modelRootNameNamespace, modelRootNameKey);
                
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
@@ -212,7 +216,7 @@ public class Generator {
         targetCtClass.addInterface(originalCtClass);
         
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
-        Set<String> alreadyAddedNaked = new LinkedHashSet<String>();
+        Set<QName> alreadyAddedNaked = new LinkedHashSet<QName>();
         
         List<AltMethod> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
@@ -229,6 +233,9 @@ public class Generator {
             if (mi.isKey()) {
                 compiledModel.setKeyProperty(mi.getRepresentedProperty());
             }
+            
+            String miRepPropNamespace = QNameUtilities.getNamespace(mi.getRepresentedProperty());
+            String miRepProp = mi.getRepresentedProperty().getLocalPart();
             
             if (!MethodType.CUSTOM.equals(mi.getMethodType())) {
                 createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
@@ -275,17 +282,18 @@ public class Generator {
             if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
                 isSetter = true;
-                setters.add(mi.getRepresentedProperty());
+                setters.add(mi.getRepresentedProperty().getLocalPart());
                 
                 childType = mi.getBaseChildType();
                 
                 isReference = mi.isReference();
                 
-                sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + mi.getRepresentedProperty() + "\", arg0); }");
+                sb.append(getCompilableClass(mi.getGetterSetterType()) +
+                        " arg0) { super._setProperty(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\", arg0); }");
             }
             else if (MethodType.GETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
-                getters.put(mi.getRepresentedProperty(), mi);
+                getters.put(mi.getRepresentedProperty().getLocalPart(), mi);
                 
                 childType = mi.getBaseChildType();
                 
@@ -321,11 +329,11 @@ public class Generator {
                     cast = "(" + getCompilableClass(mi.getGetterSetterType()) + ") ";
                 }
                 
-                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.getRepresentedProperty() + "\"); }");
+                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\"); }");
             }
             else if (MethodType.LOOKUP.equals(mi.getMethodType())) {
                 sb.append("java.lang.String arg0) { return (" + getCompilableClass(originalRetType) +
-                        ") super._lookupChild(\"" + mi.getRepresentedProperty() + "\", arg0); }");
+                        ") super._lookupChild(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\", arg0); }");
                 
             }
             else if (MethodType.ADD.equals(mi.getMethodType())) {
@@ -338,12 +346,12 @@ public class Generator {
                 
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 if (paramTypes.size() == 0) {
-                    sb.append(") { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
+                    sb.append(") { " + returnClause + "super._doAdd(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\", null, null, -1); }");
                 }
                 else if (paramTypes.size() == 1) {
                     createInterfaceForAltClassIfNeeded(paramTypes.get(0), defaultClassPool);
                     
-                    sb.append(paramTypes.get(0).getName() + " arg0) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0) { " + returnClause + "super._doAdd(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, -1); }");
@@ -356,7 +364,7 @@ public class Generator {
                     }
                 }
                 else {
-                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { " + returnClause + "super._doAdd(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         createInterfaceForAltClassIfNeeded(paramTypes.get(0), defaultClassPool);
@@ -387,19 +395,19 @@ public class Generator {
                 
                 if (paramTypes.size() == 0) {
                     sb.append(") { " + doReturn + " " + cast + function +
-                            mi.getRepresentedProperty() + "\", null, -1, null); }");
+                            miRepPropNamespace + "\",\"" + miRepProp + "\", null, -1, null); }");
                 }
                 else if (String.class.getName().equals(paramTypes.get(0).getName())) {
                     sb.append("java.lang.String arg0) { " + doReturn + " " + cast  + function +
-                            mi.getRepresentedProperty() + "\", arg0, -1, null); }");
+                            miRepPropNamespace + "\",\"" + miRepProp + "\", arg0, -1, null); }");
                 }
                 else if (int.class.getName().equals(paramTypes.get(0).getName())) {
                     sb.append("int arg0) { " + doReturn + " " + cast + function +
-                            mi.getRepresentedProperty() + "\", null, arg0, null); }");
+                            miRepPropNamespace + "\",\"" + miRepProp + "\", null, arg0, null); }");
                 }
                 else {
                     sb.append(paramTypes.get(0).getName() + " arg0) { " + doReturn + " " + cast + function +
-                            mi.getRepresentedProperty() + "\", null, -1, arg0); }");
+                            miRepPropNamespace + "\",\"" + miRepProp + "\", null, -1, arg0); }");
                 }
             }
             else if (MethodType.CUSTOM.equals(mi.getMethodType())) {
@@ -545,12 +553,12 @@ public class Generator {
                     createAnnotationCopy(methodConstPool, anno, ctAnnotations);
                 }
                 else if (getterOrSetter && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
-                    String representedProperty = mi.getRepresentedProperty();
+                    QName representedProperty = mi.getRepresentedProperty();
                     
                     AltAnnotation elements[] = convertMeAnnotation.getAnnotationArrayValue("value");
                     if (elements == null) elements = new AltAnnotation[0];
                     
-                    elementsMethods.put(representedProperty, new GhostXmlElementData(elements, mi.getGetterSetterType()));
+                    elementsMethods.put(representedProperty.getLocalPart(), new GhostXmlElementData(elements, mi.getGetterSetterType()));
                     
                     // Note the XmlElements is NOT copied to the proxy, the ghost methods will get the XmlElements
                 }
@@ -560,7 +568,7 @@ public class Generator {
             }
             
             if (getterOrSetter) {
-                List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
+                List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty().getLocalPart());
                 if ((childType != null) || (aliases != null)) {
                     if (!isReference) {
                         AliasType aType = (aliases == null) ? AliasType.NORMAL : AliasType.HAS_ALIASES ;
@@ -571,8 +579,9 @@ public class Generator {
                         if (useChildType.isInterface()) {
                             compiledModel.addChild(
                                 useChildType.getName(),
-                                mi.getRepresentedProperty(),
-                                mi.getRepresentedProperty(),
+                                QNameUtilities.getNamespace(mi.getRepresentedProperty()),
+                                mi.getRepresentedProperty().getLocalPart(),
+                                mi.getRepresentedProperty().getLocalPart(),
                                 getChildType(mi.isList(), mi.isArray()),
                                 mi.getDefaultValue(),
                                 aType,
@@ -580,7 +589,9 @@ public class Generator {
                                 adapterClass);
                         }
                         else {
-                            compiledModel.addNonChild(mi.getRepresentedProperty(),
+                            compiledModel.addNonChild(
+                                    QNameUtilities.getNamespace(mi.getRepresentedProperty()),
+                                    mi.getRepresentedProperty().getLocalPart(),
                                     mi.getDefaultValue(),
                                     mi.getGetterSetterType().getName(),
                                     mi.getListParameterizedType().getName(),
@@ -597,6 +608,7 @@ public class Generator {
                                 
                                 if (alias.isTypeInterface()) {
                                     compiledModel.addChild(aliasType,
+                                        alias.getNamespace(),
                                         alias.getName(),
                                         alias.getAlias(),
                                         getChildType(mi.isList(), mi.isArray()),
@@ -606,7 +618,9 @@ public class Generator {
                                         adapterClass);
                                 }
                                 else {
-                                    compiledModel.addNonChild(alias.getName(),
+                                    compiledModel.addNonChild(
+                                            alias.getNamespace(),
+                                            alias.getName(),
                                             alias.getDefaultValue(),
                                             mi.getGetterSetterType().getName(),
                                             aliasType,
@@ -621,19 +635,32 @@ public class Generator {
                     else {
                         // Is a reference
                         String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
-                        compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                                mi.getGetterSetterType().getName(), listPType, true, mi.getFormat(), AliasType.NORMAL, null);
+                        compiledModel.addNonChild(
+                                mi.getRepresentedProperty(),
+                                mi.getDefaultValue(),
+                                mi.getGetterSetterType().getName(),
+                                listPType,
+                                true,
+                                mi.getFormat(),
+                                AliasType.NORMAL, null);
                     }
                 }
                 else {
                     String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
-                    compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName(), listPType, false, mi.getFormat(), AliasType.NORMAL, null);
+                    compiledModel.addNonChild(
+                            mi.getRepresentedProperty(),
+                            mi.getDefaultValue(),
+                            mi.getGetterSetterType().getName(),
+                            listPType,
+                            false,
+                            mi.getFormat(),
+                            AliasType.NORMAL,
+                            null);
                 }
             }
             
             if (getterOrSetter && childType != null &&
-                    xmlNameMap.hasNoXmlElement(mi.getRepresentedProperty()) &&
+                    xmlNameMap.hasNoXmlElement(mi.getRepresentedProperty().getLocalPart()) &&
                     !alreadyAddedNaked.contains(mi.getRepresentedProperty())) {
                 alreadyAddedNaked.add(mi.getRepresentedProperty());
                 if (ctAnnotations == null) {
@@ -669,13 +696,16 @@ public class Generator {
             String getterProperty = getterEntry.getKey();
             MethodInformationI mi = getterEntry.getValue();
             
+            String miRepPropNamespace = QNameUtilities.getNamespace(mi.getRepresentedProperty());
+            String miRepProp = mi.getRepresentedProperty().getLocalPart();
+            
             if (setters.contains(getterProperty)) continue;
             
             String getterName = mi.getOriginalMethod().getName();
             String setterName = Utilities.convertToSetter(getterName);
             
             StringBuffer sb = new StringBuffer("private void " + setterName + "(");
-            sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + mi.getRepresentedProperty() + "\", arg0); }");
+            sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + miRepPropNamespace + "\",\"" + miRepProp + "\", arg0); }");
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
@@ -701,6 +731,7 @@ public class Generator {
             
             for (AltAnnotation xmlElement : xmlElements) {
                 String elementName = xmlElement.getStringValue("name");
+                String elementNamespace = xmlElement.getStringValue("namespace");
                 
                 String ghostMethodName = baseSetSetterName + "_" + elementCount;
                 String ghostMethodGetName = baseGetterName + "_" + elementCount;
@@ -713,7 +744,7 @@ public class Generator {
                     
                     StringBuffer ghostBufferSetter = new StringBuffer("private void " + ghostMethodName + "(");
                     ghostBufferSetter.append(getCompilableClass(gxed.getterSetterType) +
-                        " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
+                        " arg0) { super._setProperty(\"" + elementNamespace + "\",\"" + elementName + "\", arg0); }");
                     
                     if (DEBUG_METHODS) {
                         Logger.getLogger().debug("Adding ghost XmlElements setter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferSetter);
@@ -730,7 +761,7 @@ public class Generator {
                     // Create the getter
                     
                     StringBuffer ghostBufferGetter = new StringBuffer("private " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
-                        "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementName + "\"); }");
+                        "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementNamespace + "\",\"" + elementName + "\"); }");
                 
                     CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
                 
@@ -795,23 +826,33 @@ public class Generator {
         sb.append(model.getOriginalInterface() + "\",\"" + model.getTranslatedClass() + "\");\n");
         
         if (model.getRootName() != null) {
-            sb.append("retVal.setRootName(\"" + model.getRootName() + "\");\n");
+            String rootNameNamespace = QNameUtilities.getNamespace(model.getRootName());
+            String rootNameKey = model.getRootName().getLocalPart();
+            
+            sb.append("retVal.setRootName(\"" + rootNameNamespace + "\",\"" + rootNameKey + "\");\n");
         }
         
         if (model.getKeyProperty() != null) {
-            sb.append("retVal.setKeyProperty(\"" + model.getKeyProperty() + "\");\n");
+            String keyPropNamespace = QNameUtilities.getNamespace(model.getKeyProperty());
+            String keyPropKey = model.getKeyProperty().getLocalPart();
+            
+            sb.append("retVal.setKeyProperty(\"" + keyPropNamespace + "\",\"" + keyPropKey + "\");\n");
         }
         
-        Map<String, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
-        for (Map.Entry<String, ChildDescriptor> entry : allChildren.entrySet()) {
-            String xmlTag = entry.getKey();
+        Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
+        for (Map.Entry<QName, ChildDescriptor> entry : allChildren.entrySet()) {
+            QName xmlTagQName = entry.getKey();
             ChildDescriptor descriptor = entry.getValue();
+            
+            String xmlTagNamespace = QNameUtilities.getNamespace(xmlTagQName);
+            String xmlTag = xmlTagQName.getLocalPart();
             
             ParentedModel parentedModel = descriptor.getParentedModel();
             if (parentedModel != null) {
                 
                 sb.append("retVal.addChild(" +
                         asParameter(parentedModel.getChildInterface()) + "," +
+                        asParameter(parentedModel.getChildXmlNamespace()) + "," +
                         asParameter(parentedModel.getChildXmlTag()) + "," +
                         asParameter(parentedModel.getChildXmlAlias()) + "," +
                         asParameter(parentedModel.getChildType()) + "," +
@@ -824,6 +865,7 @@ public class Generator {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
                 
                 sb.append("retVal.addNonChild(" +
+                        asParameter(xmlTagNamespace) + "," +
                         asParameter(xmlTag) + "," +
                         asParameter(childDataModel.getDefaultAsString()) + "," +
                         asParameter(childDataModel.getChildType()) + "," +
@@ -1243,7 +1285,7 @@ public class Generator {
                     
                 String defaultValue = JAXB_DEFAULT_DEFAULT;
                     
-                xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
+                xmlNameMap.put(setterVariable, new XmlElementData("", setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
                     
                 String aliasName = setterVariable;
                     
@@ -1253,7 +1295,8 @@ public class Generator {
                     
                 for (AltAnnotation allXmlElement : allXmlElements) {
                     defaultValue = allXmlElement.getStringValue("defaultValue");
-                        
+                    
+                    String allXmlElementNamespace = allXmlElement.getStringValue("namespace");
                     String allXmlElementName = allXmlElement.getStringValue("name");
                     AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
                     String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
@@ -1263,7 +1306,9 @@ public class Generator {
                         throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
                     }
                     else {
-                        aliases.add(new XmlElementData(allXmlElementName,
+                        aliases.add(new XmlElementData(
+                                allXmlElementNamespace,
+                                allXmlElementName,
                                 aliasName,
                                 defaultValue,
                                 Format.ELEMENT,
@@ -1280,9 +1325,13 @@ public class Generator {
                 pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
                     
                 String defaultValue = xmlElement.getStringValue("defaultValue");
+                
+                String namespace = xmlElement.getStringValue("namespace");
                     
                 if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                    xmlNameMap.put(setterVariable, new XmlElementData(
+                            namespace,
+                            setterVariable,
                             setterVariable,
                             defaultValue,
                             Format.ELEMENT,
@@ -1292,6 +1341,7 @@ public class Generator {
                 }
                 else {
                     xmlNameMap.put(setterVariable, new XmlElementData(
+                            namespace,
                             xmlElement.getStringValue("name"),
                             xmlElement.getStringValue("name"),
                             defaultValue,
@@ -1302,8 +1352,12 @@ public class Generator {
                 }
             }
             else if (xmlAttribute != null) {
+                String namespace = xmlAttribute.getStringValue("namespace");
+                
                 if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                    xmlNameMap.put(setterVariable, new XmlElementData(
+                            namespace,
+                            setterVariable,
                             setterVariable,
                             JAXB_DEFAULT_DEFAULT,
                             Format.ATTRIBUTE,
@@ -1312,7 +1366,9 @@ public class Generator {
                             xmlElementWrapperName));
                 }
                 else {
-                    xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"),
+                    xmlNameMap.put(setterVariable, new XmlElementData(
+                            namespace,
+                            xmlAttribute.getStringValue("name"),
                             xmlAttribute.getStringValue("name"),
                             JAXB_DEFAULT_DEFAULT,
                             Format.ATTRIBUTE,
@@ -1325,7 +1381,9 @@ public class Generator {
                 if (valueData != null) {
                     throw new IllegalArgumentException("There may be only one XmlValue method on " + convertMe);
                 }
-                valueData = new XmlElementData(setterVariable,
+                valueData = new XmlElementData(
+                        "",
+                        setterVariable,
                         setterVariable,
                         null,
                         Format.VALUE,
@@ -1366,50 +1424,7 @@ public class Generator {
                 valueData);
     }
     
-    private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
-        String rootName = root.getStringValue("name");
-        
-        if (!"##default".equals(rootName)) return rootName;
-        
-        String simpleName = clazz.getSimpleName();
-        
-        char asChars[] = simpleName.toCharArray();
-        StringBuffer sb = new StringBuffer();
-        
-        boolean firstChar = true;
-        boolean lastCharWasCapital = false;
-        for (char asChar : asChars) {
-            if (firstChar) {
-                firstChar = false;
-                if (Character.isUpperCase(asChar)) {
-                    lastCharWasCapital = true;
-                    sb.append(Character.toLowerCase(asChar));
-                }
-                else {
-                    lastCharWasCapital = false;
-                    sb.append(asChar);
-                }
-            }
-            else {
-                if (Character.isUpperCase(asChar)) {
-                    if (!lastCharWasCapital) {
-                        sb.append('-');
-                    }
-                    
-                    sb.append(Character.toLowerCase(asChar));
-                    
-                    lastCharWasCapital = true;
-                }
-                else {
-                    sb.append(asChar);
-                    
-                    lastCharWasCapital = false;
-                }
-            }
-        }
-        
-        return sb.toString();
-    }
+    
     
     private static boolean isSpecifiedReference(AltMethod method) {
         AltAnnotation customAnnotation = method.getAnnotation(XmlIDREF.class.getName());

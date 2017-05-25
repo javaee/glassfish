@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,46 +37,65 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.spi;
-
-import java.io.Serializable;
+package org.glassfish.hk2.xml.internal;
 
 import javax.xml.namespace.QName;
+
+import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
 
 /**
  * @author jwells
  *
  */
-public interface Model extends Serializable {
-    /**
-     * @return the originalInterface
-     */
-    public String getOriginalInterface();
-    
-    /**
-     * @return the original interface as a class
-     */
-    public Class<?> getOriginalInterfaceAsClass();
+public class GeneratorUtilities {
+    public static QName convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
+        String namespace = root.getStringValue("namespace");
+        
+        String rootName = root.getStringValue("name");
+        
+        if (!"##default".equals(rootName)) return QNameUtilities.createQName(namespace, rootName);
+        
+        String simpleName = clazz.getSimpleName();
+        
+        char asChars[] = simpleName.toCharArray();
+        StringBuffer sb = new StringBuffer();
+        
+        boolean firstChar = true;
+        boolean lastCharWasCapital = false;
+        for (char asChar : asChars) {
+            if (firstChar) {
+                firstChar = false;
+                if (Character.isUpperCase(asChar)) {
+                    lastCharWasCapital = true;
+                    sb.append(Character.toLowerCase(asChar));
+                }
+                else {
+                    lastCharWasCapital = false;
+                    sb.append(asChar);
+                }
+            }
+            else {
+                if (Character.isUpperCase(asChar)) {
+                    if (!lastCharWasCapital) {
+                        sb.append('-');
+                    }
+                    
+                    sb.append(Character.toLowerCase(asChar));
+                    
+                    lastCharWasCapital = true;
+                }
+                else {
+                    sb.append(asChar);
+                    
+                    lastCharWasCapital = false;
+                }
+            }
+        }
+        
+        String localPart = sb.toString();
+        
+        return QNameUtilities.createQName(namespace, localPart);
+    }
 
-    /**
-     * @return the translatedClass
-     */
-    public String getTranslatedClass();
-
-    /**
-     * @return the rootName
-     */
-    public QName getRootName();
-
-    /**
-     * @return the keyProperty
-     */
-    public QName getKeyProperty();
-    
-    /**
-     * Gets the class of the proxy for this bean
-     * 
-     * @return The class of the generated proxy
-     */
-    public Class<?> getProxyAsClass();
 }

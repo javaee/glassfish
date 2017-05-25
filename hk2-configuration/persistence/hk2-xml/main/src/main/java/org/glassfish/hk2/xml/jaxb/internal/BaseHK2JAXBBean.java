@@ -57,8 +57,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
@@ -72,12 +72,13 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ModelPropertyType;
+import org.glassfish.hk2.xml.internal.NamespaceBeanLikeMapImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
+import org.glassfish.hk2.xml.internal.QNameUtilities;
 import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.XmlDynamicChange;
 import org.glassfish.hk2.xml.internal.XmlRootHandleImpl;
@@ -103,11 +104,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     public final static char XML_PATH_SEPARATOR = '/';
     
     /**
-     * All fields, including child lists and direct children
+     * All fields, including child lists and direct children for beans
+     * with no namespace specified (##default)
      */
-    private HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
-    
-    private HashMap<String, Object> backupMap = null;
+    private final NamespaceBeanLikeMap nBeanLikeMap = new NamespaceBeanLikeMapImpl();
     
     /**
      * All children whose type has an identifier.  First key is the xml parameter name, second
@@ -115,7 +115,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * as a cache, may not be completely accurate and must be flushed on remove
      * operations
      */
-    private final Map<String, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new ConcurrentHashMap<String, Map<String, BaseHK2JAXBBean>>();
+    private final Map<QName, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new ConcurrentHashMap<QName, Map<String, BaseHK2JAXBBean>>();
     
     /** The model for this, including lists of all children property names */
     // private UnparentedNode model;
@@ -123,8 +123,14 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     /** The parent of this instance, or null if this is a root (or has not been fully initialized yet) */
     private Object parent;
     
+    /** My own namespace, which is determined either by my parent or by my root value */
+    private String selfNamespace;
+    
     /** My own XmlTag, which is determined either by my parent or by my root value */
     private String selfXmlTag;
+    
+    /** The full instance namespace */
+    private String instanceNamespace;
     
     /** The full instance name this takes, with names from keyed children or ids from unkeyed multi children */
     private String instanceName;
@@ -177,7 +183,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     /**
      * A map from the namespace prefix to the namespace URI
      */
-    private final Map<String, String> namespacePrefixMap = new HashMap<String, String>();
+    private final Map<String, String> prefixToNamespaceMap = new HashMap<String, String>();
+    
+    /**
+     * A map from the namespace URI to the prefix
+     */
+    private final Map<String, String> namespaceToPrefixMap = new HashMap<String, String>();
     
     /**
      * For JAXB and Serialization
@@ -186,17 +197,32 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
     }
     
-    public void _setProperty(String propName, Object propValue) {
-        _setProperty(propName, propValue, true);
+    public void _setProperty(String propNamespace, String propName, Object propValue) {
+        _setProperty(propNamespace, propName, propValue, true);
     }
     
-    public void _setProperty(String propName, Object propValue, boolean changeInHub) {
-        _setProperty(propName, propValue, changeInHub, false);
+    public void _setProperty(String propNamespace, String propName, Object propValue, boolean changeInHub) {
+        _setProperty(propNamespace, propName, propValue, changeInHub, false);
+    }
+    
+    public void _setProperty(QName qName, Object propValue) {
+        String namespace = QNameUtilities.getNamespace(qName);
+        String propName = qName.getLocalPart();
+        
+        _setProperty(namespace, propName, propValue);
+    }
+    
+    public void _setProperty(QName qName, Object propValue, boolean changeInHub) {
+        String namespace = QNameUtilities.getNamespace(qName);
+        String propName = qName.getLocalPart();
+        
+        _setProperty(namespace, propName, propValue, changeInHub);
     }
     
     @SuppressWarnings("unchecked")
-    public void _setProperty(String propName, Object propValue, boolean changeInHub, boolean rawSet) {
-        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+    public void _setProperty(String propNamespace, String propName, Object propValue, boolean changeInHub, boolean rawSet) {
+        if (propNamespace == null || propName == null) throw new IllegalArgumentException(
+                "properyName or propertyNamespace may not be null");
         
         if (DEBUG_GETS_AND_SETS) {
             // Hidden behind static because of potential expensive toString costs
@@ -216,11 +242,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         if (changeControl == null) {
             if (active) {
                 synchronized (this) {
-                    beanLikeMap.put(propName, propValue);
+                    nBeanLikeMap.setValue(propNamespace, propName, propValue);
                 }
             }
             else {
-                beanLikeMap.put(propName, propValue);
+                nBeanLikeMap.setValue(propNamespace, propName, propValue);
             }
         }
         else {
@@ -237,22 +263,24 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 changeControl.getReadLock().lock();
                 
                 try {
-                    currentValue = beanLikeMap.get(propName);
+                    currentValue = nBeanLikeMap.getValue(propNamespace, propName);
                 
                     // If both null this goes, or if they are somehow exactly the same
                     if (currentValue == propValue) return;
                 
                     ModelImpl model = _getModel();
-                    ParentedModel childModel = model.getChild(propName);
+                    ParentedModel childModel = model.getChild(propNamespace, propName);
                     if (childModel != null) {
                         if (ChildType.DIRECT.equals(childModel.getChildType())) {
                             if (currentValue == null && propValue != null) {
                                 // This is an add
                                 doAdd = true;
                                 
-                                String childKeyProperty = childModel.getChildModel().getKeyProperty();
+                                QName keyQName = childModel.getChildModel().getKeyProperty();
+                                String childkeyNamespace = keyQName == null ? null : keyQName.getNamespaceURI();
+                                String childKeyProperty = keyQName == null ? null : keyQName.getLocalPart();
                                 if (childKeyProperty != null) {
-                                    directNewKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childKeyProperty);
+                                    directNewKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childkeyNamespace, childKeyProperty);
                                 }
                             }
                             else if (currentValue != null && propValue == null) {
@@ -261,10 +289,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                             }
                             else {
                                 // Both beans are different
-                                String childKeyProperty = childModel.getChildModel().getKeyProperty();
+                                QName keyQName = childModel.getChildModel().getKeyProperty();
+                                String childkeyNamespace = keyQName == null ? null : keyQName.getNamespaceURI();
+                                String childKeyProperty = keyQName == null ? null : keyQName.getLocalPart();
                                 if (childKeyProperty != null) {
-                                    directCurrentKey = (String) ((BaseHK2JAXBBean) currentValue)._getProperty(childKeyProperty);
-                                    directNewKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childKeyProperty);
+                                    directCurrentKey = (String) ((BaseHK2JAXBBean) currentValue)._getProperty(childkeyNamespace, childKeyProperty);
+                                    directNewKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childkeyNamespace, childKeyProperty);
                                     
                                     if (GeneralUtilities.safeEquals(directCurrentKey, directNewKey)) {
                                         doModify = true;
@@ -290,15 +320,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             
             if (doAdd) {
-                _doAdd(propName, propValue, directNewKey, -1);
+                _doAdd(propNamespace, propName, propValue, directNewKey, -1);
                 return;
             }
             if (doRemove) {
-                _doRemove(propName, null, -1, currentValue);
+                _doRemove(propNamespace, propName, null, -1, currentValue);
                 return;
             }
             if (doModify) {
-                _doModify(propName, currentValue, propValue);
+                _doModify(propNamespace, propName, currentValue, propValue);
                 return;
             }
             if (doDirectReplace) {
@@ -307,8 +337,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     boolean success = false;
                     changeControl.startOrContinueChange(this);
                     try {
-                        _doRemove(propName, directCurrentKey, -1, currentValue, false);
-                        _doAdd(propName, propValue, directNewKey, -1, true);
+                        _doRemove(propNamespace, propName, directCurrentKey, -1, currentValue, false);
+                        _doAdd(propNamespace, propName, propValue, directNewKey, -1, true);
                         success = true;
                     }
                     finally {
@@ -321,8 +351,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 return;
             }
             
-            String keyProperty = _getModel().getKeyProperty();
-            if (keyProperty != null && propName.equals(keyProperty) && (keyValue != null)) {
+            QName keyQName = _getModel().getKeyProperty();
+            String keyPropertyNamespace = keyQName == null ? null : keyQName.getNamespaceURI();
+            String keyProperty = keyQName == null ? null : keyQName.getLocalPart();
+            if (keyProperty != null && propName.equals(keyProperty) && (keyValue != null) &&
+                    keyPropertyNamespace != null && propNamespace.equals(keyPropertyNamespace)) {
                 throw new IllegalArgumentException("The key property of a bean (" + keyProperty + ") may not be changed from " +
                   keyValue + " to " + propValue);
             }
@@ -334,19 +367,19 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 
                 try {
                     if (!rawSet) {
-                      Utilities.invokeVetoableChangeListeners(changeControl, this,
-                        beanLikeMap.get(propName), propValue, propName, classReflectionHelper);
+                        Object oValue = nBeanLikeMap.getValue(propNamespace, propName);
+                       
+                        Utilities.invokeVetoableChangeListeners(changeControl, this,
+                            oValue, propValue, propName, classReflectionHelper);
                     }
                 
                     if (changeInHub) {
-                        changeInHubDirect(propName, propValue);
+                        changeInHubDirect(propNamespace, propName, propValue);
                     }
+                    
+                    nBeanLikeMap.backup();
                 
-                    if (backupMap == null) {
-                        backupMap = new HashMap<String, Object>(beanLikeMap);
-                    }
-                
-                    beanLikeMap.put(propName, propValue);
+                    nBeanLikeMap.setValue(propNamespace, propName, propValue);
                     
                     success = true;
                 }
@@ -360,59 +393,61 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
-    public void _setProperty(String propName, byte propValue) {
+    public void _setProperty(String propNamespace, String propName, byte propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Byte) propValue);
+        _setProperty(propNamespace, propName, (Byte) propValue);
     }
     
-    public void _setProperty(String propName, boolean propValue) {
+    public void _setProperty(String propNamespace, String propName, boolean propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Boolean) propValue);
+        _setProperty(propNamespace, propName, (Boolean) propValue);
     }
     
-    public void _setProperty(String propName, char propValue) {
+    public void _setProperty(String propNamespace, String propName, char propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Character) propValue);
+        _setProperty(propNamespace, propName, (Character) propValue);
     }
     
-    public void _setProperty(String propName, short propValue) {
+    public void _setProperty(String propNamespace, String propName, short propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Short) propValue);
+        _setProperty(propNamespace, propName, (Short) propValue);
     }
     
-    public void _setProperty(String propName, int propValue) {
+    public void _setProperty(String propNamespace, String propName, int propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Integer) propValue);
+        _setProperty(propNamespace, propName, (Integer) propValue);
     }
     
-    public void _setProperty(String propName, float propValue) {
+    public void _setProperty(String propNamespace, String propName, float propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Float) propValue);
+        _setProperty(propNamespace, propName, (Float) propValue);
     }
     
-    public void _setProperty(String propName, long propValue) {
+    public void _setProperty(String propNamespace, String propName, long propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Long) propValue);
+        _setProperty(propNamespace, propName, (Long) propValue);
     }
     
-    public void _setProperty(String propName, double propValue) {
+    public void _setProperty(String propNamespace, String propName, double propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        _setProperty(propName, (Double) propValue);
+        _setProperty(propNamespace, propName, (Double) propValue);
     }
     
-    private Object _getProperty(String propName, Class<?> expectedClass) {
-        return _getProperty(propName, expectedClass, null);
+    private Object _getProperty(String propNamespace, String propName, Class<?> expectedClass) {
+        return _getProperty(propNamespace, propName, expectedClass, null);
     }
     
-    private Object _getProperty(String propName, Class<?> expectedClass, ParentedModel parentNode) {
+    private Object _getProperty(String propNamespace, String propName, Class<?> expectedClass, ParentedModel parentNode) {
+        if (propNamespace == null) throw new IllegalArgumentException("propNamespace must not be null");
+        
         boolean isSet;
         Object retVal;
         boolean doDefaulting = active ? true : false;
@@ -420,21 +455,21 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         if (changeControl == null) {
             if (active) {
                 synchronized (this) {
-                    isSet = beanLikeMap.containsKey(propName);
-                    retVal = beanLikeMap.get(propName);
+                    isSet = nBeanLikeMap.isSet(propNamespace, propName);
+                    retVal = nBeanLikeMap.getValue(propNamespace, propName);
                 }
             }
             else {
-                isSet = beanLikeMap.containsKey(propName);
-                retVal = beanLikeMap.get(propName);
+                isSet = nBeanLikeMap.isSet(propNamespace, propName);
+                retVal = nBeanLikeMap.getValue(propNamespace, propName);
             }
         }
         else {
             changeControl.getReadLock().lock();
             try {
                 doDefaulting = true;
-                isSet = beanLikeMap.containsKey(propName);
-                retVal = beanLikeMap.get(propName);
+                isSet = nBeanLikeMap.isSet(propNamespace, propName);
+                retVal = nBeanLikeMap.getValue(propNamespace, propName);
             }
             finally {
                 changeControl.getReadLock().unlock();
@@ -443,7 +478,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         if (doDefaulting && (retVal == null) && !isSet) {
             if (expectedClass != null) {
-                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass, namespacePrefixMap);
+                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propNamespace, propName), expectedClass, prefixToNamespaceMap);
             }
             else if (parentNode != null) {
                 switch (parentNode.getChildType()) {
@@ -471,22 +506,30 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return retVal;
     }
     
+    public Object _getProperty(QName qName) {
+        String propNamespace = QNameUtilities.getNamespace(qName);
+        String propName = qName.getLocalPart();
+        
+        return _getProperty(propNamespace, propName);
+    }
+    
     /**
      * Called by proxy
      * 
      * @param propName Property of child or non-child element or attribute
      * @return Value
      */
-    public Object _getProperty(String propName) {
+    public Object _getProperty(String propNamespace, String propName) {
         ModelImpl model = _getModel();
-        ModelPropertyType mpt = model.getModelPropertyType(propName);
+        ModelPropertyType mpt = model.getModelPropertyType(propNamespace, propName);
         
         switch(mpt) {
         case FLAT_PROPERTY:
-            return _getProperty(propName, model.getNonChildType(propName));
+            return _getProperty(propNamespace, propName, model.getNonChildType(propNamespace, propName));
         case TREE_ROOT:
-            ParentedModel parent = model.getChild(propName);
-            return _getProperty(parent.getChildXmlTag(), null, parent);
+            ParentedModel parent = model.getChild(propNamespace, propName);
+            
+            return _getProperty(parent.getChildXmlNamespace(), parent.getChildXmlTag(), null, parent);
         case UNKNOWN:
         default:
             throw new AssertionError("Unknown type " + mpt + " for " + propName + " in " + this);
@@ -499,8 +542,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public boolean _getPropertyZ(String propName) {
-        return (Boolean) _getProperty(propName, boolean.class);
+    public boolean _getPropertyZ(String propNamespace, String propName) {
+        return (Boolean) _getProperty(propNamespace, propName, boolean.class);
     }
     
     /**
@@ -509,8 +552,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public byte _getPropertyB(String propName) {
-        return (Byte) _getProperty(propName, byte.class);
+    public byte _getPropertyB(String propNamespace, String propName) {
+        return (Byte) _getProperty(propNamespace, propName, byte.class);
     }
     
     /**
@@ -519,8 +562,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public char _getPropertyC(String propName) {
-        return (Character) _getProperty(propName, char.class);
+    public char _getPropertyC(String propNamespace, String propName) {
+        return (Character) _getProperty(propNamespace, propName, char.class);
     }
     
     /**
@@ -529,8 +572,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public short _getPropertyS(String propName) {
-        return (Short) _getProperty(propName, short.class);
+    public short _getPropertyS(String propNamespace, String propName) {
+        return (Short) _getProperty(propNamespace, propName, short.class);
     }
     
     /**
@@ -539,8 +582,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public int _getPropertyI(String propName) {
-        return (Integer) _getProperty(propName, int.class);
+    public int _getPropertyI(String propNamespace, String propName) {
+        return (Integer) _getProperty(propNamespace, propName, int.class);
     }
     
     /**
@@ -549,8 +592,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public float _getPropertyF(String propName) {
-        return (Float) _getProperty(propName, float.class);
+    public float _getPropertyF(String propNamespace, String propName) {
+        return (Float) _getProperty(propNamespace, propName, float.class);
     }
     
     /**
@@ -559,8 +602,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public long _getPropertyJ(String propName) {
-        return (Long) _getProperty(propName, long.class);
+    public long _getPropertyJ(String propNamespace, String propName) {
+        return (Long) _getProperty(propNamespace, propName, long.class);
     }
     
     /**
@@ -569,17 +612,17 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @return
      */
-    public double _getPropertyD(String propName) {
-        return (Double) _getProperty(propName, double.class);
+    public double _getPropertyD(String propNamespace, String propName) {
+        return (Double) _getProperty(propNamespace, propName, double.class);
     }
     
     @SuppressWarnings("unchecked")
-    private Object internalLookup(String propName, String keyValue) {
+    private Object internalLookup(String propNamespace, String propName, String keyValue) {
         // First look in the cache
         Object retVal = null;
         
         Map<String, BaseHK2JAXBBean> byName;
-        byName = keyedChildrenCache.get(propName);
+        byName = keyedChildrenCache.get(new QName(propNamespace, propName));
         if (byName != null) {
             retVal = byName.get(keyValue);
         }
@@ -590,7 +633,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
         
         // Now do it the hard way
-        Object prop = _getProperty(propName);
+        Object prop = _getProperty(propNamespace, propName);
         if (prop == null) return null;  // Just not found
         
         if (prop instanceof List) {
@@ -600,7 +643,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     if (byName == null) {
                         byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
-                        keyedChildrenCache.put(propName, byName);
+                        keyedChildrenCache.put(new QName(propNamespace, propName), byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -619,7 +662,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     if (byName == null) {
                         byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
-                        keyedChildrenCache.put(propName, byName);
+                        keyedChildrenCache.put(new QName(propNamespace, propName), byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -634,41 +677,41 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return null;
     }
     
-    public Object _lookupChild(String propName, String keyValue) {
+    public Object _lookupChild(String propNamespace, String propName, String keyValue) {
         if (changeControl == null) {
-            return internalLookup(propName, keyValue);
+            return internalLookup(propNamespace, propName, keyValue);
         }
         
         changeControl.getReadLock().lock();
         try {
-            return internalLookup(propName, keyValue);
+            return internalLookup(propNamespace, propName, keyValue);
         }
         finally {
             changeControl.getReadLock().unlock();
         }
     }
     
-    public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
-        return _doAdd(childProperty, rawChild, childKey, index, true);
+    public Object _doAdd(String propNamespace, String childProperty, Object rawChild, String childKey, int index) {
+        return _doAdd(propNamespace, childProperty, rawChild, childKey, index, true);
     }
     
-    public Object _doAdd(String childProperty, Object rawChild, String childKey, int index, boolean changeList) {
+    public Object _doAdd(String propNamespace, String childProperty, Object rawChild, String childKey, int index, boolean changeList) {
         if (changeControl == null) {
-            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, XmlDynamicChange.EMPTY, new LinkedList<ActiveDescriptor<?>>(), changeList);
+            return Utilities.internalAdd(this, propNamespace, childProperty, rawChild, childKey, index, null, XmlDynamicChange.EMPTY, new LinkedList<ActiveDescriptor<?>>(), changeList);
         }
         
         changeControl.getWriteLock().lock();
         try {
-            Object oldValue = beanLikeMap.get(childProperty);
+            Object oldValue = nBeanLikeMap.getValue(propNamespace, childProperty);
             
             LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
             Object retVal;
             boolean success = false;
             XmlDynamicChange change = changeControl.startOrContinueChange(this);
             try {
-                retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, change, addedServices, changeList);
+                retVal = Utilities.internalAdd(this, propNamespace, childProperty, rawChild, childKey, index, changeControl, change, addedServices, changeList);
                 
-                Object newValue = beanLikeMap.get(childProperty);
+                Object newValue = nBeanLikeMap.getValue(propNamespace, childProperty);
                 
                 Utilities.invokeVetoableChangeListeners(changeControl, this,
                         oldValue, newValue, childProperty, classReflectionHelper);
@@ -692,7 +735,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
-    private void _doModify(String propName, Object currentValue, Object newValue) {
+    private void _doModify(String propNamespace, String propName, Object currentValue, Object newValue) {
         if (root == null) {
             throw new IllegalStateException("A direct set will only work on a rooted bean");
         }
@@ -702,7 +745,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             boolean success = false;
             XmlDynamicChange change = changeControl.startOrContinueChange(this);
             try {
-                Utilities.internalModifyChild(this, propName, currentValue, newValue, root, changeControl, change);
+                Utilities.internalModifyChild(this, propNamespace, propName, currentValue, newValue, root, changeControl, change);
                 
                 success = true;
             }
@@ -838,13 +881,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return ((Double) _invokeCustomizedMethod(methodName, params, values)).doubleValue();
     }
     
-    public Object _doRemove(String childProperty, String childKey, int index, Object child) {
-        return _doRemove(childProperty, childKey, index, child, true);
+    public Object _doRemove(String propNamespace, String childProperty, String childKey, int index, Object child) {
+        return _doRemove(propNamespace, childProperty, childKey, index, child, true);
     }
     
-    public Object _doRemove(String childProperty, String childKey, int index, Object child, boolean changeList) {
+    public Object _doRemove(String propNamespace, String childProperty, String childKey, int index, Object child, boolean changeList) {
         if (changeControl == null) {
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY, changeList);
+            Object retVal = Utilities.internalRemove(this, propNamespace, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY, changeList);
             
             if (retVal != null) {
                 keyedChildrenCache.remove(childProperty);
@@ -861,11 +904,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             Object retVal;
             boolean success = false;
             try {
-                Object oldVal = beanLikeMap.get(childProperty);
+                Object oldVal = nBeanLikeMap.getValue(propNamespace, childProperty);
                 
-                retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, xmlDynamicChange, changeList);
+                retVal = Utilities.internalRemove(this, propNamespace, childProperty, childKey, index, child, changeControl, xmlDynamicChange, changeList);
                 
-                Object newVal = beanLikeMap.get(childProperty);
+                Object newVal = nBeanLikeMap.getValue(propNamespace, childProperty);
                 
                 Utilities.invokeVetoableChangeListeners(changeControl, this,
                         oldVal, newVal, childProperty, classReflectionHelper);
@@ -887,25 +930,25 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
-    public boolean _doRemoveZ(String childProperty, String childKey, int index, Object child) {
-        Object retVal = _doRemove(childProperty, childKey, index, child);
+    public boolean _doRemoveZ(String propNamespace, String childProperty, String childKey, int index, Object child) {
+        Object retVal = _doRemove(propNamespace, childProperty, childKey, index, child);
         return (retVal != null);
     }
 
-    public boolean _hasProperty(String propName) {
+    public boolean _hasProperty(String propNamespace, String propName) {
         if (changeControl == null) {
             if (active) {
                 synchronized (this) {
-                    return beanLikeMap.containsKey(propName);
+                    return nBeanLikeMap.isSet(propNamespace, propName);
                 }
             }
             
-            return beanLikeMap.containsKey(propName);
+            return nBeanLikeMap.isSet(propNamespace, propName);
         }
         
         changeControl.getReadLock().lock();
         try {
-            return beanLikeMap.containsKey(propName);
+            return nBeanLikeMap.isSet(propNamespace, propName);
         }
         finally {
             changeControl.getReadLock().unlock();
@@ -920,15 +963,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         if (changeControl == null) {
             if (active) {
                 synchronized (this) {
-                    return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
+                    return Collections.unmodifiableMap(nBeanLikeMap.getBeanLikeMap(namespaceToPrefixMap));
                 }
             }
-            return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
+            return Collections.unmodifiableMap(nBeanLikeMap.getBeanLikeMap(namespaceToPrefixMap));
         }
         
         changeControl.getReadLock().lock();
         try {
-            return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
+            return Collections.unmodifiableMap(nBeanLikeMap.getBeanLikeMap(namespaceToPrefixMap));
         }
         finally {
             changeControl.getReadLock().unlock();
@@ -951,17 +994,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     public void _setParent(Object parent) {
         this.parent = parent;
-        
-        Package packageIns = getClass().getPackage();
-        XmlSchema xmlSchema = packageIns.getAnnotation(XmlSchema.class);
-        if (xmlSchema != null) {
-            
-            
-        }
     }
     
-    public void _setSelfXmlTag(String selfXmlTag) {
+    public void _setSelfXmlTag(String selfNamespace, String selfXmlTag) {
+        this.selfNamespace = selfNamespace;
         this.selfXmlTag = selfXmlTag;
+    }
+    
+    public String _getSelfNamespace() {
+        return selfNamespace;
     }
     
     public String _getSelfXmlTag() {
@@ -976,8 +1017,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return xmlPath;
     }
     
-    public void _setInstanceName(String name) {
+    public void _setInstanceName(String namespace, String name) {
+        instanceNamespace = namespace;
         instanceName = name;
+    }
+    
+    public String _getInstanceNamespace() {
+        return instanceNamespace;
     }
 
     /* (non-Javadoc)
@@ -996,7 +1042,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getKeyPropertyName()
      */
     @Override
-    public String _getKeyPropertyName() {
+    public QName _getKeyPropertyName() {
         return _getModel().getKeyProperty();
     }
     
@@ -1047,7 +1093,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         changeControl = change;
         this.root = root;
         
-        Utilities.calculateNamespaces(this, root, namespacePrefixMap);
+        Utilities.calculateNamespaces(this, root, prefixToNamespaceMap);
+        
+        // Reverse the prefixToNamespace for the namespaceToPrefix map
+        for (Map.Entry<String, String> entry : prefixToNamespaceMap.entrySet()) {
+            namespaceToPrefixMap.put(entry.getValue(), entry.getKey());
+        }
         
         if (changeControl != null) active = true;
     }
@@ -1065,8 +1116,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * 
      * @return The set of all children tags
      */
-    public Set<String> _getChildrenXmlTags() {
-        HashSet<String> retVal = new HashSet<String>(_getModel().getKeyedChildren());
+    public Set<QName> _getChildrenXmlTags() {
+        HashSet<QName> retVal = new HashSet<QName>(_getModel().getKeyedChildren());
         retVal.addAll(_getModel().getUnKeyedChildren());
         
         return retVal;
@@ -1088,21 +1139,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
-        Map<String, Object> copyBeanLikeMap = copyMe._getBeanLikeMap();
-        
-        ModelImpl copyModel = copyMe._getModel();
-        for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
-            String xmlTag = entrySet.getKey();
-            
-            if (copyModel.getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
-            
-            ChildDataModel cdm = copyModel.getNonChildProperties().get(xmlTag);
-            if (!copyReferences && cdm != null && cdm.isReference()) {
-                continue;
-            }
-            
-            beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
-        }
+        nBeanLikeMap.shallowCopy(nBeanLikeMap, copyMe._getModel());
     }
     
     /**
@@ -1111,8 +1148,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName The name of the property to change
      * @param propValue The new value of the property
      */
-    public boolean _changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
-        Object oldValue = beanLikeMap.get(propName);
+    public boolean _changeInHub(String propNamespace, String propName, Object propValue, WriteableBeanDatabase wbd) {
+        Object oldValue = nBeanLikeMap.getValue(propNamespace, propName);
         if (GeneralUtilities.safeEquals(oldValue, propValue)) {
             // Calling set, but the value was not in fact changed
             return false;
@@ -1120,7 +1157,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         WriteableType wt = wbd.getWriteableType(xmlPath);
         
-        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        HashMap<String, Object> modified = new HashMap<String, Object>(nBeanLikeMap.getBeanLikeMap(namespaceToPrefixMap));
         modified.put(propName, propValue);
             
         wt.modifyInstance(instanceName, modified);
@@ -1136,7 +1173,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     public boolean _changeInHub(List<PropertyChangeEvent> events, WriteableBeanDatabase wbd) {
         WriteableType wt = wbd.getWriteableType(xmlPath);
-        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        HashMap<String, Object> modified = new HashMap<String, Object>(nBeanLikeMap.getBeanLikeMap(namespaceToPrefixMap));
         List<PropertyChangeEvent> effectiveChanges = new ArrayList<PropertyChangeEvent>(events.size());
         
         for (PropertyChangeEvent event : events) {
@@ -1165,7 +1202,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName
      * @param propValue
      */
-    private void changeInHubDirect(String propName, Object propValue) {
+    private void changeInHubDirect(String propNamespace, String propName, Object propValue) {
         if (changeControl == null) return;
         
         XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(this);
@@ -1179,7 +1216,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 return;
             }
             
-            _changeInHub(propName, propValue, wbd);
+            _changeInHub(propNamespace, propName, propValue, wbd);
             
             success = true;
         }
@@ -1220,7 +1257,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * Write lock must be held
      */
     public void __activateChange() {
-        backupMap = null;
+        nBeanLikeMap.restoreBackup(true);
         addCost = -1;
     }
     
@@ -1228,10 +1265,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * Write lock must be held
      */
     public void __rollbackChange() {
-        if (backupMap == null) return;
-        
-        beanLikeMap = backupMap;
-        backupMap = null;
+        nBeanLikeMap.restoreBackup(false);
     }
     
     /**
@@ -1247,14 +1281,20 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     @Override
-    public boolean _isSet(String propName) {
+    public boolean _isSet(String propNamespace, String propName) {
         if (changeControl == null) {
-            return beanLikeMap.containsKey(propName);
+            if (active) {
+                synchronized (this) {
+                    return nBeanLikeMap.isSet(propNamespace, propName);
+                }
+            }
+            
+            return nBeanLikeMap.isSet(propNamespace, propName);
         }
         
         changeControl.getReadLock().lock();
         try {
-            return beanLikeMap.containsKey(propName);
+            return nBeanLikeMap.isSet(propNamespace, propName);
         }
         finally {
             changeControl.getReadLock().unlock();
@@ -1271,8 +1311,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     @SuppressWarnings("unchecked")
-    public void __fixAlias(String propName, String baseName) {
-        Object propNameValueRaw = beanLikeMap.get(propName);
+    public void __fixAlias(String propNamespace, String propName, String baseName) {
+        Object propNameValueRaw = nBeanLikeMap.getValue(propNamespace, propName);
         if (propNameValueRaw == null) return;
         if (!(propNameValueRaw instanceof List)) {
             throw new AssertionError("Aliasing with XmlElements only works with List type.  Found " + propNameValueRaw);
@@ -1281,10 +1321,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         List<Object> propNameValue = (List<Object>) propNameValueRaw;
         if (propNameValue.isEmpty()) return;
         
-        Object baseNamePropertyRaw = beanLikeMap.get(baseName);
+        Object baseNamePropertyRaw = nBeanLikeMap.getValue(propNamespace, baseName);
         if (baseNamePropertyRaw == null) {
             baseNamePropertyRaw = new ArrayList<Object>(propNameValue.size());
-            beanLikeMap.put(baseName, baseNamePropertyRaw);
+            nBeanLikeMap.setValue(propNamespace, baseName, baseNamePropertyRaw);
         }
         
         if (!(baseNamePropertyRaw instanceof List)) {

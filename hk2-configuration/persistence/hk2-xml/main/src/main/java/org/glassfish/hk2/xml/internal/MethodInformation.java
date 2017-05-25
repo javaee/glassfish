@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import javax.xml.namespace.QName;
+
 import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
@@ -72,7 +74,7 @@ public class MethodInformation implements MethodInformationI {
     private final String decapitalizedMethodProperty;
     
     /** The xml tag for this method */
-    private final String representedProperty;
+    private final QName representedProperty;
     
     /** The default value specified for this method */
     private final String defaultValue;
@@ -126,7 +128,7 @@ public class MethodInformation implements MethodInformationI {
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
-            String representedProperty,
+            QName representedProperty,
             String defaultValue,
             AltClass baseChildType,
             AltClass gsType,
@@ -183,7 +185,7 @@ public class MethodInformation implements MethodInformationI {
      * @see org.glassfish.hk2.xml.internal.MethodInformationI#getRepresentedProperty()
      */
     @Override
-    public String getRepresentedProperty() {
+    public QName getRepresentedProperty() {
         return representedProperty;
     }
 

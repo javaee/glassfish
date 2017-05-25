@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -72,7 +73,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     private void setUserKey(BaseHK2JAXBBean bean, boolean listOrArray) {
         ModelImpl model = bean._getModel();
         
-        String keyProperty = model.getKeyProperty();
+        QName keyProperty = model.getKeyProperty();
         if (keyProperty == null && listOrArray) {
             bean._setKeyValue(jaUtilities.getUniqueId());
             
@@ -81,7 +82,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         
         if (keyProperty == null) return;
         
-        String key = (String) bean._getProperty(keyProperty);
+        String key = (String) bean._getProperty(QNameUtilities.getNamespace(keyProperty), keyProperty.getLocalPart());
         if (key == null) return;
         
         bean._setKeyValue(key);
@@ -93,10 +94,11 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean, BaseHK2JAXBBean parent) {
         ModelImpl model = targetBean._getModel();
         
-        for (Map.Entry<String, ChildDescriptor> childDescriptorEntry : model.getAllChildrenDescriptors().entrySet()) {
+        for (Map.Entry<QName, ChildDescriptor> childDescriptorEntry : model.getAllChildrenDescriptors().entrySet()) {
             ParentedModel parentedNode = childDescriptorEntry.getValue().getParentedModel();
             
             if (parentedNode != null) {
+                String childXmlTagNamespace = parentedNode.getChildXmlNamespace();
                 String childXmlTag = parentedNode.getChildXmlTag();
                 String xmlWrapperTag = parentedNode.getXmlWrapperTag();
                 if (parentedNode.getAdapter() != null) {
@@ -106,11 +108,11 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                 Object children;
                 switch (parentedNode.getAliasType()) {
                 case NORMAL:
-                    children = targetBean._getProperty(childXmlTag);
+                    children = targetBean._getProperty(childXmlTagNamespace, childXmlTag);
                     break;
                 case IS_ALIAS:
-                    children = targetBean._getProperty(childXmlTag);
-                    targetBean.__fixAlias(childXmlTag, parentedNode.getChildXmlAlias());
+                    children = targetBean._getProperty(childXmlTagNamespace, childXmlTag);
+                    targetBean.__fixAlias(childXmlTagNamespace, childXmlTag, parentedNode.getChildXmlAlias());
                     
                     break;
                 case HAS_ALIASES:
@@ -130,7 +132,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                         
                         BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                         
-                        childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
+                        childBean._setSelfXmlTag(parentedNode.getChildXmlNamespace(), Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                         
                         setUserKey(childBean, true);
                     }
@@ -140,7 +142,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                     for (Object child : (Object[]) children) {
                         BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                         
-                        childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
+                        childBean._setSelfXmlTag(parentedNode.getChildXmlNamespace(), Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                         
                         setUserKey(childBean, true);
                     }
@@ -148,18 +150,18 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                 else {
                     BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
                     
-                    childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
+                    childBean._setSelfXmlTag(parentedNode.getChildXmlNamespace(), Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                     
                     setUserKey(childBean, false);
                 }
                 
             }
             else {
-                String nonChildProp = childDescriptorEntry.getKey();
+                QName nonChildProp = childDescriptorEntry.getKey();
                 ChildDataModel cdm = childDescriptorEntry.getValue().getChildDataModel();
                 
                 if (AliasType.IS_ALIAS.equals(cdm.getAliasType())) {
-                    targetBean.__fixAlias(nonChildProp, cdm.getXmlAlias());
+                    targetBean.__fixAlias(QNameUtilities.getNamespace(nonChildProp), nonChildProp.getLocalPart(), cdm.getXmlAlias());
                 }
             }
         }
@@ -176,7 +178,9 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         allBeans.add(targetBean);
         
         if (parentBean == null) {
-            targetBean._setSelfXmlTag(targetNode.getRootName());
+            QName rootName = targetNode.getRootName();
+            
+            targetBean._setSelfXmlTag(QNameUtilities.getNamespace(rootName), rootName.getLocalPart());
         }
         
         setSelfXmlTagInAllChildren(targetBean, parentBean);

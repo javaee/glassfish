@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal.alt;
 
+import javax.xml.namespace.QName;
+
 import org.glassfish.hk2.xml.internal.Format;
 import org.glassfish.hk2.xml.internal.MethodType;
 
@@ -62,7 +64,7 @@ public interface MethodInformationI {
     /**
      * @return the representedProperty
      */
-    public String getRepresentedProperty();
+    public QName getRepresentedProperty();
 
     /**
      * @return the defaultValue

@@ -277,7 +277,7 @@ public class XmlServiceImpl implements XmlService {
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = Utilities.createInstanceName(base);
-            base._setInstanceName(instanceName);
+            base._setInstanceName("", instanceName);
             
             base._setDynamicChangeInfo(retVal, changeControl);
             

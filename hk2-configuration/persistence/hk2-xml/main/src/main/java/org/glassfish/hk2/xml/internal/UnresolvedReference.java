@@ -44,12 +44,14 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 public class UnresolvedReference {
     private final String type;
     private final String xmlID;
+    private final String propertyNamespace;
     private final String propertyName;
     private final BaseHK2JAXBBean unfinished;
     
-    UnresolvedReference(String type, String xmlID, String propertyName, BaseHK2JAXBBean unfinished) {
+    UnresolvedReference(String type, String xmlID, String propertyNamespace, String propertyName, BaseHK2JAXBBean unfinished) {
         this.type = type;
         this.xmlID = xmlID;
+        this.propertyNamespace = propertyNamespace;
         this.propertyName = propertyName;
         this.unfinished = unfinished;
     }
@@ -66,6 +68,10 @@ public class UnresolvedReference {
      */
     public String getXmlID() {
         return xmlID;
+    }
+    
+    public String getPropertyNamespace() {
+        return propertyNamespace;
     }
 
     /**
@@ -84,7 +90,12 @@ public class UnresolvedReference {
     
     @Override
     public String toString() {
-        return "UnresolvedReference(" + type + "," + xmlID + "," + propertyName + "," + unfinished + "," + System.identityHashCode(this) + ")";
+        return "UnresolvedReference(" + type + ","
+                   + xmlID + ","
+                   + propertyNamespace + ","
+                   + propertyName + ","
+                   + unfinished + ","
+                   + System.identityHashCode(this) + ")";
     }
     
 }

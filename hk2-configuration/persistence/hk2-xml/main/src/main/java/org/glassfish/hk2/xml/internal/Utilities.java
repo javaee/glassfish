@@ -336,6 +336,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static void internalModifyChild(
             BaseHK2JAXBBean myParent,
+            String childPropertyNamespace,
             String childProperty,
             Object currentValue,
             Object newValue,
@@ -343,7 +344,7 @@ public class Utilities {
             DynamicChangeInfo<?> changeInformation,
             XmlDynamicChange xmlDynamicChange
             ) {
-        ParentedModel childNode = myParent._getModel().getChild(childProperty);
+        ParentedModel childNode = myParent._getModel().getChild(childPropertyNamespace, childProperty);
         if (childNode == null) {
             throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
         }
@@ -433,6 +434,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static BaseHK2JAXBBean internalAdd(
             BaseHK2JAXBBean myParent,
+            String childPropertyNamespace,
             String childProperty,
             Object rawChild,
             String childKey,
@@ -445,7 +447,7 @@ public class Utilities {
             throw new IllegalArgumentException("Unknown index " + index);
         }
         
-        if (childKey != null && myParent._lookupChild(childProperty, childKey) != null) {
+        if (childKey != null && myParent._lookupChild(childPropertyNamespace, childProperty, childKey) != null) {
             throw new IllegalStateException("There is already a child with name " + childKey + " for child " + childProperty);
         }
         
@@ -453,12 +455,12 @@ public class Utilities {
             throw new IllegalArgumentException("The child added must be from XmlService.createBean");
         }
         
-        ParentedModel childNode = myParent._getModel().getChild(childProperty);
+        ParentedModel childNode = myParent._getModel().getChild(childPropertyNamespace, childProperty);
         if (childNode == null) {
             throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
         }
         
-        Object allMyChildren = myParent._getProperty(childProperty);
+        Object allMyChildren = myParent._getProperty(childPropertyNamespace, childProperty);
         List<Object> multiChildren = null;
         if (!ChildType.DIRECT.equals(childNode.getChildType())) {
             if (allMyChildren == null) {
@@ -490,18 +492,24 @@ public class Utilities {
         if (rawChild != null) {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
-            for (String nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
-                Object value = childToCopy._getProperty(nonChildProperty);
+            for (QName nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
+                String nonChildPropNamespace = QNameUtilities.getNamespace(nonChildProperty);
+                String nonChildPropKey = nonChildProperty.getLocalPart();
+                
+                Object value = childToCopy._getProperty(nonChildPropNamespace, nonChildPropKey);
                 if (value == null) continue;
                 
-                child._setProperty(nonChildProperty, value, false, true);
+                child._setProperty(nonChildPropNamespace, nonChildPropKey, value, false, true);
             }
         }
         
         if (childKey == null) {
             if (childNode.getChildModel().getKeyProperty() != null) {
                 if (rawChild != null) {
-                    childKey = (String) child._getProperty(childNode.getChildModel().getKeyProperty());
+                    String keyPropNamespace = QNameUtilities.getNamespace(childNode.getChildModel().getKeyProperty());
+                    String keyPropKey = childNode.getChildModel().getKeyProperty().getLocalPart();
+                    
+                    childKey = (String) child._getProperty(keyPropNamespace, keyPropKey);
                 }
                     
                 if (childKey == null) {
@@ -527,19 +535,23 @@ public class Utilities {
             if (childNode.getChildModel().getKeyProperty() == null) {
                 throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + myParent);
             }
+            
+            QName keyProp = childNode.getChildModel().getKeyProperty();
                 
-            child._setProperty(childNode.getChildModel().getKeyProperty(), childKey, false, true);
+            child._setProperty(QNameUtilities.getNamespace(keyProp), keyProp.getLocalPart(), childKey, false, true);
             child._setKeyValue(childKey);
         }
         
         child._setParent(myParent);
-        child._setSelfXmlTag(constructXmlTag(childNode.getXmlWrapperTag(), childNode.getChildXmlTag()));
+        child._setSelfXmlTag(childNode.getChildXmlNamespace(), constructXmlTag(childNode.getXmlWrapperTag(), childNode.getChildXmlTag()));
         child._setKeyValue(childKey);
         if (childKey != null) {
-            child._setInstanceName(composeInstanceName(myParent._getInstanceName(), child._getKeyValue(), childNode.getXmlWrapperTag()));
+            child._setInstanceName(myParent._getInstanceNamespace(),
+                    composeInstanceName(myParent._getInstanceName(), child._getKeyValue(), childNode.getXmlWrapperTag()));
         }
         else {
-            child._setInstanceName(composeInstanceName(myParent._getInstanceName(), childNode.getChildXmlTag(), childNode.getXmlWrapperTag()));
+            child._setInstanceName(myParent._getInstanceNamespace(),
+                    composeInstanceName(myParent._getInstanceName(), childNode.getChildXmlTag(), childNode.getXmlWrapperTag()));
         }
         
         // Now freeze it
@@ -577,18 +589,18 @@ public class Utilities {
             }
             
             if (xmlDynamicChange.getBeanDatabase() != null) {
-                myParent._changeInHub(childProperty, finalChildList, xmlDynamicChange.getBeanDatabase());
+                myParent._changeInHub(childPropertyNamespace, childProperty, finalChildList, xmlDynamicChange.getBeanDatabase());
             }
             
-            myParent._setProperty(childProperty, finalChildList, false, true);
+            myParent._setProperty(childPropertyNamespace, childProperty, finalChildList, false, true);
         }
         else {
             // Direct child
             if (xmlDynamicChange.getBeanDatabase() != null){
-                myParent._changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
+                myParent._changeInHub(childPropertyNamespace, childProperty, child, xmlDynamicChange.getBeanDatabase());
             }
             
-            myParent._setProperty(childProperty, child, false, true);
+            myParent._setProperty(childPropertyNamespace, childProperty, child, false, true);
         }
         
         return child;
@@ -620,19 +632,22 @@ public class Utilities {
             DynamicChangeInfo<?> changeInformation,
             List<ActiveDescriptor<?>> addedServices,
             XmlDynamicChange xmlDynamicChange) {
-        Map<String, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
+        Map<QName, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
         
-        for (Map.Entry<String, ParentedModel> childsChildrenEntry : childrenMap.entrySet()) {
-            String childsChildProperty = childsChildrenEntry.getKey();
+        for (Map.Entry<QName, ParentedModel> childsChildrenEntry : childrenMap.entrySet()) {
+            QName childsChildProperty = childsChildrenEntry.getKey();
             ParentedModel childsChildParentNode = childsChildrenEntry.getValue();
+            
+            String childsChildPropertyNamespace = QNameUtilities.getNamespace(childsChildProperty);
+            String childsChildPropertyKey = childsChildProperty.getLocalPart();
             
             if (!ChildType.DIRECT.equals(childsChildParentNode.getChildType())) {
                 List<BaseHK2JAXBBean> childsChildren = null;
                 if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
-                    childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
+                    childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildPropertyNamespace, childsChildPropertyKey);
                 }
                 else {
-                    Object arrayChildsChildren = childToCopy._getProperty(childsChildProperty);
+                    Object arrayChildsChildren = childToCopy._getProperty(childsChildPropertyNamespace, childsChildPropertyKey);
                     if (arrayChildsChildren != null) {
                         // This object is an array
                         childsChildren = new ArrayList<BaseHK2JAXBBean>(Array.getLength(arrayChildsChildren));
@@ -649,7 +664,7 @@ public class Utilities {
                 Object asArray = Array.newInstance(childsChildParentNode.getChildModel().getOriginalInterfaceAsClass(), childsChildren.size());
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
-                    BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
+                    BaseHK2JAXBBean grandchild = internalAdd(child, childsChildPropertyNamespace, childsChildPropertyKey,
                             childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, false);
                     
                     copiedChildArray.add(grandchild);
@@ -657,20 +672,20 @@ public class Utilities {
                 }
                 
                 if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
-                    child._setProperty(childsChildProperty, copiedChildArray, false, true);
+                    child._setProperty(childsChildPropertyNamespace, childsChildPropertyKey, copiedChildArray, false, true);
                 }
                 else {
-                    child._setProperty(childsChildProperty, asArray, false, true);
+                    child._setProperty(childsChildPropertyNamespace, childsChildPropertyKey, asArray, false, true);
                 }
             }
             else {
-                BaseHK2JAXBBean childsChild = (BaseHK2JAXBBean) childToCopy._getProperty(childsChildProperty);
+                BaseHK2JAXBBean childsChild = (BaseHK2JAXBBean) childToCopy._getProperty(childsChildPropertyNamespace, childsChildPropertyKey);
                 if (childsChild == null) continue;
                 
-                BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
+                BaseHK2JAXBBean grandchild = internalAdd(child, childsChildPropertyNamespace, childsChildPropertyKey,
                         childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, false);
                 
-                child._setProperty(childsChildProperty, grandchild, false, true);
+                child._setProperty(childsChildPropertyNamespace, childsChildPropertyKey, grandchild, false, true);
             }
         }
     }
@@ -684,8 +699,11 @@ public class Utilities {
             addedDescriptors.add(added);
         }
         
-        for (String keyedChildProperty : root._getModel().getKeyedChildren()) {
-            Object keyedRawChild = root._getProperty(keyedChildProperty);
+        for (QName keyedChildProperty : root._getModel().getKeyedChildren()) {
+            String keyedChildPropertyNamespace = QNameUtilities.getNamespace(keyedChildProperty);
+            String keyedChildPropertyKey = keyedChildProperty.getLocalPart();
+            
+            Object keyedRawChild = root._getProperty(keyedChildPropertyNamespace, keyedChildPropertyKey);
             if (keyedRawChild == null) continue;
             
             if (keyedRawChild instanceof Iterable) {
@@ -707,8 +725,11 @@ public class Utilities {
             }
         }
         
-        for (String unkeyedChildProperty : root._getModel().getUnKeyedChildren()) {
-            Object unkeyedRawChild = root._getProperty(unkeyedChildProperty);
+        for (QName unkeyedChildProperty : root._getModel().getUnKeyedChildren()) {
+            String unkeyedChildPropertyNamespace = QNameUtilities.getNamespace(unkeyedChildProperty);
+            String unkeyedChildPropertyKey = unkeyedChildProperty.getLocalPart();
+            
+            Object unkeyedRawChild = root._getProperty(unkeyedChildPropertyNamespace, unkeyedChildPropertyKey);
             if (unkeyedRawChild == null) continue;
             
             if (unkeyedRawChild instanceof Iterable) {
@@ -758,19 +779,28 @@ public class Utilities {
         
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
-        for (String nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
-            Object value = childToCopy._getProperty(nonChildProperty);
+        for (QName nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
+            String nonChildPropertyNamespace = QNameUtilities.getNamespace(nonChildProperty);
+            String nonChildPropertyKey = nonChildProperty.getLocalPart();
+            
+            Object value = childToCopy._getProperty(nonChildPropertyNamespace, nonChildPropertyKey);
             if (value == null) continue;
             
-            child._setProperty(nonChildProperty, value, false);
+            child._setProperty(nonChildPropertyNamespace, nonChildPropertyKey, value, false);
         }
         
         if (rootNode.getKeyProperty() != null) {
-            child._setKeyValue((String) child._getProperty(rootNode.getKeyProperty())); 
+            QName rootKeyProperty = rootNode.getKeyProperty();
+            
+            child._setKeyValue((String) child._getProperty(QNameUtilities.getNamespace(rootKeyProperty), rootKeyProperty.getLocalPart())); 
         }
         
-        child._setSelfXmlTag(rootNode.getRootName());
-        child._setInstanceName(rootNode.getRootName());
+        QName rName = rootNode.getRootName();
+        String rNameNamespace = QNameUtilities.getNamespace(rName);
+        String rNameKey = rName.getLocalPart();
+        
+        child._setSelfXmlTag(rNameNamespace, rNameKey);
+        child._setInstanceName(QNameUtilities.getNamespace(rootNode.getRootName()), rootNode.getRootName().getLocalPart());
         
         handleChildren(child, childToCopy, changeInfo, addedServices, XmlDynamicChange.EMPTY);
             
@@ -796,6 +826,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static BaseHK2JAXBBean internalRemove(
             BaseHK2JAXBBean myParent,
+            String childPropertyNamespace,
             String childProperty,
             String childKey,
             int index,
@@ -828,7 +859,7 @@ public class Utilities {
             instanceToRemove = childToRemoveBean._getInstanceName();
         }
         
-        ParentedModel removeMeParentedNode = myParent._getModel().getChild(childProperty);
+        ParentedModel removeMeParentedNode = myParent._getModel().getChild(childPropertyNamespace, childProperty);
         ModelImpl removeMeNode = removeMeParentedNode.getChildModel();
         BaseHK2JAXBBean rootForDeletion = null;
         
@@ -836,7 +867,7 @@ public class Utilities {
             if (childKey == null && index < 0 && instanceToRemove == null) return null;
             
             if (ChildType.LIST.equals(removeMeParentedNode.getChildType())) {
-                List<BaseHK2JAXBBean> removeFromList = (List<BaseHK2JAXBBean>) myParent._getProperty(childProperty);
+                List<BaseHK2JAXBBean> removeFromList = (List<BaseHK2JAXBBean>) myParent._getProperty(childPropertyNamespace, childProperty);
                 
                 if (removeFromList == null) return null;
                 
@@ -885,15 +916,15 @@ public class Utilities {
                 
                 if (changeList) {
                     if (xmlDynamicChange.getBeanDatabase() != null) {
-                        myParent._changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                        myParent._changeInHub(childPropertyNamespace, childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                     }
                 
-                    myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
+                    myParent._setProperty(childPropertyNamespace, childProperty, listWithObjectRemoved, false, true);
                 }
             }
             else {
                 // array children
-                Object removeFromArray = myParent._getProperty(childProperty);
+                Object removeFromArray = myParent._getProperty(childPropertyNamespace, childProperty);
                 
                 if (removeFromArray == null) return null;
                 
@@ -979,24 +1010,24 @@ public class Utilities {
                 
                 if (changeList) {
                     if (xmlDynamicChange.getBeanDatabase() != null) {
-                        myParent._changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                        myParent._changeInHub(childPropertyNamespace, childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                     }
                 
-                    myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
+                    myParent._setProperty(childPropertyNamespace, childProperty, arrayWithObjectRemoved, false, true);
                 }
             }
         }
         else {
             // Direct child
-            rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
+            rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childPropertyNamespace, childProperty);
             if (rootForDeletion == null) return null;
             
             if (changeList) {
                 if (xmlDynamicChange.getBeanDatabase() != null) {
-                    myParent._changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
+                    myParent._changeInHub(childPropertyNamespace, childProperty, null, xmlDynamicChange.getBeanDatabase());
                 }
             
-                myParent._setProperty(childProperty, null, false, true);
+                myParent._setProperty(childPropertyNamespace, childProperty, null, false, true);
             }
         }
         
@@ -1060,11 +1091,12 @@ public class Utilities {
         if (model == null) return;
         
         for (ParentedModel parentedChild : model.getAllChildren()) {
+            String childPropertyNamespace = parentedChild.getChildXmlNamespace();
             String childPropertyName = parentedChild.getChildXmlTag();
             
             switch (parentedChild.getChildType()) {
             case LIST:
-                List<BaseHK2JAXBBean> listChildren = (List<BaseHK2JAXBBean>) fromMe._getProperty(childPropertyName);
+                List<BaseHK2JAXBBean> listChildren = (List<BaseHK2JAXBBean>) fromMe._getProperty(childPropertyNamespace, childPropertyName);
                 if (listChildren != null) {
                     for (BaseHK2JAXBBean listChild : listChildren) {
                         getDescriptorsToRemove(listChild, descriptorsToRemove);
@@ -1072,7 +1104,7 @@ public class Utilities {
                 }
                 break;
             case ARRAY:
-                Object arrayChildren = fromMe._getProperty(childPropertyName);
+                Object arrayChildren = fromMe._getProperty(childPropertyNamespace, childPropertyName);
                 if (arrayChildren != null) {
                     int arrayLength = Array.getLength(arrayChildren);
                     
@@ -1083,7 +1115,7 @@ public class Utilities {
                 }
                 break;
             case DIRECT:
-                BaseHK2JAXBBean bean = (BaseHK2JAXBBean) fromMe._getProperty(childPropertyName);
+                BaseHK2JAXBBean bean = (BaseHK2JAXBBean) fromMe._getProperty(childPropertyNamespace, childPropertyName);
                 if (bean != null) {
                     getDescriptorsToRemove(bean, descriptorsToRemove);
                 }
@@ -1223,7 +1255,7 @@ public class Utilities {
             }
             
             BaseHK2JAXBBean unfinished = unresolvedRef.getUnfinished();
-            unfinished._setProperty(unresolvedRef.getPropertyName(), reference);
+            unfinished._setProperty(unresolvedRef.getPropertyNamespace(), unresolvedRef.getPropertyName(), reference);
         }
         
         if (!errors.isEmpty()) {
@@ -1293,12 +1325,15 @@ public class Utilities {
             ClassReflectionHelper helper) {
         ModelImpl model = rootBean._getModel();
         
-        Map<String, ParentedModel> childrenByName = model.getChildrenByName();
-        for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
-            String propertyName = entry.getKey();
+        Map<QName, ParentedModel> childrenByName = model.getChildrenByName();
+        for (Map.Entry<QName, ParentedModel> entry : childrenByName.entrySet()) {
+            QName propertyName = entry.getKey();
             ParentedModel parentModel = entry.getValue();
             
-            Object child = rootBean._getProperty(propertyName);
+            String propertyNameNamespace = QNameUtilities.getNamespace(propertyName);
+            String propertyNameKey = propertyName.getLocalPart();
+            
+            Object child = rootBean._getProperty(propertyNameNamespace, propertyNameKey);
             if (child == null) continue;
             
             if (ChildType.LIST.equals(parentModel.getChildType())) {
@@ -1400,14 +1435,14 @@ public class Utilities {
         return retVal;
     }
     
-    private static Map<String, Integer> getIndexMap(List<BaseHK2JAXBBean> list, String keyProperty) {
+    private static Map<String, Integer> getIndexMap(List<BaseHK2JAXBBean> list, String keyPropertyNamespace, String keyProperty) {
         Map<String, Integer> retVal = new HashMap<String, Integer>();
         for (int lcv = 0; lcv < list.size(); lcv++) {
             BaseHK2JAXBBean bean = list.get(lcv);
             String key = bean._getKeyValue();
             
             if (key == null) {
-                key = (String) bean._getProperty(keyProperty);
+                key = (String) bean._getProperty(keyPropertyNamespace, keyProperty);
                 if (key == null) {
                     throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv + " in " + list);
                 }
@@ -1419,7 +1454,7 @@ public class Utilities {
         return retVal;
     }
     
-    private static Map<String, Integer> getIndexMapArray(Object array, String keyProperty) {
+    private static Map<String, Integer> getIndexMapArray(Object array, String keyPropertyNamespace, String keyProperty) {
         Map<String, Integer> retVal = new HashMap<String, Integer>();
         
         int length = Array.getLength(array);
@@ -1428,7 +1463,7 @@ public class Utilities {
             String key = bean._getKeyValue();
             
             if (key == null) {
-                key = (String) bean._getProperty(keyProperty);
+                key = (String) bean._getProperty(keyPropertyNamespace, keyProperty);
                 if (key == null) {
                     throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv);
                 }
@@ -1450,27 +1485,30 @@ public class Utilities {
         Map<String, Object> sourceMap = source._getBeanLikeMap();
         Map<String, Object> otherMap = other._getBeanLikeMap();
         
-        Map<String, ChildDataModel> nonChildProperties = sourceModel.getNonChildProperties();
+        Map<QName, ChildDataModel> nonChildProperties = sourceModel.getNonChildProperties();
         
-        for (Map.Entry<String, ChildDataModel> nonChildPropertyEntry : nonChildProperties.entrySet()) {
-            String nonChildProperty = nonChildPropertyEntry.getKey();
+        for (Map.Entry<QName, ChildDataModel> nonChildPropertyEntry : nonChildProperties.entrySet()) {
+            QName nonChildProperty = nonChildPropertyEntry.getKey();
             ChildDataModel dataModel = nonChildPropertyEntry.getValue();
+            
+            String nonChildPropertyNamespace = QNameUtilities.getNamespace(nonChildProperty);
+            String nonChildPropertyKey = nonChildProperty.getLocalPart();
                     
             Object sourceValue = sourceMap.get(nonChildProperty);
             Object otherValue = otherMap.get(nonChildProperty);
             
             if (!dataModel.isReference()) {
                 if (!GeneralUtilities.safeEquals(sourceValue, otherValue)) {
-                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildPropertyKey, sourceValue, otherValue));
                 }
             }
             else {
                 // Comparing references
                 if (sourceValue != null && otherValue == null) {
-                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildPropertyKey, sourceValue, otherValue));
                 }
                 else if (sourceValue == null && otherValue != null) {
-                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildPropertyKey, sourceValue, otherValue));
                 }
                 else if (sourceValue != null) {
                     BaseHK2JAXBBean sourceReference = (BaseHK2JAXBBean) sourceValue;
@@ -1480,7 +1518,7 @@ public class Utilities {
                     String otherReferenceKey = otherReference._getKeyValue();
                     
                     if (!GeneralUtilities.safeEquals(sourceReferenceKey, otherReferenceKey)) {
-                        localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                        localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildPropertyKey, sourceValue, otherValue));
                     }
                     
                 }
@@ -1488,10 +1526,13 @@ public class Utilities {
             }
         }
         
-        Map<String, ParentedModel> childProperties = sourceModel.getChildrenByName();
-        for (Map.Entry<String, ParentedModel> childEntry : childProperties.entrySet()) {
-            String xmlTag = childEntry.getKey();
+        Map<QName, ParentedModel> childProperties = sourceModel.getChildrenByName();
+        for (Map.Entry<QName, ParentedModel> childEntry : childProperties.entrySet()) {
+            QName xmlTag = childEntry.getKey();
             ParentedModel pModel = childEntry.getValue();
+            
+            String xmlTagNamespace = QNameUtilities.getNamespace(xmlTag);
+            String xmlTagKey = xmlTag.getLocalPart();
             
             Object sourceValue = sourceMap.get(xmlTag);
             Object otherValue = otherMap.get(xmlTag);
@@ -1499,26 +1540,29 @@ public class Utilities {
             if (ChildType.DIRECT.equals(pModel.getChildType())) {
                 if (sourceValue == null && otherValue != null) {
                     // This is just a pure add
-                    localDifference.addAdd(xmlTag, (BaseHK2JAXBBean) otherValue, -1); 
+                    localDifference.addAdd(xmlTagKey, (BaseHK2JAXBBean) otherValue, -1); 
                 }
                 else if (sourceValue != null && otherValue == null) {
                     // A pure remove
-                    localDifference.addRemove(xmlTag, new RemoveData(xmlTag, (BaseHK2JAXBBean) sourceValue));
+                    localDifference.addRemove(xmlTagKey, new RemoveData(xmlTagKey, (BaseHK2JAXBBean) sourceValue));
                 }
                 else if (sourceValue != null) {
-                    String keyProperty = pModel.getChildModel().getKeyProperty();
+                    QName keyProperty = pModel.getChildModel().getKeyProperty();
                     if (keyProperty == null) {
                         getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
                     }
                     else {
-                        String sourceKey = (String) ((BaseHK2JAXBBean) sourceValue)._getProperty(keyProperty);
-                        String otherKey = (String) ((BaseHK2JAXBBean) otherValue)._getProperty(keyProperty);
+                        String keyPropertyNamespace = QNameUtilities.getNamespace(keyProperty);
+                        String keyPropertyKey = keyProperty.getLocalPart();
+                        
+                        String sourceKey = (String) ((BaseHK2JAXBBean) sourceValue)._getProperty(keyPropertyNamespace, keyPropertyKey);
+                        String otherKey = (String) ((BaseHK2JAXBBean) otherValue)._getProperty(keyPropertyNamespace, keyPropertyKey);
                         
                         if (GeneralUtilities.safeEquals(sourceKey, otherKey)) {
                             getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
                         }
                         else {
-                            localDifference.addDirectReplace(xmlTag, (BaseHK2JAXBBean) otherValue, new RemoveData(xmlTag, (BaseHK2JAXBBean) sourceValue));
+                            localDifference.addDirectReplace(xmlTagKey, (BaseHK2JAXBBean) otherValue, new RemoveData(xmlTagKey, (BaseHK2JAXBBean) sourceValue));
                         }
                     }
                 }
@@ -1527,13 +1571,13 @@ public class Utilities {
                 getListDifferences(pModel,
                         sourceValue, otherValue,
                         differences,
-                        xmlTag, source);
+                        xmlTagKey, source);
             }
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
                 getArrayDifferences(pModel,
                         sourceValue, otherValue,
                         differences,
-                        xmlTag, source);
+                        xmlTagKey, source);
             }
         }
         
@@ -1549,7 +1593,7 @@ public class Utilities {
             String xmlTag, BaseHK2JAXBBean source) {
         Difference localDifference = new Difference(source);
         
-        String keyProperty = pModel.getChildModel().getKeyProperty();
+        QName keyProperty = pModel.getChildModel().getKeyProperty();
         
         List<BaseHK2JAXBBean> sourceValueList = (List<BaseHK2JAXBBean>) sourceValue;
         List<BaseHK2JAXBBean> otherValueList = (List<BaseHK2JAXBBean>) otherValue;
@@ -1558,8 +1602,11 @@ public class Utilities {
         if (otherValueList == null) otherValueList = Collections.emptyList();
         
         if (keyProperty != null) {
-            Map<String, Integer> sourceIndexMap = getIndexMap(sourceValueList, keyProperty);
-            Map<String, Integer> otherIndexMap = getIndexMap(otherValueList, keyProperty);
+            String keyPropertyNamespace = QNameUtilities.getNamespace(keyProperty);
+            String keyPropertyKey = keyProperty.getLocalPart();
+            
+            Map<String, Integer> sourceIndexMap = getIndexMap(sourceValueList, keyPropertyNamespace, keyPropertyKey);
+            Map<String, Integer> otherIndexMap = getIndexMap(otherValueList, keyPropertyNamespace, keyPropertyKey);
             
             for (BaseHK2JAXBBean sourceBean : sourceValueList) {
                 String sourceKeyValue = sourceBean._getKeyValue();
@@ -1585,7 +1632,7 @@ public class Utilities {
             for (BaseHK2JAXBBean otherBean : otherValueList) {
                 String otherKeyValue = otherBean._getKeyValue();
                 if (otherKeyValue == null) {
-                    otherKeyValue = (String) otherBean._getProperty(keyProperty);
+                    otherKeyValue = (String) otherBean._getProperty(keyPropertyNamespace, keyPropertyKey);
                 }
                 
                 if (!sourceIndexMap.containsKey(otherKeyValue)) {
@@ -1614,14 +1661,17 @@ public class Utilities {
             String xmlTag, BaseHK2JAXBBean source) {
         Difference localDifference = new Difference(source);
 
-        String keyProperty = pModel.getChildModel().getKeyProperty();
+        QName keyProperty = pModel.getChildModel().getKeyProperty();
         
         Object sourceArray = (sourceValue == null) ? new BaseHK2JAXBBean[0] : sourceValue ;
         Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
         
         if (keyProperty != null) {
-            Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray, keyProperty);
-            Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray, keyProperty);
+            String keyPropertyNamespace = QNameUtilities.getNamespace(keyProperty);
+            String keyPropertyKey = keyProperty.getLocalPart();
+            
+            Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray, keyPropertyNamespace, keyPropertyKey);
+            Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray, keyPropertyNamespace, keyPropertyKey);
             
             int sourceLength = Array.getLength(sourceArray);
             
@@ -1657,7 +1707,7 @@ public class Utilities {
                 
                 String otherKeyValue = otherBean._getKeyValue();
                 if (otherKeyValue == null) {
-                    otherKeyValue = (String) otherBean._getProperty(keyProperty);
+                    otherKeyValue = (String) otherBean._getProperty(keyPropertyNamespace, keyPropertyKey);
                 }
                 
                 if (!sourceIndexMap.containsKey(otherKeyValue)) {
@@ -1704,12 +1754,12 @@ public class Utilities {
             for (Map.Entry<String, AddRemoveMoveDifference> childEntry : difference.getChildChanges().entrySet()) {
                 String xmlKey = childEntry.getKey();
                 AddRemoveMoveDifference childDiffs = childEntry.getValue();
-                ParentedModel parentedModel = model.getChild(xmlKey);
+                ParentedModel parentedModel = model.getChild("", xmlKey);
                 ChildType childType = parentedModel.getChildType();
                 
                 boolean changeList = ChildType.DIRECT.equals(childType);
                 
-                Object oldListOrArray = source._getProperty(xmlKey);
+                Object oldListOrArray = source._getProperty("", xmlKey);
                 Map<Integer, BaseHK2JAXBBean> arrayChanges = null;
                 
                 if (!changeList) {
@@ -1723,8 +1773,8 @@ public class Utilities {
                     BaseHK2JAXBBean addMe = added.getToAdd();
                     String addedKey = addMe._getKeyValue();
                     
-                    BaseHK2JAXBBean removedBean = (BaseHK2JAXBBean) source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
-                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, addedKey, -1, false);
+                    BaseHK2JAXBBean removedBean = (BaseHK2JAXBBean) source._doRemove("", xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
+                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd("", xmlKey, addMe, addedKey, -1, false);
                     
                     allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, removedBean, addedBean));
                 }
@@ -1733,7 +1783,7 @@ public class Utilities {
                     BaseHK2JAXBBean addMe = added.getToAdd();
                     int index = added.getIndex();
                 
-                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, null, index, false);
+                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd("", xmlKey, addMe, null, index, false);
                     if (!changeList) {
                         arrayChanges.put(index, addedBean);
                     }
@@ -1743,7 +1793,7 @@ public class Utilities {
                 }
                 
                 for (RemoveData removed : childDiffs.getRemoves()) {
-                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
+                    source._doRemove("", xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
                     if (changeList) {
                         allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, oldListOrArray, null));
                     }
@@ -1809,7 +1859,7 @@ public class Utilities {
             }
             
             for (PropertyChangeEvent pce : events) { 
-                source._setProperty(pce.getPropertyName(), pce.getNewValue(), false, true);
+                source._setProperty("", pce.getPropertyName(), pce.getNewValue(), false, true);
             }
             
             success = true;
@@ -1892,9 +1942,10 @@ public class Utilities {
         
         ModelImpl model = bean._getModel();
         for (ParentedModel parentedModel : model.getAllChildren()) {
+            String propNamespace = parentedModel.getChildXmlNamespace();
             String propName = parentedModel.getChildXmlTag();
             
-            Object rawChild = bean._getProperty(propName);
+            Object rawChild = bean._getProperty(propNamespace, propName);
             if (rawChild == null) continue;
             
             switch (parentedModel.getChildType()) {
@@ -2314,8 +2365,17 @@ public class Utilities {
             methodType = MethodType.CUSTOM;
         }
         
-        String representedProperty = xmlNameMap.getNameMap(variable);
-        if (representedProperty == null) representedProperty = variable;
+        String repPropNamespace = xmlNameMap.getNamespaceMap(variable);
+        String repPropName = xmlNameMap.getNameMap(variable);
+        
+        
+        QName representedProperty;
+        if (repPropName == null) {
+            representedProperty = QNameUtilities.createQName("", variable);
+        }
+        else {
+            representedProperty = QNameUtilities.createQName(repPropNamespace, repPropName);
+        }
         
         String defaultValue = xmlNameMap.getDefaultNameMap(variable);
         
@@ -2470,9 +2530,12 @@ public class Utilities {
         
         ModelImpl myModel = retVal._getModel();
         
-        Set<String> childrenProps = copyMe._getChildrenXmlTags();
-        for (String childProp : childrenProps) {
-            Object child = copyMe._getProperty(childProp);
+        Set<QName> childrenProps = copyMe._getChildrenXmlTags();
+        for (QName childProp : childrenProps) {
+            String childPropNamespace = QNameUtilities.getNamespace(childProp);
+            String childPropKey = childProp.getLocalPart();
+            
+            Object child = copyMe._getProperty(childPropNamespace, childPropKey);
             if (child == null) continue;
             
             if (child instanceof List) {
@@ -2487,12 +2550,12 @@ public class Utilities {
                 }
                 
                 // Sets the list property into the parent
-                retVal._setProperty(childProp, toSetChildList);
+                retVal._setProperty(childPropNamespace, childPropKey, toSetChildList);
             }
             else if (child.getClass().isArray()) {
                 int length = Array.getLength(child);
                 
-                ParentedModel pm = myModel.getChild(childProp);
+                ParentedModel pm = myModel.getChild(childPropNamespace, childPropKey);
                 ModelImpl childModel = pm.getChildModel();
                 
                 Class<?> childInterface = childModel.getOriginalInterfaceAsClass();
@@ -2508,13 +2571,13 @@ public class Utilities {
                 }
                 
                 // Sets the array property into the parent
-                retVal._setProperty(childProp, toSetChildArray);
+                retVal._setProperty(childPropNamespace, childPropKey, toSetChildArray);
             }
             else {
                 // A direct child
                 BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController, retVal, rootHandle, referenceMap, unresolved);
                 
-                retVal._setProperty(childProp, copiedChild);
+                retVal._setProperty(childPropNamespace, childPropKey, copiedChild);
             }
         }
         
@@ -2522,7 +2585,7 @@ public class Utilities {
             retVal._setParent(theCopiedParent);
         }
         
-        String keyPropertyName = retVal._getKeyPropertyName();
+        QName keyPropertyName = retVal._getKeyPropertyName();
         if (referenceMap != null && keyPropertyName != null) {
             String keyProperty = retVal._getKeyValue();
             if (keyProperty != null) {
@@ -2530,14 +2593,17 @@ public class Utilities {
             }
             
             // Now try to resolve any references, and if we can not add them to the unfinished list
-            Map<String, ChildDataModel> nonChildrenProps = myModel.getNonChildProperties();
-            for (Map.Entry<String, ChildDataModel> nonChild : nonChildrenProps.entrySet()) {
-                String xmlTag = nonChild.getKey();
+            Map<QName, ChildDataModel> nonChildrenProps = myModel.getNonChildProperties();
+            for (Map.Entry<QName, ChildDataModel> nonChild : nonChildrenProps.entrySet()) {
+                QName xmlTag = nonChild.getKey();
                 ChildDataModel cdm = nonChild.getValue();
+                
+                String xmlTagNamespace = QNameUtilities.getNamespace(xmlTag);
+                String xmlTagKey = xmlTag.getLocalPart();
                 
                 if (!cdm.isReference()) continue;
                 
-                Object fromReferenceRaw = copyMe._getProperty(xmlTag);
+                Object fromReferenceRaw = copyMe._getProperty(xmlTagNamespace, xmlTagKey);
                 if (fromReferenceRaw == null) continue;
                 if (!(fromReferenceRaw instanceof BaseHK2JAXBBean)) continue;
                 BaseHK2JAXBBean fromReference = (BaseHK2JAXBBean) fromReferenceRaw;
@@ -2548,11 +2614,11 @@ public class Utilities {
                 
                 BaseHK2JAXBBean toReference = referenceMap.get(rk);
                 if (toReference != null) {
-                    retVal._setProperty(xmlTag, toReference);
+                    retVal._setProperty(xmlTagNamespace, xmlTagKey, toReference);
                 }
                 else {
                     // Must go in unfinished list
-                    unresolved.add(new UnresolvedReference(cdm.getChildType(), fromKeyValue, xmlTag, retVal));
+                    unresolved.add(new UnresolvedReference(cdm.getChildType(), fromKeyValue, xmlTagNamespace, xmlTagKey, retVal));
                 }
             }
         }

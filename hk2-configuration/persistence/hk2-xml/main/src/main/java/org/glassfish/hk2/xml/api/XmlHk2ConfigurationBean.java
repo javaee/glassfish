@@ -42,6 +42,8 @@ package org.glassfish.hk2.xml.api;
 
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.jvnet.hk2.annotations.Contract;
@@ -55,7 +57,8 @@ public interface XmlHk2ConfigurationBean {
     /**
      * Returns a read-only copy of the
      * bean-like map corresponding to the current
-     * state of this bean
+     * state of this bean in the default namespace
+     * of the document
      * 
      * @return A copy of the bean-like map associated
      * with this bean
@@ -92,10 +95,10 @@ public interface XmlHk2ConfigurationBean {
      * property
      * 
      * @return The name of the key property for
-     * this bean or null if this bean doesn
+     * this bean or null if this bean does
      * not have a key property
      */
-    public String _getKeyPropertyName();
+    public QName _getKeyPropertyName();
     
     /**
      * Returns the key value for this object
@@ -128,7 +131,7 @@ public interface XmlHk2ConfigurationBean {
      * @param keyValue The non-null keyValue to look for
      * @return The child or null if not found
      */
-    public Object _lookupChild(String propName, String keyValue);
+    public Object _lookupChild(String propNamespace, String propName, String keyValue);
     
     /**
      * Returns true if the given property is explicitly set, false
@@ -139,7 +142,7 @@ public interface XmlHk2ConfigurationBean {
      * @return true if the property is explicitly set, false if
      * the property is not explicitly set
      */
-    public boolean _isSet(String propName);
+    public boolean _isSet(String propNamespace, String propName);
     
     /**
      * Gets the root associated with this bean.  If this bean

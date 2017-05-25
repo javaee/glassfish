@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,46 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.spi;
-
-import java.io.Serializable;
+package org.glassfish.hk2.xml.internal;
 
 import javax.xml.namespace.QName;
+
+import org.glassfish.hk2.xml.api.XmlService;
 
 /**
  * @author jwells
  *
  */
-public interface Model extends Serializable {
+public class QNameUtilities {
     /**
-     * @return the originalInterface
-     */
-    public String getOriginalInterface();
-    
-    /**
-     * @return the original interface as a class
-     */
-    public Class<?> getOriginalInterfaceAsClass();
-
-    /**
-     * @return the translatedClass
-     */
-    public String getTranslatedClass();
-
-    /**
-     * @return the rootName
-     */
-    public QName getRootName();
-
-    /**
-     * @return the keyProperty
-     */
-    public QName getKeyProperty();
-    
-    /**
-     * Gets the class of the proxy for this bean
+     * Creates a QName taking into account the DEFAULT_NAMESPACE field
+     * from JAXB
      * 
-     * @return The class of the generated proxy
+     * @param namespace
+     * @param xmlTag
+     * @return
      */
-    public Class<?> getProxyAsClass();
+    public static QName createQName(String namespace, String xmlTag) {
+        if (namespace == null || namespace.isEmpty() || namespace.trim().isEmpty() || XmlService.DEFAULT_NAMESPACE.equals(namespace)) {
+            return new QName(xmlTag);
+        }
+        
+        return new QName(namespace, xmlTag);
+    }
+    
+    /**
+     * Returns the namespace, but if the namespace is null or
+     * empty will return
+     * {@link XmlService#DEFAULT_NAMESPACE} instead
+     * 
+     * @param qName A non-null qName to find the namespace of
+     * @return A non-null namespace
+     */
+    public static String getNamespace(QName qName) {
+        String namespace = qName.getNamespaceURI();
+        if ((namespace == null) || namespace.isEmpty() || namespace.trim().isEmpty()) {
+            return XmlService.DEFAULT_NAMESPACE;
+        }
+        
+        return namespace;
+        
+    }
+
 }

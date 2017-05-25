@@ -50,11 +50,16 @@ import javax.xml.stream.XMLStreamReader;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This is the main service for parsing your XML files using some
+ * pluggable parsing technology.
  * @author jwells
  *
  */
 @Contract
 public interface XmlService {
+    /** The default namespace of the document */
+    public static final String DEFAULT_NAMESPACE = "##default";
+    
     /**
      * Unmarshalls the given URI using the jaxb annotated interface.  The resulting
      * JavaBean tree will be advertised in the ServiceLocator and in the Hub.

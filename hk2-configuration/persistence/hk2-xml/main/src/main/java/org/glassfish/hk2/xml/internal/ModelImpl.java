@@ -50,6 +50,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -86,25 +87,25 @@ public class ModelImpl implements Model {
     private volatile Class<?> translatedClassAsClass;
     
     /** If this node can be a root, the xml tag of the root of the document */
-    private String rootName;
+    private QName rootName;
     
     /** A map from the xml tag to the parented child node */
-    private final Map<String, ParentedModel> childrenByName = new LinkedHashMap<String, ParentedModel>();
+    private final Map<QName, ParentedModel> childrenByName = new LinkedHashMap<QName, ParentedModel>();
     
     /** A map from xml tag to information about the non-child property */
-    private final Map<String, ChildDataModel> nonChildProperty = new LinkedHashMap<String, ChildDataModel>();
+    private final Map<QName, ChildDataModel> nonChildProperty = new LinkedHashMap<QName, ChildDataModel>();
     
     /** A map from xml tag to child data, ordered */
-    private final Map<String, ChildDescriptor> allChildren = new LinkedHashMap<String, ChildDescriptor>();
+    private final Map<QName, ChildDescriptor> allChildren = new LinkedHashMap<QName, ChildDescriptor>();
     
     /** If this node has a key, this is the property name of the key */
-    private String keyProperty;
+    private QName keyProperty;
     
     /**
      * These are calculated values and only filled in when asked for
      */
-    private Set<String> unKeyedChildren = null;
-    private Set<String> keyedChildren = null;
+    private Set<QName> unKeyedChildren = null;
+    private Set<QName> keyedChildren = null;
     private transient JAUtilities jaUtilities = null;
     private ClassLoader myLoader;
     private Map<String, String> keyToJavaNameMap = null;
@@ -122,16 +123,28 @@ public class ModelImpl implements Model {
         this.translatedClass = translatedClass;
     }
     
-    public void setRootName(String rootName) {
-        this.rootName = rootName;
+    public void setRootName(QName root) {
+        this.rootName = root;
     }
     
-    public void setKeyProperty(String keyProperty) {
-        this.keyProperty = keyProperty;
+    public void setRootName(String rootNamespace, String rootName) {
+        this.rootName = QNameUtilities.createQName(rootNamespace, rootName);
+    }
+    
+    public void setKeyProperty(QName qName) {
+        String namespace = QNameUtilities.getNamespace(qName);
+        String name = qName.getLocalPart();
+        
+        setKeyProperty(namespace, name);
+    }
+    
+    public void setKeyProperty(String keyNamespace, String keyProperty) {
+        this.keyProperty = QNameUtilities.createQName(keyNamespace, keyProperty);
     }
     
     public void addChild(
             String childInterface,
+            String namespace,
             String xmlTag,
             String xmlAlias,
             ChildType childType,
@@ -139,12 +152,37 @@ public class ModelImpl implements Model {
             AliasType aliased,
             String childWrapperTag,
             String adapter) {
-        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag, adapter);
-        childrenByName.put(xmlTag, pm);
-        allChildren.put(xmlTag, new ChildDescriptor(pm));
+        ParentedModel pm = new ParentedModel(childInterface, namespace, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag, adapter);
+        childrenByName.put(QNameUtilities.createQName(namespace, xmlTag), pm);
+        allChildren.put(QNameUtilities.createQName(namespace, xmlTag), new ChildDescriptor(pm));
     }
     
-    public void addNonChild(String xmlTag,
+    public void addNonChild(
+            QName qName,
+            String defaultValue,
+            String childType,
+            String childListType,
+            boolean isReference,
+            Format format,
+            AliasType aliasType,
+            String aliasOf) {
+        String namespace = QNameUtilities.getNamespace(qName);
+        String xmlTag = qName.getLocalPart();
+        
+        addNonChild(namespace,
+                xmlTag,
+                defaultValue,
+                childType,
+                childListType,
+                isReference,
+                format,
+                aliasType,
+                aliasOf);
+    }
+    
+    public void addNonChild(
+            String namespace,
+            String xmlTag,
             String defaultValue,
             String childType,
             String childListType,
@@ -153,8 +191,8 @@ public class ModelImpl implements Model {
             AliasType aliasType,
             String aliasOf) {
         ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, format, aliasType, aliasOf);
-        nonChildProperty.put(xmlTag, cdm);
-        allChildren.put(xmlTag, new ChildDescriptor(cdm));
+        nonChildProperty.put(QNameUtilities.createQName(namespace, xmlTag), cdm);
+        allChildren.put(QNameUtilities.createQName(namespace, xmlTag), new ChildDescriptor(cdm));
         if (Format.VALUE.equals(format)) {
             valueProperty = xmlTag;
             valueData = cdm;
@@ -181,7 +219,7 @@ public class ModelImpl implements Model {
      * @return the rootName
      */
     @Override
-    public String getRootName() {
+    public QName getRootName() {
         return rootName;
     }
 
@@ -189,19 +227,19 @@ public class ModelImpl implements Model {
      * @return the keyProperty
      */
     @Override
-    public String getKeyProperty() {
+    public QName getKeyProperty() {
         return keyProperty;
     }
     
-    public Map<String, ParentedModel> getChildrenByName() {
+    public Map<QName, ParentedModel> getChildrenByName() {
         return childrenByName;
     }
     
-    public Map<String, ChildDataModel> getNonChildProperties() {
+    public Map<QName, ChildDataModel> getNonChildProperties() {
         return nonChildProperty;
     }
     
-    public Map<String, ChildDescriptor> getAllChildrenDescriptors() {
+    public Map<QName, ChildDescriptor> getAllChildrenDescriptors() {
         return allChildren;
     }
     
@@ -232,13 +270,13 @@ public class ModelImpl implements Model {
         return allChildren.get(xmlTag);
     }
     
-    public Set<String> getUnKeyedChildren() {
+    public Set<QName> getUnKeyedChildren() {
         synchronized (lock) {
             if (unKeyedChildren != null) return unKeyedChildren;
             
-            unKeyedChildren = new HashSet<String>();
+            unKeyedChildren = new HashSet<QName>();
             
-            for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            for (Map.Entry<QName, ParentedModel> entry : childrenByName.entrySet()) {
                 if (entry.getValue().getChildModel().getKeyProperty() != null) continue;
                 unKeyedChildren.add(entry.getKey());
             }
@@ -247,13 +285,13 @@ public class ModelImpl implements Model {
         }
     }
     
-    public Set<String> getKeyedChildren() {
+    public Set<QName> getKeyedChildren() {
         synchronized (lock) {
             if (keyedChildren != null) return keyedChildren;
             
-            keyedChildren = new HashSet<String>();
+            keyedChildren = new HashSet<QName>();
             
-            for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            for (Map.Entry<QName, ParentedModel> entry : childrenByName.entrySet()) {
                 if (entry.getValue().getChildModel().getKeyProperty() == null) continue;
                 keyedChildren.add(entry.getKey());
             }
@@ -278,35 +316,43 @@ public class ModelImpl implements Model {
         }
     }
     
-    public String getDefaultChildValue(String propName) {
+    public String getDefaultChildValue(String propNamespace, String propName) {
+        QName propQName = QNameUtilities.createQName(propNamespace, propName);
+        
         synchronized (lock) {
-            ChildDataModel cd = nonChildProperty.get(propName);
+            ChildDataModel cd = nonChildProperty.get(propQName);
             if (cd == null) return null;
             return cd.getDefaultAsString();
         }
     }
     
-    public ModelPropertyType getModelPropertyType(String propName) {
+    public ModelPropertyType getModelPropertyType(String propNamespace, String propName) {
+        QName propQName = QNameUtilities.createQName(propNamespace, propName);
+        
         synchronized (lock) {
-            if (nonChildProperty.containsKey(propName)) return ModelPropertyType.FLAT_PROPERTY;
-            if (childrenByName.containsKey(propName)) return ModelPropertyType.TREE_ROOT;
+            if (nonChildProperty.containsKey(propQName)) return ModelPropertyType.FLAT_PROPERTY;
+            if (childrenByName.containsKey(propQName)) return ModelPropertyType.TREE_ROOT;
             
             return ModelPropertyType.UNKNOWN;
         }
     }
     
-    public Class<?> getNonChildType(String propName) {
+    public Class<?> getNonChildType(String propNamespace, String propName) {
+        QName propQName = QNameUtilities.createQName(propNamespace, propName);
+        
         synchronized (lock) {
-            ChildDataModel cd = nonChildProperty.get(propName);
+            ChildDataModel cd = nonChildProperty.get(propQName);
             if (cd == null) return null;
             
             return cd.getChildTypeAsClass();
         }
     }
     
-    public ParentedModel getChild(String propName) {
+    public ParentedModel getChild(String propNamespace, String propName) {
+        QName propQName = QNameUtilities.createQName(propNamespace, propName);
+        
         synchronized (lock) {
-            return childrenByName.get(propName);
+            return childrenByName.get(propQName);
         }
     }
     
@@ -342,17 +388,17 @@ public class ModelImpl implements Model {
         }
     }
     
-    public Map<String, ParentedModel> getChildrenProperties() {
+    public Map<QName, ParentedModel> getChildrenProperties() {
         synchronized (lock) {
             return Collections.unmodifiableMap(childrenByName);
         }
     }
     
-    public Map<String, ChildDataModel> getAllAttributeChildren() {
-        Map<String, ChildDataModel> retVal = new LinkedHashMap<String, ChildDataModel>();
+    public Map<QName, ChildDataModel> getAllAttributeChildren() {
+        Map<QName, ChildDataModel> retVal = new LinkedHashMap<QName, ChildDataModel>();
         
-        for (Map.Entry<String, ChildDataModel> candidate : nonChildProperty.entrySet()) {
-            String xmlKey = candidate.getKey();
+        for (Map.Entry<QName, ChildDataModel> candidate : nonChildProperty.entrySet()) {
+            QName xmlKey = candidate.getKey();
             ChildDataModel childDataModel = candidate.getValue();
             
             if (!Format.ATTRIBUTE.equals(childDataModel.getFormat())) continue;
@@ -363,11 +409,11 @@ public class ModelImpl implements Model {
         return retVal;
     }
     
-    public Map<String, ChildDescriptor> getAllElementChildren() {
-        Map<String, ChildDescriptor> retVal = new LinkedHashMap<String, ChildDescriptor>();
+    public Map<QName, ChildDescriptor> getAllElementChildren() {
+        Map<QName, ChildDescriptor> retVal = new LinkedHashMap<QName, ChildDescriptor>();
         
-        for (Map.Entry<String, ChildDescriptor> candidate : allChildren.entrySet()) {
-            String xmlKey = candidate.getKey();
+        for (Map.Entry<QName, ChildDescriptor> candidate : allChildren.entrySet()) {
+            QName xmlKey = candidate.getKey();
             ChildDescriptor childDescriptor = candidate.getValue();
             
             if (childDescriptor.getParentedModel() != null) {
@@ -443,7 +489,6 @@ public class ModelImpl implements Model {
         return Utilities.isSetter(alt);
     }
     
-    
     @Override
     public int hashCode() {
         return translatedClass.hashCode();
@@ -465,5 +510,4 @@ public class ModelImpl implements Model {
                 ",keyProperty=" + keyProperty + 
                 "," + System.identityHashCode(this) + ")";
     }
-    
 }

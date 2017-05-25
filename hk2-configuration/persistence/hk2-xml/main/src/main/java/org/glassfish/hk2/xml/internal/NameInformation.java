@@ -78,6 +78,12 @@ public class NameInformation {
         this.valueData = valueData;
     }
     
+    String getNamespaceMap(String mapMe) {
+        if (mapMe == null) return null;
+        if (!nameMapping.containsKey(mapMe)) return mapMe;
+        return nameMapping.get(mapMe).getNamespace();
+    }
+    
     String getNameMap(String mapMe) {
         if (mapMe == null) return null;
         if (!nameMapping.containsKey(mapMe)) return mapMe;

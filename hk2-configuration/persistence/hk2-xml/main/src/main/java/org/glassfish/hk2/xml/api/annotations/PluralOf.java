@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public @interface PluralOf {
      * name.
      * <p>
      * For example, if this is returning the singular for
-     * mice, it should return &quot;Mouse&quot;.
+     * &quot;mice&quot;, it should return &quot;Mouse&quot;.
      * 
      * @return The singular of the element name, or
      * {@link PluralOf#USE_NORMAL_PLURAL_PATTERN} if the

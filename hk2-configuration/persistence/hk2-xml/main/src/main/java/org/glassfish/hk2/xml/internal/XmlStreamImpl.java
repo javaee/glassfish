@@ -52,6 +52,7 @@ import java.util.Set;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -144,19 +145,20 @@ public class XmlStreamImpl {
             Map<String, String> namespaceMap) throws Exception {
         listener.beforeUnmarshal(target, parent);
         
-        Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
-        Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
+        Map<QName, List<BaseHK2JAXBBean>> listChildren = new HashMap<QName, List<BaseHK2JAXBBean>>();
+        Map<QName, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<QName, List<BaseHK2JAXBBean>>();
         
-        Map<String, List<Object>> listNonChild = new HashMap<String, List<Object>>();
-        Map<String, ArrayInformation> arrayNonChild = new HashMap<String, ArrayInformation>();
+        Map<QName, List<Object>> listNonChild = new HashMap<QName, List<Object>>();
+        Map<QName, ArrayInformation> arrayNonChild = new HashMap<QName, ArrayInformation>();
         
         ModelImpl targetModel = target._getModel();
-        Map<String, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
-        Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
+        Map<QName, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
+        Map<QName, ParentedModel> childProperties = targetModel.getChildrenByName();
         Set<String> allWrappers = targetModel.getAllXmlWrappers();
         
         int numAttributes = reader.getAttributeCount();
         for (int lcv = 0; lcv < numAttributes; lcv++) {
+            String attributeNamespace = reader.getAttributeNamespace(lcv);
             String attributeName = reader.getAttributeLocalName(lcv);
             String attributeValue = reader.getAttributeValue(lcv);
             
@@ -168,11 +170,11 @@ public class XmlStreamImpl {
             if (childDataModel == null) continue;
             if (!Format.ATTRIBUTE.equals(childDataModel.getFormat())) continue;
             
-            Class<?> childType = targetModel.getNonChildType(attributeName);
+            Class<?> childType = targetModel.getNonChildType(attributeNamespace, attributeName);
             
             if (!childDataModel.isReference()) {
                 Object convertedValue = Utilities.getDefaultValue(attributeValue, childType, namespaceMap);
-                target._setProperty(attributeName, convertedValue);
+                target._setProperty(attributeNamespace, attributeName, convertedValue);
             }
             else {
                 if (DEBUG_PARSING) {
@@ -183,10 +185,10 @@ public class XmlStreamImpl {
                 ReferenceKey rk = new ReferenceKey(childDataModel.getChildType(), attributeValue);
                 BaseHK2JAXBBean reference = referenceMap.get(rk);
                 if (reference != null) {
-                    target._setProperty(attributeName, reference);
+                    target._setProperty(attributeNamespace, attributeName, reference);
                 }
                 else {
-                    unresolved.add(new UnresolvedReference(childDataModel.getChildType(), attributeValue, attributeName, target));
+                    unresolved.add(new UnresolvedReference(childDataModel.getChildType(), attributeValue, attributeNamespace, attributeName, target));
                 }
             }
         }
@@ -199,6 +201,7 @@ public class XmlStreamImpl {
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
+                String elementTagNamespace = reader.getName().getNamespaceURI();
                 String elementTag = reader.getName().getLocalPart();
                 
                 if (DEBUG_PARSING) {
@@ -229,7 +232,7 @@ public class XmlStreamImpl {
                             List<Object> listObjects = listNonChild.get(elementTag);
                             if (listObjects == null) {
                                 listObjects = new LinkedList<Object>();
-                                listNonChild.put(elementTag, listObjects);
+                                listNonChild.put(QNameUtilities.createQName(elementTagNamespace, elementTag), listObjects);
                             }
                             
                             listObjects.add(convertedValue);
@@ -242,7 +245,7 @@ public class XmlStreamImpl {
                             ArrayInformation ai = arrayNonChild.get(elementTag);
                             if (ai == null) {
                                 ai = new ArrayInformation(aType);
-                                arrayNonChild.put(elementTag, ai);
+                                arrayNonChild.put(QNameUtilities.createQName(elementTagNamespace, elementTag), ai);
                             }
                             
                             ai.add(convertedValue);
@@ -250,7 +253,7 @@ public class XmlStreamImpl {
                         else {
                             Object convertedValue = Utilities.getDefaultValue(elementValue, childType, effectiveNamespaceMap);
                         
-                            target._setProperty(elementTag, convertedValue);
+                            target._setProperty(elementTagNamespace, elementTag, convertedValue);
                         }
                     }
                     else {
@@ -258,11 +261,11 @@ public class XmlStreamImpl {
                         BaseHK2JAXBBean reference = referenceMap.get(referenceKey);
                         
                         if (reference != null) {
-                            target._setProperty(elementTag, reference);
+                            target._setProperty(elementTagNamespace, elementTag, reference);
                         }
                         else {
                             unresolved.add(new UnresolvedReference(cdm.getChildType(),
-                                    elementValue, elementTag, target));
+                                    elementValue, elementTagNamespace, elementTag, target));
                         }
                     }
                     
@@ -289,13 +292,13 @@ public class XmlStreamImpl {
                     }
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
-                        target._setProperty(elementTag, realThing);
+                        target._setProperty(elementTagNamespace, elementTag, realThing);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
                         List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
                         if (cList == null) {
                             cList = new ArrayList<BaseHK2JAXBBean>();
-                            listChildren.put(elementTag, cList);
+                            listChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
                         }
                         cList.add(hk2Root);
                     }
@@ -303,7 +306,7 @@ public class XmlStreamImpl {
                         List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
                         if (cList == null) {
                             cList = new LinkedList<BaseHK2JAXBBean>();
-                            arrayChildren.put(elementTag, cList);
+                            arrayChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
                         }
                         cList.add(hk2Root);
                     }
@@ -319,6 +322,7 @@ public class XmlStreamImpl {
                             listener,
                             referenceMap,
                             unresolved,
+                            elementTagNamespace,
                             elementTag,
                             effectiveNamespaceMap,
                             elementTag,
@@ -345,18 +349,24 @@ public class XmlStreamImpl {
                     
                     Object convertedValue = Utilities.getDefaultValue(text, childType, namespaceMap);
                     
-                    target._setProperty(propName, convertedValue);
+                    target._setProperty("", propName, convertedValue);
                 }
                 break;
             case XMLStreamConstants.END_ELEMENT:
-                for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {
+                for (Map.Entry<QName, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {
+                    String namespace = QNameUtilities.getNamespace(entry.getKey());
+                    String key = entry.getKey().getLocalPart();
+                    
                     // Kind of cheating with the erasure, but hey, it works!
-                    target._setProperty(entry.getKey(), entry.getValue());
+                    target._setProperty(namespace, key, entry.getValue());
                 }
                 
-                for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : arrayChildren.entrySet()) {
-                    String childTag = entry.getKey();
-                    ParentedModel pn = targetModel.getChild(childTag);
+                for (Map.Entry<QName, List<BaseHK2JAXBBean>> entry : arrayChildren.entrySet()) {
+                    QName childTag = entry.getKey();
+                    String childTagNamespace = QNameUtilities.getNamespace(childTag);
+                    String childTagKey = childTag.getLocalPart();
+                    
+                    ParentedModel pn = targetModel.getChild(childTagNamespace, childTagKey);
                     Class<?> childType = pn.getChildModel().getOriginalInterfaceAsClass();
                     
                     List<BaseHK2JAXBBean> individuals = entry.getValue();
@@ -371,15 +381,15 @@ public class XmlStreamImpl {
                     target._setProperty(childTag, actualArray);
                 }
                 
-                for (Map.Entry<String, List<Object>> entry : listNonChild.entrySet()) {
-                    String childTag = entry.getKey();
+                for (Map.Entry<QName, List<Object>> entry : listNonChild.entrySet()) {
+                    QName childTag = entry.getKey();
                     List<Object> value = entry.getValue();
                     
                     target._setProperty(childTag, value);
                 }
                 
-                for (Map.Entry<String, ArrayInformation> entry : arrayNonChild.entrySet()) {
-                    String childTag = entry.getKey();
+                for (Map.Entry<QName, ArrayInformation> entry : arrayNonChild.entrySet()) {
+                    QName childTag = entry.getKey();
                     ArrayInformation ai = entry.getValue();
                     
                     Object actualArray = Array.newInstance(ai.getAType(), ai.getValues().size());
@@ -395,7 +405,7 @@ public class XmlStreamImpl {
                 listener.afterUnmarshal(target, parent);
                 
                 // Put the finished product into the reference map
-                String keyProp = target._getKeyPropertyName();
+                QName keyProp = target._getKeyPropertyName();
                 if (keyProp != null) {
                     String keyVal = (String) target._getProperty(keyProp);
                     String myType = target._getModel().getOriginalInterface();
@@ -461,13 +471,14 @@ public class XmlStreamImpl {
             Listener listener,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
             List<UnresolvedReference> unresolved,
+            String outerElementTagNamespace,
             String outerElementTag,
             Map<String, String> namespaceMap,
             String xmlWrapper,
-            Map<String, List<BaseHK2JAXBBean>> listChildren,
-            Map<String, List<BaseHK2JAXBBean>> arrayChildren) throws Exception {
+            Map<QName, List<BaseHK2JAXBBean>> listChildren,
+            Map<QName, List<BaseHK2JAXBBean>> arrayChildren) throws Exception {
         ModelImpl targetModel = target._getModel();
-        Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
+        Map<QName, ParentedModel> childProperties = targetModel.getChildrenByName();
         
         while (reader.hasNext()) {
             int event = reader.next();
@@ -484,6 +495,7 @@ public class XmlStreamImpl {
             
             switch (event) {
             case XMLStreamConstants.START_ELEMENT:
+                String elementTagNamespace = reader.getName().getNamespaceURI();
                 String elementTag = reader.getName().getLocalPart();
                 
                 Map<String, String> effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
@@ -505,13 +517,13 @@ public class XmlStreamImpl {
                     handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
-                        target._setProperty(elementTag, hk2Root);
+                        target._setProperty(elementTagNamespace, elementTag, hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
                         List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
                         if (cList == null) {
                             cList = new ArrayList<BaseHK2JAXBBean>();
-                            listChildren.put(elementTag, cList);
+                            listChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
                         }
                         cList.add(hk2Root);
                     }
@@ -519,7 +531,7 @@ public class XmlStreamImpl {
                         List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
                         if (cList == null) {
                             cList = new LinkedList<BaseHK2JAXBBean>();
-                            arrayChildren.put(elementTag, cList);
+                            arrayChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
                         }
                         cList.add(hk2Root);
                     }
@@ -614,7 +626,10 @@ public class XmlStreamImpl {
         
         String xmlTag;
         if (parented == null) {
-            xmlTag = model.getRootName();
+            QName rootName = model.getRootName();
+            
+            // TODO, how do I get the prefix?
+            xmlTag = rootName.getLocalPart();
         }
         else {
             xmlTag = parented.getChildXmlTag();
@@ -622,12 +637,14 @@ public class XmlStreamImpl {
         
         indenter.writeStartElement(xmlTag);
         
-        Map<String, ChildDataModel> attributeModels = model.getAllAttributeChildren();
-        for (Map.Entry<String, ChildDataModel> entry : attributeModels.entrySet()) {
-            String attributeTag = entry.getKey();
+        Map<QName, ChildDataModel> attributeModels = model.getAllAttributeChildren();
+        for (Map.Entry<QName, ChildDataModel> entry : attributeModels.entrySet()) {
+            QName attributeQName = entry.getKey();
             ChildDataModel childDataModel = entry.getValue();
             
-            Object value = beanLikeMap.get(attributeTag);
+            String attributeTagKey = attributeQName.getLocalPart();
+            
+            Object value = beanLikeMap.get(attributeTagKey);
             if (value == null) continue;
             
             String valueAsString;
@@ -641,15 +658,17 @@ public class XmlStreamImpl {
             
             if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
             
-            indenter.writeAttribute(attributeTag, valueAsString);
+            indenter.writeAttribute(attributeTagKey, valueAsString);
         }
         
-        Map<String, ChildDescriptor> elementDescriptors = model.getAllElementChildren();
-        for (Map.Entry<String, ChildDescriptor> entry : elementDescriptors.entrySet()) {
-            String elementTag = entry.getKey();
+        Map<QName, ChildDescriptor> elementDescriptors = model.getAllElementChildren();
+        for (Map.Entry<QName, ChildDescriptor> entry : elementDescriptors.entrySet()) {
+            QName elementQName = entry.getKey();
             ChildDescriptor descriptor = entry.getValue();
             
-            Object value = beanLikeMap.get(elementTag);
+            String elementTagKey = elementQName.getLocalPart();
+            
+            Object value = beanLikeMap.get(elementTagKey);
             if (value == null) continue;
             
             ParentedModel parentedChild = descriptor.getParentedModel();
@@ -688,7 +707,7 @@ public class XmlStreamImpl {
                     String valueAsString = value.toString();
                     if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
                     
-                    indenter.writeStartElement(elementTag);
+                    indenter.writeStartElement(elementTagKey);
                     indenter.writeCharacters(valueAsString);
                     indenter.writeEndElement();
                 }
@@ -696,7 +715,7 @@ public class XmlStreamImpl {
                     XmlHk2ConfigurationBean reference = (XmlHk2ConfigurationBean) value;
                     String keyValue = reference._getKeyValue();
                     
-                    indenter.writeStartElement(elementTag);
+                    indenter.writeStartElement(elementTagKey);
                     indenter.writeCharacters(keyValue);
                     indenter.writeEndElement();
                     
