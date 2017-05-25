@@ -75,6 +75,7 @@ public class FooMethodServlet extends HttpServlet {
                     res.setStatus(HttpServletResponse.SC_OK);
             }
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
             
     }
 }
