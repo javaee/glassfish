@@ -83,5 +83,6 @@ public class NOTfacesServlet extends HttpServlet {
             }
             res.getWriter().println("foo: bar");
             res.setStatus(HttpServletResponse.SC_OK);
+            return;
     }
 }
