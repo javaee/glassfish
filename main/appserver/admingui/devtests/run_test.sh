@@ -44,9 +44,16 @@ list_test_ids(){
 
 test_run(){
   #test functions goes here, maven test or ant test etc.
+  M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
+  MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=384m"; export MAVEN_OPTS
+  MAVEN_REPO=$WORKSPACE/repository
+  MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
+  PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
+  mvn -version
+  echo $WORKSPACE
   $S1AS_HOME/bin/asadmin start-domain
   pwd
-  mvn -Dtest=ConfigTest test | tee $TEST_RUN_LOG
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain	
 }
 
