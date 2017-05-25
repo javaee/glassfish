@@ -536,7 +536,7 @@ zip_tests_workspace(){
         main/appserver/pom.xml \
         main/appserver/tests/ \
 	main/appserver/admingui/devtests/ \
-	main/appserver/admingui/pom.xml/ \
+	main/appserver/admingui/pom.xml \
         -x *.git/* > /dev/null
     cp -p  ${WORKSPACE}/$GF_ROOT/main/appserver/tests/gftest.sh ${WORKSPACE}/bundles
 }
