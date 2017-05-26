@@ -70,6 +70,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
@@ -1211,6 +1212,12 @@ public class Response
      */
     public boolean containsHeader(String name) {
         return coyoteResponse.containsHeader(name);
+    }
+
+
+    @Override
+    public void setTrailerFields(Supplier<Map<String, String>> supplier) {
+        coyoteResponse.setTrailers(supplier);
     }
 
 

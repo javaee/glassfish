@@ -57,20 +57,20 @@
     <name>GlassFish Nucleus Parent Project</name>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/nucleus</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/nucleus</developerConnection>
-        <url>https://svn.java.net/svn/glassfish~svn/trunk/main/nucleus</url>
+      <connection>scm:git:git://github.com/javaee/glassfish.git</connection>
+      <developerConnection>scm:git:git://github.com/javaee/glassfish.git</developerConnection>
+      <url>https://github.com/javaee/glassfish</url>
     </scm>
 
     <issueManagement>
         <system>IssueTracker</system>
-        <url>http://java.net/jira/browse/GLASSFISH</url>
+        <url>https://github.com/javaee/glassfish/issues</url>
     </issueManagement>
 
     <licenses>
       <license>
         <name>CDDL + GPLv2 with classpath exception</name>
-        <url>http://glassfish.java.net/nonav/public/CDDL+GPL.html</url>
+        <url>https://javaee.github.io/glassfish/LICENSE</url>
         <distribution>repo</distribution>
         <comments>A business-friendly OSS license</comments>
       </license>
@@ -78,28 +78,9 @@
 
     <mailingLists>
         <mailingList>
-            <name>dev</name>
-            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
-            <post>dev@glassfish.java.net</post>
-            <archive>http://java.net/projects/glassfish/lists/dev/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>users</name>
-            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
-            <post>users@glassfish.java.net</post>
-            <archive>http://java.net/projects/glassfish/lists/users/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>issues</name>
-            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
-            <post>issues@glassfish.java.net</post>
-            <archive>http://java.net/projects/glassfish/lists/issues/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>commits</name>
-            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
-            <post>commits@glassfish.java.net</post>
-            <archive>http://java.net/projects/glassfish/lists/commits/archive</archive>
+            <name>glassfish</name>
+            <subscribe>glassfish+subscribe@javaee.groups.io</subscribe>
+            <post>glassfish@javaee.groups.io</post>
         </mailingList>
     </mailingLists>
 
@@ -144,7 +125,7 @@
         <glassfish-corba.version>4.0.1</glassfish-corba.version>
         <stax-api.version>1.0-2</stax-api.version>
         <management-api.version>1.1-rev-1</management-api.version>
-        <servlet-api.version>4.0.0-b05</servlet-api.version>
+        <servlet-api.version>4.0.0-b06</servlet-api.version>
         <grizzly.version>2.4.0-beta2</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
         <saaj-api.version>1.3.4</saaj-api.version>
