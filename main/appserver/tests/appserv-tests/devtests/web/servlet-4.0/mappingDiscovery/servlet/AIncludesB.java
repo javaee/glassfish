@@ -45,7 +45,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 
 public class AIncludesB extends HttpServlet {
@@ -72,15 +72,15 @@ public class AIncludesB extends HttpServlet {
             out.print("</head>");
             out.print("<body>");
             out.print("<h1>Servlet AIncludesB at " + request.getContextPath() + "</h1>");
-            request.getServletContext().log(this.getClass().getSimpleName() + " getServletMapping: " 
-                    + request.getServletMapping());
-            ServletMapping forwardMapping = (ServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
+            request.getServletContext().log(this.getClass().getSimpleName() + " getHttpServletMapping: " 
+                    + request.getHttpServletMapping());
+            HttpServletMapping forwardMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
             request.getServletContext().log(this.getClass().getSimpleName() + " FORWARD_MAPPING attribute: " 
                     + forwardMapping);
-            ServletMapping includeMapping = (ServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
+            HttpServletMapping includeMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
             request.getServletContext().log(this.getClass().getSimpleName() + " INCLUDE_MAPPING attribute: " 
                     + includeMapping);
-            out.print("<p> In " + this.getClass().getSimpleName() + " " + request.getServletMapping() + "</p>");
+            out.print("<p> In " + this.getClass().getSimpleName() + " " + request.getHttpServletMapping() + "</p>");
             out.print("<p> FORWARD_MAPPING: " + forwardMapping + "</p>");
             out.print("<p> INCLUDE_MAPPING: " + includeMapping + "</p>");
             out.print("<hr />");
