@@ -572,6 +572,7 @@ zip_tests_maven_repo(){
         org/glassfish/main/security/security-services/* \
         org/glassfish/main/security/ssl-impl/* \
 	org/glassfish/main/admingui/* \
+	org/glassfish/main/glassfish-parent/* \
         org/glassfish/main/security/nucleus-security/* > /dev/null
     popd
 }
