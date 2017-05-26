@@ -48,6 +48,7 @@ test_run(){
   $S1AS_HOME/bin/asadmin start-domain
   cd $WORKSPACE/main/appserver/admingui/devtests/
   pwd
+  export DISPLAY=localhost:0.0	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain	
 }
