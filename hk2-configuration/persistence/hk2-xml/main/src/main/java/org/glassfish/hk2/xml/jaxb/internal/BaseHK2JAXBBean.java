@@ -615,11 +615,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     @SuppressWarnings("unchecked")
     private Object internalLookup(String propNamespace, String propName, String keyValue) {
+        QName propertyQName = QNameUtilities.createQName(propNamespace, propName);
+        
         // First look in the cache
         Object retVal = null;
         
         Map<String, BaseHK2JAXBBean> byName;
-        byName = keyedChildrenCache.get(new QName(propNamespace, propName));
+        byName = keyedChildrenCache.get(propertyQName);
         if (byName != null) {
             retVal = byName.get(keyValue);
         }
@@ -640,7 +642,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     if (byName == null) {
                         byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
-                        keyedChildrenCache.put(new QName(propNamespace, propName), byName);
+                        keyedChildrenCache.put(propertyQName, byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -659,7 +661,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     if (byName == null) {
                         byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
-                        keyedChildrenCache.put(new QName(propNamespace, propName), byName);
+                        keyedChildrenCache.put(propertyQName, byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -883,14 +885,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     public Object _doRemove(String propNamespace, String childProperty, String childKey, int index, Object child, boolean changeList) {
+        QName childPropQName = QNameUtilities.createQName(propNamespace, childProperty);
+        
         if (changeControl == null) {
             Object retVal = Utilities.internalRemove(this, propNamespace, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY, changeList);
             
             if (retVal != null) {
-                keyedChildrenCache.remove(childProperty);
+                keyedChildrenCache.remove(childPropQName);
             }
             
-            // return Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
             return retVal;
         }
         
@@ -917,7 +920,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             
             if (retVal != null) {
-                keyedChildrenCache.remove(childProperty);
+                keyedChildrenCache.remove(childPropQName);
             }
             
             return retVal;
