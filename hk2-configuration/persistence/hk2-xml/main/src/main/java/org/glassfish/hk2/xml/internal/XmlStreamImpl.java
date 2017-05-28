@@ -301,18 +301,18 @@ public class XmlStreamImpl {
                         target._setProperty(elementTagNamespace, elementTag, realThing);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
-                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
+                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTagQName);
                         if (cList == null) {
                             cList = new ArrayList<BaseHK2JAXBBean>();
-                            listChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
+                            listChildren.put(elementTagQName, cList);
                         }
                         cList.add(hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
-                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
+                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTagQName);
                         if (cList == null) {
                             cList = new LinkedList<BaseHK2JAXBBean>();
-                            arrayChildren.put(QNameUtilities.createQName(elementTagNamespace, elementTag), cList);
+                            arrayChildren.put(elementTagQName, cList);
                         }
                         cList.add(hk2Root);
                     }
