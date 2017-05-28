@@ -235,7 +235,7 @@ public class Generator {
             }
             
             String miRepPropNamespace = QNameUtilities.getNamespace(mi.getRepresentedProperty());
-            String miRepProp = mi.getRepresentedProperty().getLocalPart();
+            String miRepProp = (mi.getRepresentedProperty() == null) ? null : mi.getRepresentedProperty().getLocalPart();
             
             if (!MethodType.CUSTOM.equals(mi.getMethodType())) {
                 createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);

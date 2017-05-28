@@ -43,6 +43,8 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.NamespaceBeanLikeMap;
 
@@ -62,13 +64,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
         namespaceMap.put(XmlService.DEFAULT_NAMESPACE, new LinkedHashMap<String, Object>());
     }
     
-    private static final String fixNamespace(String namespace) {
-        if (namespace == null || namespace.isEmpty() || namespace.trim().isEmpty()) {
-            return XmlService.DEFAULT_NAMESPACE;
-        }
-        
-        return namespace;
-    }
+    
     
     private static Map<String, Map<String, Object>> deepCopyNamespaceBeanLikeMaps(Map<String, Map<String, Object>> copyMe) {
         Map<String, Map<String, Object>> retVal = new LinkedHashMap<>();
@@ -89,7 +85,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public Object getValue(String namespace, String key) {
-        namespace = fixNamespace(namespace);
+        namespace = QNameUtilities.fixNamespace(namespace);
         
         Map<String, Object> nMap = namespaceMap.get(namespace);
         if (nMap == null) return null;
@@ -102,7 +98,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public void setValue(String namespace, String key, Object value) {
-        namespace = fixNamespace(namespace);
+        namespace = QNameUtilities.fixNamespace(namespace);
         
         Map<String, Object> narrowedMap = namespaceMap.get(namespace);
         if (narrowedMap == null) {
@@ -118,7 +114,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public boolean isSet(String namespace, String key) {
-        namespace = fixNamespace(namespace);
+        namespace = QNameUtilities.fixNamespace(namespace);
         
         Map<String, Object> narrowedMap = namespaceMap.get(namespace);
         if (narrowedMap == null) return false;
@@ -195,28 +191,69 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      * @see org.glassfish.hk2.xml.jaxb.internal.NamespaceBeanLikeMap#shallowCopy(org.glassfish.hk2.xml.jaxb.internal.NamespaceBeanLikeMap, org.glassfish.hk2.xml.internal.ModelImpl)
      */
     @Override
-    public void shallowCopy(NamespaceBeanLikeMap copyFrom, ModelImpl model) {
-        throw new AssertionError("shallow copy not yet implemented");
+    public void shallowCopy(NamespaceBeanLikeMap copyFrom, ModelImpl copyModel, boolean copyReferences) {
+        for (Map.Entry<String, Map<String, Object>> outerEntry : copyFrom.getNamespaceBeanLikeMap().entrySet()) {
+            String copyNamespace = outerEntry.getKey();
+            Map<String, Object> copyBeanLikeMap = outerEntry.getValue();
+            
+            for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
+                String xmlTag = entrySet.getKey();
+                
+                QName childQName = QNameUtilities.createQName(copyNamespace, xmlTag);
+                
+                if (copyModel.getKeyedChildren().contains(childQName) || copyModel.getUnKeyedChildren().contains(childQName)) {
+                    continue;
+                }
+                
+                ChildDataModel cdm = copyModel.getNonChildProperties().get(childQName);
+                if (!copyReferences && cdm != null && cdm.isReference()) {
+                    continue;
+                }
+                
+                setValue(copyNamespace, xmlTag, entrySet.getValue());
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.jaxb.internal.NamespaceBeanLikeMap#getNamespaceBeanLikeMap()
+     */
+    @Override
+    public Map<String, Map<String, Object>> getNamespaceBeanLikeMap() {
+        return namespaceMap;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.jaxb.internal.NamespaceBeanLikeMap#getQNameMap()
+     */
+    @Override
+    public Map<QName, Object> getQNameMap() {
+        Map<QName, Object> retVal = new LinkedHashMap<>();
         
-        /*
-        for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
-            String xmlTag = entrySet.getKey();
+        for (Map.Entry<String, Map<String, Object>> outerEntry : namespaceMap.entrySet()) {
+            String namespace = outerEntry.getKey();
+            Map<String, Object> innerMap = outerEntry.getValue();
             
-            if (copyModel.getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
-            
-            ChildDataModel cdm = copyModel.getNonChildProperties().get(xmlTag);
-            if (!copyReferences && cdm != null && cdm.isReference()) {
-                continue;
+            for (Map.Entry<String, Object> innerEntry : innerMap.entrySet()) {
+                QName key = QNameUtilities.createQName(namespace, innerEntry.getKey());
+                Object value = innerEntry.getValue();
+                
+                retVal.put(key, value);
             }
             
-            beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
-        */
         
+        return retVal;
     }
     
     @Override
     public String toString() {
         return "NamespaceBeanLikeMapImpl(" + System.identityHashCode(this) + ")";
     }
+
+
+
+    
+
+    
 }

@@ -129,9 +129,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     /** My own XmlTag, which is determined either by my parent or by my root value */
     private String selfXmlTag;
     
-    /** The full instance namespace */
-    private String instanceNamespace;
-    
     /** The full instance name this takes, with names from keyed children or ids from unkeyed multi children */
     private String instanceName;
     
@@ -352,7 +349,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             
             QName keyQName = _getModel().getKeyProperty();
-            String keyPropertyNamespace = keyQName == null ? null : keyQName.getNamespaceURI();
+            String keyPropertyNamespace = keyQName == null ? null : QNameUtilities.getNamespace(keyQName);
             String keyProperty = keyQName == null ? null : keyQName.getLocalPart();
             if (keyProperty != null && propName.equals(keyProperty) && (keyValue != null) &&
                     keyPropertyNamespace != null && propNamespace.equals(keyPropertyNamespace)) {
@@ -978,6 +975,26 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
+    public Map<QName, Object> _getQNameMap() {
+        if (changeControl == null) {
+            if (active) {
+                synchronized (this) {
+                    return Collections.unmodifiableMap(nBeanLikeMap.getQNameMap());
+                }
+            }
+            return Collections.unmodifiableMap(nBeanLikeMap.getQNameMap());
+        }
+        
+        changeControl.getReadLock().lock();
+        try {
+            return Collections.unmodifiableMap(nBeanLikeMap.getQNameMap());
+        }
+        finally {
+            changeControl.getReadLock().unlock();
+        }
+        
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getParent()
      */
@@ -1017,13 +1034,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return xmlPath;
     }
     
-    public void _setInstanceName(String namespace, String name) {
-        instanceNamespace = namespace;
+    public void _setInstanceName(String name) {
         instanceName = name;
-    }
-    
-    public String _getInstanceNamespace() {
-        return instanceNamespace;
     }
 
     /* (non-Javadoc)
@@ -1134,12 +1146,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param copyMe The non-null bean to copy FROM
      */
     public void _shallowCopyFrom(BaseHK2JAXBBean copyMe, boolean copyReferences) {
+        selfNamespace = copyMe.selfNamespace;
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
-        nBeanLikeMap.shallowCopy(nBeanLikeMap, copyMe._getModel());
+        nBeanLikeMap.shallowCopy(copyMe.nBeanLikeMap, copyMe._getModel(), copyReferences);
     }
     
     /**

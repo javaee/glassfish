@@ -201,6 +201,7 @@ public class ParentedModel implements Serializable {
     @Override
     public String toString() {
         return "ParentedModel(interface=" + childInterface +
+                ",xmlNamespace=" + childXmlNamespace +
                 ",xmlTag=" + childXmlTag +
                 ",xmlAlias=" + childXmlAlias +
                 ",xmlWrapperTag=" + childXmlWrapperTag +

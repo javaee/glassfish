@@ -48,6 +48,21 @@ import org.glassfish.hk2.xml.api.XmlService;
  *
  */
 public class QNameUtilities {
+    
+    /**
+     * Returns the namespace after accounting for null or empty strings
+     * 
+     * @param namespace The possibly null namespace
+     * @return The non-null namespace
+     */
+    public static final String fixNamespace(String namespace) {
+        if (namespace == null || namespace.isEmpty() || namespace.trim().isEmpty()) {
+            return XmlService.DEFAULT_NAMESPACE;
+        }
+        
+        return namespace;
+    }
+    
     /**
      * Creates a QName taking into account the DEFAULT_NAMESPACE field
      * from JAXB
@@ -57,6 +72,8 @@ public class QNameUtilities {
      * @return
      */
     public static QName createQName(String namespace, String xmlTag) {
+        if (xmlTag == null) return null;
+        
         if (namespace == null || namespace.isEmpty() || namespace.trim().isEmpty() || XmlService.DEFAULT_NAMESPACE.equals(namespace)) {
             return new QName(xmlTag);
         }
@@ -69,10 +86,13 @@ public class QNameUtilities {
      * empty will return
      * {@link XmlService#DEFAULT_NAMESPACE} instead
      * 
-     * @param qName A non-null qName to find the namespace of
-     * @return A non-null namespace
+     * @param qName qName to find the namespace of or null
+     * @return null if qName is null or the String for the
+     * namespace if not null
      */
     public static String getNamespace(QName qName) {
+        if (qName == null) return null;
+        
         String namespace = qName.getNamespaceURI();
         if ((namespace == null) || namespace.isEmpty() || namespace.trim().isEmpty()) {
             return XmlService.DEFAULT_NAMESPACE;

@@ -102,6 +102,7 @@ public class XmlStreamImpl {
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
+                String elementTagNamespace = QNameUtilities.getNamespace(reader.getName());
                 String elementTag = reader.getName().getLocalPart();
                 if (DEBUG_PARSING) {
                     Logger.getLogger().debug("XmlServiceDebug starting document tag " + elementTag);
@@ -113,7 +114,7 @@ public class XmlStreamImpl {
                     rootNamespace.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
                 }
                 
-                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, rootNamespace);
+                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTagNamespace, elementTag, rootNamespace);
                 
                 break;
             case XMLStreamConstants.END_DOCUMENT:
@@ -141,6 +142,7 @@ public class XmlStreamImpl {
             Listener listener,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
             List<UnresolvedReference> unresolved,
+            String outerElementNamespace,
             String outerElementTag,
             Map<String, String> namespaceMap) throws Exception {
         listener.beforeUnmarshal(target, parent);
@@ -158,15 +160,17 @@ public class XmlStreamImpl {
         
         int numAttributes = reader.getAttributeCount();
         for (int lcv = 0; lcv < numAttributes; lcv++) {
-            String attributeNamespace = reader.getAttributeNamespace(lcv);
+            String attributeNamespace = QNameUtilities.fixNamespace(reader.getAttributeNamespace(lcv));
             String attributeName = reader.getAttributeLocalName(lcv);
             String attributeValue = reader.getAttributeValue(lcv);
             
+            QName attributeQName = QNameUtilities.createQName(attributeNamespace, attributeName);
+            
             if (DEBUG_PARSING) {
-                Logger.getLogger().debug("XmlServiceDebug handling attribute " + attributeName + " with value " + attributeValue);
+                Logger.getLogger().debug("XmlServiceDebug handling attribute " + attributeQName + " with value " + attributeValue);
             }
             
-            ChildDataModel childDataModel = nonChildProperties.get(attributeName);
+            ChildDataModel childDataModel = nonChildProperties.get(attributeQName);
             if (childDataModel == null) continue;
             if (!Format.ATTRIBUTE.equals(childDataModel.getFormat())) continue;
             
@@ -201,8 +205,10 @@ public class XmlStreamImpl {
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
-                String elementTagNamespace = reader.getName().getNamespaceURI();
+                String elementTagNamespace = QNameUtilities.getNamespace(reader.getName());
                 String elementTag = reader.getName().getLocalPart();
+                
+                QName elementTagQName = QNameUtilities.createQName(elementTagNamespace, elementTag);
                 
                 if (DEBUG_PARSING) {
                     Logger.getLogger().debug("XmlServiceDebug starting parse of element " + elementTag);
@@ -217,7 +223,7 @@ public class XmlStreamImpl {
                     }
                 }
                 
-                ChildDataModel cdm = nonChildProperties.get(elementTag);
+                ChildDataModel cdm = nonChildProperties.get(elementTagQName);
                 if (cdm != null && Format.ELEMENT.equals(cdm.getFormat())) {
                     String elementValue = advanceNonChildElement(reader, elementTag);
                     
@@ -272,17 +278,17 @@ public class XmlStreamImpl {
                     break;
                 }
                 
-                ParentedModel informedChild = childProperties.get(elementTag);
+                ParentedModel informedChild = childProperties.get(elementTagQName);
                 if (informedChild != null) {
                     ModelImpl grandChild = informedChild.getChildModel();
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
                     hk2Root._setClassReflectionHelper(classReflectionHelper);
                     if (DEBUG_PARSING) {
-                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTag + " with model " + hk2Root._getModel());
+                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementNamespace + "," + outerElementTag + " with model " + hk2Root._getModel());
                     }
                     
-                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, outerElementTag, elementTag, effectiveNamespaceMap);
                     
                     Object realThing = hk2Root;
                     if (informedChild.getAdapter() != null) {
@@ -495,8 +501,10 @@ public class XmlStreamImpl {
             
             switch (event) {
             case XMLStreamConstants.START_ELEMENT:
-                String elementTagNamespace = reader.getName().getNamespaceURI();
+                String elementTagNamespace = QNameUtilities.getNamespace(reader.getName());
                 String elementTag = reader.getName().getLocalPart();
+                
+                QName elementTagQName = QNameUtilities.createQName(elementTagNamespace, elementTag);
                 
                 Map<String, String> effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
                 int namespaceCount = reader.getNamespaceCount();
@@ -504,17 +512,17 @@ public class XmlStreamImpl {
                     effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
                 }
                 
-                ParentedModel informedChild = childProperties.get(elementTag);
+                ParentedModel informedChild = childProperties.get(elementTagQName);
                 if (informedChild != null && GeneralUtilities.safeEquals(xmlWrapper, informedChild.getXmlWrapperTag())) {
                     ModelImpl grandChild = informedChild.getChildModel();
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
                     hk2Root._setClassReflectionHelper(classReflectionHelper);
                     if (DEBUG_PARSING) {
-                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTag + " with model " + hk2Root._getModel());
+                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTagNamespace + "," + outerElementTag + " with model " + hk2Root._getModel());
                     }
                     
-                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTagNamespace, elementTag, effectiveNamespaceMap);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
                         target._setProperty(elementTagNamespace, elementTag, hk2Root);

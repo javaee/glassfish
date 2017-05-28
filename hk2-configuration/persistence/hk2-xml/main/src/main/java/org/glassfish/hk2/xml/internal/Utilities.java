@@ -546,11 +546,11 @@ public class Utilities {
         child._setSelfXmlTag(childNode.getChildXmlNamespace(), constructXmlTag(childNode.getXmlWrapperTag(), childNode.getChildXmlTag()));
         child._setKeyValue(childKey);
         if (childKey != null) {
-            child._setInstanceName(myParent._getInstanceNamespace(),
+            child._setInstanceName(
                     composeInstanceName(myParent._getInstanceName(), child._getKeyValue(), childNode.getXmlWrapperTag()));
         }
         else {
-            child._setInstanceName(myParent._getInstanceNamespace(),
+            child._setInstanceName(
                     composeInstanceName(myParent._getInstanceName(), childNode.getChildXmlTag(), childNode.getXmlWrapperTag()));
         }
         
@@ -800,7 +800,7 @@ public class Utilities {
         String rNameKey = rName.getLocalPart();
         
         child._setSelfXmlTag(rNameNamespace, rNameKey);
-        child._setInstanceName(QNameUtilities.getNamespace(rootNode.getRootName()), rootNode.getRootName().getLocalPart());
+        child._setInstanceName(rootNode.getRootName().getLocalPart());
         
         handleChildren(child, childToCopy, changeInfo, addedServices, XmlDynamicChange.EMPTY);
             
@@ -1482,8 +1482,8 @@ public class Utilities {
         
         ModelImpl sourceModel = source._getModel();
         
-        Map<String, Object> sourceMap = source._getBeanLikeMap();
-        Map<String, Object> otherMap = other._getBeanLikeMap();
+        Map<QName, Object> sourceMap = source._getQNameMap();
+        Map<QName, Object> otherMap = other._getQNameMap();
         
         Map<QName, ChildDataModel> nonChildProperties = sourceModel.getNonChildProperties();
         
@@ -1491,7 +1491,6 @@ public class Utilities {
             QName nonChildProperty = nonChildPropertyEntry.getKey();
             ChildDataModel dataModel = nonChildPropertyEntry.getValue();
             
-            String nonChildPropertyNamespace = QNameUtilities.getNamespace(nonChildProperty);
             String nonChildPropertyKey = nonChildProperty.getLocalPart();
                     
             Object sourceValue = sourceMap.get(nonChildProperty);
@@ -1531,7 +1530,6 @@ public class Utilities {
             QName xmlTag = childEntry.getKey();
             ParentedModel pModel = childEntry.getValue();
             
-            String xmlTagNamespace = QNameUtilities.getNamespace(xmlTag);
             String xmlTagKey = xmlTag.getLocalPart();
             
             Object sourceValue = sourceMap.get(xmlTag);

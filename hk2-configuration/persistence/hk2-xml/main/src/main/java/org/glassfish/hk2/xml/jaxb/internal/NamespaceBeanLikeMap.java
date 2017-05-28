@@ -41,6 +41,8 @@ package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.glassfish.hk2.xml.internal.ModelImpl;
 
 /**
@@ -119,10 +121,30 @@ public interface NamespaceBeanLikeMap {
     public Map<String, Object> getBeanLikeMap(Map<String, String> namespaceToPrefixMap);
     
     /**
+     * Gets a map from QName to value.  Default namespace
+     * is not taken into account
+     * 
+     * @return A non-null map from QName to value
+     */
+    public Map<QName, Object> getQNameMap();
+    
+    /**
      * Does a shallow copy from another namespace bean-like map to this one
      * 
      * @param copyFrom The other namesapce bean-like map to copy
      * @param model The model to use to determine what fields to copy
+     * @param copyReferences true if references should also be copied
      */
-    public void shallowCopy(NamespaceBeanLikeMap copyFrom, ModelImpl model);
+    public void shallowCopy(NamespaceBeanLikeMap copyFrom, ModelImpl model, boolean copyReferences);
+    
+    /**
+     * Gets a raw copy of the bean-like map.  The outer map has
+     * namespace keys (including one for default) and the inner
+     * map is the bean-like map for that namespace.  The map returned
+     * is not a copy, so any changes to it will affect the underlying
+     * object (so don't change it)
+     * 
+     * @return
+     */
+    public Map<String, Map<String, Object>> getNamespaceBeanLikeMap();
 }
