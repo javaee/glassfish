@@ -127,7 +127,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public void backup() {
-        if (backupMap == null) return;
+        if (backupMap != null) return;
         
         backupMap = deepCopyNamespaceBeanLikeMaps(namespaceMap);
     }
@@ -137,16 +137,20 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public void restoreBackup(boolean drop) {
-        if (backupMap == null) return;
-        
-        
-        if (drop) {
-            backupMap = null;
-            return;
+        try {
+            if (backupMap == null) {
+                return;
+            }
+            
+            if (drop) {
+                return;
+            }
+            
+            namespaceMap = backupMap;
         }
-        
-        namespaceMap = backupMap;
-        backupMap = null;
+        finally {
+            backupMap = null;
+        }
     }
     
     /* (non-Javadoc)
