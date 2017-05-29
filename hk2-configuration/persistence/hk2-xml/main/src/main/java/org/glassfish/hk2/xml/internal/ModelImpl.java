@@ -111,6 +111,7 @@ public class ModelImpl implements Model {
     private Map<String, String> keyToJavaNameMap = null;
     private Set<String> allXmlWrappers;
     
+    private String valuePropertyNamespace;
     private String valueProperty;
     private ChildDataModel valueData;
     
@@ -194,6 +195,7 @@ public class ModelImpl implements Model {
         nonChildProperty.put(QNameUtilities.createQName(namespace, xmlTag), cdm);
         allChildren.put(QNameUtilities.createQName(namespace, xmlTag), new ChildDescriptor(cdm));
         if (Format.VALUE.equals(format)) {
+            valuePropertyNamespace = namespace;
             valueProperty = xmlTag;
             valueData = cdm;
         }
@@ -241,6 +243,10 @@ public class ModelImpl implements Model {
     
     public Map<QName, ChildDescriptor> getAllChildrenDescriptors() {
         return allChildren;
+    }
+    
+    public String getValuePropertyNamespace() {
+        return valuePropertyNamespace;
     }
     
     public String getValueProperty() {
@@ -507,7 +513,9 @@ public class ModelImpl implements Model {
         return "ModelImpl(interface=" + originalInterface + 
                 ",class=" + translatedClass +
                 ",root=" + rootName +
-                ",keyProperty=" + keyProperty + 
+                ",keyProperty=" + keyProperty +
+                ",valuePropertyNamespace=" + valuePropertyNamespace +
+                ",valueProperty=" + valueProperty +
                 "," + System.identityHashCode(this) + ")";
     }
 }

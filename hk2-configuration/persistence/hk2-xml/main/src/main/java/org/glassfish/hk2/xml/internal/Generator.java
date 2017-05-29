@@ -96,6 +96,7 @@ import javax.xml.namespace.QName;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
@@ -1382,7 +1383,7 @@ public class Generator {
                     throw new IllegalArgumentException("There may be only one XmlValue method on " + convertMe);
                 }
                 valueData = new XmlElementData(
-                        "",
+                        XmlService.DEFAULT_NAMESPACE,
                         setterVariable,
                         setterVariable,
                         null,

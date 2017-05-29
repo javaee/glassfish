@@ -351,11 +351,13 @@ public class XmlStreamImpl {
                     String text = reader.getText();
                     
                     Class<?> childType = valueModel.getChildTypeAsClass();
+                    
+                    String propNamespace = targetModel.getValuePropertyNamespace();
                     String propName = targetModel.getValueProperty();
                     
                     Object convertedValue = Utilities.getDefaultValue(text, childType, namespaceMap);
                     
-                    target._setProperty("", propName, convertedValue);
+                    target._setProperty(propNamespace, propName, convertedValue);
                 }
                 break;
             case XMLStreamConstants.END_ELEMENT:
