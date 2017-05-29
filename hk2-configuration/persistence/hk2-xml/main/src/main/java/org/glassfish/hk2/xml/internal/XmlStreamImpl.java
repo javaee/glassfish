@@ -235,10 +235,10 @@ public class XmlStreamImpl {
                             
                             Object convertedValue = Utilities.getDefaultValue(elementValue, listType, effectiveNamespaceMap);
                             
-                            List<Object> listObjects = listNonChild.get(elementTag);
+                            List<Object> listObjects = listNonChild.get(elementTagQName);
                             if (listObjects == null) {
                                 listObjects = new LinkedList<Object>();
-                                listNonChild.put(QNameUtilities.createQName(elementTagNamespace, elementTag), listObjects);
+                                listNonChild.put(elementTagQName, listObjects);
                             }
                             
                             listObjects.add(convertedValue);
@@ -248,10 +248,10 @@ public class XmlStreamImpl {
                             
                             Object convertedValue = Utilities.getDefaultValue(elementValue, aType, effectiveNamespaceMap);
                             
-                            ArrayInformation ai = arrayNonChild.get(elementTag);
+                            ArrayInformation ai = arrayNonChild.get(elementTagQName);
                             if (ai == null) {
                                 ai = new ArrayInformation(aType);
-                                arrayNonChild.put(QNameUtilities.createQName(elementTagNamespace, elementTag), ai);
+                                arrayNonChild.put(elementTagQName, ai);
                             }
                             
                             ai.add(convertedValue);
