@@ -48,7 +48,7 @@ test_run(){
   cd ~
   mkdir .vnc
   cd .vnc/
-  date | md5sum > temp
+  openssl rand -base64 12 > temp
   vncpasswd -f < temp > passwd
   chmod 600 passwd
   vncserver
