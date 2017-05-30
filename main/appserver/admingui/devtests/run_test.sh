@@ -45,12 +45,21 @@ list_test_ids(){
 test_run(){
   #test functions goes here, maven test or ant test etc.
   
+  cd ~
+  mkdir .vnc
+  cd .vnc/
+  date | md5sum > temp
+  vncpasswd -f < temp > passwd
+  chmod 600 passwd
+  vncserver
   $S1AS_HOME/bin/asadmin start-domain
   cd $WORKSPACE/main/appserver/admingui/devtests/
   pwd
-  export DISPLAY=127.0.0.1:0.0	
+  export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain	
+  vncserver -kill :1
+  rm -rf ~/.vnc
 }
 
 run_test_id(){
