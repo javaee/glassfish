@@ -50,14 +50,14 @@ import org.glassfish.hk2.xml.test.namespace.NamespaceCommon;
  * @author jwells
  *
  */
-@XmlRootElement(namespace=NamespaceCommon.NAMESPACE_A, name="double-namespace-trouble")
+@XmlRootElement(namespace=NamespaceCommon.NAMESPACE_0, name="double-namespace-trouble")
 public interface DoubleNamespaceTroubleRootBean {
     @XmlElement(name="Alice", namespace=NamespaceCommon.NAMESPACE_A)
     public String getAlice();
     
     // No namespace
-    @XmlElement(name="Bob")
-    public String getBob();
+    @XmlElement(name="Alice")
+    public String getAliceDefault();
     
     @XmlElement(name="Alice", namespace=NamespaceCommon.NAMESPACE_B)
     public String getAliceB();

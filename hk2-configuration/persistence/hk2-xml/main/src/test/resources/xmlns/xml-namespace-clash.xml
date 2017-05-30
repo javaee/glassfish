@@ -41,13 +41,13 @@
 
 -->
 
-<A:double-namespace-trouble xsi:xmlns="NamespaceA"
+<double-namespace-trouble xmlns="Namespace0"
                  xmlns:A="NamespaceA"
                  xmlns:B="NamespaceB"
                  xmlns:C="NamespaceC"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Alice>foo</Alice>
-  <A:Bob>bar</A:Bob>
+  <A:Alice>foo</A:Alice>
+  <Alice>bar</Alice>
   <B:Alice>baz</B:Alice>
   <C:Alice>grax</C:Alice>
-</A:double-namespace-trouble>
+</double-namespace-trouble>

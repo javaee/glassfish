@@ -85,6 +85,7 @@ public class NamespaceCommon {
     private final static String GMB = "gumby";
     private final static String FIG = "figaro";
     
+    public final static String NAMESPACE_0 = "Namespace0";
     public final static String NAMESPACE_A = "NamespaceA";
     public final static String NAMESPACE_B = "NamespaceB";
     public final static String NAMESPACE_C = "NamespaceC";
@@ -149,7 +150,7 @@ public class NamespaceCommon {
         DoubleNamespaceTroubleRootBean root = rootHandle.getRoot();
         
         Assert.assertEquals(FOO, root.getAlice());
-        Assert.assertEquals(BAR, root.getBob());
+        Assert.assertEquals(BAR, root.getAliceDefault());
         Assert.assertEquals(BAZ, root.getAliceB());
         Assert.assertEquals(GRAX, root.getAliceC());
     }

@@ -90,9 +90,9 @@ public class NamespaceTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testNamespaceClashJAXB() throws Exception {
-        ServiceLocator locator = Utilities.createDomLocator();
+        ServiceLocator locator = Utilities.createLocator();
         URL url = getClass().getClassLoader().getResource(NamespaceCommon.NAMESPACE_CLASH_FILE);
         URI uri = url.toURI();
         
@@ -106,9 +106,9 @@ public class NamespaceTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testNamespaceClashNative() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         URL url = getClass().getClassLoader().getResource(NamespaceCommon.NAMESPACE_CLASH_FILE);
         URI uri = url.toURI();
         

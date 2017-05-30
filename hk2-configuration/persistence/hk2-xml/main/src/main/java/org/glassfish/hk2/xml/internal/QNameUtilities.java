@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import javax.xml.namespace.QName;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlService;
 
 /**
@@ -63,22 +64,29 @@ public class QNameUtilities {
         return namespace;
     }
     
+    public static QName createQName(String namespace, String localPart) {
+        return createQName(namespace, localPart, null);
+    }
+    
     /**
      * Creates a QName taking into account the DEFAULT_NAMESPACE field
      * from JAXB
      * 
-     * @param namespace
-     * @param xmlTag
+     * @param namespace The possibly null namespace
+     * @param localPart The not-null localPart
+     * @param defaultNamespace The default namespace if known, or null if not known
      * @return
      */
-    public static QName createQName(String namespace, String xmlTag) {
-        if (xmlTag == null) return null;
+    public static QName createQName(String namespace, String localPart, String defaultNamespace) {
+        if (localPart == null) return null;
         
-        if (namespace == null || namespace.isEmpty() || namespace.trim().isEmpty() || XmlService.DEFAULT_NAMESPACE.equals(namespace)) {
-            return new QName(xmlTag);
+        if ((namespace == null) || namespace.isEmpty() || namespace.trim().isEmpty() ||
+                XmlService.DEFAULT_NAMESPACE.equals(namespace) ||
+                ((defaultNamespace != null) && GeneralUtilities.safeEquals(namespace, defaultNamespace))) {
+            return new QName(localPart);
         }
         
-        return new QName(namespace, xmlTag);
+        return new QName(namespace, localPart);
     }
     
     /**
@@ -87,14 +95,27 @@ public class QNameUtilities {
      * {@link XmlService#DEFAULT_NAMESPACE} instead
      * 
      * @param qName qName to find the namespace of or null
-     * @return null if qName is null or the String for the
-     * namespace if not null
+     * @return null if qName is null or the String for the namespace if not null
      */
     public static String getNamespace(QName qName) {
+        return getNamespace(qName, null);
+    }
+    
+    /**
+     * Returns the namespace, but if the namespace is null or
+     * empty will return
+     * {@link XmlService#DEFAULT_NAMESPACE} instead
+     * 
+     * @param qName qName to find the namespace of or null
+     * @param defaultNamespace The default namespace if known, or null if not known
+     * @return null if qName is null or the String for the namespace if not null
+     */
+    public static String getNamespace(QName qName, String defaultNamespace) {
         if (qName == null) return null;
         
         String namespace = qName.getNamespaceURI();
-        if ((namespace == null) || namespace.isEmpty() || namespace.trim().isEmpty()) {
+        if ((namespace == null) || namespace.isEmpty() || namespace.trim().isEmpty() ||
+                ((defaultNamespace != null) && GeneralUtilities.safeEquals(defaultNamespace, namespace))) {
             return XmlService.DEFAULT_NAMESPACE;
         }
         
