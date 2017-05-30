@@ -103,13 +103,23 @@ class RequestFacadeWrapper extends RequestFacade implements HttpServletRequest {
     }
 
     @Override
+    public Map<String, String> getTrailerFields() {
+        return servletRequest.getTrailerFields();
+    }
+
+    @Override
+    public boolean isTrailerFieldsReady() {
+        return servletRequest.isTrailerFieldsReady();
+    }
+
+    @Override
     public String getMethod() {
         return servletRequest.getMethod();
     }
 
     @Override
-    public ServletMapping getServletMapping() {
-        return servletRequest.getServletMapping(); 
+    public HttpServletMapping getHttpServletMapping() {
+        return servletRequest.getHttpServletMapping(); 
     }
 
     @Override

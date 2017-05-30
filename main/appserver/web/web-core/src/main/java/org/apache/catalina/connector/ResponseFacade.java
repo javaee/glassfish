@@ -69,7 +69,9 @@ import java.io.PrintWriter;
 import java.security.*;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 
 /**
@@ -99,7 +101,8 @@ public class ResponseFacade
         public SetContentTypePrivilegedAction(String contentType){
             this.contentType = contentType;
         }
-        
+
+        @Override
         public Void run() {
             response.setContentType(contentType);
             return null;
@@ -135,6 +138,7 @@ public class ResponseFacade
     /**
      * Prevent cloning the facade.
      */
+    @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
@@ -173,7 +177,7 @@ public class ResponseFacade
 
     // ------------------------------------------------ ServletResponse Methods
 
-
+    @Override
     public String getCharacterEncoding() {
 
         // Disallow operation if the object has gone out of scope
@@ -184,7 +188,7 @@ public class ResponseFacade
         return response.getCharacterEncoding();
     }
 
-
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -202,7 +206,7 @@ public class ResponseFacade
         return (sos);
     }
 
-
+    @Override
     public PrintWriter getWriter() throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -220,7 +224,7 @@ public class ResponseFacade
         return (writer);
     }
 
-
+    @Override
     public void setContentLength(int len) {
 
         // Disallow operation if the object has gone out of scope
@@ -234,7 +238,7 @@ public class ResponseFacade
         response.setContentLength(len);
     }
 
-
+    @Override
     public void setContentLengthLong(long len) {
 
         // Disallow operation if the object has gone out of scope
@@ -248,7 +252,7 @@ public class ResponseFacade
         response.setContentLengthLong(len);
     }
 
-
+    @Override
     public void setContentType(String type) {
 
         // Disallow operation if the object has gone out of scope
@@ -266,7 +270,7 @@ public class ResponseFacade
         }
     }
 
-
+    @Override
     public void setBufferSize(int size) {
 
         // Disallow operation if the object has gone out of scope
@@ -281,7 +285,7 @@ public class ResponseFacade
         response.setBufferSize(size);
     }
 
-
+    @Override
     public int getBufferSize() {
 
         // Disallow operation if the object has gone out of scope
@@ -292,7 +296,7 @@ public class ResponseFacade
         return response.getBufferSize();
     }
 
-
+    @Override
     public void flushBuffer() throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -330,7 +334,7 @@ public class ResponseFacade
         }
     }
 
-
+    @Override
     public void resetBuffer() {
 
         // Disallow operation if the object has gone out of scope
@@ -345,7 +349,7 @@ public class ResponseFacade
         response.resetBuffer();
     }
 
-
+    @Override
     public boolean isCommitted() {
 
         // Disallow operation if the object has gone out of scope
@@ -356,7 +360,7 @@ public class ResponseFacade
         return (response.isAppCommitted());
     }
 
-
+    @Override
     public void reset() {
 
         // Disallow operation if the object has gone out of scope
@@ -371,7 +375,7 @@ public class ResponseFacade
         response.reset();
     }
 
-
+    @Override
     public void setLocale(Locale loc) {
 
         // Disallow operation if the object has gone out of scope
@@ -385,7 +389,7 @@ public class ResponseFacade
         response.setLocale(loc);
     }
 
-
+    @Override
     public Locale getLocale() {
 
         // Disallow operation if the object has gone out of scope
@@ -396,7 +400,7 @@ public class ResponseFacade
         return response.getLocale();
     }
 
-
+    @Override
     public void addCookie(Cookie cookie) {
 
         // Disallow operation if the object has gone out of scope
@@ -410,7 +414,7 @@ public class ResponseFacade
         response.addCookie(cookie);
     }
 
-
+    @Override
     public boolean containsHeader(String name) {
 
         // Disallow operation if the object has gone out of scope
@@ -421,7 +425,7 @@ public class ResponseFacade
         return response.containsHeader(name);
     }
 
-
+    @Override
     public String encodeURL(String url) {
 
         // Disallow operation if the object has gone out of scope
@@ -432,7 +436,7 @@ public class ResponseFacade
         return response.encodeURL(url);
     }
 
-
+    @Override
     public String encodeRedirectURL(String url) {
 
         // Disallow operation if the object has gone out of scope
@@ -443,7 +447,7 @@ public class ResponseFacade
         return response.encodeRedirectURL(url);
     }
 
-
+    @Override
     public String encodeUrl(String url) {
 
         // Disallow operation if the object has gone out of scope
@@ -454,7 +458,7 @@ public class ResponseFacade
         return response.encodeURL(url);
     }
 
-
+    @Override
     public String encodeRedirectUrl(String url) {
 
         // Disallow operation if the object has gone out of scope
@@ -465,7 +469,7 @@ public class ResponseFacade
         return response.encodeRedirectURL(url);
     }
 
-
+    @Override
     public void sendError(int sc, String msg) throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -482,7 +486,7 @@ public class ResponseFacade
         response.sendError(sc, msg);
     }
 
-
+    @Override
     public void sendError(int sc) throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -499,7 +503,7 @@ public class ResponseFacade
         response.sendError(sc);
     }
 
-
+    @Override
     public void sendRedirect(String location) throws IOException {
 
         // Disallow operation if the object has gone out of scope
@@ -516,7 +520,7 @@ public class ResponseFacade
         response.sendRedirect(location);
     }
 
-
+    @Override
     public void setDateHeader(String name, long date) {
 
         // Disallow operation if the object has gone out of scope
@@ -530,7 +534,7 @@ public class ResponseFacade
         response.setDateHeader(name, date);
     }
 
-
+    @Override
     public void addDateHeader(String name, long date) {
 
         // Disallow operation if the object has gone out of scope
@@ -544,7 +548,7 @@ public class ResponseFacade
         response.addDateHeader(name, date);
     }
 
-
+    @Override
     public void setHeader(String name, String value) {
 
         // Disallow operation if the object has gone out of scope
@@ -558,7 +562,7 @@ public class ResponseFacade
         response.setHeader(name, value);
     }
 
-
+    @Override
     public void addHeader(String name, String value) {
 
         // Disallow operation if the object has gone out of scope
@@ -572,7 +576,7 @@ public class ResponseFacade
         response.addHeader(name, value);
     }
 
-
+    @Override
     public void setIntHeader(String name, int value) {
 
         // Disallow operation if the object has gone out of scope
@@ -586,7 +590,7 @@ public class ResponseFacade
         response.setIntHeader(name, value);
     }
 
-
+    @Override
     public void addIntHeader(String name, int value) {
 
         // Disallow operation if the object has gone out of scope
@@ -600,7 +604,7 @@ public class ResponseFacade
         response.addIntHeader(name, value);
     }
 
-
+    @Override
     public void setStatus(int sc) {
 
         // Disallow operation if the object has gone out of scope
@@ -614,7 +618,7 @@ public class ResponseFacade
         response.setStatus(sc);
     }
 
-
+    @Override
     public void setStatus(int sc, String msg) {
 
         // Disallow operation if the object has gone out of scope
@@ -628,7 +632,7 @@ public class ResponseFacade
         response.setStatus(sc, msg);
     }
 
-
+    @Override
     public String getContentType() {
 
         // Disallow operation if the object has gone out of scope
@@ -639,7 +643,7 @@ public class ResponseFacade
         return response.getContentType();
     }
 
-
+    @Override
     public void setCharacterEncoding(String arg0) {
 
         // Disallow operation if the object has gone out of scope
@@ -652,6 +656,7 @@ public class ResponseFacade
 
 
     // START SJSAS 6374990
+    @Override
     public int getStatus() {
 
         // Disallow operation if the object has gone out of scope
@@ -664,7 +669,7 @@ public class ResponseFacade
 
     // END SJSAS 6374990
 
-
+    @Override
     public String getHeader(String name) {
         if (response == null) {
             throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));
@@ -672,15 +677,15 @@ public class ResponseFacade
         return response.getHeader(name);
     }
 
-
+    @Override
     public Collection<String> getHeaders(String name) {
         if (response == null) {
             throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));
         }
         return response.getHeaders(name);
     }
-    
 
+    @Override
     public Collection<String> getHeaderNames() {
         if (response == null) {
             throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));
@@ -688,4 +693,11 @@ public class ResponseFacade
         return response.getHeaderNames();
     }
 
+    @Override
+    public void setTrailerFields(Supplier<Map<String, String>> supplier) {
+        if (response == null) {
+            throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));
+        }
+        response.setTrailerFields(supplier);
+    }
 }

@@ -45,13 +45,13 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.MappingMatch;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 import org.glassfish.grizzly.http.server.util.MappingData;
 
 import org.apache.catalina.LogFacade;
 
-public class MappingImpl implements ServletMapping, Serializable {
+public class MappingImpl implements HttpServletMapping, Serializable {
 
     private static final long serialVersionUID = -5134622427867249518L;
 

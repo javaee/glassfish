@@ -50,7 +50,6 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 import javax.interceptor.InterceptorBinding;
 
-@Qualifier
 @Target({ TYPE, METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @InterceptorBinding
