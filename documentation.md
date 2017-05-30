@@ -30,3 +30,5 @@
 
 * [Java EE 7 Your First Cup](https://docs.oracle.com/javaee/7/firstcup/index.html)
 * [Java EE 7 Tutorial](https://docs.oracle.com/javaee/7/tutorial/)
+* [Java EE 7 Technical Kit](https://javaee.github.io/javaee7/techkit/)
+
