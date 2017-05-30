@@ -452,6 +452,12 @@
         <artifactId>javax.json</artifactId>
       </dependency>
 
+      <dependency>
+        <scope>runtime</scope>
+        <groupId>org.eclipse</groupId>
+        <artifactId>yasson</artifactId>
+      </dependency>
+
       <!-- CDI support -->
       <dependency>
           <groupId>org.jboss.weld.se</groupId>
