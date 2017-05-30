@@ -66,9 +66,8 @@
             </roles>
         </developer>
         <developer>
-            <id>swchan2</id>
+            <id>shingwaichan</id>
             <name>Shing Wai Chan</name>
-            <url>http://weblogs.java.net/blog/swchan2</url>
             <organization>Oracle</organization>
             <roles>
                 <role>developer</role>
