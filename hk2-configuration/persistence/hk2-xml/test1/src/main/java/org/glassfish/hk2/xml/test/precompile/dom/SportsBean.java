@@ -41,11 +41,14 @@ package org.glassfish.hk2.xml.test.precompile.dom;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * @author jwells
  *
  */
 public interface SportsBean {
+    @XmlElement(name="football")
     public List<FootballBean> getFootball();
     public void setFootball(List<FootballBean> football);
 

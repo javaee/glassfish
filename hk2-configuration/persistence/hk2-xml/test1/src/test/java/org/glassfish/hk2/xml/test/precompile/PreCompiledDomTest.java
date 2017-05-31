@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.precompile;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -49,6 +50,8 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
 import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
 import org.glassfish.hk2.xml.test.precompile.dom.EntertainmentBean;
+import org.glassfish.hk2.xml.test.precompile.dom.FootballBean;
+import org.glassfish.hk2.xml.test.precompile.dom.SportsBean;
 import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -229,7 +232,20 @@ public class PreCompiledDomTest {
         
         EntertainmentBean root = rootHandle.getRoot();
         
-        Assert.assertEquals("Eagles", root.getSports().get(0).getFootball().get(0).getName());
+        List<SportsBean> sports = root.getSports();
+        Assert.assertNotNull(sports);
+        Assert.assertEquals(1, sports.size());
+        
+        SportsBean sBean = sports.get(0);
+        Assert.assertNotNull(sBean);
+        
+        List<FootballBean> football = sBean.getFootball();
+        Assert.assertNotNull(football);
+        Assert.assertEquals(1, football.size());
+        
+        FootballBean eaglesBean = football.get(0);
+        
+        Assert.assertEquals("Eagles", eaglesBean.getName());
     }
     
     private static class BeanListenerInterfaceImpl implements BeanListenerInterface {

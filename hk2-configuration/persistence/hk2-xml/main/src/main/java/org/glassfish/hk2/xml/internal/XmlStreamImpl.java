@@ -226,6 +226,23 @@ public class XmlStreamImpl {
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
+                Map<String, String> effectiveNamespaceMap = null;
+                {
+                    effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
+                    int namespaceCount = reader.getNamespaceCount();
+                    for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
+                        String namespacePrefix = reader.getNamespacePrefix(nLcv);
+                        String namespaceURI = reader.getNamespaceURI(nLcv);
+                        
+                        if (namespacePrefix == null) {
+                            defaultNamespace = namespaceURI;
+                        }
+                        else {
+                            effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                        }
+                    }
+                }
+                
                 String elementTagNamespace = QNameUtilities.getNamespace(reader.getName(), defaultNamespace);
                 String elementTag = reader.getName().getLocalPart();
                 
@@ -233,15 +250,6 @@ public class XmlStreamImpl {
                 
                 if (DEBUG_PARSING) {
                     Logger.getLogger().debug("XmlServiceDebug starting parse of element " + elementTag);
-                }
-                
-                Map<String, String> effectiveNamespaceMap = null;
-                {
-                    effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
-                    int namespaceCount = reader.getNamespaceCount();
-                    for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
-                        effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
-                    }
                 }
                 
                 ChildDataModel cdm = nonChildProperties.get(elementTagQName);
