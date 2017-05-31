@@ -56,7 +56,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
     private static final long serialVersionUID = 7351909351649012181L;
 
     private Map<String, Map<String, Object>> namespaceMap =
-            new LinkedHashMap<>();
+            new LinkedHashMap<String, Map<String, Object>>();
     
     private Map<String, Map<String, Object>> backupMap;
     
@@ -67,7 +67,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
     
     
     private static Map<String, Map<String, Object>> deepCopyNamespaceBeanLikeMaps(Map<String, Map<String, Object>> copyMe) {
-        Map<String, Map<String, Object>> retVal = new LinkedHashMap<>();
+        Map<String, Map<String, Object>> retVal = new LinkedHashMap<String, Map<String, Object>>();
         if (copyMe == null) return retVal;
         
         for (Map.Entry<String, Map<String,Object>> entry : copyMe.entrySet()) {
@@ -102,7 +102,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
         
         Map<String, Object> narrowedMap = namespaceMap.get(namespace);
         if (narrowedMap == null) {
-            narrowedMap = new LinkedHashMap<>();
+            narrowedMap = new LinkedHashMap<String, Object>();
             namespaceMap.put(namespace, narrowedMap);
         }
         
@@ -232,7 +232,7 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
      */
     @Override
     public Map<QName, Object> getQNameMap() {
-        Map<QName, Object> retVal = new LinkedHashMap<>();
+        Map<QName, Object> retVal = new LinkedHashMap<QName, Object>();
         
         for (Map.Entry<String, Map<String, Object>> outerEntry : namespaceMap.entrySet()) {
             String namespace = outerEntry.getKey();
