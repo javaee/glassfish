@@ -61,6 +61,7 @@ import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
 import javax.xml.bind.Unmarshaller.Listener;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.json.api.JsonUtilities;
@@ -150,7 +151,9 @@ public class JsonParser implements XmlServiceParser {
                 break;
             case KEY_NAME:
                 String keyName = parser.getString();
-                ChildDescriptor descriptor = currentModel.getChildDescriptor(keyName);
+                QName qKeyName = new QName(keyName);
+                
+                ChildDescriptor descriptor = currentModel.getChildDescriptor(qKeyName);
                 if (descriptor == null) {
                     skipper(parser);
                 }
@@ -162,24 +165,24 @@ public class JsonParser implements XmlServiceParser {
                         javax.json.stream.JsonParser.Event attributeEvent = parser.next();
                         switch (attributeEvent) {
                         case VALUE_STRING:
-                            target._setProperty(keyName, parser.getString());
+                            target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, parser.getString());
                             break;
                         case VALUE_NUMBER:
                             if (parser.isIntegralNumber()) {
-                                target._setProperty(keyName, new Integer(parser.getInt()));
+                                target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, new Integer(parser.getInt()));
                             }
                             else {
-                                target._setProperty(keyName, new Long(parser.getLong()));
+                                target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, new Long(parser.getLong()));
                             }
                             break;
                         case VALUE_NULL:
-                            target._setProperty(keyName, null);
+                            target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, null);
                             break;
                         case VALUE_TRUE:
-                            target._setProperty(keyName, Boolean.TRUE);
+                            target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, Boolean.TRUE);
                             break;
                         case VALUE_FALSE:
-                            target._setProperty(keyName, Boolean.FALSE);
+                            target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, Boolean.FALSE);
                             break;
                         default:
                             throw new IllegalStateException("Uknown value type: " + attributeEvent + " for " + childDataModel + " for " + currentModel);
@@ -212,7 +215,7 @@ public class JsonParser implements XmlServiceParser {
                             }
                         
                             if (ChildType.LIST.equals(parentedModel.getChildType())) {
-                                target._setProperty(keyName, myList);
+                                target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, myList);
                             }
                             else if (ChildType.ARRAY.equals(parentedModel.getChildType())) {
                                 Object array = Array.newInstance(childModel.getOriginalInterfaceAsClass(), myList.size());
@@ -223,7 +226,7 @@ public class JsonParser implements XmlServiceParser {
                                     lcv++;
                                 }
                             
-                                target._setProperty(keyName, array);
+                                target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, array);
                             }
                             else {
                                 throw new AssertionError("The model says DIRECT but I got an ARRAY start so bombing quite badly");
@@ -239,7 +242,7 @@ public class JsonParser implements XmlServiceParser {
                         
                             parseObject(childModel, oneChild, target, listener, parser);
                         
-                            target._setProperty(keyName, oneChild);
+                            target._setProperty(XmlService.DEFAULT_NAMESPACE, keyName, oneChild);
                         }
                         else {
                             throw new IllegalStateException("Unknown start of child event: " + event);
@@ -346,12 +349,13 @@ public class JsonParser implements XmlServiceParser {
         }
         
         ModelImpl model = bean._getModel();
-        Map<String, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
-        for (Map.Entry<String, ChildDescriptor> entry : allChildren.entrySet()) {
-            String keyName = entry.getKey();
+        Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
+        for (Map.Entry<QName, ChildDescriptor> entry : allChildren.entrySet()) {
+            QName keyNameQName = entry.getKey();
+            String keyName = keyNameQName.getLocalPart();
             
             if (!bean._isSet(keyName)) continue;
-            Object value = bean._getProperty(keyName);
+            Object value = bean._getProperty(XmlService.DEFAULT_NAMESPACE, keyName);
             
             ParentedModel parented = entry.getValue().getParentedModel();
             if (parented != null) {

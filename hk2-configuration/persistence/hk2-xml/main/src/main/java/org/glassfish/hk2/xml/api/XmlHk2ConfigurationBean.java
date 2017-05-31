@@ -125,8 +125,20 @@ public interface XmlHk2ConfigurationBean {
     
     /**
      * Looks up the child with the given propertyName that has the
+     * given key value.  Will only search the default namespace
+     * 
+     * @param propName The non-null property name to look for
+     * @param keyValue The non-null keyValue to look for
+     * @return The child or null if not found
+     */
+    public Object _lookupChild(String propName, String keyValue);
+    
+    /**
+     * Looks up the child with the given propertyName that has the
      * given key value
      * 
+     * @param propNamespace The namespace to find the property in.
+     * If null then the default namespace
      * @param propName The non-null property name to look for
      * @param keyValue The non-null keyValue to look for
      * @return The child or null if not found
@@ -135,8 +147,22 @@ public interface XmlHk2ConfigurationBean {
     
     /**
      * Returns true if the given property is explicitly set, false
+     * if the property has not been explicitly set.  Will only
+     * check the default namespace
+     *
+     * @param propName The name of the property to check for being set,
+     * may not be null
+     * @return true if the property is explicitly set, false if
+     * the property is not explicitly set
+     */
+    public boolean _isSet(String propName);
+    
+    /**
+     * Returns true if the given property is explicitly set, false
      * if the property has not been explicitly set
      * 
+     * @param propNamespace The namespace to find the property in.
+     * If null then the default namespace
      * @param propName The name of the property to check for being set,
      * may not be null
      * @return true if the property is explicitly set, false if

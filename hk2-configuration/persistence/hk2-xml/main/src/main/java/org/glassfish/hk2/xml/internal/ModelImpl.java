@@ -272,7 +272,7 @@ public class ModelImpl implements Model {
         }
     }
     
-    public ChildDescriptor getChildDescriptor(String xmlTag) {
+    public ChildDescriptor getChildDescriptor(QName xmlTag) {
         return allChildren.get(xmlTag);
     }
     

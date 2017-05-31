@@ -72,6 +72,7 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ModelImpl;
@@ -676,6 +677,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return null;
     }
     
+    @Override
+    public Object _lookupChild(String propName, String keyValue) {
+        return _lookupChild(XmlService.DEFAULT_NAMESPACE, propName, keyValue);
+    }
+    
+    @Override
     public Object _lookupChild(String propNamespace, String propName, String keyValue) {
         if (changeControl == null) {
             return internalLookup(propNamespace, propName, keyValue);
@@ -1294,6 +1301,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     @Override
     public XmlRootHandle<?> _getRoot() {
         return root;
+    }
+    
+    @Override
+    public boolean _isSet(String propName) {
+        return _isSet(XmlService.DEFAULT_NAMESPACE, propName);
     }
     
     @Override
