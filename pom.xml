@@ -175,13 +175,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <distributionManagement>
-        <site>
-            <id>website.java.net</id>
-            <url>dav:https://website.java.net/website/hk2</url>
-        </site>
-    </distributionManagement> 
-
     <properties>
         <javax.annotation.version>1.2</javax.annotation.version>
         <javax.json.version>1.0</javax.json.version>
@@ -217,17 +210,18 @@
         <surefireArgLineExtra />
 
         <!-- site is generated under target/site/${project.version} -->
-        <site.dir>${project.build.directory}/site</site.dir>
-        <site.outputDir>${site.dir}/${project.version}</site.outputDir>
+        <!--<site.dir>${project.build.directory}/site</site.dir>-->
+        <!--<site.outputDir>${site.dir}/${project.version}</site.outputDir>-->
 
         <!-- properties for site resources -->
-        <cdn.bootstrap>http://netdna.bootstrapcdn.com</cdn.bootstrap>
-        <cdn.google>http://ajax.googleapis.com/ajax/libs</cdn.google>
-        <cdn.yandex>http://yandex.st</cdn.yandex>
-        <bootstrap.version>2.3.2</bootstrap.version>
-        <fontawesome.version>3.2.1</fontawesome.version>
-        <highlightjs.version>7.5</highlightjs.version>
-        <jquery.version>1.9.1</jquery.version>
+        <!--<cdn.bootstrap>http://netdna.bootstrapcdn.com</cdn.bootstrap>-->
+        <!--<cdn.google>http://ajax.googleapis.com/ajax/libs</cdn.google>-->
+        <!--<cdn.yandex>http://yandex.st</cdn.yandex>-->
+        <!--<bootstrap.version>2.3.2</bootstrap.version>-->
+        <!--<fontawesome.version>3.2.1</fontawesome.version>-->
+        <!--<highlightjs.version>7.5</highlightjs.version>-->
+        <!--<jquery.version>1.9.1</jquery.version>-->
+
         <jdk.version>1.6.0</jdk.version>
         <mvn.version>3.0.3</mvn.version>
     </properties>
@@ -333,7 +327,7 @@
                   /apidocs -> ${project.version}/apidocs
                   /xref -> ${project.version}/xref
             -->
-            <plugin>
+<!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
@@ -347,7 +341,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${site.dir}</outputDirectory>
-                            <resources>          
+                            <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
@@ -356,11 +350,11 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <!--
                 Download site's resources: .css and .js files
             -->
-            <plugin>
+<!--            <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>maven-download-plugin</artifactId>
                 <inherited>false</inherited>
@@ -426,8 +420,8 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
+            </plugin>-->
+<!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
@@ -454,7 +448,7 @@
                         <version>1.7</version>
                     </dependency>
                 </dependencies>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -607,16 +601,9 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav-jackrabbit</artifactId>
-                <version>2.0</version>
-            </extension>
-        </extensions>
     </build>
     
-    <reporting>
+<!--    <reporting>
         <outputDirectory>${site.outputDir}</outputDirectory>
         <plugins>
             <plugin>
@@ -714,7 +701,7 @@
                 </configuration>
             </plugin>
         </plugins>
-    </reporting>
+    </reporting>-->
     
     <dependencyManagement>
         <dependencies>
