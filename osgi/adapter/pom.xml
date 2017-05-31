@@ -48,7 +48,6 @@
         <version>2.5.0-b38-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-adapter</artifactId>
-    
     <name>HK2 OSGi Adapter</name>
 
     <developers>
@@ -103,6 +102,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>

@@ -58,7 +58,7 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -100,11 +100,10 @@
     </build>
 
     <dependencies>
-   	    <dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
-

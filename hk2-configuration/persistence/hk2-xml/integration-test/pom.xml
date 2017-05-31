@@ -58,7 +58,7 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>             
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -98,22 +98,27 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-xml</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-integration</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-extras</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>aopalliance-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

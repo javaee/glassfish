@@ -88,7 +88,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>config-generator</artifactId>
@@ -114,22 +114,27 @@
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-locator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-config</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>

@@ -88,18 +88,22 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-runlevel</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-locator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
@@ -113,6 +117,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-testng</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,6 +131,5 @@
                </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
 </project>

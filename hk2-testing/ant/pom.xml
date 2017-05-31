@@ -101,9 +101,10 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
+
     <profiles>
         <profile>
             <id>default</id>
@@ -152,12 +153,12 @@
                                     <version>1</version>
                                     <scope>system</scope>
                                     <systemPath>${java.home}/../Classes/classes.jar</systemPath>
-                                </dependency>                    
-                            </dependencies>                        
+                                </dependency>
+                            </dependencies>
                         </plugin>
                     </plugins>
                 </pluginManagement>
             </build>
-        </profile>        
+        </profile>
     </profiles>
 </project>

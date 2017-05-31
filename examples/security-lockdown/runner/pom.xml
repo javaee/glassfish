@@ -87,26 +87,32 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>security-lockdown-example-mallory</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>security-lockdown-example-alice</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>security-lockdown-example-system</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-locator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
     </dependencies>

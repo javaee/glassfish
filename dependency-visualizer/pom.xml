@@ -90,5 +90,5 @@
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
         </dependency>
-    </dependencies>    
+    </dependencies>
 </project>

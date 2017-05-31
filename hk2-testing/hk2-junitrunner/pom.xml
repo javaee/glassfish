@@ -54,12 +54,16 @@
     <name>HK2 Junit Runner</name>
     <description>A utility for running HK2 tests</description>
 
+    <properties>
+        <links>http://junit.org/javadoc/latest/</links>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -75,18 +79,22 @@
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-locator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -96,9 +104,7 @@
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
-    <properties>
-      <links>http://junit.org/javadoc/latest/</links>
-    </properties>
 </project>

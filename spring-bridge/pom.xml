@@ -84,6 +84,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -92,6 +93,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

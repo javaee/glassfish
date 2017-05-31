@@ -71,7 +71,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>             
+            </plugin>
         </plugins>
     </build>
     
@@ -79,26 +79,32 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-integration</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-property-file</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-hub</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-locator</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>

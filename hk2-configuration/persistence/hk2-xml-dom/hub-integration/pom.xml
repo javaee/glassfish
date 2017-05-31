@@ -58,7 +58,7 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>             
+            </plugin>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-inhabitant-generator</artifactId>
@@ -76,7 +76,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -117,14 +117,17 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-config</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>config-types</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-hub</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -137,11 +140,13 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-integration</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
