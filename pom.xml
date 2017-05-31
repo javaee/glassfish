@@ -45,11 +45,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-bom</artifactId>
-        <version>2.5.0-b38-SNAPSHOT</version>
-        <relativePath>bom/pom.xml</relativePath>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>5</version>
+        <relativePath />
     </parent>
+    <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -114,36 +115,9 @@
         </developer>
     </developers>
 
-    <mailingLists>
-        <mailingList>
-            <name>dev</name>
-            <subscribe>http://java.net/projects/hk2/lists</subscribe>
-            <post>dev@hk2.java.net</post>
-            <archive>http://java.net/projects/hk2/lists/dev/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>users</name>
-            <subscribe>http://java.net/projects/hk2/lists</subscribe>
-            <post>users@hk2.java.net</post>
-            <archive>http://java.net/projects/hk2/lists/users/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>issues</name>
-            <subscribe>http://java.net/projects/hk2/lists</subscribe>
-            <post>issues@hk2.java.net</post>
-            <archive>http://java.net/projects/hk2/lists/issues/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>commits</name>
-            <subscribe>http://java.net/projects/hk2/lists</subscribe>
-            <post>commits@hk2.java.net</post>
-            <archive>http://java.net/projects/hk2/lists/commits/archive</archive>
-        </mailingList>
-    </mailingLists>
-
     <issueManagement>
-        <system>JIRA</system>
-        <url>http://java.net/jira/browse/HK2</url>
+        <system>Github</system>
+        <url>https://github.com/hk2-project/hk2/issues</url>
     </issueManagement>
 
     <scm>
@@ -176,6 +150,9 @@
     </pluginRepositories>
 
     <properties>
+        <jdk.version>1.6.0</jdk.version>
+        <mvn.version>3.0.3</mvn.version>
+
         <javax.annotation.version>1.2</javax.annotation.version>
         <javax.json.version>1.0</javax.json.version>
         <glassfish.json.version>1.0.4</glassfish.json.version>
@@ -204,26 +181,12 @@
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <javax.ws.rs.version>2.0</javax.ws.rs.version>
         <javax.jsr311.version>1.1.1</javax.jsr311.version>
+        <javax.validation.version>1.1.0.Final</javax.validation.version>
 
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <surefireArgLineExtra />
-
-        <!-- site is generated under target/site/${project.version} -->
-        <!--<site.dir>${project.build.directory}/site</site.dir>-->
-        <!--<site.outputDir>${site.dir}/${project.version}</site.outputDir>-->
-
-        <!-- properties for site resources -->
-        <!--<cdn.bootstrap>http://netdna.bootstrapcdn.com</cdn.bootstrap>-->
-        <!--<cdn.google>http://ajax.googleapis.com/ajax/libs</cdn.google>-->
-        <!--<cdn.yandex>http://yandex.st</cdn.yandex>-->
-        <!--<bootstrap.version>2.3.2</bootstrap.version>-->
-        <!--<fontawesome.version>3.2.1</fontawesome.version>-->
-        <!--<highlightjs.version>7.5</highlightjs.version>-->
-        <!--<jquery.version>1.9.1</jquery.version>-->
-
-        <jdk.version>1.6.0</jdk.version>
-        <mvn.version>3.0.3</mvn.version>
+        <release.arguments />
     </properties>
 
     <modules>
@@ -320,135 +283,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!--
-                maven site URL contains the version.
-                Thus, we need to do the following redirects:
-                  / -> /${project.version}
-                  /apidocs -> ${project.version}/apidocs
-                  /xref -> ${project.version}/xref
-            -->
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${site.dir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <!--
-                Download site's resources: .css and .js files
-            -->
-<!--            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>maven-download-plugin</artifactId>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>get-bootstrap-min-css</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.bootstrap}/twitter-bootstrap/${bootstrap.version}/css/bootstrap.min.css</url>
-                            <outputDirectory>${site.outputDir}/css</outputDirectory>
-                            <md5>a4e7cc3c672f9dbc86ffe3517aff11a8</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-bootstrap-min-js</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.bootstrap}/twitter-bootstrap/${bootstrap.version}/js/bootstrap.min.js</url>
-                            <outputDirectory>${site.outputDir}/js</outputDirectory>
-                            <md5>be1c5898c4332c8e7f9906011e005bb0</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-jquery</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.google}/jquery/${jquery.version}/jquery.min.js</url>
-                            <outputDirectory>${site.outputDir}/js</outputDirectory>
-                            <md5>397754ba49e9e0cf4e7c190da78dda05</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-highlightjs</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.yandex}/highlightjs/${highlightjs.version}/highlight.min.js</url>
-                            <outputDirectory>${site.outputDir}/js</outputDirectory>
-                            <md5>56335e0f03719e5ab34a87a6a74b2476</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-highlightjs-theme</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.yandex}/highlightjs/${highlightjs.version}/styles/solarized_dark.min.css</url>
-                            <outputDirectory>${site.outputDir}/css</outputDirectory>
-                            <md5>0496f08bdc1e4e4469d5db56070b1323</md5>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <stagingDirectory>${site.outputDir}}</stagingDirectory>
-                    <inputDirectory>${site.dir}</inputDirectory>
-                    <skip>false</skip>
-                    <skipDeploy>false</skipDeploy>
-                </configuration>
-                <inherited>false</inherited>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.4</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>lt.velykis.maven.skins</groupId>
-                        <artifactId>reflow-velocity-tools</artifactId>
-                        <version>1.1.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.velocity</groupId>
-                        <artifactId>velocity</artifactId>
-                        <version>1.7</version>
-                    </dependency>
-                </dependencies>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -523,11 +357,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
                 </plugin>
@@ -599,110 +428,72 @@
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>2.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <configuration>
+                      <includePom>true</includePom>
+                    </configuration>
+                </plugin>
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-site-plugin</artifactId>
+                  <version>3.2</version>
+                  <configuration>
+                        <skip>true</skip>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <mavenExecutorId>forked-path</mavenExecutorId>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
+                        <arguments>${release.arguments}</arguments>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.scm</groupId>
+                            <artifactId>maven-scm-provider-gitexe</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>1.42</version>
+                    <configuration>
+                        <scm>git</scm>
+                        <scmOnly>true</scmOnly>
+                        <exclude>
+                          <exclude>MANIFEST.MF</exclude>
+                          <exclude>hk2-locator/</exclude>
+                          <exclude>META-INF/services/</exclude>
+                          <exclude>META-INF/inhabitants/</exclude>
+                          <exclude>resources/gendir</exclude>
+                          <exclude>.png</exclude>
+                          <exclude>.class</exclude>
+                          <exclude>.json</exclude>
+                        </exclude>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    
-<!--    <reporting>
-        <outputDirectory>${site.outputDir}</outputDirectory>
-        <plugins>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
-                    <developerConnection>scm:git:git@github.com:hk2-project/hk2.git/</developerConnection>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>project-team</report>
-                            <report>mailing-list</report>
-                            <report>issue-tracking</report>
-                            <report>license</report>
-                            <report>scm</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
-                <configuration>
-                    <additionalparam>${javadoc.options}</additionalparam>
-                    <sourcepath>
-                        ${basedir}/hk2-api/src/main/java;
-                        ${basedir}/hk2-locator/src/main/java;
-                        ${basedir}/hk2-utils/src/main/java;
-                        ${basedir}/hk2-runlevel/src/main/java;
-                        ${basedir}/guice-bridge/src/main/java;
-                        ${basedir}/spring-bridge/src/main/java;
-                        ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
-                        ${basedir}/hk2-testing/collections/src/main/java;
-                        ${basedir}/hk2-inhabitant-generator/src/main/java;
-                        ${basedir}/hk2-configuration/manager/src/main/java;
-                        ${basedir}/hk2-configuration/hk2-integration/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/property-file/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/hk2-xml/src/main/java;
-                        ${basedir}/hk2-extras/src/main/java
-                    </sourcepath>
-                    <doctitle>HK2 API Documentation</doctitle>
-                    <windowtitle>HK2 API Documentation</windowtitle>
-                    <bottom>
-<![CDATA[Copyright &#169; 2009-2017,
-    <a href="http://www.oracle.com">Oracle</a>
-    and/or its affiliates. All Rights Reserved.
-]]>
-                    </bottom>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>javadoc</id>
-                        <inherited>false</inherited>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <linkJavadoc>true</linkJavadoc>
-                    <javadocDir>${site.outputDir}/apidocs</javadocDir>
-                    <sourcePath>
-                        ;${basedir}/hk2-api/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/hk2-xml-dom/hk2-config/src/main/java;
-                        ${basedir}/hk2-locator/src/main/java;
-                        ${basedir}/hk2-utils/src/main/java;
-                        ${basedir}/hk2-runlevel/src/main/java;
-                        ${basedir}/hk2-core/src/main/java;
-                        ${basedir}/class-model/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/hk2-xml-dom/config-types/src/main/java;
-                        ${basedir}/guice-bridge/src/main/java;
-                        ${basedir}/spring-bridge/src/main/java;
-                        ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
-                        ${basedir}/hk2-inhabitant-generator/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/hk2-xml/src/main/java;
-                        ${basedir}/hk2-extras/src/main/java
-                    </sourcePath>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.4.0</version>
-                <configuration>
-                    <threshold>${findbugs.threshold}</threshold>
-                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>-->
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -1059,7 +850,6 @@
                 <version>${javax.jsr311.version}</version>
             </dependency>
         </dependencies>
-      
     </dependencyManagement>
 
     <dependencies>
