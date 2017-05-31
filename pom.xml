@@ -147,8 +147,8 @@
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git://java.net/hk2~git</connection>
-        <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
+        <connection>scm:git:https://github.com/hk2-project/hk2.git</connection>
+        <developerConnection>scm:git:git@github.com:hk2-project/hk2.git</developerConnection>
         <url>https://java.net/projects/hk2/sources/git/show</url>
         <tag>hk2-parent-2.4.0-b23</tag>
     </scm>
@@ -624,7 +624,7 @@
                 <version>2.7</version>
                 <configuration>
                     <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
-                    <developerConnection>scm:git:ssh://[jvnet_id]@git.java.net/hk2~git/</developerConnection>
+                    <developerConnection>scm:git:git@github.com:hk2-project/hk2.git/</developerConnection>
                 </configuration>
                 <reportSets>
                     <reportSet>
