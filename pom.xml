@@ -149,8 +149,8 @@
     <scm>
         <connection>scm:git:https://github.com/hk2-project/hk2.git</connection>
         <developerConnection>scm:git:git@github.com:hk2-project/hk2.git</developerConnection>
-        <url>https://java.net/projects/hk2/sources/git/show</url>
-        <tag>hk2-parent-2.4.0-b23</tag>
+        <url>https://hk2-project.github.io</url>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
