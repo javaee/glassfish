@@ -116,13 +116,6 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-        <!-- yasson package -->
-        <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>yasson</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
         <!-- admin ui package -->
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>

@@ -130,7 +130,6 @@
         <module>glassfish-jmx</module>
         <module>glassfish-entitybeans-container</module>
         <module>json</module>
-        <module>yasson</module>
     </modules>
 
     <build>
