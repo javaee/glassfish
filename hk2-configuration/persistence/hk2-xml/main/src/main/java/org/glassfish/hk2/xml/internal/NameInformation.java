@@ -60,7 +60,7 @@ public class NameInformation {
     private final Map<String, List<XmlElementData>> aliases;
     private final XmlElementData valueData;
     
-    NameInformation(Map<String, XmlElementData> nameMapping,
+    public NameInformation(Map<String, XmlElementData> nameMapping,
             Set<String> unmappedNames,
             Map<String, String> addMethodToVariableName,
             Map<String, String> removeMethodToVariableName,
@@ -78,13 +78,13 @@ public class NameInformation {
         this.valueData = valueData;
     }
     
-    String getNamespaceMap(String mapMe) {
+    public String getNamespaceMap(String mapMe) {
         if (mapMe == null) return null;
         if (!nameMapping.containsKey(mapMe)) return mapMe;
         return nameMapping.get(mapMe).getNamespace();
     }
     
-    String getNameMap(String mapMe) {
+    public String getNameMap(String mapMe) {
         if (mapMe == null) return null;
         if (!nameMapping.containsKey(mapMe)) return mapMe;
         return nameMapping.get(mapMe).getName();
@@ -94,48 +94,58 @@ public class NameInformation {
         return aliases.get(variableName);
     }
     
-    String getDefaultNameMap(String mapMe) {
+    public String getDefaultNameMap(String mapMe) {
         if (mapMe == null) return Generator.JAXB_DEFAULT_DEFAULT;
         if (!nameMapping.containsKey(mapMe)) return Generator.JAXB_DEFAULT_DEFAULT;
         return nameMapping.get(mapMe).getDefaultValue();
     }
     
-    String getXmlWrapperTag(String mapMe) {
+    public String getXmlWrapperTag(String mapMe) {
         if (mapMe == null) return null;
         if (!nameMapping.containsKey(mapMe)) return null;
         return nameMapping.get(mapMe).getXmlWrapperTag();
     }
     
-    boolean hasNoXmlElement(String variableName) {
+    public boolean hasNoXmlElement(String variableName) {
         if (variableName == null) return true;
         return noXmlElement.contains(variableName);
     }
     
-    boolean isReference(String variableName) {
+    public boolean isReference(String variableName) {
         if (variableName == null) return false;
         return referenceSet.contains(variableName);
     }
     
-    Format getFormat(String variableName) {
+    public Format getFormat(String variableName) {
         if (variableName == null) return Format.ATTRIBUTE;
         if ((valueData != null) && valueData.getName().equals(variableName)) return Format.VALUE;
         if (!nameMapping.containsKey(variableName)) return Format.ATTRIBUTE;
         return nameMapping.get(variableName).getFormat();
     }
     
-    String getAddVariableName(String methodName) {
+    public String getAddVariableName(String methodName) {
         return addMethodToVariableName.get(methodName);
     }
     
-    String getRemoveVariableName(String methodName) {
+    public String getRemoveVariableName(String methodName) {
         return removeMethodToVariableName.get(methodName);
     }
     
-    String getLookupVariableName(String methodName) {
+    public String getLookupVariableName(String methodName) {
         return lookupMethodToVariableName.get(methodName);
     }
     
-    public XmlElementData getValueData() {
-        return valueData;
+    @Override
+    public String toString() {
+        return "NameInformation(nameMapping=" + nameMapping +
+                ",noXmlElement=" + noXmlElement +
+                ",addMethodToVariableName=" + addMethodToVariableName +
+                ",removeMethodToVariableName=" + removeMethodToVariableName +
+                ",lookupMethodToVariableName=" + lookupMethodToVariableName +
+                ",referenceSet=" + referenceSet +
+                ",aliases=" + aliases +
+                ",valueData=" + valueData +
+                "," + System.identityHashCode(this) + ")";
+        
     }
 }

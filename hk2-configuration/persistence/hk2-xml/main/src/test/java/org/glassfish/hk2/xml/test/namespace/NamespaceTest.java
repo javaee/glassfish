@@ -74,7 +74,7 @@ public class NamespaceTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testExtraAttributesJAXB() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         URL url = getClass().getClassLoader().getResource(NamespaceCommon.XTRA_ATTRIBUTES_FILE);

@@ -100,6 +100,7 @@ public class NamespaceCommon {
         Assert.assertEquals(FOO, fooBean.getAttA());
         
         Map<QName, String> others = fooBean.getOtherAttributes();
+        Assert.assertNotNull(others);
         Assert.assertEquals(5, others.size());
         
         boolean foundBaz = false;
