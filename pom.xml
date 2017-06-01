@@ -480,7 +480,9 @@
                         <scm>git</scm>
                         <scmOnly>true</scmOnly>
                         <exclude>
+                          <exclude>LICENSE.md</exclude>
                           <exclude>MANIFEST.MF</exclude>
+                          <exclude>README</exclude>
                           <exclude>hk2-locator/</exclude>
                           <exclude>META-INF/services/</exclude>
                           <exclude>META-INF/inhabitants/</exclude>
@@ -488,6 +490,7 @@
                           <exclude>.png</exclude>
                           <exclude>.class</exclude>
                           <exclude>.json</exclude>
+                          <exclude>.txt</exclude>
                         </exclude>
                     </configuration>
                 </plugin>
