@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
 
@@ -75,6 +77,7 @@ import org.glassfish.hk2.xml.spi.Model;
  */
 public class XmlStreamImpl {
     private final static boolean DEBUG_PARSING = XmlServiceImpl.DEBUG_PARSING;
+    private final static QName ANY_ATTRIBUTE_QNAME = QNameUtilities.createQName(XmlService.DEFAULT_NAMESPACE, GeneratorUtilities.XML_ANY_ATTRIBUTE_LOCAL_PART);
     
     @SuppressWarnings("unchecked")
     public static <T> T parseRoot(XmlServiceImpl xmlService,
@@ -179,6 +182,7 @@ public class XmlStreamImpl {
         Map<QName, ParentedModel> childProperties = targetModel.getChildrenByName();
         Set<String> allWrappers = targetModel.getAllXmlWrappers();
         
+        Map<QName, String> xmlAnyAttributeData = new LinkedHashMap<QName, String>();
         int numAttributes = reader.getAttributeCount();
         for (int lcv = 0; lcv < numAttributes; lcv++) {
             String attributeNamespace = QNameUtilities.fixNamespace(reader.getAttributeNamespace(lcv));
@@ -192,7 +196,11 @@ public class XmlStreamImpl {
             }
             
             ChildDataModel childDataModel = nonChildProperties.get(attributeQName);
-            if (childDataModel == null) continue;
+            if (childDataModel == null) {
+                xmlAnyAttributeData.put(attributeQName, attributeValue);
+                
+                continue;
+            }
             if (!Format.ATTRIBUTE.equals(childDataModel.getFormat())) continue;
             
             Class<?> childType = targetModel.getNonChildType(attributeNamespace, attributeName);
@@ -217,6 +225,12 @@ public class XmlStreamImpl {
                 }
             }
         }
+        
+        ChildDataModel childDataModel = nonChildProperties.get(ANY_ATTRIBUTE_QNAME);
+        if (childDataModel != null) {
+            target._setProperty(ANY_ATTRIBUTE_QNAME, xmlAnyAttributeData);
+        }
+        
         
         while(reader.hasNext()) {
             int event = reader.next();

@@ -59,7 +59,7 @@ public class NamespaceTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testExtraAttributesNative() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         URL url = getClass().getClassLoader().getResource(NamespaceCommon.XTRA_ATTRIBUTES_FILE);

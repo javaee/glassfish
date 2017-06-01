@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -68,6 +69,7 @@ import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
  */
 public class GeneratorUtilities {
     private final static String XML_VALUE_LOCAL_PART = "##XmlValue";
+    public final static String XML_ANY_ATTRIBUTE_LOCAL_PART = "##XmlAnyAttribute";
     
     public static QName convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
         String namespace = root.getStringValue("namespace");
@@ -123,6 +125,13 @@ public class GeneratorUtilities {
         return (customAnnotation != null);
     }
     
+    private static void checkOnlyOne(AltClass convertMe, AltMethod method, AltAnnotation aAnnotation, AltAnnotation bAnnotation) {
+        if (aAnnotation != null && bAnnotation != null) {
+            throw new IllegalArgumentException("The method " + method + " of " + convertMe + " has both the annotation " + aAnnotation + " and the annotation " +
+              bAnnotation + " which is illegal");
+        }
+    }
+    
     public static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new LinkedHashMap<String, XmlElementData>();
         Set<String> unmappedNames = new LinkedHashSet<String>();
@@ -132,6 +141,7 @@ public class GeneratorUtilities {
         Set<String> referenceSet = new LinkedHashSet<String>();
         Map<String, List<XmlElementData>> aliasMap = new LinkedHashMap<String, List<XmlElementData>>();
         XmlElementData valueData = null;
+        XmlElementData xmlAnyAttributeData = null;
         
         boolean hasAnElement = false;
         for (AltMethod originalMethod : convertMe.getMethods()) {
@@ -151,27 +161,23 @@ public class GeneratorUtilities {
             AltAnnotation xmlElementWrapper = originalMethod.getAnnotation(XmlElementWrapper.class.getName());
             AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
             AltAnnotation xmlValue = originalMethod.getAnnotation(XmlValue.class.getName());
+            AltAnnotation xmlAnyAttribute = originalMethod.getAnnotation(XmlAnyAttribute.class.getName());
             
             String xmlElementWrapperName = (xmlElementWrapper == null) ? null : xmlElementWrapper.getStringValue("name");
             if (xmlElementWrapperName != null && xmlElementWrapperName.isEmpty()) {
                 xmlElementWrapperName = setterVariable;
             }
             
-            if (xmlElement != null && xmlElements != null) {
-                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlElements, which is illegal");
-            }
-            
-            if ((xmlElement != null || xmlElements != null) && xmlAttribute != null) {
-                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlAttribute, which is illegal");
-            }
-            
-            if ((xmlElement != null || xmlElements != null) && xmlValue != null) {
-                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlValue, which is illegal");
-            }
-            
-            if (xmlAttribute != null && xmlValue != null) {
-                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlAttribute and @XmlValue, which is illegal");
-            }
+            checkOnlyOne(convertMe, originalMethod, xmlElement, xmlElements);
+            checkOnlyOne(convertMe, originalMethod, xmlElement, xmlAttribute);
+            checkOnlyOne(convertMe, originalMethod, xmlElements, xmlAttribute);
+            checkOnlyOne(convertMe, originalMethod, xmlElement, xmlValue);
+            checkOnlyOne(convertMe, originalMethod, xmlElements, xmlValue);
+            checkOnlyOne(convertMe, originalMethod, xmlAttribute, xmlValue);
+            checkOnlyOne(convertMe, originalMethod, xmlElement, xmlAnyAttribute);
+            checkOnlyOne(convertMe, originalMethod, xmlElements, xmlAnyAttribute);
+            checkOnlyOne(convertMe, originalMethod, xmlAttribute, xmlAnyAttribute);
+            checkOnlyOne(convertMe, originalMethod, xmlValue, xmlAnyAttribute);
             
             if (xmlElements != null) {
                 hasAnElement = true;
@@ -290,6 +296,22 @@ public class GeneratorUtilities {
                         false,
                         xmlElementWrapperName);
                 xmlNameMap.put(setterVariable, valueData);
+            }
+            else if (xmlAnyAttribute != null) {
+                if (xmlAnyAttributeData != null) {
+                    throw new IllegalArgumentException("There may be only one XmlAnyAttribute method on " + convertMe);
+                }
+                
+                xmlAnyAttributeData = new XmlElementData(
+                        XmlService.DEFAULT_NAMESPACE,
+                        XML_ANY_ATTRIBUTE_LOCAL_PART,
+                        XML_ANY_ATTRIBUTE_LOCAL_PART,
+                        null,
+                        Format.ATTRIBUTE,
+                        null,
+                        false,
+                        xmlElementWrapperName);
+                xmlNameMap.put(setterVariable, xmlAnyAttributeData);       
             }
             else {
                 unmappedNames.add(setterVariable);
