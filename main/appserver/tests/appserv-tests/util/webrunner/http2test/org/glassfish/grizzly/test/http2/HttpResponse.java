@@ -63,8 +63,9 @@ public class HttpResponse {
     private boolean push = false;
     private HttpPushPromise pushPromise;
     private Map<String, List<String>> headerMap = new HashMap<>();
+    private Map<String, String> trailerMap = null;
 
-    HttpResponse(HttpContent httpContent) {
+    HttpResponse(HttpContent httpContent, Map<String, String> trailerMap) {
         this.httpContent = httpContent;
         this.response = (HttpResponsePacket)httpContent.getHttpHeader();
         this.push = Http2Stream.getStreamFor(response).isPushStream();
@@ -78,6 +79,7 @@ public class HttpResponse {
             headerMap.put(name, list);
         }
         headerMap = Collections.unmodifiableMap(headerMap);
+        this.trailerMap = Collections.unmodifiableMap(trailerMap);
         if (this.push) {
             pushPromise = new HttpPushPromise(httpContent);
         }
@@ -97,6 +99,10 @@ public class HttpResponse {
 
     public Map<String, List<String>> getHeaders() {
         return headerMap;
+    }
+
+    public Map<String, String> getTrailerFields() {
+        return trailerMap;
     }
 
     public String getBody() {
