@@ -69,7 +69,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for http2 push static file");
+        stat.addDescription("Unit test for http2 push arbitrary method");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);

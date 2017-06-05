@@ -65,6 +65,9 @@ public class TestServlet extends HttpServlet {
             method("FOO").
             path("foo/my.css");
         pushBuilder.push();
+        // Note that pushing this body is just a formality
+        // because the test client is not a browser, and thus will
+        // not make the followup get request of foo/my.css.
         res.getWriter().println("<html><head><title>HTTP2 Test</title><link rel=\"stylesheet\" href=\"/foo/my.css\"></head><body>Hello</body></html>");
         res.setStatus(HttpServletResponse.SC_OK);
         return;
