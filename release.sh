@@ -126,7 +126,7 @@ mvn -B -e release:perform -Dgoals="'deploy' 'site-deploy' $ARGS" $ARGS -Prelease
 
 # upload the site to gh-pages
 # requires ssh push access
-cd target/
+cd javadocs/target/
 git init
 git remote add origin git@github.com:hk2-project/hk2.git
 git fetch --depth=1 origin gh-pages
