@@ -1205,4 +1205,26 @@ appserver/tests/appserv-tests/devtests/security/ldap/simpleweb/descriptor/web.xm
 appserver/tests/appserv-tests/devtests/security/jdbcrealm/web.xml.template
 appserver/tests/appserv-tests/devtests/web/servlet-3.0/asyncTimeoutNoListener/docroot/error.jsp
 appserver/tests/appserv-tests/devtests/web/jstlHtmlParamOutsideFmtMessage/docroot/jsp/test.jspx
+appserver/tests/appserv-tests/devtests/security/jmac/httpServletChallenge/goldenfiles/output.html
+appserver/tests/appserv-tests/devtests/security/jmac/httpServlet/goldenfiles/output.html
+appserver/tests/appserv-tests/devtests/security/jmac/soapEmbedded/goldenfiles/output.html
+appserver/tests/appserv-tests/devtests/security/jmac/httpServletForm/docroot/error.html
+appserver/tests/appserv-tests/devtests/security/jmac/httpServletForm/goldenfiles/output.html
+appserver/tests/appserv-tests/devtests/security/simpleMultiRoleMapping/goldenfiles/ejb.html
+appserver/tests/appserv-tests/devtests/security/simpleMultiRoleMapping/goldenfiles/web.html
+appserver/tests/appserv-tests/devtests/security/jsp2sful/docroot/error.html
+appserver/tests/appserv-tests/devtests/security/jsp2sful/goldenfiles/WebOnlyAuth.html
+appserver/tests/appserv-tests/devtests/security/jsp2sful/goldenfiles/AllAuth.html
+appserver/tests/appserv-tests/devtests/security/jsp2sful/goldenfiles/PartialEJBAuth.html
+appserver/tests/appserv-tests/devtests/security/multiRoleMapping/goldenfiles/role2.html
+appserver/tests/appserv-tests/devtests/security/multiRoleMapping/goldenfiles/role1.html
+appserver/tests/appserv-tests/devtests/security/multiRoleMapping/goldenfiles/role4.html
+appserver/tests/appserv-tests/devtests/security/multiRoleMapping/goldenfiles/role3.html
+appserver/tests/appserv-tests/devtests/security/multiRoleMapping/goldenfiles/role7.html
+appserver/tests/appserv-tests/devtests/security/defaultp2r/goldenfiles/foo.html
+appserver/tests/appserv-tests/devtests/security/defaultp2r/goldenfiles/get.html
+appserver/tests/appserv-tests/devtests/security/httpMethod/goldenfiles/foo.html
+appserver/tests/appserv-tests/devtests/security/httpMethod/goldenfiles/get.html
+appserver/tests/appserv-tests/devtests/security/cert-realm-custom-loginmodule/docroot/error.html
+appserver/tests/appserv-tests/devtests/security/jmac/httpServlet/docroot/index.jsp
 
