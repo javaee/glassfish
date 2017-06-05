@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
 import org.glassfish.grizzly.test.http2.*;
 
 /*
- * Unit test for Http2 Push static file
+ * Unit test for Http2 Push with dynamic file
  */
 public class WebTest {
 

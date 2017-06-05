@@ -63,7 +63,6 @@ public class FooMethodServlet extends HttpServlet {
             String pathInfo = req.getPathInfo();
             String method = req.getMethod();
             if ("FOO".equals(method)) {
-                    System.out.println("debug: edburns: sending OK: pathInfo:" + pathInfo);
                     if ("/my.css".equals(pathInfo)) {
                             res.getWriter().println("foo: bar");
                             res.setStatus(HttpServletResponse.SC_OK);
