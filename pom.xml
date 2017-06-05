@@ -64,7 +64,7 @@
         <url>http://www.oracle.com</url>
     </organization>
 
-    <url>https://hk2.java.net</url>
+    <url>https://github.com/hk2-project/hk2</url>
 
     <licenses>
         <license>
@@ -127,6 +127,15 @@
         <url>https://hk2-project.github.io</url>
         <tag>HEAD</tag>
     </scm>
+
+    <mailingLists>
+        <mailingList>
+            <name>hk2</name>
+            <subscribe>hk2+subscribe@javaee.groups.io</subscribe>
+            <post>hk2@javaee.groups.io</post>
+            <archive>https://javaee.groups.io/g/hk2/messages</archive>
+        </mailingList>
+    </mailingLists>
 
     <repositories>
         <repository>
@@ -216,6 +225,7 @@
         <module>hk2-api</module>
         <module>hk2-configuration</module>
         <module>hk2-extras</module>
+        <module>javadocs</module>
     </modules>
 
     <build>

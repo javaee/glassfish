@@ -117,9 +117,27 @@ if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
    set -e
 fi
 
-ARGS=" $*"
+ARGS="${*}"
 # everything supplied as argument will be provided to every maven command.
 # e.g to supply -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
 
 mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
 mvn -B -e release:perform -Dgoals="'deploy' 'site-deploy' $ARGS" $ARGS -Prelease
+
+# upload the site to gh-pages
+# requires ssh push access
+cd target/
+git init
+git remote add origin git@github.com:hk2-project/hk2.git
+git fetch --depth=1 origin gh-pages
+git checkout gh-pages
+git add apidocs/
+git commit apidocs
+git diff .gitignore
+git commit apidocs
+git status
+git diff .gitignore
+git add apidocs/
+git commit -a -m "update javadocs in gh-pages"
+git merge --no-edit -s ours remotes/origin/gh-pages
+git push origin gh-pages
