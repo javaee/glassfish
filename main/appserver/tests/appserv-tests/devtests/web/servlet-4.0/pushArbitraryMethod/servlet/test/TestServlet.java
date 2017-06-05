@@ -66,5 +66,8 @@ public class TestServlet extends HttpServlet {
             path("foo/my.css");
         pushBuilder.push();
         res.getWriter().println("<html><head><title>HTTP2 Test</title><link rel=\"stylesheet\" href=\"/foo/my.css\"></head><body>Hello</body></html>");
+        res.setStatus(HttpServletResponse.SC_OK);
+        return;
+        
     }
 }

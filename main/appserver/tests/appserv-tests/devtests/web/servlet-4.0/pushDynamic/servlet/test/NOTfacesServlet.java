@@ -74,10 +74,12 @@ public class NOTfacesServlet extends HttpServlet {
                             if (!"resources".equals(result)) {
                                     req.getServletContext().log("Parameter value incorrect.  Should be resources.  Is: " + result);
                                     res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                    return;
                             }
                     } else {
                             req.getServletContext().log("Should have ln parameter.  Does not.");
                             res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            return;
                             
                     }
             }
