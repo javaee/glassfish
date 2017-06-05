@@ -52,7 +52,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-parent</artifactId>
-    <version>2.5.0-b39-SNAPSHOT</version>
+    <version>2.5.0-b39</version>
     <packaging>pom</packaging>
 
     <name>HK2</name>
@@ -125,7 +125,7 @@
         <connection>scm:git:https://github.com/hk2-project/hk2.git</connection>
         <developerConnection>scm:git:git@github.com:hk2-project/hk2.git</developerConnection>
         <url>https://hk2-project.github.io</url>
-        <tag>HEAD</tag>
+        <tag>2.5.0-b39</tag>
     </scm>
 
     <mailingLists>
