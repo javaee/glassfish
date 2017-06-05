@@ -124,19 +124,13 @@ ARGS="${*}"
 mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
 mvn -B -e release:perform -Dgoals="'deploy' 'site-deploy' $ARGS" $ARGS -Prelease
 
-# upload the site to gh-pages
+# upload the javadocs to gh-pages branch
 # requires ssh push access
 cd javadocs/target/
 git init
 git remote add origin git@github.com:hk2-project/hk2.git
 git fetch --depth=1 origin gh-pages
 git checkout gh-pages
-git add apidocs/
-git commit apidocs
-git diff .gitignore
-git commit apidocs
-git status
-git diff .gitignore
 git add apidocs/
 git commit -a -m "update javadocs in gh-pages"
 git merge --no-edit -s ours remotes/origin/gh-pages
