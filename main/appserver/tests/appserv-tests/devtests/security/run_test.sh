@@ -44,7 +44,8 @@ test_run(){
 	mkdir opends-image
 	pushd opends-image
 
-	wget --no-check-certificate http://java.net/downloads/opends/promoted-builds/2.2.1/OpenDS-2.2.1.zip
+	#wget --no-check-certificate http://java.net/downloads/opends/promoted-builds/2.2.1/OpenDS-2.2.1.zip
+	scp gf-hudson.us.oracle.com:/net/gf-hudson/gf-hudson-tools/OpenDS-2.2.1.zip .	
 	unzip -q OpenDS-2.2.1.zip
 
 	export OPENDS_HOME=$PWD/OpenDS-2.2.1
@@ -52,11 +53,16 @@ test_run(){
 
 	# Workaround for JDK7 and OpenDS
 	cp $APS_HOME/devtests/security/ldap/opends/X500Signer.jar $OPENDS_HOME/lib
-
+	
+	export OLD_PATH=$PATH	
+	export JDK7_HOME=/gf-hudson-tools/jdk/7/latest/bin
+	export PATH=$JDK7_HOME:$PATH
+	
 	# Configure and start OpenDS using the default ports
 	$OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanager -b "dc=sfbay,dc=sun,dc=com" -Z 1636 --useJavaKeystore $S1AS_HOME/domains/domain1/config/keystore.jks -W changeit -N s1as
 
-
+	export PATH=$OLD_PATH	
+	
 	$S1AS_HOME/bin/asadmin start-database
 	$S1AS_HOME/bin/asadmin start-domain
 	pushd $APS_HOME/devtests/security
