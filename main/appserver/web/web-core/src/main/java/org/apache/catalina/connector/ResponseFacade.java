@@ -694,6 +694,14 @@ public class ResponseFacade
     }
 
     @Override
+    public Supplier<Map<String, String>> getTrailerFields() {
+        if (response == null) {
+            throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));
+        }
+        return response.getTrailerFields();
+    }
+
+    @Override
     public void setTrailerFields(Supplier<Map<String, String>> supplier) {
         if (response == null) {
             throw new IllegalStateException(rb.getString(LogFacade.NULL_RESPONSE_OBJECT));

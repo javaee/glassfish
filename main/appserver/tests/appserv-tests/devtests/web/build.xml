@@ -353,6 +353,8 @@
         <ant dir="servlet-4.0/pushCacheable" target="all"/>
         <ant dir="servlet-4.0/pushAuthorization" target="all"/>
         <ant dir="servlet-4.0/pushQueryString" target="all"/>
+        <ant dir="servlet-4.0/trailer" target="all"/>
+        <ant dir="servlet-4.0/compositeTrailerSupplier" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
