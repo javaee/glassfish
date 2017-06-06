@@ -152,7 +152,7 @@ public class BaseSeleniumTestClass {
     public void reset() {
         selenium = helper.getSeleniumInstance();
         currentTestClass = this.getClass().getName();
-        openAndWait("/", TRIGGER_COMMON_TASKS);
+        openAndWait(helper.getBaseUrl(), TRIGGER_COMMON_TASKS);
     }
 
     @After
@@ -399,9 +399,20 @@ public class BaseSeleniumTestClass {
     }
 
     public void openAndWait(String url, String triggerText, int timeout) {
-        open(url);
+        open(url);        
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
         waitForPageLoad(triggerText, timeout);
+    }
+    
+    public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
+        open(url);        
+        String isDocker = System.getProperty("docker");
+        if (Boolean.parseBoolean(isDocker)) {
+           waitForLoginPageLoad(timeout);
+           handleLogin("admin", "admin", triggerText);
+        } else {
+          waitForPageLoad(triggerText, timeout);
+       }
     }
 
     /**
@@ -419,6 +430,15 @@ public class BaseSeleniumTestClass {
         insureElementIsVisible(id);
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
+    }
+    
+    protected void clickAndWait(String id, String triggerText, boolean switchFromFrame) {
+        log ("Clicking on {0} \"{1}\"", id, triggerText);
+        waitForElement(id);
+        insureElementIsVisible(id);
+        pressButton(id);
+        if(switchFromFrame){ driver.switchTo().defaultContent();}
+        waitForPageLoad(triggerText, TIMEOUT);
     }
 
     protected void clickAndWait(String id, WaitForLoadCallBack callback) {
@@ -983,7 +1003,7 @@ public class BaseSeleniumTestClass {
         }
     }
 
-    private void waitForElement(String elem) {
+    protected void waitForElement(String elem) {
         // times out after 5 seconds
         WebDriverWait wait = new WebDriverWait(driver, 5);
 

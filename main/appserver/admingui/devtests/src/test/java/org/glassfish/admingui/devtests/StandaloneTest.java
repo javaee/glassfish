@@ -129,7 +129,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
-        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", "System Properties");
+        clickAndWaitForElement("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", "propertyForm:sysPropsTable");
         sleep(1000); // grr
         assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
         clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps", "Additional Properties (1)"); // FIXME
