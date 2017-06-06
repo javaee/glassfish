@@ -1043,6 +1043,7 @@ appserver/tests/appserv-tests/devtests/web/servlet-3.1/servletContextGetVirtualS
 appserver/tests/appserv-tests/devtests/web/servlet-3.1/upgradeEcho/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-3.1/upgradeWithCDI/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/addJspFile/build.properties
+appserver/tests/appserv-tests/devtests/web/servlet-4.0/compositeTrailerSupplier/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/contextCharEncoding/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/defaultContextPath/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/mappingDiscovery/build.properties
@@ -1052,6 +1053,7 @@ appserver/tests/appserv-tests/devtests/web/servlet-4.0/pushQueryString/build.pro
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/pushStatic/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/reqResEncoding/build.properties
 appserver/tests/appserv-tests/devtests/web/servlet-4.0/setSessionTimeout/build.properties
+appserver/tests/appserv-tests/devtests/web/servlet-4.0/trailer/build.properties
 appserver/tests/appserv-tests/devtests/web/servletAnnotationPreDestroy/build.properties
 appserver/tests/appserv-tests/devtests/web/servletChainedException/build.properties
 appserver/tests/appserv-tests/devtests/web/servletContextAttributeEventAttributeRemoved/build.properties
