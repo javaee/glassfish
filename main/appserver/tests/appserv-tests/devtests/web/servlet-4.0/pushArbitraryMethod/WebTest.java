@@ -53,7 +53,7 @@ public class WebTest {
 
     private static String TEST_NAME = "servlet-4.0-push-arbitrary-method";
     private static String EXPECTED_PUSH_BODY = "foo: bar";
-    private static String EXPECTED_BODY = "my.css";
+    private static String EXPECTED_BODY = "<body>Hello</body>";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -76,13 +76,17 @@ public class WebTest {
     }
 
     public void doTest() {
+            System.out.println("host: " + host + " port: " + port + " contextRoot: " + contextRoot);
         try (HttpClient httpClient = HttpClient.builder().
                 host(host).port(port).build()) {
             httpClient.request().path(contextRoot + "/test").build().send();
             HttpResponse httpResponse = httpClient.getHttpResponse();
             HttpResponse httpResponse2 = httpClient.getHttpResponse();
-            if (!verify(httpResponse) || !verify(httpResponse2)) {
-                throw new Exception("Incorrect result");
+            if (!verify(httpResponse)) {
+                throw new Exception("Incorrect result for httpResponse");
+            }
+            if (!verify(httpResponse2)) {
+                throw new Exception("Incorrect result for httpResponse2");
             }
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch(Throwable t) {
@@ -98,8 +102,14 @@ public class WebTest {
         }
 
         String body = response.getBody().trim();
-        System.out.println("--> body: " + body);
+        System.out.println("--> body: " + body + " isPush: " + response.isPush());
 
-        return (response.isPush() ? body.contains(EXPECTED_PUSH_BODY) : body.contains(EXPECTED_BODY));
+        if (response.isPush()) {
+                HttpPushPromise pushPromise = response.getHttpPushPromise();
+                return body.contains(EXPECTED_PUSH_BODY) &&
+                        "FOO".equals(pushPromise.getMethod());
+        }
+
+        return body.contains(EXPECTED_BODY);
     }
 }

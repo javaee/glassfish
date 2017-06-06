@@ -61,14 +61,33 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+            /*
+             * To test this in an HTTP/2 capable browser, visit
+             * https://localhost:8181/web-servlet-4.0-push-arbitrary-method/test
+             * and note that a push promise frame similar to the following
+             * has been pushed by the server.
+
+             * HTTP2_SESSION_RECV_PUSH_PROMISE
+             * :method: FOO
+             * :scheme: https
+             * :authority: localhost:8181
+             * :path: /web-servlet-4.0-push-arbitrary-method/foo/my.css
+             * host: localhost:8181
+             * cache-control: max-age=0
+             * upgrade-insecure-requests: 1
+             * user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36
+             * accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,;q=0.8
+             * accept-encoding: gzip, deflate, sdch, br
+             * accept-language: en-US,en;q=0.8
+             * cookie: [375 bytes were stripped]
+             * referer: https://localhost:8181/web-servlet-4.0-push-arbitrary-method/test
+             */
+            
         PushBuilder pushBuilder = req.newPushBuilder().
             method("FOO").
             path("foo/my.css");
         pushBuilder.push();
-        // Note that pushing this body is just a formality
-        // because the test client is not a browser, and thus will
-        // not make the followup get request of foo/my.css.
-        res.getWriter().println("<html><head><title>HTTP2 Test</title><link rel=\"stylesheet\" href=\"/foo/my.css\"></head><body>Hello</body></html>");
+        res.getWriter().println("<html><head><title>HTTP2 Test</title></head><body>Hello</body></html>");
         res.setStatus(HttpServletResponse.SC_OK);
         return;
     }
