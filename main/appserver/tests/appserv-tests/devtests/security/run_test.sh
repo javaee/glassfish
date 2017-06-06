@@ -43,9 +43,8 @@ test_run(){
 	rm -rf opends-image
 	mkdir opends-image
 	pushd opends-image
-
-	wget --no-check-certificate http://java.net/downloads/opends/promoted-builds/2.2.1/OpenDS-2.2.1.zip
-	unzip -q OpenDS-2.2.1.zip
+	
+	unzip -q /net/gf-hudson/scratch/java_re_node/OpenDS-2.2.1.zip
 
 	export OPENDS_HOME=$PWD/OpenDS-2.2.1
 	popd
