@@ -124,8 +124,8 @@
         <jsonp-api.version>1.1</jsonp-api.version>
         <jsonp-ri.version>1.1</jsonp-ri.version>
         <jsonp-jaxrs.version>1.1</jsonp-jaxrs.version>
-        <json.bind-api.version>1.0.0-M2</json.bind-api.version>
-        <yasson.version>1.0.0-M2</yasson.version>
+        <json.bind-api.version>1.0.0-RC2</json.bind-api.version>
+        <yasson.version>1.0.0-RC1</yasson.version>
         <concurrent-api.version>1.0</concurrent-api.version>
         <concurrent.version>1.0</concurrent.version>
         <javax.batch-api.version>1.0</javax.batch-api.version>
@@ -225,9 +225,9 @@
                                 <artifactId>yasson</artifactId>
                                 <version>${yasson.version}</version>
                             </artifact>
-                            <nonFinal>false</nonFinal>
+                            <nonFinal>true</nonFinal>
                             <jarType>impl</jarType>
-                            <specVersion>1.0</specVersion>
+                            <specVersion>0.9</specVersion>
                             <implVersion>${yasson.version}</implVersion>
                             <apiPackage>javax.json.bind</apiPackage>
                             <implNamespace>org.eclipse</implNamespace>
