@@ -82,7 +82,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.RemoteAdminAccessException;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.jersey.internal.inject.ReferencingFactory;
+import org.glassfish.jersey.inject.hk2.Hk2ReferencingFactory;
 import org.glassfish.jersey.internal.util.collection.Ref;
 import org.glassfish.jersey.internal.util.collection.Refs;
 import org.glassfish.jersey.process.internal.RequestScoped;
@@ -279,7 +279,7 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
             protected void configure() {
                 bindFactory(SubjectReferenceFactory.class).to(new TypeLiteral<Ref<Subject>>() {
                 }).in(PerLookup.class);
-                bindFactory(ReferencingFactory.<Subject>referenceFactory()).to(new TypeLiteral<Ref<Subject>>() {
+                bindFactory(Hk2ReferencingFactory.<Subject>referenceFactory()).to(new TypeLiteral<Ref<Subject>>() {
                 }).in(RequestScoped.class);
             }
         });

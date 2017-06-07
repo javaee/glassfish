@@ -385,6 +385,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     }
     
     public boolean isSecureAdminEnabled() {
+        reset();
        clickAndWaitForElement("treeForm:tree:applicationServer:applicationServer_link", "propertyForm:propertyContentPage:secureAdmin");
         clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
         sleep(10000);
