@@ -109,5 +109,3 @@ case $OPT in
   run_test_id )
     run_test_id $TEST_ID ;;
 esac
-
-
