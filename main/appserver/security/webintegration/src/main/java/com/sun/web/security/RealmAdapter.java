@@ -87,7 +87,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.realm.Constants;
 import org.apache.catalina.realm.RealmBase;
-
+import org.apache.catalina.ContainerEvent;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
@@ -473,7 +473,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                     if (subject.isReadOnly()) {
                         _logger.log(Level.WARNING, "Read-only subject found during logout processing");
                     }
-                    sAC.cleanSubject(messageInfo, subject);
+                    try {
+                        req.getContext().fireContainerEvent(ContainerEvent.BEFORE_LOGOUT, null);
+                        sAC.cleanSubject(messageInfo, subject);
+                    }finally {
+                        req.getContext().fireContainerEvent(ContainerEvent.AFTER_LOGOUT, null);
+                    }
                 }
             } catch (AuthException ex) {
                 throw new RuntimeException(ex);
@@ -1518,7 +1523,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         
         if (serverAuthConfig != null) {
             //JSR 196 is enabled for this application
-            result = validate(request, response, config, authenticator, calledFromAuthenticate);
+            try{
+                context.fireContainerEvent(ContainerEvent.BEFORE_AUTHENTICATION, null);
+                result = validate(request, response, config, authenticator, calledFromAuthenticate);
+            }finally {
+                context.fireContainerEvent(ContainerEvent.AFTER_AUTHENTICATION, null);
+            }
         } else {
             //jsr196 is not enabled.  Use the current authenticator.
             result = ((AuthenticatorBase) authenticator).authenticate(
@@ -1551,10 +1561,15 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                     //JSR 196 is enabled for this application
                     sAC = (ServerAuthContext) messageInfo.getMap().get(SERVER_AUTH_CONTEXT);
                     if (sAC != null) {
-                        AuthStatus authStatus =
-                                sAC.secureResponse(messageInfo,
-                                null); //null serviceSubject
-                        result = AuthStatus.SUCCESS.equals(authStatus);
+                        try {
+                            context.fireContainerEvent(ContainerEvent.BEFORE_POST_AUTHENTICATION, null);
+                            AuthStatus authStatus =
+                                    sAC.secureResponse(messageInfo,
+                                            null); //null serviceSubject
+                            result = AuthStatus.SUCCESS.equals(authStatus);
+                        }finally {
+                            context.fireContainerEvent(ContainerEvent.AFTER_POST_AUTHENTICATION, null);
+                        }
                     }
                 }
             }
