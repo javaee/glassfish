@@ -105,7 +105,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 import org.apache.catalina.connector.MappingImpl;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;
@@ -7399,7 +7399,7 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) mappingData.wrapper;
         String wrapperPath = mappingData.wrapperPath.toString();
         String pathInfo = mappingData.pathInfo.toString();
-        ServletMapping mappingForDispatch = new MappingImpl(mappingData);
+        HttpServletMapping mappingForDispatch = new MappingImpl(mappingData);
 
         mappingData.recycle();
 

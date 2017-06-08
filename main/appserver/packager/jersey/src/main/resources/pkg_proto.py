@@ -3,19 +3,19 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2008-2014 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -46,7 +46,7 @@ conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
     "name"          : "jersey",
-    "version"       : "2.10.4,0-0",
+    "version"       : "2.26.0,0-1",
     "attributes"    : { "pkg.summary" : "Jersey 2 Core, RESTful Web services for GlassFish",
                         "pkg.description" : 
 "Jersey core runtime libraries including some 3rd party dependencies. \

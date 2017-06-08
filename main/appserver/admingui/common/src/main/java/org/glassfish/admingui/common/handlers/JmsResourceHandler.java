@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -89,6 +89,7 @@ public class JmsResourceHandler {
                 String encodedName = URLEncoder.encode((String) one.get("name"), "UTF-8");
                 String endpoint = prefix + encodedName;
                 Map attrs = (Map) RestUtil.getAttributesMap(endpoint);
+                String desc = null;
                 if (isConnectionFactory){
                     String poolName = URLEncoder.encode((String)attrs.get("poolName"), "UTF-8");
                     String e1 = (String) GuiUtil.getSessionValue("REST_URL") + "/resources/connector-connection-pool/" + poolName;
@@ -98,13 +99,14 @@ public class JmsResourceHandler {
                     one.put("logicalJndiName", (lname==null)? "" : lname);
                     one.put("encodedPoolName", poolName);
                     one.put("objectType", (String) attrs.get("objectType"));
+                    desc = (String)poolAttrs.get("description");
                 }else{
                     one.put("resType", (String) attrs.get("resType"));
+                    desc = (String)attrs.get("description");
                 }
                 one.put("selected", false);
                 one.put("enabled", (String) attrs.get("enabled"));
                 one.put("encodedName", encodedName);
-                String desc = (String)attrs.get("description");
                 one.put("description", (desc == null)? "" : desc);
             }
         }catch(Exception ex){

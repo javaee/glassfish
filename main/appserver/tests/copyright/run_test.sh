@@ -9,12 +9,12 @@
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -37,6 +37,7 @@
 # and therefore, elected the GPL Version 2 license, then the option applies
 # only if the new code is made subject to such option by the copyright
 # holder.
+#
 
 
 copyright_run(){
@@ -55,9 +56,8 @@ copyright_run(){
 	# TODO move the copyright module in main and main's default reactor in a profile, in order to not trigger the default reactor.
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO -Prelease-phase1 clean install
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO --quiet org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright -Pcopyright > $WORKSPACE/copyright-files-temp-open.txt
-
+	cat $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt | sed s@$PWD/@@g > copyright-files.txt
-        
 }
 
 generate_copyright_results(){
@@ -74,16 +74,17 @@ generate_copyright_results(){
 }
 
 run_test_id(){
-	source `dirname $0`/../common_test.sh
-	kill_process
+  source `dirname $0`/../common_test.sh
+  kill_process
   rm main.zip rm version-info.txt || true
-  download_test_resources main.zip version-info.txt
+  download_test_resources main.zip .git.zip version-info.txt
   rm -rf main || true
-  unzip_test_resources $WORKSPACE/bundles/main.zip
-	copyright_run
-	generate_copyright_results
+  rm -rf .git || true
+  unzip_test_resources $WORKSPACE/bundles/main.zip $WORKSPACE/bundles/.git.zip
+  copyright_run
+  generate_copyright_results
   upload_test_results
-	delete_bundle
+  delete_bundle
 }
 
 

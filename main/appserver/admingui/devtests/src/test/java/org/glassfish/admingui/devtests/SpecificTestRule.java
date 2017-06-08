@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,6 +70,15 @@ public class SpecificTestRule implements MethodRule {
                 boolean runMethod = false;
                 final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
                 String method = System.getProperty("method");
+                boolean skipTest = false;
+                if(BaseSeleniumTestClass.IS_SECURE_ADMIN_ENABLED) {
+                    String className = frameworkMethod.getMethod().getDeclaringClass().getName();
+                    if (className.contains(".SecurityTest") ||
+                       (className.contains(".AdminServiceTest") && 
+                        frameworkMethod.getName().equals("testSsl"))) {
+                        skipTest = true;
+                    }  
+                }
                 Set<String> methods = new HashSet<String>();
                 if (method != null) {
                     String[] parts = method.split(",");
@@ -77,9 +86,9 @@ public class SpecificTestRule implements MethodRule {
                 }
                 Ignore ignore = frameworkMethod.getAnnotation(Ignore.class);
 
-                if (methods.contains(frameworkMethod.getName())) {
+                if (methods.contains(frameworkMethod.getName()) && !skipTest) {
                     runMethod = true;
-                } else if ((method == null) && (ignore == null)) {
+                } else if ((method == null) && (ignore == null) && !skipTest) {
                     runMethod = true;
                 }
 

@@ -57,7 +57,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_CONFIGURATION = "i18nc.configurations.NewPageTitle";
     ArrayList<String> list = new ArrayList(); {list.add("server-config"); list.add("new-config");}
 
-    @Test
+    //@Test
     public void testAddingNetworkListener() {
         final String listenerName = "listener"+generateRandomString();
         createConfig("new-config");
@@ -121,7 +121,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         }
     }
 
-    @Test
+    //@Test
     public void testAddingProtocol() {
         final String protocol = "protocol"+generateRandomString();
         final String maxAge = Integer.toString(generateRandomNumber(60));
