@@ -97,6 +97,8 @@ import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import org.glassfish.web.deployment.descriptor.ServletFilterDescriptor;
 import org.glassfish.web.deployment.descriptor.ServletFilterMappingDescriptor;
 import org.jboss.weld.resources.spi.ResourceLoader;
+import org.jboss.weld.module.ejb.WeldEjbModule;
+import org.jboss.weld.module.WeldModule;
 
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer>
@@ -115,16 +117,16 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     // Note...this constant is also defined in org.apache.catalina.connector.AsyncContextImpl.  If it changes here it must
     // change there as well.  The reason it is duplicated is so that a dependency from web-core to gf-weld-connector
     // is not necessary.
-    private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
+    private static final String WELD_LISTENER = "org.jboss.weld.module.web.servlet.WeldListener";
 
-    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.servlet.WeldTerminalListener";
+    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.module.web.servlet.WeldTerminalListener";
 
     private static final String WELD_SHUTDOWN = "weld_shutdown";
 
     //This constant is used to indicate if bootstrap shutdown has been called or not.
     private static final String WELD_BOOTSTRAP_SHUTDOWN = "weld_bootstrap_shutdown";
 
-    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.servlet.ConversationFilter";
+    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.module.web.servlet.ConversationFilter";
     private static final String WELD_CONVERSATION_FILTER_NAME = "CDI Conversation Filter";
     @Inject
     private Events events;
@@ -484,7 +486,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
             BootstrapConfigurationImpl bootstrapConfiguration = new BootstrapConfigurationImpl();
             deploymentImpl.getServices().add(BootstrapConfiguration.class, bootstrapConfiguration);
-
+        
             addWeldListenerToAllWars(context);
         } else {
             deploymentImpl.scanArchive(archive, ejbs, context);
