@@ -8,12 +8,12 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -36,14 +36,7 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
-
 
 import java.io.IOException;
 import javax.servlet.AsyncContext;
@@ -52,7 +45,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 public class AAsyncDispatchToC extends HttpServlet {
 
@@ -69,15 +62,15 @@ public class AAsyncDispatchToC extends HttpServlet {
             throws ServletException, IOException {
         AsyncContext asyncContext = request.startAsync();
         
-        request.getServletContext().log(this.getClass().getSimpleName() + " getServletMapping: " 
-                + request.getServletMapping());
-        ServletMapping forwardMapping = (ServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
+        request.getServletContext().log(this.getClass().getSimpleName() + " getHttpServletMapping: " 
+                + request.getHttpServletMapping());
+        HttpServletMapping forwardMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.FORWARD_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " FORWARD_MAPPING attribute: " 
                 + forwardMapping);
-        ServletMapping includeMapping = (ServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
+        HttpServletMapping includeMapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " INCLUDE_MAPPING attribute: " 
                 + includeMapping);
-        ServletMapping asyncMapping = (ServletMapping) request.getAttribute(AsyncContext.ASYNC_MAPPING);
+        HttpServletMapping asyncMapping = (HttpServletMapping) request.getAttribute(AsyncContext.ASYNC_MAPPING);
         request.getServletContext().log(this.getClass().getSimpleName() + " ASYNC_MAPPING attribute: " 
                 + asyncMapping);
         asyncContext.dispatch("/ServletC");

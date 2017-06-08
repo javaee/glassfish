@@ -9,12 +9,12 @@
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -37,6 +37,8 @@
 # and therefore, elected the GPL Version 2 license, then the option applies
 # only if the new code is made subject to such option by the copyright
 # holder.
+#
+
 test_run_cts_smoke(){
 	TS_HOME=$WORKSPACE/javaee-smoke
 	CTS_SMOKE=http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/promoted/
@@ -150,6 +152,9 @@ test_run_servlet_tck(){
 	-e "s/tyrus-container-grizzly\.jar/tyrus-container-grizzly-client\.jar/g" \
 	-e "s/impl\.vi=/impl\.vi\=glassfish/g" \
 	> ts.jte
+
+	echo "# Disabling signature tests for CI build pipeline" >> ts.jtx
+	echo "com/sun/ts/tests/signaturetest/servlet/ServletSigTest.java#signatureTest" >> ts.jtx
 
 	cd $S1AS_HOME
 	bin/asadmin start-domain

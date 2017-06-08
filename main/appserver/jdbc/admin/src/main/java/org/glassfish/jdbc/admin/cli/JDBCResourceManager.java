@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -232,6 +232,15 @@ public class JDBCResourceManager implements ResourceManager {
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
+        JdbcResource jdbcResource = (JdbcResource) ConnectorsUtil.getResourceByName(resources, JdbcResource.class, jndiName);
+        // ensure we are not deleting resource of the type system-all-req
+        if(ResourceConstants.SYSTEM_ALL_REQ.equals(jdbcResource.getObjectType())){
+            String msg = localStrings.getLocalString("delete.jdbc.resource.system-all-req.object-type",
+                    "The jdbc resource [ {0} ] cannot be deleted as it is required to be configured in the system.",
+                    jndiName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
         if (environment.isDas()) {
 
             if ("domain".equals(target)) {
@@ -261,14 +270,6 @@ public class JDBCResourceManager implements ResourceManager {
         }
 
         try {
-
-            JdbcResource jdbcResource = (JdbcResource) ConnectorsUtil.getResourceByName(resources, JdbcResource.class, jndiName);
-            if(ResourceConstants.SYSTEM_ALL_REQ.equals(jdbcResource.getObjectType())){
-                String msg = localStrings.getLocalString("delete.jdbc.resource.system-all-req.object-type",
-                        "The jdbc resource [ {0} ] cannot be deleted as it is required to be configured in the system.",
-                        jndiName);
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
 
             // delete resource-ref
             resourceUtil.deleteResourceRef(jndiName, target);

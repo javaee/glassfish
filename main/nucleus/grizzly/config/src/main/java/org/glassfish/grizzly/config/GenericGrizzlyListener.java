@@ -8,12 +8,12 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.grizzly.config;
 
 import java.beans.PropertyChangeEvent;
@@ -144,8 +145,9 @@ public class GenericGrizzlyListener implements GrizzlyListener {
     protected volatile boolean isAjpEnabled;
     // spdy enabled flag
     protected volatile boolean isSpdyEnabled;
-    // spdy enabled flag
+    // HTTP2 enabled flag
     protected volatile boolean isHttp2Enabled;
+    protected volatile boolean skipHttp2;
     // websocket enabled flag
     protected volatile boolean isWebSocketEnabled;
     // comet enabled flag
@@ -448,6 +450,15 @@ public class GenericGrizzlyListener implements GrizzlyListener {
                         ProtocolFinder.class, finderClassname, finderClassname);
                     configureElement(habitat, networkListener, finderConfig, protocolFinder);
                     final Protocol subProtocol = finderConfig.findProtocol();
+                    if (subProtocol.getHttp() != null) {
+                        if (LOGGER.isLoggable(Level.WARNING)) {
+                            LOGGER.log(Level.WARNING,
+                                       "HTTP/2 (enabled by default) is unsupported with port " +
+                                           "unification and will be disabled for network listener {0}.",
+                                       networkListener.getName());
+                        }
+                        skipHttp2 = true;
+                    }
                     final FilterChainBuilder subProtocolFilterChainBuilder =
                         puFilter.getPUFilterChainBuilder();
                     // If subprotocol is secured - we need to wrap it under SSLProtocolFinder
@@ -733,7 +744,7 @@ public class GenericGrizzlyListener implements GrizzlyListener {
                                         final Http httpElement,
                                         final FilterChainBuilder builder,
                                         final boolean secure) {
-        if (httpElement != null && httpElement.isHttp2Enabled()) {
+        if (!skipHttp2 && httpElement != null && httpElement.isHttp2Enabled()) {
 
             Http2AddOn http2Addon = new Http2AddOn(Http2Configuration.builder()
                     .disableCipherCheck(httpElement.isHttp2DisableCipherCheck())

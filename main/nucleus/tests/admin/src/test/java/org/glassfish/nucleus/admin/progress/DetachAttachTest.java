@@ -70,7 +70,8 @@ public class DetachAttachTest {
         nadmin("stop-domain");
         JobManagerTest.deleteJobsFile();
         //osgi-cache workaround
-        touchDirectory(nucleusRoot);
+        File osgiCacheDir = new File(nucleusRoot, "domains"+File.separator+"domain1"+File.separator+"osgi-cache");
+        deleteDirectoryContents(osgiCacheDir);
         nadmin("start-domain");
     }
 
