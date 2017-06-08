@@ -46,7 +46,7 @@ test_run(){
   #test functions goes here, maven test or ant test etc.
   
   cd ~
-  mkdir .vnc
+  mkdir -p .vnc
   cd .vnc/
   openssl rand -base64 12 > temp
   vncpasswd -f < temp > passwd
