@@ -119,9 +119,9 @@
            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.external</groupId>
-            <artifactId>osgi-cdi-repackaged</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.fighterfish</groupId>
+            <artifactId>osgi-cdi</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.fighterfish</groupId>

@@ -858,6 +858,11 @@
                 <artifactId>osgi-http</artifactId>
                 <version>1.0.6</version>
             </dependency>
+	    <dependency>
+                <groupId>org.glassfish.fighterfish</groupId>
+                <artifactId>osgi-cdi</artifactId>
+                <version>1.0.4</version>
+            </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jta</artifactId>
