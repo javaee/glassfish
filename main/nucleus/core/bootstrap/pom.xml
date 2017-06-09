@@ -76,24 +76,7 @@
     </developers>    
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
-                <executions>
-                    <execution>
-                        <id>testResources</id>
-                        <!-- here the phase you need -->
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>testResources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${java.io.tmpdir}/MainHelperTest</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
+            <plugin>        
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>

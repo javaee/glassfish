@@ -53,16 +53,46 @@ import java.util.*;
 public class MainHelperTest {
 
     /* This test is used to test the regex pattern of "parseAsEnv" method of "MainHelper.java".
-       The sample "asenv.conf" and "asenv.bat" (used for testing) files are located in " main/nucleus/core/bootstrap/src/test/resources/config/"  folder.
-       File "pom.xml" copies the test resources to the temp directory "/tmp/MainHelperTest". The path of this temp directory is passed to the "parseAsEnv()" method of "MainHelper.java".
-       The method reads the "asenv.*" file line by line to generate the Properties "asenvProps" whose assertion has been done in this unit test.
+       It creates two temporary files (asenv.conf and asenv.bat) for testing purpose.
+       The "parseAsEnv()" method of "MainHelper.java" reads the "asenv.*" file line by line to generate
+       the Properties "asenvProps" whose assertion has been done in this unit test.
     */
 
     @Test
     public void parseAsEnvTest() {
         try {
-            String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "MainHelperTest";
-            File installRoot = new File(tempDir);
+            File resources = File.createTempFile("helperTestResources", "config");
+            resources.delete();      // delete the temp file
+            resources.mkdir();       // reuse the name for a directory
+            resources.deleteOnExit();
+            File config = new File(resources, "config");
+            config.mkdir();
+            config.deleteOnExit();
+            File asenv_bat = new File(config, "asenv.bat"); //test resource for windows
+            File asenv_conf = new File(config, "asenv.conf");//test resource for linux
+            asenv_bat.deleteOnExit();
+            asenv_conf.deleteOnExit();
+
+            PrintWriter pw1 = new PrintWriter(asenv_bat);
+            pw1.println("set AbcVar=value1");
+            pw1.println("SET Avar=\"value2\"");
+            pw1.println("Set Bvar=\"value3\"");
+            pw1.println("set setVar=\"value4\"");
+            pw1.println("set SetVar=value5");
+            pw1.println("set seVar=\"value6\"");
+            pw1.println("set sVar=\"value7\"");
+            pw1.close();
+            PrintWriter pw2 = new PrintWriter(asenv_conf);
+            pw2.println("AbcVar=value1");
+            pw2.println("Avar=\"value2\"");
+            pw2.println("Bvar=\"value3\"");
+            pw2.println("setVar=\"value4\"");
+            pw2.println("SetVar=value5");
+            pw2.println("seVar=\"value6\"");
+            pw2.println("sVar=\"value7\"");
+            pw2.close();
+
+            File installRoot = new File(resources.toString());
             Properties asenvProps = MainHelper.parseAsEnv(installRoot);
             assertEquals("value1",asenvProps.getProperty("AbcVar"));
             assertEquals("value2",asenvProps.getProperty("Avar"));
