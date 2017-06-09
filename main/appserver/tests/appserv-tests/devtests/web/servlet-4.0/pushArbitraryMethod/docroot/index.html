@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,38 +40,6 @@
 
 -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-
-    <id>stage-package</id>
-    <formats>
-        <format>dir</format>
-    </formats>
-
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <directory>${temp.dir}/glassfish</directory>
-            <outputDirectory>${install.dir.name}/glassfish</outputDirectory>
-            <excludes>
-                <exclude>modules/gf-client.jar</exclude>
-                <exclude>modules/weld-se-shaded.jar</exclude>
-                <exclude>pkg_proto.py</exclude>
-            </excludes>            
-        </fileSet>
-        <fileSet>
-            <directory>${temp.dir}/glassfish/modules</directory>
-            <includes>
-                <include>gf-client.jar</include>
-            </includes>
-            <outputDirectory>${install.dir.name}/glassfish/lib</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${temp.dir}/glassfish/modules</directory>
-            <includes>
-                <include>weld-se-shaded.jar</include>
-            </includes>
-            <outputDirectory>${install.dir.name}/glassfish/lib/appclient</outputDirectory>
-        </fileSet>
-    </fileSets>
-</assembly>
+<html><head><title>HTTP2 Test</title></head><body>
+<img src="my.jpg"/>
+</body></html>
