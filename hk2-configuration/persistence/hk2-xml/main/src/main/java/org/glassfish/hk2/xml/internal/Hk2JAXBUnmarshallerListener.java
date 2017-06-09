@@ -189,7 +189,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     @Override
     public void beforeUnmarshal(Object target, Object parent) {
         if (!(target instanceof BaseHK2JAXBBean)) return;
-        if (!(parent instanceof BaseHK2JAXBBean)) return;
+        if ((parent != null) && !(parent instanceof BaseHK2JAXBBean)) return;
         
         BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
         BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
