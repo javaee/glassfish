@@ -72,7 +72,7 @@ public interface XmlHk2ConfigurationBean {
      * @return The parent of this object, or null if this
      * is the root of the tree
      */
-    public Object _getParent();
+    public XmlHk2ConfigurationBean _getParent();
     
     /**
      * Returns the XmlPath for this object

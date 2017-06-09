@@ -122,7 +122,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     // private UnparentedNode model;
     
     /** The parent of this instance, or null if this is a root (or has not been fully initialized yet) */
-    private Object parent;
+    private XmlHk2ConfigurationBean parent;
     
     /** My own namespace, which is determined either by my parent or by my root value */
     private String selfNamespace;
@@ -360,9 +360,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             changeControl.getWriteLock().lock();
             try {
-                changeControl.startOrContinueChange(this);
                 boolean success = false;
                 
+                changeControl.startOrContinueChange(this);
                 try {
                     if (!rawSet) {
                         Object oValue = nBeanLikeMap.getValue(propNamespace, propName);
@@ -1009,7 +1009,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getParent()
      */
     @Override
-    public Object _getParent() {
+    public XmlHk2ConfigurationBean _getParent() {
         return parent;
     }
     
@@ -1019,7 +1019,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * 
      * @param parent
      */
-    public void _setParent(Object parent) {
+    public void _setParent(XmlHk2ConfigurationBean parent) {
         this.parent = parent;
     }
     
