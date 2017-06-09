@@ -1,6 +1,6 @@
 GlassFish Server
 =================
-http://glassfish.java.net
+https://javaee.github.io/glassfish
 
 GlassFish is the reference implementation of Java EE.
 

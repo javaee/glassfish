@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -100,6 +100,9 @@ public final class WebContainerListener
         beforeEvents.add(ContainerEvent.BEFORE_READ_LISTENER_ON_ERROR);
         beforeEvents.add(ContainerEvent.BEFORE_WRITE_LISTENER_ON_WRITE_POSSIBLE);
         beforeEvents.add(ContainerEvent.BEFORE_WRITE_LISTENER_ON_ERROR);
+        beforeEvents.add(ContainerEvent.BEFORE_AUTHENTICATION);
+        beforeEvents.add(ContainerEvent.BEFORE_POST_AUTHENTICATION);
+        beforeEvents.add(ContainerEvent.BEFORE_LOGOUT);
 
         // postInvoke events
         afterEvents.add(ContainerEvent.AFTER_CONTEXT_INITIALIZED);
@@ -125,6 +128,9 @@ public final class WebContainerListener
         afterEvents.add(ContainerEvent.AFTER_READ_LISTENER_ON_ERROR);
         afterEvents.add(ContainerEvent.AFTER_WRITE_LISTENER_ON_WRITE_POSSIBLE);
         afterEvents.add(ContainerEvent.AFTER_WRITE_LISTENER_ON_ERROR);
+        afterEvents.add(ContainerEvent.AFTER_AUTHENTICATION);
+        afterEvents.add(ContainerEvent.AFTER_POST_AUTHENTICATION);
+        afterEvents.add(ContainerEvent.AFTER_LOGOUT);
 
     }
 

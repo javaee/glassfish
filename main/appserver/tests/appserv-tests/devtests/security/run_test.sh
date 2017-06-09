@@ -2,19 +2,19 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -38,19 +38,21 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
+
 test_run(){
 	rm -rf opends-image
 	mkdir opends-image
 	pushd opends-image
-
-	wget --no-check-certificate http://java.net/downloads/opends/promoted-builds/2.2.1/OpenDS-2.2.1.zip
-	unzip -q OpenDS-2.2.1.zip
+	
+	unzip -q /net/gf-hudson/scratch/java_re_node/OpenDS-2.2.1.zip
 
 	export OPENDS_HOME=$PWD/OpenDS-2.2.1
 	popd
 
 	# Workaround for JDK7 and OpenDS
 	cp $APS_HOME/devtests/security/ldap/opends/X500Signer.jar $OPENDS_HOME/lib
+	rm -rf $OPENDS_HOME/lib/set-java-home
+	export OPENDS_JAVA_HOME=/gf-hudson-tools/jdk/7/latest
 
 	# Configure and start OpenDS using the default ports
 	$OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanager -b "dc=sfbay,dc=sun,dc=com" -Z 1636 --useJavaKeystore $S1AS_HOME/domains/domain1/config/keystore.jks -W changeit -N s1as

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -210,6 +210,19 @@ public final class ContainerEvent extends EventObject {
 
     public static final String AFTER_WRITE_LISTENER_ON_ERROR
         = "afterWriteListenerOnError";
+
+    public static final String BEFORE_AUTHENTICATION
+        = "beforeAuthentication";
+    public static final String AFTER_AUTHENTICATION
+        = "afterAuthentication";
+    public static final String BEFORE_POST_AUTHENTICATION
+        = "beforePostAuthentication";
+    public static final String AFTER_POST_AUTHENTICATION
+        = "afterPostAuthentication";
+    public static final String BEFORE_LOGOUT
+        = "beforePostAuthentication";
+    public static final String AFTER_LOGOUT
+        = "afterPostAuthentication";
 
     /**
      * The Container on which this event occurred.

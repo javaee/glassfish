@@ -8,12 +8,12 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -36,7 +36,7 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- */       
+ */
 
 package org.glassfish.grizzly.test.http2;
 
@@ -65,6 +65,7 @@ import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpHeader;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.HttpResponsePacket;
+import org.glassfish.grizzly.http.HttpTrailer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http2.Http2BaseFilter;
@@ -92,7 +93,7 @@ public class HttpClient implements AutoCloseable {
     private String trustStore = System.getProperty("S1AS_HOME") + "/domains/domain1/config/cacerts.jks";
     private TCPNIOTransport clientTransport;
     private Connection connection;
-    private final BlockingQueue<HttpContent> resultQueue = new LinkedTransferQueue<>();
+    private final BlockingQueue<HttpContentInfo> resultQueue = new LinkedTransferQueue<>();
 
     private HttpClient() {
     }
@@ -148,8 +149,9 @@ public class HttpClient implements AutoCloseable {
     }
 
     public HttpResponse getHttpResponse(int time, TimeUnit timeUnit) throws InterruptedException {
-        HttpContent content = resultQueue.poll(time, timeUnit);
-        return ((content != null)? new HttpResponse(content) : null);
+        HttpContentInfo contentInfo = resultQueue.poll(time, timeUnit);
+        return ((contentInfo != null)?
+            new HttpResponse(contentInfo.httpContent, contentInfo.trailerMap) : null);
     }
 
     public void close() throws Exception {
@@ -266,12 +268,28 @@ public class HttpClient implements AutoCloseable {
         }
     }
 
+    private static class HttpContentInfo {
+        private HttpContent httpContent = null;
+        private Map<String, String> trailerMap = new HashMap<>();
+
+        private HttpContentInfo(HttpContent httpContent) {
+            this.httpContent = httpContent;
+        }
+
+        private void append(HttpContent hc) {
+            httpContent = httpContent.append(hc);
+        }
+
+        private void addTrailerField(String name, String value) {
+            trailerMap.put(name, value);
+        }
+    }
 
     private static class ClientAggregatorFilter extends BaseFilter {
-        private final BlockingQueue<HttpContent> resultQueue;
-        private final Map<Http2Stream, HttpContent> remaindersMap = new HashMap<>();
+        private final BlockingQueue<HttpContentInfo> resultQueue;
+        private final Map<Http2Stream, HttpContentInfo> remaindersMap = new HashMap<>();
 
-        public ClientAggregatorFilter(BlockingQueue<HttpContent> resultQueue) {
+        public ClientAggregatorFilter(BlockingQueue<HttpContentInfo> resultQueue) {
             this.resultQueue = resultQueue;
         }
 
@@ -280,16 +298,28 @@ public class HttpClient implements AutoCloseable {
             final HttpContent message = ctx.getMessage();
             final Http2Stream http2Stream = Http2Stream.getStreamFor(message.getHttpHeader());
 
-            final HttpContent remainder = remaindersMap.get(http2Stream);
-            final HttpContent sum = remainder != null
-                    ? remainder.append(message) : message;
+            HttpContentInfo result = remaindersMap.get(http2Stream);
+            if (result == null) {
+                result = new HttpContentInfo(message);
+                remaindersMap.put(http2Stream, result);
+            } else {
+                result.append(message);
+            }
 
-            if (!sum.isLast()) {
-                remaindersMap.put(http2Stream, sum);
+            if (HttpTrailer.isTrailer(message)) {
+                HttpTrailer trailer = (HttpTrailer)message;
+                for (String name : trailer.getHeaders().names()) {
+                    String value = trailer.getHeader(name);
+                    result.addTrailerField(name, value);
+                }
+            }
+
+            if (!result.httpContent.isLast()) {
                 return ctx.getStopAction();
             }
 
-            resultQueue.add(sum);
+            remaindersMap.remove(http2Stream);
+            resultQueue.add(result);
 
             return ctx.getStopAction();
         }

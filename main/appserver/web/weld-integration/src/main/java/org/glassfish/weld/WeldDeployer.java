@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -97,6 +97,8 @@ import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import org.glassfish.web.deployment.descriptor.ServletFilterDescriptor;
 import org.glassfish.web.deployment.descriptor.ServletFilterMappingDescriptor;
 import org.jboss.weld.resources.spi.ResourceLoader;
+import org.jboss.weld.module.ejb.WeldEjbModule;
+import org.jboss.weld.module.WeldModule;
 
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer>
@@ -115,16 +117,16 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     // Note...this constant is also defined in org.apache.catalina.connector.AsyncContextImpl.  If it changes here it must
     // change there as well.  The reason it is duplicated is so that a dependency from web-core to gf-weld-connector
     // is not necessary.
-    private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
+    private static final String WELD_LISTENER = "org.jboss.weld.module.web.servlet.WeldListener";
 
-    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.servlet.WeldTerminalListener";
+    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.module.web.servlet.WeldTerminalListener";
 
     private static final String WELD_SHUTDOWN = "weld_shutdown";
 
     //This constant is used to indicate if bootstrap shutdown has been called or not.
     private static final String WELD_BOOTSTRAP_SHUTDOWN = "weld_bootstrap_shutdown";
 
-    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.servlet.ConversationFilter";
+    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.module.web.servlet.ConversationFilter";
     private static final String WELD_CONVERSATION_FILTER_NAME = "CDI Conversation Filter";
     @Inject
     private Events events;
@@ -484,7 +486,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
             BootstrapConfigurationImpl bootstrapConfiguration = new BootstrapConfigurationImpl();
             deploymentImpl.getServices().add(BootstrapConfiguration.class, bootstrapConfiguration);
-
+        
             addWeldListenerToAllWars(context);
         } else {
             deploymentImpl.scanArchive(archive, ejbs, context);

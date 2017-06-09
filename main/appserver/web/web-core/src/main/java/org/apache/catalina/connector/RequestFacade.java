@@ -78,7 +78,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.SecurityPermission;
 import java.util.*;
-import javax.servlet.http.ServletMapping;
+import javax.servlet.http.HttpServletMapping;
 
 
 /**
@@ -433,13 +433,13 @@ public class RequestFacade
         return request.getInputStream();
     }
     
-    public ServletMapping getServletMapping() {
+    public HttpServletMapping getHttpServletMapping() {
 
         if (request == null) {
             throw new IllegalStateException(rb.getString(LogFacade.CANNOT_USE_REQUEST_OBJECT_OUTSIDE_SCOPE_EXCEPTION));
         }
 
-        return request.getServletMapping();
+        return request.getHttpServletMapping();
     }
     
     public String getParameter(String name) {
@@ -761,6 +761,24 @@ public class RequestFacade
         }
 
         return request.getIntHeader(name);
+    }
+
+    @Override
+    public Map<String, String> getTrailerFields() {
+        if (request == null) {
+            throw new IllegalStateException(rb.getString(LogFacade.CANNOT_USE_REQUEST_OBJECT_OUTSIDE_SCOPE_EXCEPTION));
+        }
+
+        return request.getTrailerFields();
+    }
+
+    @Override
+    public boolean isTrailerFieldsReady() {
+        if (request == null) {
+            throw new IllegalStateException(rb.getString(LogFacade.CANNOT_USE_REQUEST_OBJECT_OUTSIDE_SCOPE_EXCEPTION));
+        }
+
+        return request.isTrailerFieldsReady();
     }
 
     @Override
