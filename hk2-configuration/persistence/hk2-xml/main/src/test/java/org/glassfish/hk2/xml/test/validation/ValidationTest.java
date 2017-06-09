@@ -119,6 +119,31 @@ public class ValidationTest {
         }
     }
     
+    private static void checkMultiException(MultiException me, String expectedConstraintMessage) {
+        ConstraintViolationException found = null;
+        for (Throwable th : me.getErrors()) {
+            if (th instanceof ConstraintViolationException) {
+                found = (ConstraintViolationException) th;
+                break;
+            }
+        }
+        
+        Assert.assertNotNull(found);
+        
+        boolean foundMessage = false;
+        Set<ConstraintViolation<?>> violations = found.getConstraintViolations();
+        for (ConstraintViolation<?> violation : violations) {
+            if (expectedConstraintMessage.equals(violation.getMessage())) {
+                foundMessage = true;
+                break;
+            }
+        }
+        
+        Assert.assertTrue("Did not find expected exception in " + me + " was looking for " + expectedConstraintMessage,
+                foundMessage);
+        
+    }
+    
     /**
      * Tests that validation happens on a bad set
      * @throws Exception
@@ -143,15 +168,7 @@ public class ValidationTest {
             Assert.fail("Should not have worked because validation is on");
         }
         catch (MultiException e) {
-            boolean found = false;
-            for (Throwable th : e.getErrors()) {
-                if (th instanceof ConstraintViolationException) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            Assert.assertTrue("Did not find expected exception in " + e, found);
+            checkMultiException(e, "may not be null");
         }
         
         // Nothing should have changed
@@ -270,12 +287,8 @@ public class ValidationTest {
             root.addListChild(listChild);
             Assert.fail("Add of invalid bean should have failed");
         }
-        catch (ConstraintViolationException me) {
-            // Expected
-            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
-            for (ConstraintViolation<?> violation : violations) {
-                Assert.assertEquals("may not be null", violation.getMessage());
-            }
+        catch (MultiException me) {
+            checkMultiException(me, "may not be null");
         }
         
         List<ValidationChildBean> listChildren = root.getListChildren();
@@ -307,12 +320,8 @@ public class ValidationTest {
             root.addArrayChild(arrayChild);
             Assert.fail("Add of invalid array child should have failed");
         }
-        catch (ConstraintViolationException me) {
-            // Expected
-            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
-            for (ConstraintViolation<?> violation : violations) {
-                Assert.assertEquals("may not be null", violation.getMessage());
-            }
+        catch (MultiException me) {
+            checkMultiException(me, "may not be null");
         }
         
         // Make sure we didn't actually add it
@@ -348,12 +357,8 @@ public class ValidationTest {
             root.setDirectChild(directChild);
             Assert.fail("Add of invalid array child should have failed");
         }
-        catch (ConstraintViolationException me) {
-            // Expected
-            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
-            for (ConstraintViolation<?> violation : violations) {
-                Assert.assertEquals("may not be null", violation.getMessage());
-            }
+        catch (MultiException me) {
+            checkMultiException(me, "may not be null");
         }
         
         Assert.assertNull(root.getDirectChild());

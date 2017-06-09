@@ -229,7 +229,7 @@ public class DynamicChangeInfo<T> {
             }
             
             if (validationException != null) {
-                throw validationException;
+                throw new MultiException(validationException);
             }
             return;
         }
