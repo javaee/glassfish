@@ -102,6 +102,9 @@ public abstract class GenericSniffer implements Sniffer {
         if (archiveType != null && !supportsArchiveType(archiveType)) {
             return false;
         }
+        if(archiveType != null) {
+            context.getSource().setExtraData(ArchiveType.class, archiveType);
+        }
         return handles(context.getSource());
     }
 

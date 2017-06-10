@@ -128,7 +128,10 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             spf.setNamespaceAware(true);
             
 	    // turn validation on for deployment descriptor XML files
-            spf.setValidating(validating);    
+            spf.setValidating(validating);
+            if(!validating){
+                spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            }
 
 	    // this feature is needed for backward compat with old DDs 
 	    // constructed by J2EE1.2 which used Java encoding names
