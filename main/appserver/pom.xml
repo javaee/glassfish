@@ -74,7 +74,7 @@
         <javax.transaction-api.version>1.2.1</javax.transaction-api.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
         <javax.faces-api.version>2.2</javax.faces-api.version>
-        <cdi-api.version>1.2</cdi-api.version>
+        <cdi-api.version>2.0</cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.resource-api.version>1.7</javax.resource-api.version>
         <javax.enterprise.deploy-api.version>1.6</javax.enterprise.deploy-api.version>
@@ -117,13 +117,15 @@
         <mq.version>5.1.1-b02</mq.version>
         <javadb.version>10.10.2.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
-        <weld.version>2.2.13.Final</weld.version>
+        <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
         <tyrus.version>1.13.1</tyrus.version>
         <jsonp-api.version>1.1</jsonp-api.version>
         <jsonp-ri.version>1.1</jsonp-ri.version>
-        <jsonp-jaxrs.version>1.1</jsonp-jaxrs.version>
+        <jsonp-jaxrs.version>1.1.1</jsonp-jaxrs.version>
+        <json.bind-api.version>1.0.0-RC2</json.bind-api.version>
+        <yasson.version>1.0.0-RC1</yasson.version>
         <concurrent-api.version>1.0</concurrent-api.version>
         <concurrent.version>1.0</concurrent.version>
         <javax.batch-api.version>1.0</javax.batch-api.version>
@@ -133,6 +135,7 @@
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
+	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
     </properties>
 
     <modules>
@@ -216,6 +219,19 @@
                             <implVersion>${jsonp-ri.version}</implVersion>
                             <apiPackage>javax.json</apiPackage>
                             <implNamespace>org.glassfish</implNamespace>
+                        </spec>
+                        <spec>
+                            <artifact>
+                                <groupId>org.eclipse</groupId>
+                                <artifactId>yasson</artifactId>
+                                <version>${yasson.version}</version>
+                            </artifact>
+                            <nonFinal>true</nonFinal>
+                            <jarType>impl</jarType>
+                            <specVersion>0.9</specVersion>
+                            <implVersion>${yasson.version}</implVersion>
+                            <apiPackage>javax.json.bind</apiPackage>
+                            <implNamespace>org.eclipse</implNamespace>
                         </spec>
                         <spec>
                             <artifact>
@@ -670,8 +686,15 @@
                 </exclusions>                
             </dependency>
             <dependency>
+
+                 <groupId>org.jboss.classfilewriter</groupId>
+                 <artifactId>jboss-classfilewriter</artifactId>
+                 <version>${jboss.classfilewriter.version}</version>
+             </dependency>
+
+<dependency>
                 <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
+                <artifactId>weld-se-shaded</artifactId>
                 <version>${weld.version}</version>
             </dependency>
             <dependency>
@@ -795,6 +818,16 @@
                 <artifactId>javax.json-api</artifactId>
                 <version>${jsonp-api.version}</version>
             </dependency>
+			<dependency>
+				<groupId>javax.json.bind</groupId>
+				<artifactId>javax.json.bind-api</artifactId>
+                <version>${json.bind-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse</groupId>
+				<artifactId>yasson</artifactId>
+				<version>${yasson.version}</version>
+			</dependency>
             <dependency>
                 <groupId>javax.xml.soap</groupId>
                 <artifactId>javax.xml.soap-api</artifactId>
@@ -850,10 +883,10 @@
                 <artifactId>osgi-http</artifactId>
                 <version>1.0.6</version>
             </dependency>
-            <dependency>
+	    <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-cdi</artifactId>
-                <version>1.0.3</version>
+                <version>1.0.4</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
