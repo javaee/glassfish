@@ -48,6 +48,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     @Inject
     Domain domain;
 
+    private static final String JAVA_COMP_PREFIX = "java:comp/";
+    private static final String JAVA_MODULE_PREFIX = "java:module/";
+    private static final String JAVA_APP_PREFIX = "java:app/";
+    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
+
     public void postConstruct() {
         events.register(this);
     }
@@ -63,7 +68,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
     }
 
-    //TODO: Extract resources completely out of dc
     private void processResources() {
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.warType())) {
             accept(bd);
@@ -73,6 +77,26 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.ejbType())) {
             accept(bd);
+            EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
+            for (EjbDescriptor ejb : ebd.getEjbs()) {
+                for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
+                    ResourceReferenceDescriptor next =
+                            (ResourceReferenceDescriptor) it.next();
+                    accept(next);
+                }
+
+                for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
+                    ResourceEnvReferenceDescriptor next =
+                            (ResourceEnvReferenceDescriptor) it.next();
+                    accept(next);
+                }
+
+                for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
+                    MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
+                    accept((NamedDescriptor) next);
+                }
+
+            }
         }
     }
 
@@ -82,10 +106,33 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
                 accept(itr.next());
             }
+
+            for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
+                accept(itr.next());
+            }
+
             for (Iterator<MessageDestinationDescriptor> itr = bundleDescriptor.getMessageDestinations().iterator(); itr.hasNext();) {
                 accept(itr.next());
             }
         }
+    }
+
+    // TODO: Decide what to do in case of ORB, WebService Context, URL
+    private void accept(ResourceReferenceDescriptor resRef) {
+        if (resRef.isORB() || resRef.isWebServiceContext() || resRef.isURLResource()) {
+            return;
+        }
+        accept((NamedDescriptor) resRef);
+    }
+
+    /* TODO: Find all usages of this. Since a custom JNDI resource is stored in this,
+       we need to exclude all normal references and validate only the custom resources.
+       Custom resources are also stored in the general resources secion.
+       While only custom resources specified through annotations go into this, I think all resources
+       specified under resource-env-ref tag go in here.
+     */
+    private void accept(ResourceEnvReferenceDescriptor resRef) {
+        return;
     }
 
     private void accept(NamedDescriptor resRef) {
@@ -104,14 +151,19 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private boolean validateResource(String target, String jndiName) {
+        if (jndiName == "java:comp/DefaultDataSource" || jndiName == "java:comp/DefaultJMSConnectionFactory")
+            return true;
+
         Server svr = domain.getServerNamed(target);
         if (svr != null) {
             return svr.isResourceRefExists(jndiName);
         }
+
         Cluster cluster = domain.getClusterNamed(target);
         if (cluster != null) {
             return cluster.isResourceRefExists(jndiName);
         }
+
         return false;
     }
 
