@@ -406,8 +406,14 @@ public class BaseSeleniumTestClass {
     }
     
     public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
+<<<<<<< HEAD
+        open(url);        
+        String isDocker = System.getProperty("docker");
+        if (Boolean.parseBoolean(isDocker)) {
+=======
         open(url);
         if (IS_SECURE_ADMIN_ENABLED) {
+>>>>>>> upstream/master
            waitForLoginPageLoad(timeout);
            handleLogin("admin", "admin", triggerText);
         } else {
