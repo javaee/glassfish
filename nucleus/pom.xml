@@ -417,8 +417,8 @@
                             <pattern>/README</pattern>
                             <pattern>/yui/</pattern>
                             <pattern>/zlib-1.1.4/</pattern>
-                            <pattern>nucleus/deployment/dtds/</pattern>
-                            <pattern>nucleus/deployment/schemas/</pattern>
+                            <pattern>deployment/dtds/</pattern>
+                            <pattern>deployment/schemas/</pattern>
                             <pattern>admin/cli/src/main/resources/unsupported-legacy-command-names</pattern>
                             <pattern>admin/cli/src/main/resources/supported-legacy-command-names</pattern>
                             <pattern>/readme</pattern>

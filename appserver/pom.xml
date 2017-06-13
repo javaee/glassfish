@@ -502,13 +502,8 @@
                          <pattern>admingui/war/src/main/webapp/3rd-party-license</pattern>
                          <pattern>packager/legal/</pattern>
                          <pattern>common/annotation-framework/src/main/java/org/glassfish/apf/skip-annotation-class-list</pattern>
-                         <pattern>deployment/dtds/</pattern>
                          <pattern>admingui/common/src/main/resources/applications/appEdit/</pattern>
-                         <pattern>deployment/schemas/</pattern>
-                         <pattern>deployment/schemas/</pattern>
-                         <pattern>deployment/schemas/</pattern>
                          <pattern>.layout</pattern>
-                         <pattern>/TODO</pattern>
                          <pattern>admingui/war/src/main/webapp/j_security_check</pattern>
                          <pattern>appclient/client/acc/src/test/resources/topSecret.stuff</pattern>
                     </exclude>

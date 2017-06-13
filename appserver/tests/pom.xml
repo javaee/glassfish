@@ -108,7 +108,6 @@
                     <pattern>.default</pattern>
                     <pattern>.ldif</pattern>
                     <pattern>/descriptor/web.xml</pattern>
-                    <pattern>/readme</pattern>
                     <pattern>/jndi.properties.cosnaming</pattern>
                     <pattern>/jndi.properties.s1as8_default</pattern>
                     <pattern>community/web/jruby/helloapp/public/javascripts/</pattern>
