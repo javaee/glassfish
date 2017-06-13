@@ -41,6 +41,8 @@
 package org.glassfish.grizzly.test.http2;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +51,7 @@ import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.http.HttpContent;
 import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpTrailer;
 import org.glassfish.grizzly.http.Protocol;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.memory.MemoryManager;
@@ -62,12 +65,16 @@ public class HttpRequest {
     private HttpRequestPacket httpRequestPacket;
     private Connection connection;
     private Buffer contentBuffer = Buffers.EMPTY_BUFFER;
+    private Map<String, String> trailerFields = null;
 
     private HttpRequest(HttpRequestPacket httpRequestPacket,
-            String charEncoding, String content, Connection connection) {
+            String charEncoding, String content,
+            Map<String, String> trailerFields, Connection connection) {
+
         this.httpRequestPacket = httpRequestPacket;
         httpRequestPacket.setCharacterEncoding(charEncoding);
         this.connection = connection;
+        this.trailerFields = trailerFields;
 
         if (content != null) {
             MemoryManager mm = MemoryManager.DEFAULT_MEMORY_MANAGER;
@@ -82,26 +89,44 @@ public class HttpRequest {
                 contentBuffer = Buffers.wrap(mm, content);
             }
         }
-        httpRequestPacket.setContentLength(contentBuffer.remaining());
+
+        if (!httpRequestPacket.isChunked()) {
+            httpRequestPacket.setContentLength(contentBuffer.remaining());
+        }
     }
 
     public void send() {
+        boolean hasTrailer = httpRequestPacket.isChunked() &&
+            trailerFields != null && !trailerFields.isEmpty();
+
         connection.write(HttpContent.builder(httpRequestPacket)
                 .content(contentBuffer)
-                .last(true)
+                .last(!hasTrailer)
                 .build());
+
+        if (hasTrailer) {
+            HttpTrailer.Builder httpTrailerBuilder = HttpTrailer.builder(httpRequestPacket)
+                .content(Buffers.EMPTY_BUFFER);
+            for (Map.Entry<String, String> trailerField : trailerFields.entrySet()) {
+                httpTrailerBuilder.header(
+                    trailerField.getKey(), trailerField.getValue());
+            }
+            connection.write(httpTrailerBuilder.last(true).build());
+        }
     }
 
     // ----- inner class -----
     public static class Builder {
         private HttpRequestPacket.Builder reqPacketBuilder = new  HttpRequestPacket.Builder();
+        private Boolean chunked = null;
         private String charEncoding = null;
         private String content = null;
+        private Map<String, String> trailerFields = null;
         private Connection connection = null;
 
         Builder(String host, int port, Connection connection) {
-            reqPacketBuilder.method("GET").protocol(Protocol.HTTP_1_1)
-                .header("Host", host + ":" + port);
+            reqPacketBuilder.method("GET").protocol(Protocol.HTTP_2_0)
+                .host(host + ":" + port);
             this.connection = connection;
         }
 
@@ -120,6 +145,11 @@ public class HttpRequest {
             return this;
         }
 
+        public Builder chunked(Boolean c) {
+            reqPacketBuilder.chunked(c);
+            return this;
+        }
+
         public Builder characterEncoding(String charEncoding) {
             this.charEncoding = charEncoding;
             return this;
@@ -135,8 +165,18 @@ public class HttpRequest {
             return this;
         }
 
+        public Builder trailerField(String name, String value) {
+            if (trailerFields == null) {
+                trailerFields = new HashMap<>();
+            }
+
+            trailerFields.put(name, value);
+            return this;
+        }
+
         public HttpRequest build() {
-            return new HttpRequest(reqPacketBuilder.build(), charEncoding, content, connection);
+            return new HttpRequest(reqPacketBuilder.build(), 
+                charEncoding, content, trailerFields, connection);
         }
     }
 }
