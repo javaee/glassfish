@@ -1,0 +1,17 @@
+language: java
+# specifying other dists doesn't make sense because `trusty` doesn't have `oraclejdk8` (fails due to `Sorry, but JDK '[oraclejdk8]' is not known.`) which is the only supported JDK currently. Testing on Mac OSX doesn't make too much sense since it will run the same `maven` based build routine.
+
+jdk:
+- oraclejdk8
+    # - `openjdk8` not available
+    # - Java 7 is not supported (`javac: invalid target release: 1.8`)
+
+install:
+- wget http://apache.mirror.digionline.de/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz && tar xf apache-maven-3.5.0-bin.tar.gz
+    # use Maven 3.5.0 because specifying `MAVEN_OPTS="-Xmx6g -Xms2g -XX:+UseConcMarkSweepGC"` doesn't avoid `GC overhead limit exceeded` during dependency download
+
+script:
+- cd main
+- ../apache-maven-3.5.0/bin/mvn install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version
+# add --update-snapshots if snapshots are used
+- ../apache-maven-3.5.0/bin/mvn test verify --batch-mode
