@@ -74,6 +74,11 @@ public final class Assert {
         assertEquals(200, response.getStatusCode());
         assertNotAuthenticatedUnprotected("web", "null", response.getContentAsString(), new ArrayList<String>());
     }
+
+    public static void assertNotAuthenticatedError(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(500, response.getStatusCode());
+    }
     
     public static void assertAuthenticated(String userType, String name, String response, String... roles) {
         assertTrue(
