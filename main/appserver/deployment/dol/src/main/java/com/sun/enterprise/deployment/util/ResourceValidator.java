@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by mskd on 6/9/17.
+ * Created by Krishna Deepak on 6/9/17.
  */
 @Service
 public class ResourceValidator implements EventListener, ResourceValidatorVisitor {
@@ -93,11 +93,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
                 for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
                     MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-                    accept((NamedDescriptor) next);
+                    accept(next);
                 }
-
             }
         }
+        accept(application);
     }
 
     private void accept(BundleDescriptor bundleDescriptor) {
@@ -107,7 +107,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 accept(itr.next());
             }
 
-            for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
+            for (Iterator<ResourceEnvReferenceDescriptor> itr = nameEnvironment.getResourceEnvReferenceDescriptors().iterator(); itr.hasNext();) {
+                accept(itr.next());
+            }
+
+            for (Iterator<MessageDestinationReferenceDescriptor> itr = nameEnvironment.getMessageDestinationReferenceDescriptors().iterator(); itr.hasNext();) {
                 accept(itr.next());
             }
 
@@ -125,14 +129,24 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         accept((NamedDescriptor) resRef);
     }
 
-    /* TODO: Find all usages of this. Since a custom JNDI resource is stored in this,
-       we need to exclude all normal references and validate only the custom resources.
-       Custom resources are also stored in the general resources secion.
-       While only custom resources specified through annotations go into this, I think all resources
-       specified under resource-env-ref tag go in here.
+    /* TODO: Find all usages of this.
+       1) Since a custom JNDI resource is stored in this, we need to exclude all normal references and validate only the custom resources.
+       Custom resources might also get stored in the general resources section depending on their type.
+       2) All resources specified under resource-env-ref tag go in here.
      */
     private void accept(ResourceEnvReferenceDescriptor resRef) {
         return;
+    }
+
+    // If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
+    // We might be duplicating our validation efforts since we are already validating message destination seperately.
+    private void accept(MessageDestinationReferenceDescriptor resRef) {
+        if (resRef.isLinkedToMessageDestination()) {
+            validateJNDIRefs(resRef.getMessageDestination().getJndiName());
+        }
+        else {
+            validateJNDIRefs(resRef.getJndiName());
+        }
     }
 
     private void accept(NamedDescriptor resRef) {
@@ -141,8 +155,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     // check in the domain.xml and in the app scoped resources
     private void validateJNDIRefs(String jndiName) {
-        if(!validateResource(target, jndiName)) {
-            if (!validateAppScopedResource(jndiName, dc)) {
+        if(!validateResource(jndiName)) {
+            if (!validateAppScopedResource(jndiName)) {
                 deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                         new Object[] {jndiName});
                 throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
@@ -150,7 +164,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
     }
 
-    private boolean validateResource(String target, String jndiName) {
+    private boolean validateResource(String jndiName) {
         if (jndiName == "java:comp/DefaultDataSource" || jndiName == "java:comp/DefaultJMSConnectionFactory")
             return true;
 
@@ -168,7 +182,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     // TODO: Understand application scoped resources and validate using resourcesList
-    private boolean validateAppScopedResource(String jndiName, DeploymentContext dc) {
+    private boolean validateAppScopedResource(String jndiName) {
         Map<String, Map<String, List>> resourcesList =
                 (Map<String, Map<String, List>>) dc.getTransientAppMetadata().get("app-scoped-resources-map");
         return false;
