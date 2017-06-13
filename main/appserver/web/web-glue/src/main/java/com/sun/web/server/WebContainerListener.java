@@ -100,6 +100,9 @@ public final class WebContainerListener
         beforeEvents.add(ContainerEvent.BEFORE_READ_LISTENER_ON_ERROR);
         beforeEvents.add(ContainerEvent.BEFORE_WRITE_LISTENER_ON_WRITE_POSSIBLE);
         beforeEvents.add(ContainerEvent.BEFORE_WRITE_LISTENER_ON_ERROR);
+        beforeEvents.add(ContainerEvent.BEFORE_AUTHENTICATION);
+        beforeEvents.add(ContainerEvent.BEFORE_POST_AUTHENTICATION);
+        beforeEvents.add(ContainerEvent.BEFORE_LOGOUT);
 
         // postInvoke events
         afterEvents.add(ContainerEvent.AFTER_CONTEXT_INITIALIZED);
@@ -125,6 +128,9 @@ public final class WebContainerListener
         afterEvents.add(ContainerEvent.AFTER_READ_LISTENER_ON_ERROR);
         afterEvents.add(ContainerEvent.AFTER_WRITE_LISTENER_ON_WRITE_POSSIBLE);
         afterEvents.add(ContainerEvent.AFTER_WRITE_LISTENER_ON_ERROR);
+        afterEvents.add(ContainerEvent.AFTER_AUTHENTICATION);
+        afterEvents.add(ContainerEvent.AFTER_POST_AUTHENTICATION);
+        afterEvents.add(ContainerEvent.AFTER_LOGOUT);
 
     }
 
