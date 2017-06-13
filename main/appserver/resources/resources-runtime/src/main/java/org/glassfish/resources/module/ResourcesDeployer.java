@@ -250,6 +250,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             if (ResourceUtil.hasResourcesXML(archive, locator)) {
 
                 Map<String,Map<String, List>> appScopedResources = new HashMap<String,Map<String,List>>();
+                Map<String, List> jndiNames = new HashMap<String, List>();
                 Map<String, String> fileNames = new HashMap<String, String>();
 
                 String appName = getAppNameFromDeployCmdParams(dc);
@@ -278,16 +279,31 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     List list = parser.getResourcesList();
 
                     Map<String, List> resourcesList = new HashMap<String, List>();
+                    List<String> jndiNamesList = new ArrayList<String>();
                     List<org.glassfish.resources.api.Resource> nonConnectorResources =
                             ResourcesXMLParser.getNonConnectorResourcesList(list, false, true);
                     resourcesList.put(NON_CONNECTOR_RESOURCES, nonConnectorResources);
-                    
+                    for (org.glassfish.resources.api.Resource resource : nonConnectorResources) {
+                        String jndiName = (String) resource.getAttributes().get(JNDI_NAME);
+                        if (jndiName != null) {
+                            jndiNamesList.add(jndiName);
+                        }
+                    }
+
                     List<org.glassfish.resources.api.Resource> connectorResources =
                             ResourcesXMLParser.getConnectorResourcesList(list, false, true);
                     resourcesList.put(CONNECTOR_RESOURCES, connectorResources);
+                    for (org.glassfish.resources.api.Resource resource : connectorResources) {
+                        String jndiName = (String) resource.getAttributes().get(JNDI_NAME);
+                        if (jndiName != null) {
+                            jndiNamesList.add(jndiName);
+                        }
+                    }
 
+                    jndiNames.put(moduleName, jndiNamesList);
                     appScopedResources.put(moduleName, resourcesList);
                 }
+                dc.addTransientAppMetaData("app-scoped-resources-jndi-names", jndiNames);
                 dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_MAP, appScopedResources);
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if(appInfo != null){

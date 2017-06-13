@@ -1,8 +1,49 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
 package com.sun.enterprise.deployment.util;
 
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.Application;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
@@ -11,6 +52,7 @@ import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.resourcebase.resources.util.ResourceUtil;
 
 import javax.inject.Inject;
 import java.util.Iterator;
@@ -47,12 +89,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     @Inject
     Domain domain;
-
-    private static final String JAVA_COMP_PREFIX = "java:comp/";
-    private static final String JAVA_MODULE_PREFIX = "java:module/";
-    private static final String JAVA_APP_PREFIX = "java:app/";
-    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
-
+    
     public void postConstruct() {
         events.register(this);
     }
@@ -70,93 +107,96 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     private void processResources() {
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.warType())) {
-            accept(bd);
+            accept(bd, bd.getModuleName());
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.carType())) {
-            accept(bd);
+            accept(bd, bd.getModuleName());
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.ejbType())) {
-            accept(bd);
+            accept(bd, bd.getModuleName());
             EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
             for (EjbDescriptor ejb : ebd.getEjbs()) {
                 for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-                    ResourceReferenceDescriptor next =
-                            (ResourceReferenceDescriptor) it.next();
-                    accept(next);
+                    ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
+                    accept(next, bd.getModuleName());
                 }
 
                 for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
-                    ResourceEnvReferenceDescriptor next =
-                            (ResourceEnvReferenceDescriptor) it.next();
-                    accept(next);
+                    ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
+                    accept(next, bd.getModuleName());
                 }
 
                 for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
                     MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-                    accept(next);
+                    accept(next, bd.getModuleName());
                 }
             }
         }
-        accept(application);
+        accept(application, application.getAppName());
     }
 
-    private void accept(BundleDescriptor bundleDescriptor) {
+    private void accept(BundleDescriptor bundleDescriptor, String moduleName) {
         if (bundleDescriptor instanceof JndiNameEnvironment) {
             JndiNameEnvironment nameEnvironment = (JndiNameEnvironment) bundleDescriptor;
             for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next());
+                accept(itr.next(), moduleName);
             }
 
             for (Iterator<ResourceEnvReferenceDescriptor> itr = nameEnvironment.getResourceEnvReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next());
+                accept(itr.next(), moduleName);
             }
 
             for (Iterator<MessageDestinationReferenceDescriptor> itr = nameEnvironment.getMessageDestinationReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next());
+                accept(itr.next(), moduleName);
             }
 
             for (Iterator<MessageDestinationDescriptor> itr = bundleDescriptor.getMessageDestinations().iterator(); itr.hasNext();) {
-                accept(itr.next());
+                accept(itr.next(), moduleName);
             }
         }
     }
 
-    // TODO: Decide what to do in case of ORB, WebService Context, URL
-    private void accept(ResourceReferenceDescriptor resRef) {
+    // TODO: Decide what to do in case of ORB, WebService Context, URL, anything else?
+    private void accept(ResourceReferenceDescriptor resRef, String moduleName) {
         if (resRef.isORB() || resRef.isWebServiceContext() || resRef.isURLResource()) {
             return;
         }
-        accept((NamedDescriptor) resRef);
+        accept((NamedDescriptor) resRef, moduleName);
     }
 
-    /* TODO: Find all usages of this.
+    /* TODO: Implement
        1) Since a custom JNDI resource is stored in this, we need to exclude all normal references and validate only the custom resources.
        Custom resources might also get stored in the general resources section depending on their type.
        2) All resources specified under resource-env-ref tag go in here.
      */
-    private void accept(ResourceEnvReferenceDescriptor resRef) {
+    private void accept(ResourceEnvReferenceDescriptor resRef, String moduleName) {
         return;
     }
 
     // If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
-    // We might be duplicating our validation efforts since we are already validating message destination seperately.
-    private void accept(MessageDestinationReferenceDescriptor resRef) {
+    // We might be duplicating our validation efforts since we are already validating message destination separately.
+    private void accept(MessageDestinationReferenceDescriptor resRef, String moduleName) {
         if (resRef.isLinkedToMessageDestination()) {
-            validateJNDIRefs(resRef.getMessageDestination().getJndiName());
+            validateJNDIRefs(resRef.getMessageDestination().getJndiName(), moduleName);
         }
         else {
-            validateJNDIRefs(resRef.getJndiName());
+            validateJNDIRefs(resRef.getJndiName(), moduleName);
         }
     }
 
-    private void accept(NamedDescriptor resRef) {
-        validateJNDIRefs(resRef.getJndiName());
+    private void accept(NamedDescriptor resRef, String moduleName) {
+        validateJNDIRefs(resRef.getJndiName(), moduleName);
     }
 
-    // check in the domain.xml and in the app scoped resources
-    private void validateJNDIRefs(String jndiName) {
+    /**
+     * Validate the given JNDI name by checking in domain.xml and in app scoped resources.
+     *
+     * @param jndiName
+     * @param moduleName
+     */
+    private void validateJNDIRefs(String jndiName, String moduleName) {
         if(!validateResource(jndiName)) {
-            if (!validateAppScopedResource(jndiName)) {
+            if (!validateAppScopedResource(jndiName, moduleName)) {
                 deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                         new Object[] {jndiName});
                 throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
@@ -164,6 +204,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
     }
 
+    /**
+     * Validate the given resource in the corresponding target using domain.xml serverbeans.
+     *
+     * @param jndiName
+     * @return
+     */
     private boolean validateResource(String jndiName) {
         if (jndiName == "java:comp/DefaultDataSource" || jndiName == "java:comp/DefaultJMSConnectionFactory")
             return true;
@@ -181,10 +227,24 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         return false;
     }
 
-    // TODO: Understand application scoped resources and validate using resourcesList
-    private boolean validateAppScopedResource(String jndiName) {
-        Map<String, Map<String, List>> resourcesList =
-                (Map<String, Map<String, List>>) dc.getTransientAppMetadata().get("app-scoped-resources-map");
-        return false;
+    /**
+     * Validate if the jndi name is an defined as an application-scoped resource.
+     *
+     * @param jndiName of the resource.
+     * @param moduleName in which this resource reference was present.
+     * @return true if a resource is found in the module level resources.xml file or the app level one.
+     */
+    private boolean validateAppScopedResource(String jndiName, String moduleName) {
+        String actualModuleName = ResourceUtil.getActualModuleNameWithExtension(moduleName);
+        String appName = dc.getCommandParameters(DeployCommandParameters.class).name();
+
+        Map<String, List> resourcesList =
+                (Map<String, List>) dc.getTransientAppMetadata().get("app-scoped-resources-jndi-names");
+        List appLevelResources = resourcesList.get(appName);
+        List moduleLevelResources = resourcesList.get(actualModuleName);
+
+        boolean inModule = moduleLevelResources != null && moduleLevelResources.contains(jndiName);
+        boolean inApp = appLevelResources != null && appLevelResources.contains(jndiName);
+        return inModule || inApp;
     }
 }
