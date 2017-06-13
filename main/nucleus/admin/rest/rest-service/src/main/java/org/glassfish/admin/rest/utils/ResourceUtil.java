@@ -443,7 +443,8 @@ public class ResourceUtil {
                     // Ssl.getSSLInactivityTimeout(), we calculate getSslInactivityTimeout,
                     // which doesn't match due to case.
                     for (Method m : configBeanProxy.getMethods()) {
-                        if (m.getName().equalsIgnoreCase(methodName)) {
+                        String booleanMethodName = getAttributeBooleanMethodName(attributeName);
+                        if (m.getName().equalsIgnoreCase(methodName) || m.getName().equalsIgnoreCase(booleanMethodName)) {
                             method = m;
                         }
                     }
@@ -802,6 +803,10 @@ public class ResourceUtil {
 
     public static String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
+    }
+
+    public static String getAttributeBooleanMethodName(String attributeName) {
+        return methodNameFromDtdName(attributeName, "is");
     }
 
     private static String split(String lookback, String lookahead) {
