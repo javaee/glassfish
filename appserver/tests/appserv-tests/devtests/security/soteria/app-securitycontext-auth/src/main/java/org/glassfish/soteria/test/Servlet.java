@@ -43,9 +43,9 @@ import org.glassfish.soteria.SecurityContextImpl;
 
 import javax.annotation.security.DeclareRoles;
 import javax.inject.Inject;
-import javax.security.AuthenticationStatus;
-import javax.security.SecurityContext;
-import javax.security.identitystore.credential.CallerOnlyCredential;
+import javax.security.enterprise.AuthenticationStatus;
+import javax.security.enterprise.SecurityContext;
+import javax.security.enterprise.credential.CallerOnlyCredential;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -54,7 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-import static javax.security.authentication.mechanism.http.AuthenticationParameters.withParams;
+import static javax.security.enterprise.authentication.mechanism.http.AuthenticationParameters.withParams;
 import static org.glassfish.soteria.Utils.notNull;
 
 /**

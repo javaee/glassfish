@@ -40,17 +40,17 @@
 package org.glassfish.soteria.test;
 
 import static java.util.Arrays.asList;
-import static javax.security.AuthenticationStatus.SEND_FAILURE;
+import static javax.security.enterprise.AuthenticationStatus.SEND_FAILURE;
 
 import java.util.HashSet;
 
 import javax.enterprise.context.RequestScoped;
-import javax.security.AuthenticationStatus;
+import javax.security.enterprise.AuthenticationStatus;
 import javax.security.auth.message.AuthException;
-import javax.security.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.authentication.mechanism.http.HttpMessageContext;
-import javax.security.identitystore.credential.CallerOnlyCredential;
-import javax.security.identitystore.credential.Credential;
+import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
+import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.credential.CallerOnlyCredential;
+import javax.security.enterprise.credential.Credential;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

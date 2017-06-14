@@ -39,24 +39,24 @@
  */
 package org.glassfish.soteria.test;
 
-import static javax.security.identitystore.CredentialValidationResult.Status.VALID;
+import static javax.security.enterprise.identitystore.CredentialValidationResult.Status.VALID;
 import java.io.IOException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.security.AuthenticationStatus;
+import javax.security.enterprise.AuthenticationStatus;
 import javax.security.auth.message.AuthException;
-import javax.security.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.authentication.mechanism.http.HttpMessageContext;
-import javax.security.identitystore.CredentialValidationResult;
-import javax.security.identitystore.IdentityStoreHandler;
-import javax.security.identitystore.credential.UsernamePasswordCredential;
+import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
+import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStoreHandler;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.stream.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static javax.security.AuthenticationStatus.*;
+import static javax.security.enterprise.AuthenticationStatus.*;
 
 @RequestScoped
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {

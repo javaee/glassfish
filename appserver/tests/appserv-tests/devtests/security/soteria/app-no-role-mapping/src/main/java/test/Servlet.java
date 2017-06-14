@@ -42,7 +42,7 @@ package test;
 import java.io.IOException;
 
 import javax.annotation.security.DeclareRoles;
-import javax.security.authentication.mechanism.http.annotation.BasicAuthenticationMechanismDefinition;
+import javax.security.enterprise.authentication.mechanism.http.annotation.BasicAuthenticationMechanismDefinition;
 import org.glassfish.soteria.identitystores.annotation.Credentials;
 import org.glassfish.soteria.identitystores.annotation.EmbeddedIdentityStoreDefinition;
 import javax.servlet.ServletException;

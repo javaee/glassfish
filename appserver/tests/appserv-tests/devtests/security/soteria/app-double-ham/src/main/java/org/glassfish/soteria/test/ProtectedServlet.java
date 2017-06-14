@@ -42,7 +42,7 @@ package org.glassfish.soteria.test;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.security.SecurityContext;
+import javax.security.enterprise.SecurityContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -50,7 +50,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.security.authentication.mechanism.http.annotation.BasicAuthenticationMechanismDefinition;
+import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
 
 
 /**

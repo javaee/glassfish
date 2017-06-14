@@ -42,7 +42,7 @@ package org.glassfish.soteria.test;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.security.SecurityContext;
+import javax.security.enterprise.SecurityContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;

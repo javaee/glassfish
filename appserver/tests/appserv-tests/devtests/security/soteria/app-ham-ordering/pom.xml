@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.glassfish.soteria.test</groupId>
     <artifactId>soteria</artifactId>
-    <version>1.0-m05-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
   </parent>
 
 	<artifactId>app-ham-ordering</artifactId>
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>org.glassfish.soteria.test</groupId>
       <artifactId>common</artifactId>
-      <version>1.0-m05-SNAPSHOT</version>           
+      <version>5.0-SNAPSHOT</version>           
       <scope>test</scope>
       </dependency>
   </dependencies>
