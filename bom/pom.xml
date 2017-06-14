@@ -46,12 +46,12 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>2.5.0-b38</version>
+        <version>2.5.0-b39-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-bom</artifactId>
-    <version>2.5.0-b38</version>
+    <version>2.5.0-b39-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>HK2 Bom Pom</name>
