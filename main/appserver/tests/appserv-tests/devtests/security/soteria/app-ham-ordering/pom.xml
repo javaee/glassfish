@@ -7,11 +7,11 @@
     <version>1.0-m05-SNAPSHOT</version>
   </parent>
 
-	<artifactId>app-custom</artifactId>
+	<artifactId>app-ham-ordering</artifactId>
 	<packaging>war</packaging>
 	
 	<build>
-        <finalName>app-custom</finalName>
+        <finalName>app-ham-ordering</finalName>
 	</build>
     
     <properties>
