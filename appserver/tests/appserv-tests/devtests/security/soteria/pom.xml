@@ -21,6 +21,7 @@
         <module>app-custom</module>
         <module>app-securitycontext-auth</module>
         <module>app-double-ham</module>
+        <module>app-ham-ordering</module>
     </modules>
     
     <dependencyManagement>
