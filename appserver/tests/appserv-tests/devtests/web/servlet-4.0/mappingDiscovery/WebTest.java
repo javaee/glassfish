@@ -106,6 +106,12 @@ public class WebTest {
             boolean boundsMatch1 = webTest.run("GET", 200, false, "/a/foo", ".*");
             boolean boundsMatch2 = webTest.run("GET", 200, false, "/f", ".*");
             stat.addStatus(TEST_NAME + "-bounds", ((boundsMatch1 && boundsMatch2)? stat.PASS : stat.FAIL));
+
+
+            boolean namedDispatchMatch1 = webTest.run("GET", 200, false, "/NamedDispatcherBForwardToC", ".*In.ServletC.MappingImpl\\{matchValue=BForwardToCNamedDispatcher/,.pattern=/,.servletName=ServletC,.mappingMatch=DEFAULT\\}.*.FORWARD_MAPPING:.null.*.INCLUDE_MAPPING:.null.*.ASYNC_MAPPING:.null.*");
+
+            stat.addStatus(TEST_NAME + "-namedDispatch", ((namedDispatchMatch1)? stat.PASS : stat.FAIL));
+            
             
         } catch( Exception ex) {
             ex.printStackTrace();

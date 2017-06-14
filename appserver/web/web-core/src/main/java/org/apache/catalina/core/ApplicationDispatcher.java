@@ -80,6 +80,11 @@ import javax.servlet.http.HttpServletMapping;
 
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
+import org.apache.catalina.connector.MappingImpl;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Standard implementation of <code>RequestDispatcher</code> that allows a
@@ -1066,6 +1071,13 @@ public final class ApplicationDispatcher
             //START OF 6364900
             crossContextFlag = Boolean.valueOf(crossContext);
             //END OF 6364900
+            
+            //START OF github/javaee/glassfish/issues/21846
+            if (mappingForDispatch == StandardContext.NAMED_DISPATCH_SERVLET_MAPPING) {
+                this.mappingForDispatch = computeNamedDispatchHttpServletMapping(context, hcurrent);
+            }
+            //END OF github/javaee/glassfish/issues/21846
+            
             wrapper = new ApplicationHttpRequest
                 (hcurrent, context, crossContext, mappingForDispatch, state.dispatcherType);
         } else {
@@ -1082,7 +1094,31 @@ public final class ApplicationDispatcher
 
         return wrapper;
     }
+    
+    private HttpServletMapping computeNamedDispatchHttpServletMapping(Context context, HttpServletRequest hcurrent) {
+        HttpServletMapping result = null;
+        Mapper mapper = context.getMapper();
+        if (null == mapper) {
+            return null;
+        }
+  
+        MessageBytes uriMB = MessageBytes.newInstance();
+        CharChunk cc = uriMB.getCharChunk();
+        MappingData mappingData = new MappingData();
+        String requestURI = hcurrent.getRequestURI();
+        if (null == requestURI) {
+            return null;
+        }
+        try {
+            cc.append(requestURI, 0, requestURI.length());
+            mapper.map(uriMB, mappingData);
+        } catch (Exception ex) {
+            return null;
+        }
+        result = new MappingImpl(mappingData);
 
+        return result;
+    }
 
     /**
      * Create and return a response wrapper that has been inserted in the
