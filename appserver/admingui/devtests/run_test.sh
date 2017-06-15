@@ -53,7 +53,7 @@ test_run(){
   chmod 600 passwd
   vncserver
   $S1AS_HOME/bin/asadmin start-domain
-  cd $WORKSPACE/main/appserver/admingui/devtests/
+  cd $APS_HOME/../../admingui/devtests/
   pwd
   export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
