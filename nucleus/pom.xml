@@ -96,6 +96,17 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>bintray-snapshot</id>
+            <name>libs-snapshot</name>
+            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
+            <releases>
+              <enabled>false</enabled>
+            </releases>
+            <snapshots>
+              <enabled>true</enabled>              
+            </snapshots>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>

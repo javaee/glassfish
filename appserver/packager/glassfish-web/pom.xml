@@ -221,8 +221,8 @@
             <artifactId>soteria</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.security</groupId>
-            <artifactId>javax.security-api</artifactId>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
         </dependency>
     </dependencies>
 </project>
