@@ -83,6 +83,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private static final String JAVA_MODULE_PREFIX = "java:module/";
     private static final String JAVA_APP_PREFIX = "java:app/";
     private static final String JAVA_GLOBAL_PREFIX = "java:global/";
+    private static final String APP_SCOPED_RESOURCES_JNDI_NAMES = "app-scoped-resources-jndi-names";
 
     String target;
 
@@ -270,7 +271,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         String appName = dc.getCommandParameters(DeployCommandParameters.class).name();
 
         Map<String, List> resourcesList =
-                (Map<String, List>) dc.getTransientAppMetadata().get("app-scoped-resources-jndi-names");
+                (Map<String, List>) dc.getTransientAppMetadata().get(APP_SCOPED_RESOURCES_JNDI_NAMES);
         if (resourcesList == null)
             return false;
         List appLevelResources = resourcesList.get(appName);

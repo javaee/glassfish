@@ -283,6 +283,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     List<org.glassfish.resources.api.Resource> nonConnectorResources =
                             ResourcesXMLParser.getNonConnectorResourcesList(list, false, true);
                     resourcesList.put(NON_CONNECTOR_RESOURCES, nonConnectorResources);
+                    // TODO: Some resources store their JNDI names in other attributes
                     for (org.glassfish.resources.api.Resource resource : nonConnectorResources) {
                         String jndiName = (String) resource.getAttributes().get(JNDI_NAME);
                         if (jndiName != null) {
@@ -303,7 +304,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     jndiNames.put(moduleName, jndiNamesList);
                     appScopedResources.put(moduleName, resourcesList);
                 }
-                dc.addTransientAppMetaData("app-scoped-resources-jndi-names", jndiNames);
+                String APP_SCOPED_RESOURCES_JNDI_NAMES = "app-scoped-resources-jndi-names";
+                dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_JNDI_NAMES, jndiNames);
                 dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_MAP, appScopedResources);
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if(appInfo != null){
