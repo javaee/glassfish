@@ -52,14 +52,14 @@ test_run(){
   vncpasswd -f < temp > passwd
   chmod 600 passwd
   vncserver
-  $S1AS_HOME/bin/asadmin start-domain
-  cd $APS_HOME/../../admingui/devtests/
-  pwd
-  export DISPLAY=127.0.0.1:1	
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
-  $S1AS_HOME/bin/asadmin stop-domain	
-  vncserver -kill :1
-  rm -rf ~/.vnc
+ # $S1AS_HOME/bin/asadmin start-domain
+ # cd $APS_HOME/../../admingui/devtests/
+ # pwd
+ # export DISPLAY=127.0.0.1:1	
+ # mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
+ # $S1AS_HOME/bin/asadmin stop-domain	
+ # vncserver -kill :1
+ # rm -rf ~/.vnc
 }
 
 run_test_id(){
@@ -83,13 +83,13 @@ run_test_id(){
   #run the actual test function
   test_run
  
-  check_successful_run
-  generate_junit_report $1
-  change_junit_report_class_names
-  copy_test_artifects
-  upload_test_results
-  delete_bundle
-  cd -
+#  check_successful_run
+#  generate_junit_report $1
+#  change_junit_report_class_names
+#  copy_test_artifects
+#  upload_test_results
+#  delete_bundle
+#  cd -
 }
 
 get_test_target(){
