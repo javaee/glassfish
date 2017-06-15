@@ -52,6 +52,8 @@ test_run(){
   vncpasswd -f < temp > passwd
   chmod 600 passwd
   vncserver
+  vncserver -kill :1
+  vncserver
  # $S1AS_HOME/bin/asadmin start-domain
  # cd $APS_HOME/../../admingui/devtests/
  # pwd
