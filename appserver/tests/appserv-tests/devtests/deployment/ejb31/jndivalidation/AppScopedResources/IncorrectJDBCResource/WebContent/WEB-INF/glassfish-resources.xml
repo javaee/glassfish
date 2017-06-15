@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions //EN" "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+
+<resources>
+ <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.ClientDataSource" res-type="javax.sql.DataSource" name="java:app/test-jdbc-pool">
+    </jdbc-connection-pool>
+
+    <jdbc-resource pool-name="java:app/test-jdbc-pool" jndi-name="java:app/jdbc/test-jdbc-resource"></jdbc-resource>
+</resources>
+

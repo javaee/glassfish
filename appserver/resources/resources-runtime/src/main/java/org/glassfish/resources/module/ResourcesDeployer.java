@@ -285,7 +285,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     resourcesList.put(NON_CONNECTOR_RESOURCES, nonConnectorResources);
                     // TODO: Some resources store their JNDI names in other attributes
                     for (org.glassfish.resources.api.Resource resource : nonConnectorResources) {
-                        String jndiName = (String) resource.getAttributes().get(JNDI_NAME);
+                        String jndiName = extractJNDIName(resource);
                         if (jndiName != null) {
                             jndiNamesList.add(jndiName);
                         }
@@ -295,7 +295,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                             ResourcesXMLParser.getConnectorResourcesList(list, false, true);
                     resourcesList.put(CONNECTOR_RESOURCES, connectorResources);
                     for (org.glassfish.resources.api.Resource resource : connectorResources) {
-                        String jndiName = (String) resource.getAttributes().get(JNDI_NAME);
+                        String jndiName = extractJNDIName(resource);
                         if (jndiName != null) {
                             jndiNamesList.add(jndiName);
                         }
@@ -304,7 +304,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     jndiNames.put(moduleName, jndiNamesList);
                     appScopedResources.put(moduleName, resourcesList);
                 }
-                String APP_SCOPED_RESOURCES_JNDI_NAMES = "app-scoped-resources-jndi-names";
                 dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_JNDI_NAMES, jndiNames);
                 dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_MAP, appScopedResources);
                 ApplicationInfo appInfo = appRegistry.get(appName);
@@ -318,6 +317,24 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             // in the event notification infrastructure
             throw new DeploymentException("Failue while processing glassfish-resources.xml(s) in the archive ", e);
         }
+    }
+
+    /**
+     * Extract the JNDI name from the resource. Collecting for resource valitation.
+     *
+     * @param resource
+     * @return jndi name if present, null otherwise
+     */
+    private String extractJNDIName(org.glassfish.resources.api.Resource resource) {
+        HashMap attrs = resource.getAttributes();
+        String jndiName = (String) attrs.get(JNDI_NAME);
+        if (jndiName != null)
+            return jndiName;
+        // Connection Pool
+        jndiName = (String) attrs.get(CONNECTION_POOL_NAME);
+        if (jndiName != null)
+            return jndiName;
+        return null;
     }
 
     private static void validateResourcesXML(File file, ResourcesXMLParser parser) throws ResourceConflictException {

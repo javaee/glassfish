@@ -71,5 +71,8 @@
         <ant dir="resourceref" target="private-all">
             <property name="build" value="${build}/resourceref"/>
         </ant>
+        <ant dir="AppScopedResources" target="private-all">
+            <property name="build" value="${build}/AppScopedResources"/>
+        </ant>
     </target>
 </project>

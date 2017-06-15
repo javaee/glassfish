@@ -53,6 +53,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.resourcebase.resources.util.ResourceUtil;
+import org.glassfish.resourcebase.resources.api.ResourceConstants;
 
 import javax.inject.Inject;
 import java.net.MalformedURLException;
@@ -78,12 +79,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             comment = "For the method validateJNDIRefs of com.sun.enterprise.deployment.util.ResourceValidator."
     )
     private static final String RESOURCE_REF_JNDI_LOOKUP_FAILED = "AS-DEPLOYMENT-00026";
-
-    private static final String JAVA_COMP_PREFIX = "java:comp/";
-    private static final String JAVA_MODULE_PREFIX = "java:module/";
-    private static final String JAVA_APP_PREFIX = "java:app/";
-    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
-    private static final String APP_SCOPED_RESOURCES_JNDI_NAMES = "app-scoped-resources-jndi-names";
 
     String target;
 
@@ -170,8 +165,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
         if (resRef.isURLResource()) {
             String physicalJndiName = resRef.getJndiName();
-            if (!(physicalJndiName.startsWith(JAVA_GLOBAL_PREFIX) || physicalJndiName.startsWith(JAVA_APP_PREFIX) ||
-                    physicalJndiName.startsWith(JAVA_MODULE_PREFIX) || physicalJndiName.startsWith(JAVA_COMP_PREFIX))) {
+            if (!(physicalJndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX) ||
+                    physicalJndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX) ||
+                    physicalJndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX) ||
+                    physicalJndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX))) {
                 try {
                     // for jndi-name like "http://localhost:8080/index.html"
                     Object obj = new java.net.URL(physicalJndiName);
@@ -271,7 +268,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         String appName = dc.getCommandParameters(DeployCommandParameters.class).name();
 
         Map<String, List> resourcesList =
-                (Map<String, List>) dc.getTransientAppMetadata().get(APP_SCOPED_RESOURCES_JNDI_NAMES);
+                (Map<String, List>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         if (resourcesList == null)
             return false;
         List appLevelResources = resourcesList.get(appName);

@@ -148,6 +148,7 @@ public interface ResourceConstants {
     public static String EMBEDDEDRAR_NAME_DELIMITER="#";
 
     public final static String APP_META_DATA_RESOURCES = "app-level-resources-config";
+    public final static String APP_SCOPED_RESOURCES_JNDI_NAMES = "app-scoped-resources-jndi-names";
     public final static String APP_SCOPED_RESOURCES_MAP = "app-scoped-resources-map";
 
 }
