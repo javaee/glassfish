@@ -1143,7 +1143,7 @@
             <dependency>
                 <groupId>javax.security.enterprise</groupId>
                 <artifactId>javax.security.enterprise-api</artifactId>
-                <version>${javax.security.enterprise-api}</version>
+                <version>${javax.security.enterprise-api.version}</version>
             </dependency>
       </dependencies>
     </dependencyManagement>
