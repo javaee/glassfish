@@ -46,8 +46,7 @@ test_run(){
   $S1AS_HOME/bin/asadmin start-domain domain1
   $S1AS_HOME/bin/asadmin start-database
   cd $APS_HOME/devtests/jdbc
-  antTarget=all
-  ant $antTarget
+  ant TARGET
   $S1AS_HOME/bin/asadmin stop-domain domain1
   $S1AS_HOME/bin/asadmin stop-database
 }
@@ -76,6 +75,14 @@ run_test_id(){
   cd -
 }
  
+get_test_target(){
+	case $1 in
+		jdbc_all )
+			TARGET=all
+			export TARGET;;
+	esac
+
+}
 
 OPT=$1
 TEST_ID=$2
