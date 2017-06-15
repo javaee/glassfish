@@ -46,7 +46,7 @@ test_run(){
   $S1AS_HOME/bin/asadmin start-domain domain1
   $S1AS_HOME/bin/asadmin start-database
   cd $APS_HOME/devtests/jdbc
-  antTarget="all"
+  antTarget=all
   ant $antTarget
   $S1AS_HOME/bin/asadmin stop-domain domain1
   $S1AS_HOME/bin/asadmin stop-database
