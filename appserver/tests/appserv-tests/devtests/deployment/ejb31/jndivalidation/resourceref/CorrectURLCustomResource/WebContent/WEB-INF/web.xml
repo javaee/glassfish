@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE project [
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,34 +41,13 @@
 
 -->
 
-<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
-]>
-
-<project name="jndivalidation" default="all" basedir=".">
-
-    &commonBuild;
-
-    <target name="private-all">
-        <ant dir="IncorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/IncorrectEnvEntry"/>
-        </ant>
-        <ant dir="CorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/CorrectEnvEntry"/>
-        </ant>
-        <ant dir="ConflictedEJBRef" target="private-all">
-            <property name="build" value="${build}/ConflictedEJBRef"/>
-        </ant>
-        <ant dir="ConflictedEnvEntry" target="private-all">
-            <property name="build" value="${build}/ConflictedEnvEntry"/>
-        </ant>
-        <ant dir="ConflitedResourceEnvRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceEnvRef"/>
-        </ant>
-        <ant dir="ConflitedResourceRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceRef"/>
-        </ant>
-        <ant dir="resourceref" target="private-all">
-            <property name="build" value="${build}/resourceref"/>
-        </ant>
-    </target>
-</project>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>

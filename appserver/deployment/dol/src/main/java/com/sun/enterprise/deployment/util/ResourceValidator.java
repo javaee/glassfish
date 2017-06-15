@@ -55,6 +55,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.resourcebase.resources.util.ResourceUtil;
 
 import javax.inject.Inject;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             comment = "For the method validateJNDIRefs of com.sun.enterprise.deployment.util.ResourceValidator."
     )
     private static final String RESOURCE_REF_JNDI_LOOKUP_FAILED = "AS-DEPLOYMENT-00026";
+
+    private static final String JAVA_COMP_PREFIX = "java:comp/";
+    private static final String JAVA_MODULE_PREFIX = "java:module/";
+    private static final String JAVA_APP_PREFIX = "java:app/";
+    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
 
     String target;
 
@@ -156,31 +162,54 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
     }
 
-    // TODO: Decide what to do in case of ORB, WebService Context, URL, anything else?
+    // TODO: Decide what to do in case of ORB
     private void accept(ResourceReferenceDescriptor resRef, String moduleName) {
-        if (resRef.isORB() || resRef.isWebServiceContext() || resRef.isURLResource()) {
+        if (resRef.isORB() || resRef.isWebServiceContext()) {
             return;
+        }
+        if (resRef.isURLResource()) {
+            String physicalJndiName = resRef.getJndiName();
+            if (!(physicalJndiName.startsWith(JAVA_GLOBAL_PREFIX) || physicalJndiName.startsWith(JAVA_APP_PREFIX) ||
+                    physicalJndiName.startsWith(JAVA_MODULE_PREFIX) || physicalJndiName.startsWith(JAVA_COMP_PREFIX))) {
+                try {
+                    // for jndi-name like "http://localhost:8080/index.html"
+                    Object obj = new java.net.URL(physicalJndiName);
+                    return;
+                } catch (MalformedURLException e) {
+                    // If jndi-name is not an actual url, we might want to lookup the name
+                }
+            }
         }
         accept((NamedDescriptor) resRef, moduleName);
     }
 
-    /* TODO: Implement
-       1) Since a custom JNDI resource is stored in this, we need to exclude all normal references and validate only the custom resources.
-       Custom resources might also get stored in the general resources section depending on their type.
-       2) All resources specified under resource-env-ref tag go in here.
+    /**
+     * TODO: Implement
+     * 1) Since a custom JNDI resource is stored in this, we need to exclude all normal references and validate only the custom resources.
+     * Custom resources might also get stored in the general resources section depending on their type.
+     * 2) All resources specified under resource-env-ref tag go in here.
+     *
+     * @param resRef
+     * @param moduleName
      */
     private void accept(ResourceEnvReferenceDescriptor resRef, String moduleName) {
         return;
     }
 
-    // If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
-    // We might be duplicating our validation efforts since we are already validating message destination separately.
+    /**
+     * If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
+     * We might be duplicating our validation efforts since we are already validating message destination separately.
+     * TODO: devtests
+     *
+     * @param resRef
+     * @param moduleName
+     */
     private void accept(MessageDestinationReferenceDescriptor resRef, String moduleName) {
         if (resRef.isLinkedToMessageDestination()) {
             validateJNDIRefs(resRef.getMessageDestination().getJndiName(), moduleName);
         }
         else {
-            validateJNDIRefs(resRef.getJndiName(), moduleName);
+            accept((NamedDescriptor) resRef, moduleName);
         }
     }
 
@@ -211,7 +240,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @return
      */
     private boolean validateResource(String jndiName) {
-        if (jndiName == "java:comp/DefaultDataSource" || jndiName == "java:comp/DefaultJMSConnectionFactory")
+        // The default values
+        if (jndiName.equals("java:comp/DefaultDataSource") || jndiName.equals("java:comp/DefaultJMSConnectionFactory"))
             return true;
 
         Server svr = domain.getServerNamed(target);
@@ -229,6 +259,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * Validate if the jndi name is an defined as an application-scoped resource.
+     * TODO: devtests
      *
      * @param jndiName of the resource.
      * @param moduleName in which this resource reference was present.
@@ -240,6 +271,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         Map<String, List> resourcesList =
                 (Map<String, List>) dc.getTransientAppMetadata().get("app-scoped-resources-jndi-names");
+        if (resourcesList == null)
+            return false;
         List appLevelResources = resourcesList.get(appName);
         List moduleLevelResources = resourcesList.get(actualModuleName);
 

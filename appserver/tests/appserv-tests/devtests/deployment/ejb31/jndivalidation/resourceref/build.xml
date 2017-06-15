@@ -42,34 +42,22 @@
 
 -->
 
-<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 ]>
 
-<project name="jndivalidation" default="all" basedir=".">
+<project name="resourceref" default="all" basedir=".">
 
     &commonBuild;
 
     <target name="private-all">
-        <ant dir="IncorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/IncorrectEnvEntry"/>
+        <ant dir="IncorrectJDBCResource" target="private-all">
+            <property name="build" value="${build}/IncorrectJDBCResource"/>
         </ant>
-        <ant dir="CorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/CorrectEnvEntry"/>
+        <ant dir="CorrectJDBCResource" target="private-all">
+            <property name="build" value="${build}/CorrectJDBCResource"/>
         </ant>
-        <ant dir="ConflictedEJBRef" target="private-all">
-            <property name="build" value="${build}/ConflictedEJBRef"/>
-        </ant>
-        <ant dir="ConflictedEnvEntry" target="private-all">
-            <property name="build" value="${build}/ConflictedEnvEntry"/>
-        </ant>
-        <ant dir="ConflitedResourceEnvRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceEnvRef"/>
-        </ant>
-        <ant dir="ConflitedResourceRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceRef"/>
-        </ant>
-        <ant dir="resourceref" target="private-all">
-            <property name="build" value="${build}/resourceref"/>
+        <ant dir="CorrectURLCustomResource" target="private-all">
+            <property name="build" value="${build}/CorrectURLCustomResource"/>
         </ant>
     </target>
 </project>
