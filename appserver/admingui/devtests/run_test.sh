@@ -67,7 +67,7 @@ test_run(){
   cd $APS_HOME/../../admingui/devtests/
   pwd
   export DISPLAY=sca00inc.us.oracle.com:1	
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true -Dtest=ConfigTest test | tee $TEST_RUN_LOG
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
   rm -rf /tmp/password.txt	
  
