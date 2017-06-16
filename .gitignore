@@ -11,3 +11,6 @@ nbactions.xml
 .classpath
 .project
 .settings/
+appserver/appclient/client/acc-config/temp/
+appserver/security/jaspic-provider-framework/auth.conf
+appserver/tests/appserv-tests/devtests/web/JSESSIONID
