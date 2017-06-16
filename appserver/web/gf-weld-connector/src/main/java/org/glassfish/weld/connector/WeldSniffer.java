@@ -179,16 +179,11 @@ public class WeldSniffer extends GenericSniffer {
     }
 
     // there is a beans.xml.
-    if ( beanDiscoveryMode == null ) {
+    if (beanDiscoveryMode == null || beanDiscoveryMode.equals("all")) {
       return true;
-    } else {
-      if (beanDiscoveryMode.equals( "annotated") || beanDiscoveryMode.equals("all")) {
-        return true;
-      } else if (beanDiscoveryMode.equals("none")) {
-        // beanDiscoveryMode = none
-        return false;
-      }
-
+    } else if (beanDiscoveryMode.equals("none")) {
+      // beanDiscoveryMode = none
+      return false;
     }
 
     // last case is beanDiscoveryMode = annotated
@@ -197,7 +192,7 @@ public class WeldSniffer extends GenericSniffer {
     } catch (IOException e) {
       return false;
     }
-  } 
+  }
 
   public String[] getContainersNames() {
     return containers;
