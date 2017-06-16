@@ -66,7 +66,7 @@ test_run(){
   $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
-  export DISPLAY=sca00inc.us.oracle.com:1	
+  export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
   rm -rf /tmp/password.txt	
@@ -89,18 +89,18 @@ run_test_id(){
   unzip_test_resources $WORKSPACE/bundles/glassfish.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
   cd `dirname $0`
   test_init
-  get_test_target $1
+  #get_test_target $1
  
   #run the actual test function
   test_run
  
-#  check_successful_run
-#  generate_junit_report $1
-#  change_junit_report_class_names
-#  copy_test_artifects
-#  upload_test_results
-#  delete_bundle
-#  cd -
+  check_successful_run
+  generate_junit_report $1
+  change_junit_report_class_names
+  copy_test_artifects
+  upload_test_results
+  delete_bundle
+  cd -
 }
 
 get_test_target(){
