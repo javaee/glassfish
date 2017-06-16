@@ -47,7 +47,9 @@ import org.openqa.selenium.*;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -130,7 +132,13 @@ public class BaseSeleniumTestClass {
             helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
+                String hostName = null;
+                try {
+                    hostName = InetAddress.getLocalHost().getHostName();
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
