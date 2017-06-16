@@ -61,13 +61,15 @@ test_run(){
   echo "AS_ADMIN_NEWPASSWORD=admin" >> /tmp/password.txt
   $S1AS_HOME/bin/asadmin --user admin --passwordfile /tmp/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
-  $S1AS_HOME/bin/asadmin enable-secure-admin
+  echo "AS_ADMIN_PASSWORD=admin" > /tmp/password.txt
+  $S1AS_HOME/bin/asadmin --passwordfile /tmp/password.txt enable-secure-admin
   $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
   export DISPLAY=sca00inc.us.oracle.com:1	
-  mvn -Dmaven.repo.local=$WORKSPACE/repository  -DsecureAdmin=true -Dtest=ConfigTest test | tee $TEST_RUN_LOG
-  $S1AS_HOME/bin/asadmin stop-domain	
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true -Dtest=ConfigTest test | tee $TEST_RUN_LOG
+  $S1AS_HOME/bin/asadmin stop-domain
+  rm -rf /tmp/password.txt	
  
 }
 
