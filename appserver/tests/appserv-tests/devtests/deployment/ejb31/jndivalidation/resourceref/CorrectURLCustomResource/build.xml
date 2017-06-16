@@ -77,7 +77,6 @@
         <antcall target="common.create.customresource">
             <param name="resource.type" value="java.net.URL" />
             <param name="resource.factory.class" value="org.glassfish.resources.custom.factory.URLFactory" />
-            <param name="resource.target" value="server" />
             <param name="resource.value" value="http\://www.oracle.com" />
             <param name="resource.name" value="resource/myURL" />
         </antcall>
@@ -85,7 +84,6 @@
 
     <target name="undeploy.custom.resource">
         <antcall target="common.delete.customresource">
-            <param name="resource.target" value="server" />
             <param name="resource.name" value="resource/myURL" />
         </antcall>
     </target>
