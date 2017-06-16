@@ -74,8 +74,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
-            <artifactId>soteria</artifactId>
-            <version>1.0-m06-SNAPSHOT</version>
+            <artifactId>javax.security.enterprise</artifactId>
+            <version>1.0-b07</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
