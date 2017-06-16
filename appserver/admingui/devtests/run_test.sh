@@ -55,7 +55,11 @@ test_run(){
   #vncserver
   #sleep 60
   
-  
+  touch /tmp/password.txt
+  chmod 600 /tmp/password.txt
+  echo "AS_ADMIN_PASSWORD=" > /tmp/password.txt
+  echo "AS_ADMIN_NEWPASSWORD=admin" >> /tmp/password.txt
+  $S1AS_HOME/bin/asadmin --user admin --passwordfile /tmp/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
