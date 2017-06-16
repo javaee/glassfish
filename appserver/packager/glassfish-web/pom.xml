@@ -218,7 +218,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
-            <artifactId>soteria</artifactId>
+            <artifactId>javax.security.enterprise</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.security.enterprise</groupId>
