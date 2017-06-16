@@ -56,10 +56,7 @@ test_run(){
   vncserver -kill :1
   sleep 30
   vncserver
-  sleep 60
-  vncserver -kill :1
-  sleep 30
-  vncserver
+  
  # $S1AS_HOME/bin/asadmin start-domain
  # cd $APS_HOME/../../admingui/devtests/
  # pwd
