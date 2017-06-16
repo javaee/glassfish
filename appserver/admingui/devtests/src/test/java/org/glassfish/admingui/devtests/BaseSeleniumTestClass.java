@@ -138,7 +138,7 @@ public class BaseSeleniumTestClass {
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
+                URL url = new URL("http://" + hostName + ".us.oracle.com:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));

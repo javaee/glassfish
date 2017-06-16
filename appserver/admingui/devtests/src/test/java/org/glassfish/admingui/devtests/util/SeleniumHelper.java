@@ -122,7 +122,7 @@ public class SeleniumHelper {
         } catch (UnknownHostException ex) {
             Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "http://" + hostName + ":" + getParameter("admin.port", "4848");
+        return "http://" + hostName + ".us.oracle.com:" + getParameter("admin.port", "4848");
     }
 
     public WebDriver getDriver() {
