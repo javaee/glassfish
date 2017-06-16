@@ -45,25 +45,24 @@ list_test_ids(){
 test_run(){
   #test functions goes here, maven test or ant test etc.
   
-  cd ~
-  mkdir -p .vnc
-  cd .vnc/
-  openssl rand -base64 12 > temp
-  vncpasswd -f < temp > passwd
-  chmod 600 passwd
-  sleep 30
-  vncserver
-  sleep 60
+  #cd ~
+  #mkdir -p .vnc
+  #cd .vnc/
+  #openssl rand -base64 12 > temp
+  #vncpasswd -f < temp > passwd
+  #chmod 600 passwd
+  #sleep 30
+  #vncserver
+  #sleep 60
   
   
- # $S1AS_HOME/bin/asadmin start-domain
- # cd $APS_HOME/../../admingui/devtests/
- # pwd
- # export DISPLAY=127.0.0.1:1	
- # mvn -Dmaven.repo.local=$WORKSPACE/repository -Dtest=ConfigTest test | tee $TEST_RUN_LOG
- # $S1AS_HOME/bin/asadmin stop-domain	
- # vncserver -kill :1
- # rm -rf ~/.vnc
+  $S1AS_HOME/bin/asadmin start-domain
+  cd $APS_HOME/../../admingui/devtests/
+  pwd
+  export DISPLAY=127.0.0.1:1	
+  mvn -Dmaven.repo.local=$WORKSPACE/repository test | tee $TEST_RUN_LOG
+  $S1AS_HOME/bin/asadmin stop-domain	
+ 
 }
 
 run_test_id(){
