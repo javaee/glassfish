@@ -51,11 +51,10 @@ test_run(){
   openssl rand -base64 12 > temp
   vncpasswd -f < temp > passwd
   chmod 600 passwd
-  vncserver
-  sleep 60
-  vncserver -kill :1
   sleep 30
   vncserver
+  sleep 60
+  
   
  # $S1AS_HOME/bin/asadmin start-domain
  # cd $APS_HOME/../../admingui/devtests/
