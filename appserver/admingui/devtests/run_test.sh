@@ -61,6 +61,8 @@ test_run(){
   echo "AS_ADMIN_NEWPASSWORD=admin" >> /tmp/password.txt
   $S1AS_HOME/bin/asadmin --user admin --passwordfile /tmp/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
+  $S1AS_HOME/bin/asadmin enable-secure-admin
+  $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
   export DISPLAY=sca00inc.us.oracle.com:1	
