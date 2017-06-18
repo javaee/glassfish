@@ -101,7 +101,7 @@ download_test_resources(){
 	printf "\n%s \n\n" "===== DOWNLOAD TEST RESOURCES ====="
 	for i in "$@"; do
 		echo downloading $i
-		scp ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/$i bundles
+		scp -o "StrictHostKeyChecking no" ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/$i bundles
 	done
 }
 
@@ -112,7 +112,7 @@ zip_test_results(){
 
 upload_test_results(){
 	printf "\n%s \n\n" "===== UPLOADING THE TESTS RESULTS ====="
-	scp -r $WORKSPACE/results/ ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID/
+	scp -o "StrictHostKeyChecking no" -r $WORKSPACE/results/ ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID/
 }
 
 unzip_test_resources(){
