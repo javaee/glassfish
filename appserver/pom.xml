@@ -81,6 +81,8 @@
         <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <javax.validation-api.version>1.1.0.Final</javax.validation-api.version>
+        <javax.security.enterprise-api.version>1.0-b06</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0-b07</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -485,6 +487,19 @@
                             <implVersion>3.0.0</implVersion>
                             <apiPackage>javax.el</apiPackage>
                             <implNamespace>com.sun.el</implNamespace>
+                        </spec>
+                        <spec>
+                            <artifact>
+                                <groupId>javax.security.enterprise</groupId>
+                                <artifactId>javax.security.enterprise-api</artifactId>
+                                <version>${javax.security.enterprise-api.version}</version>
+                            </artifact>
+                            <nonFinal>false</nonFinal>
+                            <jarType>api</jarType>
+                            <specVersion>1.0-b06</specVersion>
+                            <specImplVersion>${javax.security.enterprise.version}</specImplVersion>
+                            <apiPackage>javax.security.enterprise</apiPackage>
+                            <implNamespace>org.glassfish.soteria</implNamespace>
                         </spec>
                     </specs>
                 </configuration>
@@ -1120,7 +1135,17 @@
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
-        </dependencies>
+            <dependency>
+                <groupId>org.glassfish.soteria</groupId>
+                <artifactId>javax.security.enterprise</artifactId>
+                <version>${javax.security.enterprise.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.security.enterprise</groupId>
+                <artifactId>javax.security.enterprise-api</artifactId>
+                <version>${javax.security.enterprise-api.version}</version>
+            </dependency>
+      </dependencies>
     </dependencyManagement>
 
     <profiles>
