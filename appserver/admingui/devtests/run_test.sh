@@ -66,7 +66,8 @@ test_run(){
   $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
-  export DISPLAY=127.0.0.1:1	
+  export DISPLAY=127.0.0.1:1
+  echo "Adding to test"	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
   rm -rf /tmp/password.txt	
