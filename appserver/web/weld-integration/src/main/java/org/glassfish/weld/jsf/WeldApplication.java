@@ -67,7 +67,7 @@ public class WeldApplication extends ApplicationWrapper {
         BeanManager beanManager = getBeanManager();
         if (beanManager != null) {
             application.addELContextListener(Util.<ELContextListener>newInstance(
-                "org.jboss.weld.module.web.el.WeldELContextListener"));
+                "org.jboss.weld.el.WeldELContextListener"));
             application.addELResolver(beanManager.getELResolver());
             JspApplicationContext jspAppContext = JspFactory.getDefaultFactory().
                 getJspApplicationContext((ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext());
