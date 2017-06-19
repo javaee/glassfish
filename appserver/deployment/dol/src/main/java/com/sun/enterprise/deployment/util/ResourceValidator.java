@@ -109,57 +109,57 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     private void processResources() {
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.warType())) {
-            accept(bd, bd.getModuleName());
+            accept(bd);
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.carType())) {
-            accept(bd, bd.getModuleName());
+            accept(bd);
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.ejbType())) {
-            accept(bd, bd.getModuleName());
+            accept(bd);
             EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
             for (EjbDescriptor ejb : ebd.getEjbs()) {
                 for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
                     ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
-                    accept(next, bd.getModuleName());
+                    accept(next, ejb);
                 }
 
                 for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
                     ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
-                    accept(next, bd.getModuleName());
+                    accept(next, ejb);
                 }
 
                 for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
                     MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-                    accept(next, bd.getModuleName());
+                    accept(next, ejb);
                 }
             }
         }
-        accept(application, application.getAppName());
+        accept(application);
     }
 
-    private void accept(BundleDescriptor bundleDescriptor, String moduleName) {
-        if (bundleDescriptor instanceof JndiNameEnvironment) {
-            JndiNameEnvironment nameEnvironment = (JndiNameEnvironment) bundleDescriptor;
+    private void accept(BundleDescriptor bd) {
+        if (bd instanceof JndiNameEnvironment) {
+            JndiNameEnvironment nameEnvironment = (JndiNameEnvironment) bd;
             for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), moduleName);
+                accept(itr.next(), nameEnvironment);
             }
 
             for (Iterator<ResourceEnvReferenceDescriptor> itr = nameEnvironment.getResourceEnvReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), moduleName);
+                accept(itr.next(), nameEnvironment);
             }
 
             for (Iterator<MessageDestinationReferenceDescriptor> itr = nameEnvironment.getMessageDestinationReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), moduleName);
+                accept(itr.next(), nameEnvironment);
             }
 
-            for (Iterator<MessageDestinationDescriptor> itr = bundleDescriptor.getMessageDestinations().iterator(); itr.hasNext();) {
-                accept(itr.next(), moduleName);
+            for (Iterator<MessageDestinationDescriptor> itr = bd.getMessageDestinations().iterator(); itr.hasNext();) {
+                accept(itr.next(), nameEnvironment);
             }
         }
     }
 
     // TODO: Decide what to do in case of ORB
-    private void accept(ResourceReferenceDescriptor resRef, String moduleName) {
+    private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         if (resRef.isORB() || resRef.isWebServiceContext()) {
             return;
         }
@@ -171,14 +171,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                     physicalJndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX))) {
                 try {
                     // for jndi-name like "http://localhost:8080/index.html"
-                    Object obj = new java.net.URL(physicalJndiName);
+                    new java.net.URL(physicalJndiName);
                     return;
                 } catch (MalformedURLException e) {
                     // If jndi-name is not an actual url, we might want to lookup the name
                 }
             }
         }
-        accept((NamedDescriptor) resRef, moduleName);
+        accept((NamedDescriptor) resRef, env);
     }
 
     /**
@@ -188,9 +188,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * 2) All resources specified under resource-env-ref tag go in here.
      *
      * @param resRef
-     * @param moduleName
+     * @param env
      */
-    private void accept(ResourceEnvReferenceDescriptor resRef, String moduleName) {
+    private void accept(ResourceEnvReferenceDescriptor resRef, JndiNameEnvironment env) {
         return;
     }
 
@@ -200,30 +200,30 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * TODO: devtests
      *
      * @param resRef
-     * @param moduleName
+     * @param env
      */
-    private void accept(MessageDestinationReferenceDescriptor resRef, String moduleName) {
+    private void accept(MessageDestinationReferenceDescriptor resRef, JndiNameEnvironment env) {
         if (resRef.isLinkedToMessageDestination()) {
-            validateJNDIRefs(resRef.getMessageDestination().getJndiName(), moduleName);
+            validateJNDIRefs(resRef.getMessageDestination().getJndiName(), env);
         }
         else {
-            accept((NamedDescriptor) resRef, moduleName);
+            accept((NamedDescriptor) resRef, env);
         }
     }
 
-    private void accept(NamedDescriptor resRef, String moduleName) {
-        validateJNDIRefs(resRef.getJndiName(), moduleName);
+    private void accept(NamedDescriptor resRef, JndiNameEnvironment env) {
+        validateJNDIRefs(resRef.getJndiName(), env);
     }
 
     /**
-     * Validate the given JNDI name by checking in domain.xml and in app scoped resources.
+     * Validate the given JNDI name by checking in domain.xml and in resources defined within the app.
      *
      * @param jndiName
-     * @param moduleName
+     * @param env
      */
-    private void validateJNDIRefs(String jndiName, String moduleName) {
+    private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
         if(!validateResource(jndiName)) {
-            if (!validateAppScopedResource(jndiName, moduleName)) {
+            if (!validateAppScopedResource(jndiName, env)) {
                 deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                         new Object[] {jndiName});
                 throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
@@ -233,6 +233,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * Validate the given resource in the corresponding target using domain.xml serverbeans.
+     * For resources defined outside the application.
      *
      * @param jndiName
      * @return
@@ -256,23 +257,22 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Validate if the jndi name is an defined as an application-scoped resource.
-     * TODO: devtests
+     * Validate if the jndi name is an defined as an application-scoped resources.
      *
      * @param jndiName of the resource.
-     * @param moduleName in which this resource reference was present.
+     * @param env in which this resource reference was present.
      * @return true if a resource is found in the module level resources.xml file or the app level one.
      */
-    private boolean validateAppScopedResource(String jndiName, String moduleName) {
-        String actualModuleName = ResourceUtil.getActualModuleNameWithExtension(moduleName);
-        String appName = dc.getCommandParameters(DeployCommandParameters.class).name();
+    private boolean validateAppScopedResource(String jndiName, JndiNameEnvironment env) {
+        String moduleName = DOLUtils.getModuleName(env);
+        String appName = DOLUtils.getApplicationName(env);
 
         Map<String, List> resourcesList =
                 (Map<String, List>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         if (resourcesList == null)
             return false;
         List appLevelResources = resourcesList.get(appName);
-        List moduleLevelResources = resourcesList.get(actualModuleName);
+        List moduleLevelResources = resourcesList.get(moduleName);
 
         boolean inModule = moduleLevelResources != null && moduleLevelResources.contains(jndiName);
         boolean inApp = appLevelResources != null && appLevelResources.contains(jndiName);
