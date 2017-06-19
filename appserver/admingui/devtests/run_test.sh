@@ -42,6 +42,16 @@ list_test_ids(){
   echo admingui_all
 }
 
+merge_junit_xmls(){
+  JUD_DIR=$1
+  JUD=$WORKSPACE/results/junitreports/test_results_junit.xml
+  rm -f ${JUD} || true
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> ${JUD}
+  echo "<testsuites>" >> ${JUD}
+  find ${JUD_DIR} -name "*.xml" -type f -exec cat '{}' \; | ${SED} 's/<?xml version=\"1.0\" encoding=\"UTF-8\"?>//g' >> ${JUD}
+  echo "</testsuites>" >> ${JUD}
+}
+
 test_run(){
   #test functions goes here, maven test or ant test etc.
   
@@ -66,12 +76,14 @@ test_run(){
   $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   pwd
-  export DISPLAY=127.0.0.1:1
-  echo "Adding to test"	
+  export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
   rm -rf /tmp/password.txt	
- 
+  cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
+  cp $TEST_RUN_LOG $WORKSPACE/results/
+  cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
+  
 }
 
 run_test_id(){
@@ -95,10 +107,11 @@ run_test_id(){
   #run the actual test function
   test_run
  
-  check_successful_run
-  generate_junit_report $1
+  #check_successful_run
+  #generate_junit_report $1
+  merge_junit_xmls $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports
   change_junit_report_class_names
-  copy_test_artifects
+  #copy_test_artifects
   upload_test_results
   delete_bundle
   cd -
