@@ -74,13 +74,15 @@
         <javax.transaction-api.version>1.2.1</javax.transaction-api.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
-        <cdi-api.version>2.0</cdi-api.version>
+        <cdi-api.version>1.2</cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.resource-api.version>1.7</javax.resource-api.version>
         <javax.enterprise.deploy-api.version>1.6</javax.enterprise.deploy-api.version>
         <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <javax.validation-api.version>1.1.0.Final</javax.validation-api.version>
+        <javax.security.enterprise-api.version>1.0-b06</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0-b07</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -117,7 +119,7 @@
         <mq.version>5.1.1-b02</mq.version>
         <javadb.version>10.10.2.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
-        <weld.version>3.0.0.Final</weld.version>
+        <weld.version>2.2.13.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
         <tyrus.version>1.13.1</tyrus.version>
@@ -135,7 +137,6 @@
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
-	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
     </properties>
 
     <modules>
@@ -486,6 +487,19 @@
                             <apiPackage>javax.el</apiPackage>
                             <implNamespace>com.sun.el</implNamespace>
                         </spec>
+                        <spec>
+                            <artifact>
+                                <groupId>javax.security.enterprise</groupId>
+                                <artifactId>javax.security.enterprise-api</artifactId>
+                                <version>${javax.security.enterprise-api.version}</version>
+                            </artifact>
+                            <nonFinal>false</nonFinal>
+                            <jarType>api</jarType>
+                            <specVersion>1.0-b06</specVersion>
+                            <specImplVersion>${javax.security.enterprise.version}</specImplVersion>
+                            <apiPackage>javax.security.enterprise</apiPackage>
+                            <implNamespace>org.glassfish.soteria</implNamespace>
+                        </spec>
                     </specs>
                 </configuration>
             </plugin>            
@@ -707,15 +721,8 @@
                 </exclusions>                
             </dependency>
             <dependency>
-
-                 <groupId>org.jboss.classfilewriter</groupId>
-                 <artifactId>jboss-classfilewriter</artifactId>
-                 <version>${jboss.classfilewriter.version}</version>
-             </dependency>
-
-<dependency>
                 <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-shaded</artifactId>
+                <artifactId>weld-se-core</artifactId>
                 <version>${weld.version}</version>
             </dependency>
             <dependency>
@@ -904,10 +911,10 @@
                 <artifactId>osgi-http</artifactId>
                 <version>1.0.6</version>
             </dependency>
-	    <dependency>
+            <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-cdi</artifactId>
-                <version>1.0.4</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
@@ -1120,7 +1127,17 @@
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
-        </dependencies>
+            <dependency>
+                <groupId>org.glassfish.soteria</groupId>
+                <artifactId>javax.security.enterprise</artifactId>
+                <version>${javax.security.enterprise.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.security.enterprise</groupId>
+                <artifactId>javax.security.enterprise-api</artifactId>
+                <version>${javax.security.enterprise-api.version}</version>
+            </dependency>
+      </dependencies>
     </dependencyManagement>
 
     <profiles>
