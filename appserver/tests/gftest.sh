@@ -48,7 +48,7 @@ delete_test_sources(){
 } 
 download_test_zip(){
 	mkdir bundles
-	scp ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/tests-workspace.zip bundles
+	scp -o "StrictHostKeyChecking no" ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/tests-workspace.zip bundles
 }
 	
 ###########################
@@ -71,7 +71,7 @@ run_test(){
 		if [[ "$found" = true ]]; then
 			$runtest run_test_id $TEST_ID
 			uname -nsp > /tmp/platform
-			scp -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
+			scp -o "StrictHostKeyChecking no" -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
 			break
 		fi
 	done

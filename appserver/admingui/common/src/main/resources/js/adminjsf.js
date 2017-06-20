@@ -192,6 +192,7 @@ function disableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
     if (typeof(el.setDisabled) === 'function') {
         el.setDisabled(true);
+        el.className = 'Btn1Dis_sun4';
     } else if (el.setProps) {
         document.getElementById(componentName).setProps({
             disabled: true,
@@ -207,6 +208,7 @@ function enableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
     if (typeof(el.setDisabled) === 'function') {
         el.setDisabled(false);
+        el.className = 'Btn1_sun4';  // Primary style
     } else if (el.setProps) {
         document.getElementById(componentName).setProps({
             disabled: false,
