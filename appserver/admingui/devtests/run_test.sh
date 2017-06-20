@@ -49,7 +49,7 @@ merge_junit_xmls(){
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> ${JUD}
   echo "<testsuites>" >> ${JUD}
   find ${JUD_DIR} -name "*.xml" -type f -exec cat '{}' \; | ${SED} 's/<?xml version=\"1.0\" encoding=\"UTF-8\" ?>//g' >> ${JUD}
-  echo -n "</testsuites>" >> ${JUD}
+  echo -e "</testsuites>" >> ${JUD}
 }
 
 test_run(){
