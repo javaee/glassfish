@@ -94,5 +94,10 @@
             <artifactId>jdbc-config</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>javax.el</artifactId>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

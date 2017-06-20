@@ -119,5 +119,10 @@
             <artifactId>logging-annotation-processor</artifactId>
             <optional>true</optional>
         </dependency>
+         <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>javax.el</artifactId>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

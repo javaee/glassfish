@@ -136,8 +136,8 @@
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <fasterxml.classmate.version>1.1.0</fasterxml.classmate.version>
         <javassist.version>3.20.0-GA</javassist.version>
-        <javax.el.version>3.0.1-b03</javax.el.version>
-        <javax.el-api.version>3.0.1-b03</javax.el-api.version>
+        <javax.el.version>2.2.4</javax.el.version>
+        <javax.el-api.version>2.2.4</javax.el-api.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <pfl.version>4.0.0-b004</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
@@ -688,7 +688,7 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>org.hibernate</groupId>
+                <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
@@ -796,7 +796,7 @@
                 <version>${javax.el-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish</groupId>
+                <groupId>org.glassfish.web</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>${javax.el.version}</version>
             </dependency>
