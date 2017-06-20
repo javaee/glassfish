@@ -43,8 +43,6 @@ package org.glassfish.soteria.test;
 import static java.util.logging.Level.SEVERE;
 import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.jsoup.Jsoup.parse;
-import static org.jsoup.parser.Parser.xmlParser;
 
 import java.io.IOException;
 import java.net.URL;
@@ -86,7 +84,7 @@ public class ArquillianBase {
                 
                 "\nLast response: " +
                 
-                "\n\n"  + formatHTML(response) + "\n\n");
+                "\n\n"  + response + "\n\n");
             
         }
     };
@@ -169,13 +167,5 @@ public class ArquillianBase {
     protected WebClient getWebClient() {
  		return webClient;
  	}
-    
-    public static String formatHTML(String html) {
-        try {
-            return parse(html, "", xmlParser()).toString();
-        } catch (Exception e) {
-            return html;
-        }
-    }
     
 }

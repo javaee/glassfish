@@ -87,21 +87,8 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-       
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.23</version>
-            <scope>test</scope>
-        </dependency>
+            <scope>test</scope>            
+        </dependency>      
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
