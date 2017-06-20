@@ -50,10 +50,23 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import org.junit.Rule;
+import org.junit.AfterClass;
+import org.junit.rules.TestWatcher;
 
 
 @RunWith(Arquillian.class)
 public class AppSecurityContextAuthIT extends ArquillianBase {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    @Rule
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppSecurityContextEJB");
+
+    @AfterClass
+    public static void printSummary(){
+        stat.printSummary();
+    }
     
     @Deployment(testable = false)
     public static Archive<?> createDeployment() {

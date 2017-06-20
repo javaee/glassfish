@@ -25,7 +25,7 @@ public class AppMemBasicIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppMemBasic");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppNoRoleMapping");
 
     @AfterClass
     public static void printSummary(){

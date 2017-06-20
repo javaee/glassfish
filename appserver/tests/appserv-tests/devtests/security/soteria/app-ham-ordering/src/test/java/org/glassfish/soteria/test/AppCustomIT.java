@@ -63,7 +63,7 @@ public class AppCustomIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppCustom");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppHamOrdering");
 
     @AfterClass
     public static void printSummary(){

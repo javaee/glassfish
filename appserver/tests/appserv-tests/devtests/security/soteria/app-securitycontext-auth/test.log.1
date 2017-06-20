@@ -1,0 +1,79 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building app-securitycontext-auth 5.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ app-securitycontext-auth ---
+[INFO] Deleting /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ app-securitycontext-auth ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ app-securitycontext-auth ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ app-securitycontext-auth ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.4:compile (default-compile) @ app-securitycontext-auth ---
+[INFO] Compiling 3 source files to /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ app-securitycontext-auth ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.4:testCompile (default-testCompile) @ app-securitycontext-auth ---
+[INFO] Compiling 1 source file to /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ app-securitycontext-auth ---
+[INFO] Surefire report directory: /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+There are no tests to run.
+
+Results :
+
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-war-plugin:2.2:war (default-war) @ app-securitycontext-auth ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [app-securitycontext-auth] in [/media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target/app-securitycontext-auth]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/src/main/webapp]
+[INFO] Webapp assembled in [41 msecs]
+[INFO] Building war: /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth/target/app-securitycontext-auth.war
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.20:integration-test (default) @ app-securitycontext-auth ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.glassfish.soteria.test.AppSecurityContextAuthIT
+Starting container using command: [java, -jar, /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/../glassfish/modules/admin-cli.jar, start-domain, -t]
+Successfully started the domain : domain1
+domain  Location: /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/domains/domain1
+Log File: /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/domains/domain1/logs/server.log
+Admin Port: 4848
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.403 s - in org.glassfish.soteria.test.AppSecurityContextAuthIT
+Stopping container using command: [java, -jar, /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/../glassfish/modules/admin-cli.jar, stop-domain, -t]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent! The file encoding for reports output files should be provided by the POM property ${project.reporting.outputEncoding}.
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.20:verify (default) @ app-securitycontext-auth ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 26.613 s
+[INFO] Finished at: 2017-06-19T19:41:16+05:30
+[INFO] Final Memory: 30M/273M
+[INFO] ------------------------------------------------------------------------
