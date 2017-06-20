@@ -149,7 +149,7 @@ public class JobManagerTest {
 
        }
 
-       @Test(dependsOnMethods = { "runDetachTest" }, enabled=false)
+       @Test(dependsOnMethods = { "runDetachTest" }, enabled=true)
        public void runConfigureManagedJobsTest() throws InterruptedException {
            try {
                String result = null;
@@ -162,7 +162,7 @@ public class JobManagerTest {
                //restart
                assertTrue( nadmin("start-domain"));
                //configure-managed-jobs
-               assertTrue( nadmin("configure-managed-jobs","--job-retention-period=6s","--cleanup-initial-delay=2s",
+               assertTrue( nadmin("configure-managed-jobs","--job-retention-period=2s","--cleanup-initial-delay=2s",
                        "--cleanup-poll-interval=2s"));
                assertTrue(COMMAND1, nadmin(COMMAND1));
 
