@@ -60,10 +60,18 @@ test_run(){
 
 	$S1AS_HOME/bin/asadmin start-database
 	$S1AS_HOME/bin/asadmin start-domain
-	pushd $APS_HOME/devtests/security
-	unset http_proxy
+	pushd $APS_HOME/devtests/security	
 	rm count.txt || true
+  ANT_OPTS="${ANT_OPTS} \
+  -Dhttp.proxyHost=${PROXY_HOST} \
+  -Dhttp.proxyPort=${PROXY_PORT} \
+  -Dhttp.noProxyHosts='127.0.0.1|localhost|*.oracle.com' \
+  -Dhttps.proxyHost=${PROXY_HOST} \
+  -Dhttps.proxyPort=${PROXY_PORT} \
+  -Dhttps.noProxyHosts='127.0.0.1|localhost|*.oracle.com'"
+  export ANT_OPTS
 	ant $TARGET |tee $TEST_RUN_LOG
+  unset ANT_OPTS
 
 	$S1AS_HOME/bin/asadmin stop-domain
 	$S1AS_HOME/bin/asadmin stop-database
