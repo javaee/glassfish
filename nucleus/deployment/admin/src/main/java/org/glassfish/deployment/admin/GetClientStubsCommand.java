@@ -105,7 +105,7 @@ public class GetClientStubsCommand implements AdminCommand, AdminCommandSecurity
                 return true;
             }
         }
-        context.getActionReport().failure(context.getLogger(), localStrings.getLocalString(
+        context.getActionReport().setMessage(localStrings.getLocalString(
             getClass(),
             "get-client-stubs.noSuchApp",
             "Application {0} was not found",
