@@ -41,7 +41,9 @@
 package org.glassfish.soteria.test;
 
 import org.glassfish.soteria.SecurityContextImpl;
-
+import javax.security.enterprise.SecurityContext;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.HttpConstraint;
 import javax.annotation.security.DeclareRoles;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationStatus;
@@ -63,8 +65,9 @@ import static org.glassfish.soteria.Utils.notNull;
  * this caller is in any of the roles {foo, bar, kaz}
  */
 @DeclareRoles({"foo", "bar", "kaz"})
-@WebServlet("/servlet")
-public class Servlet extends HttpServlet {
+@WebServlet("/protectedServlet")
+@ServletSecurity(@HttpConstraint(rolesAllowed = "foo"))
+public class ProtectedServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
@@ -111,7 +114,7 @@ public class Servlet extends HttpServlet {
         response.getWriter().write("context user has role \"bar\": " + securityContext.isCallerInRole("bar") + "\n");
         response.getWriter().write("context user has role \"kaz\": " + securityContext.isCallerInRole("kaz") + "\n");
 
-        response.getWriter().write("web user has access to /protectedServlet: " + securityContext.hasAccessToWebResource("/protectedServlet") + "\n");
+        response.getWriter().write("has access to /protectedServlet: " + securityContext.hasAccessToWebResource("/protectedServlet") + "\n");
 
         Set<String> roles = ((SecurityContextImpl) securityContext).getAllDeclaredCallerRoles();
 

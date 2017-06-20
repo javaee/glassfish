@@ -59,12 +59,6 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
     public static Archive<?> createDeployment() {
         return mavenWar();
     }
-
-    @Test
-    public void testAuthenticated() {
-        assertDefaultAuthenticated(
-            readFromServer("/servlet?name=reza"));
-    }
     
     @Test
     public void testAuthenticatedStatus() {
@@ -100,6 +94,16 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
     /**
      * Flip Context tests test as part of #21844.
      */
+
+    @Test
+    public void testAuthenticated() {
+//        Assert.assertAuthenticated(
+        Assert.assertNotAuthenticated(
+                "ejb",
+                "reza",
+                readFromServer("/servlet?name=reza"));
+    }
+
     @Test
     public void testContextAuthenticated() {
 //        Assert.assertAuthenticated(

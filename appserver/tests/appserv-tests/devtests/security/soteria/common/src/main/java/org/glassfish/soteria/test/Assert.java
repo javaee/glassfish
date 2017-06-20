@@ -108,6 +108,25 @@ public final class Assert {
                 response.contains(userType + " user has role \"" + role + "\": true"));
         }
      }
+
+    public static void assertAuthenticatedRoles(String userType, String response, String... roles) {
+        for (String role : roles) {
+            assertTrue(
+                    "Authenticated user should have role \"" + role + "\", but did not \n Response: \n" +
+                            response,
+                    response.contains(userType + " user has role \"" + role + "\": true"));
+        }
+    }
+
+    public static void assertNotAuthenticatedRoles(String userType, String name, String response, String... roles) {
+
+        for (String role : roles) {
+            assertFalse(
+                    "Authenticated user should not have role \"" + role + "\", but did \n Response: \n" +
+                            response,
+                    response.contains(userType + " user has role \"" + role + "\": true"));
+        }
+    }
     public static void assertNotAuthenticatedUnprotected(String userType, String name, String response, List<String> roles) {
         assertTrue(
                 "Should not be authenticated as user " + name + " but was \n Response: \n" +
@@ -120,6 +139,20 @@ public final class Assert {
                             response,
                     response.contains(userType + " user has role \"" + role + "\": true"));
         }
+    }
+
+    public static void assertHasAccessToResource(String userType, String name, String resource, String response) {
+        assertTrue(
+                "user " + name + "should have access to resource "+ resource +" but was not \n Response: \n" +
+                        response,
+                response.contains(userType + "user has access to " + resource + ": true"));
+    }
+
+    public static void assertNotHasAccessToResource(String userType, String name, String resource, String response) {
+        assertFalse(
+                "user " + name + "should have access to resource "+ resource +" but was not \n Response: \n" +
+                        response,
+                response.contains(userType + "user has access to " + resource + ": true"));
     }
 
 }

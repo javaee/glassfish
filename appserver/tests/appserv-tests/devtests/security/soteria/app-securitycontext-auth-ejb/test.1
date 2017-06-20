@@ -1,0 +1,134 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building app-securitycontext-auth-ejb 5.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ app-securitycontext-auth-ejb ---
+[INFO] Deleting /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ app-securitycontext-auth-ejb ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ app-securitycontext-auth-ejb ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ app-securitycontext-auth-ejb ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.4:compile (default-compile) @ app-securitycontext-auth-ejb ---
+[INFO] Compiling 4 source files to /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ app-securitycontext-auth-ejb ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.4:testCompile (default-testCompile) @ app-securitycontext-auth-ejb ---
+[INFO] Compiling 1 source file to /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ app-securitycontext-auth-ejb ---
+[INFO] Surefire report directory: /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+There are no tests to run.
+
+Results :
+
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-war-plugin:2.2:war (default-war) @ app-securitycontext-auth-ejb ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [app-securitycontext-auth-ejb] in [/media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/app-securitycontext-auth-ejb]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/src/main/webapp]
+[INFO] Webapp assembled in [42 msecs]
+[INFO] Building war: /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/app-securitycontext-auth-ejb.war
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.20:integration-test (default) @ app-securitycontext-auth-ejb ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.glassfish.soteria.test.AppSecurityContextAuthIT
+Starting container using command: [java, -jar, /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/../glassfish/modules/admin-cli.jar, start-domain, -t]
+Successfully started the domain : domain1
+domain  Location: /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/domains/domain1
+Log File: /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/domains/domain1/logs/server.log
+Admin Port: 4848
+[ERROR] Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 24.876 s <<< FAILURE! - in org.glassfish.soteria.test.AppSecurityContextAuthIT
+[ERROR] testAuthenticated(org.glassfish.soteria.test.AppSecurityContextAuthIT)  Time elapsed: 0.108 s  <<< FAILURE!
+java.lang.AssertionError: 
+Should be authenticated as user reza but was not 
+ Response: 
+This is a servlet 
+Authenticated with status: SUCCESS
+ejb username: ANONYMOUS
+ejb user has role "foo": false
+ejb user has role "bar": false
+ejb user has role "kaz": false
+context username: null
+context user has role "foo": false
+context user has role "bar": false
+context user has role "kaz": false
+web user has access to /protectedServlet: false
+All declared roles of user []
+all roles has role "foo": false
+all roles has role "bar": false
+all roles has role "kaz": false
+
+ search: web username: reza
+	at org.glassfish.soteria.test.AppSecurityContextAuthIT.testAuthenticated(AppSecurityContextAuthIT.java:65)
+
+Stopping container using command: [java, -jar, /media/sameerpandit/WLS/javaEE/tt/glassfish5/glassfish/../glassfish/modules/admin-cli.jar, stop-domain, -t]
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AppSecurityContextAuthIT.testAuthenticated:65 Should be authenticated as user reza but was not 
+ Response: 
+This is a servlet 
+Authenticated with status: SUCCESS
+ejb username: ANONYMOUS
+ejb user has role "foo": false
+ejb user has role "bar": false
+ejb user has role "kaz": false
+context username: null
+context user has role "foo": false
+context user has role "bar": false
+context user has role "kaz": false
+web user has access to /protectedServlet: false
+All declared roles of user []
+all roles has role "foo": false
+all roles has role "bar": false
+all roles has role "kaz": false
+
+ search: web username: reza
+[INFO] 
+[ERROR] Tests run: 9, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent! The file encoding for reports output files should be provided by the POM property ${project.reporting.outputEncoding}.
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.20:verify (default) @ app-securitycontext-auth-ejb ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 32.245 s
+[INFO] Finished at: 2017-06-19T23:43:54+05:30
+[INFO] Final Memory: 31M/283M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-failsafe-plugin:2.20:verify (default) on project app-securitycontext-auth-ejb: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /media/sameerpandit/WLS/javaEE/glassfish/appserver/tests/appserv-tests/devtests/security/soteria/app-securitycontext-auth-ejb/target/failsafe-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
