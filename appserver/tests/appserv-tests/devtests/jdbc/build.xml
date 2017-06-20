@@ -105,11 +105,11 @@
 	<ant dir="flushconnectionpool" target="all"/>
 	<ant dir="connleakreclaimnotify" target="all"/>
 	<ant dir="stmtCaching_hit_miss.monitoring" target="all"/>
-	<ant dir="transparent-pool-reconfig" target="all"/>
+	<!--ant dir="transparent-pool-reconfig" target="all"/-->
 	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
-	<ant dir="sqltracemonitoring" target="all"/>
-	<ant dir="statementleakdetection" target="all"/>
-	<ant dir="appbasedMonitoring" target="all"/>
+	<!--ant dir="sqltracemonitoring" target="all"/-->
+	<!--ant dir="statementleakdetection" target="all"/-->
+	<!--ant dir="appbasedMonitoring" target="all"/-->
 	<ant dir="jpa-dsd" target="all" />
 	<ant dir="jpa-dsd" target="all-appclient-exposed-dsd"/>
 	<ant dir="stmtCaching_hit_miss.fixed" target="all"/>
