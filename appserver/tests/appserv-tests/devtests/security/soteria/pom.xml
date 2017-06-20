@@ -43,11 +43,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-      <groupId>org.glassfish.main</groupId>
-      <artifactId>glassfish-nucleus-parent</artifactId>
-       <version>5.0-SNAPSHOT</version>
-    </parent>  
     <groupId>org.glassfish.soteria.test</groupId>
     <artifactId>soteria</artifactId>
     <version>5.0-SNAPSHOT</version>
@@ -68,6 +63,9 @@
         <module>app-securitycontext-auth</module>
         <module>app-double-ham</module>
         <module>app-ham-ordering</module>
+        <!-- default role-mapping test is disable till the feature is available
+        <module>app-no-role-mapping</module>-->
+        
     </modules>
     
     <dependencyManagement>
