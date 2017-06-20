@@ -42,7 +42,9 @@ Follow the below instructions to run the tests.
 1. set APS_HOME to appserv-tests dir.
 2. set M2_HOME to maven Home.
 3. set S1AS_HOME to glassfish installation. The S1AS_HOME should contain glassfish directory.
-4. Run mvn clean verify
+4. $S1AS_HOME/bin/asadmin start-domain
+5. Run mvn clean verify
+6. $S1AS_HOME/bin/asadmin stop-domain
 
 Known Issue:
 1.Aruillian gf container: 
