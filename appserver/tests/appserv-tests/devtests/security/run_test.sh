@@ -72,6 +72,7 @@ test_run(){
   -Dhttps.proxyPort=${PROXY_PORT} \
   -Dhttps.noProxyHosts='127.0.0.1|localhost|*.oracle.com'"
   export ANT_OPTS
+  echo "ANT_OPTS=${ANT_OPTS}"
 	ant $TARGET |tee $TEST_RUN_LOG
   unset ANT_OPTS
 
