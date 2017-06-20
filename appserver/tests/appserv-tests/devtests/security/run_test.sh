@@ -62,8 +62,8 @@ test_run(){
 	$S1AS_HOME/bin/asadmin start-domain
 	pushd $APS_HOME/devtests/security	
 	rm count.txt || true
-  PROXY_HOST=`echo ${http_proxy} | cut -d':' -f1`
-  PROXY_PORT=`echo ${http_proxy} | cut -d':' -f2`
+  PROXY_HOST=`echo ${http_proxy} | cut -d':' -f2 | ${SED} 's/\/\///g'`
+  PROXY_PORT=`echo ${http_proxy} | cut -d':' -f3 | ${SED} 's/\///g'`
   ANT_OPTS="${ANT_OPTS} \
   -Dhttp.proxyHost=${PROXY_HOST} \
   -Dhttp.proxyPort=${PROXY_PORT} \
