@@ -1,3 +1,3 @@
 # HOW-to
 
-* [EXTERNAL-CONTRIBUTION](EXTERNAL-CONTRIBUTION.md)
+* [How to contribute to GlassFish](COMMUNITY-CONTRIBUTION.md)
