@@ -207,7 +207,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             validateJNDIRefs(resRef.getMessageDestination().getJndiName(), env);
         }
         else {
-            accept((NamedDescriptor) resRef, env);
+            validateJNDIRefs(resRef.getJndiName(), env);
         }
     }
 
