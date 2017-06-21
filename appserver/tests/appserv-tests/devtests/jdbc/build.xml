@@ -35,7 +35,7 @@
 	<record name="jdbc.output" action="start"/>
 	<antcall target="run-tests"/>
 	<antcall target="report">
-	    <param name="htmlfile" value="${env.APS_HOME}/JDBCtest_results.html"/>
+	    <param name="htmlfile" value="${env.APS_HOME}/test_results.html"/>
 	</antcall>
 	<record name="jdbc.output" action="stop"/>
 	
