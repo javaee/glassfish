@@ -1,4 +1,4 @@
-### How to contribute to GlassFish
+## How to contribute to GlassFish
 
 #### Participate in the GlassFish Community
 
