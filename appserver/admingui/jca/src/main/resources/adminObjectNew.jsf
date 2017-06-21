@@ -80,12 +80,12 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
         setPageSessionAttribute(key="reload" value="#{false}" );
 
-        mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
         gf.getAdminObjectResourceWizard(
             reload="#{reload}"
             attrMap="#{pageSession.tmpMap}"
             currentMap="#{pageSession.valueMap}"
             valueMap=>$pageSession{valueMap});
+        mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
         //To get the resource types
       if ("#{pageSession.valueMap.resAdapter}"){
         createMap(result="#{pageSession.attrsMap}");
