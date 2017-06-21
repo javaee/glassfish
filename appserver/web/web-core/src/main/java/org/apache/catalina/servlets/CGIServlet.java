@@ -1130,7 +1130,8 @@ public final class CGIServlet extends HttpServlet {
                 //REMIND: change character set
                 //REMIND: I forgot what the previous REMIND means
                 if ("AUTHORIZATION".equalsIgnoreCase(header) ||
-                    "PROXY_AUTHORIZATION".equalsIgnoreCase(header)) {
+                    "PROXY_AUTHORIZATION".equalsIgnoreCase(header) ||
+                    "PROXY".equalsIgnoreCase(header)) {
                     //NOOP per CGI specification section 11.2
                 } else {
                     envp.put("HTTP_" + header.replace('-', '_'),
