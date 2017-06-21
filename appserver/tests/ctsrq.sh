@@ -9,12 +9,12 @@
 # and Distribution License("CDDL") (collectively, the "License").  You
 # may not use this file except in compliance with the License.  You can
 # obtain a copy of the License at
-# https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-# or packager/legal/LICENSE.txt.  See the License for the specific
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
 # language governing permissions and limitations under the License.
 #
 # When distributing the software, include this License Header Notice in each
-# file and include the License file at packager/legal/LICENSE.txt.
+# file and include the License file at LICENSE.txt.
 #
 # GPL Classpath Exception:
 # Oracle designates this particular file as subject to the "Classpath"
@@ -41,16 +41,27 @@
 ################################## Constants ##################################
 
 declare -r USAGE=$(cat <<'EOF'
-Prerequites: User must specify CTS_REMOTE_QUEUE_URL before running this script. This URL must point to the upstream hudson job of CTS Remote Queue.
+Prerequites: User must specify CTS_REMOTE_QUEUE_URL before running this script.
+             This URL must point to the upstream hudson job of CTS Remote Queue.
 
 Usage:
- 1. ctsrq.sh -l ---> List all the available CTS test identifiers (both top-level and inner-level) without running them
- 2. ctsrq.sh -s ---> List all the available top-level CTS test identifiers without running them
- 3. ctsrq.sh -i ---> List the inner-level CTS test identifiers for a given top-level CTS test identifier without running them
- 4. ctsrq.sh -b <Glassfish_Branch> -a [-e "<email-id1>, <email-id2>, .."] ---> Run all the available top-level CTS test identifiers against the specified Glassfish branch and email the results to the specified email-ids
- 5. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>" [-e "email-id1, email-id2, .."] ---> Run the specified CTS test identifiers against the specified Glassfish branch and email the results to the specified email-ids
-Note that double quotes are necessary if providing multiple test-ids.
- 6. ctsrq.sh [-h] ---> Show this message
+ 1. ctsrq.sh -l  --->  List all the available CTS test identifiers 
+                       (both top-level and inner-level) without running them
+ 2. ctsrq.sh -s  --->  List all the available top-level CTS test identifiers
+                       without running them
+ 3. ctsrq.sh -i  --->  List the inner-level CTS test identifiers for a given
+                       top-level CTS test identifier without running them
+ 4. ctsrq.sh -b <Glassfish_Branch> -a [-e "<email-id1> <email-id2> .."] 
+                 --->  Run all the available top-level CTS test identifiers
+                       against the specified Glassfish branch and email the
+                       results to the specified email-ids
+ 5. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>" 
+                                  [-e "email-id1 email-id2 .."] 
+                 --->  Run the specified CTS test identifiers against the
+                       specified Glassfish branch and email the results to the
+                       specified email-ids. Note that double quotes are 
+                       necessary if providing multiple test-ids.
+ 6. ctsrq.sh [-h]--->  Show this message
 EOF
 )
 
@@ -63,7 +74,7 @@ declare -a valid_test_ids
 
 main() {
     # Make sure that CTS_REMOTE_QUEUE_URL env variable is set
-    [[ $CTS_REMOTE_QUEUE_URL ]] || { echo "CTS_REMOTE_QUEUE_URL environment variable must be set"; exit 1; }
+    [[ -n "${CTS_REMOTE_QUEUE_URL}" ]] || { echo "CTS_REMOTE_QUEUE_URL environment variable must be set"; exit 1; }
 
     # Print the usage and exit if no arguments given
     [[ $# -eq 0 ]] && { echo -e "${USAGE}"; exit 0; }
@@ -93,8 +104,8 @@ main() {
 
     shift "$((OPTIND-1))"
 
-    [[ ${gfs_branch} ]] || { echo "Branch must be specified using -b option"; exit 1; }
-    [[ ${test_ids} ]] || { echo "Test ids must be specified using -t option"; exit 1; }
+    [[ -n "${gfs_branch}" ]] || { echo "Branch must be specified using -b option"; exit 1; }
+    [[ -n "${test_ids}" ]] || { echo "Test ids must be specified using -t option"; exit 1; }
 
     validate_given_test_ids ${test_ids[@]}
 
@@ -102,9 +113,9 @@ main() {
     test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`    
     email_ids_encoded=`echo ${email_ids} | tr ' ' '+'`
     # Generate a unique id for the job which will be used for identifying the job id later
-	unique_id=`cat /proc/sys/kernel/random/uuid`
+	unique_id=$RANDOM
 
-    local params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}"
+    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}"
     last_build=`get_last_build_number`        
 
     # Trigger the build
@@ -119,7 +130,7 @@ main() {
 # Lists all the available CTS test identifiers
 list_test_ids() {
     local test_ids_location=${CTS_TEST_IDS_LOCATION}
-    local default_test_ids_location_xpath="${CTS_REMOTE_QUEUE_URL}/api/xml?xpath=//action/parameterDefinition[name='"'CTS_TEST_IDS'"']/defaultParameterValue/value/text()"
+    local default_test_ids_location_xpath="${CTS_REMOTE_QUEUE_URL}/api/xml?xpath=//action/parameterDefinition[name='"'CTS_TEST_IDS_LOCATION'"']/defaultParameterValue/value/text()"
     [ ${test_ids_location} ] || test_ids_location=$(curl -g "${default_test_ids_location_xpath}" 2> /dev/null)
     echo $(curl -g "${test_ids_location}" 2> /dev/null)
 }
@@ -132,7 +143,7 @@ print_test_ids() {
 list_top_level_test_ids() {
     local idx=0
     for test_id in ${valid_test_ids[@]}; do
-        [[ ${test_id} == *"/"* ]] || { top_level_test_ids[$idx]=${test_id}; let idx++; }
+        [[ ${test_id} == */* ]] || { top_level_test_ids[$idx]=${test_id}; let idx++; }
     done
     echo ${top_level_test_ids[@]}
 }
