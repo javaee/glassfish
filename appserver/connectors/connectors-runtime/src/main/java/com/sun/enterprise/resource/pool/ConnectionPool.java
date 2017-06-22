@@ -879,11 +879,6 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         }
 
         ResourceHandle result = getNewResource(alloc);
-        // The code below has been commented-out because it is effectively being run AGAIN by the caller
-        /*if (result != null) {
-           alloc.fillInResourceObjects(result);
-           result.getResourceState().setBusy(true);
-        }*/
 
         return result;
     }
@@ -1247,8 +1242,6 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
     private ResourceHandle getNewResource(ResourceAllocator alloc) throws PoolingException {
-        // The wrapper method addResource() needs to be called instead of ds.addResource(), so that NumConnFree gets incremented after creating the new resource
-        //ds.addResource(alloc, 1);
         addResource(alloc);
         return ds.getResource();
     }
