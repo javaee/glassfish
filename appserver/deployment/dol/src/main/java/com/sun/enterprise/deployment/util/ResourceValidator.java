@@ -176,7 +176,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     private void parseResources(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         resRef.checkType();
-        String name = descriptorToLogicalJndiName(resRef);
+        String name = getLogicalJNDIName(resRef.getName(), env);
         myNamespace.store(name, env);
     }
 
@@ -185,13 +185,30 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private void parseResources(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env) {
-        String name = descriptorToLogicalJndiName(msgDestRef);
+        String name = getLogicalJNDIName(msgDestRef.getName(), env);
         myNamespace.store(name, env);
     }
 
     private void parseResources(EnvironmentProperty envProp, JndiNameEnvironment env) {
-        String name = descriptorToLogicalJndiName(envProp);
+        String name = getLogicalJNDIName(envProp.getName(), env);
         myNamespace.store(name, env);
+    }
+
+    private String getLogicalJNDIName(String rawName, JndiNameEnvironment env) {
+        String logicalJndiName = rawNameToLogicalJndiName(rawName);
+        boolean treatComponentAsModule = DOLUtils.getTreatComponentAsModule(env);
+        if (treatComponentAsModule && logicalJndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX)) {
+            logicalJndiName = logicalCompJndiNameToModule(logicalJndiName);
+        }
+        return logicalJndiName;
+    }
+
+    /**
+     * convert name from java:comp/xxx to java:module/xxx
+     */
+    private String logicalCompJndiNameToModule(String logicalCompName) {
+        String tail = logicalCompName.substring(ResourceConstants.JAVA_COMP_SCOPE_PREFIX.length());
+        return ResourceConstants.JAVA_MODULE_SCOPE_PREFIX + tail;
     }
 
     /**
@@ -199,9 +216,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * namespace.  This is the lookup string used by a component to access
      * the dependency.
      */
-    private String descriptorToLogicalJndiName(Descriptor descriptor) {
-        // If no java: prefix is specified, default to component scope.
-        String rawName = descriptor.getName();
+    private String rawNameToLogicalJndiName(String rawName) {
         return (rawName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX)) ?
                 rawName : ResourceConstants.JAVA_COMP_ENV_SCOPE_PREFIX + rawName;
     }
@@ -347,6 +362,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * Validate the given JNDI name by checking in domain.xml and in resources defined within the app.
+     * In case a null jndi name is passed, we fail the deployment.
      *
      * @param jndiName
      * @param env
@@ -354,7 +370,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
         if(!isResourceInDomainXML(jndiName)) {
             // convert comp to module if req
-            String convertedJndiName = jndiName;
+            String convertedJndiName = getLogicalJNDIName(jndiName, env);
             if (!myNamespace.find(convertedJndiName, env)) {
                 deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                         new Object[] {jndiName});
@@ -371,6 +387,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @return
      */
     private boolean isResourceInDomainXML(String jndiName) {
+        if (jndiName == null)
+            return false;
+
         Server svr = domain.getServerNamed(target);
         if (svr != null) {
             return svr.isResourceRefExists(jndiName);
@@ -382,29 +401,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
 
         return false;
-    }
-
-    /**
-     * Validate if the jndi name is an defined as an application-scoped resources.
-     *
-     * @param jndiName of the resource.
-     * @param env in which this resource reference was present.
-     * @return true if a resource is found in the module level resources.xml file or the app level one.
-     */
-    private boolean validateAppScopedResource(String jndiName, JndiNameEnvironment env) {
-        String moduleName = DOLUtils.getModuleName(env);
-        String appName = DOLUtils.getApplicationName(env);
-
-        Map<String, List> resourcesList =
-                (Map<String, List>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
-        if (resourcesList == null)
-            return false;
-        List appLevelResources = resourcesList.get(appName);
-        List moduleLevelResources = resourcesList.get(moduleName);
-
-        boolean inModule = moduleLevelResources != null && moduleLevelResources.contains(jndiName);
-        boolean inApp = appLevelResources != null && appLevelResources.contains(jndiName);
-        return inModule || inApp;
     }
 
     private static class JNDINamespace {
@@ -423,6 +419,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             globalNameSpace = new ArrayList();
         }
 
+        /**
+         * Store app scoped resources in this namespace to facilitate lookup during validation.
+         *
+         * @param resources - App scoped resources
+         * @param appName
+         */
         private void storeAppScopedResources(Map<String, List> resources, String appName) {
             if (resources == null)
                 return;
@@ -446,6 +448,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             }
         }
 
+        /**
+         * Store the jndi name in the correct scope. Will be stored only if jndi name is javaURL.
+         *
+         * @param jndiName
+         * @param env
+         */
         public void store(String jndiName, JndiNameEnvironment env) {
             if (jndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX)) {
                 String componentId = DOLUtils.getComponentEnvId(env);
@@ -479,7 +487,17 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             }
         }
 
+        /**
+         * Find the jndi name in our namespace.
+         *
+         * @param jndiName
+         * @param env
+         * @return
+         */
         public boolean find(String jndiName, JndiNameEnvironment env) {
+            if (jndiName == null)
+                return false;
+
             if (jndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX)) {
                 String componentId = DOLUtils.getComponentEnvId(env);
                 List jndiNames = componentNamespaces.get(componentId);
