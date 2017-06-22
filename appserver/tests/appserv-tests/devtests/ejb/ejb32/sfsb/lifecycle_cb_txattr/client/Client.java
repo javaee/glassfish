@@ -41,31 +41,53 @@
 package com.acme;
 
 import javax.ejb.*;
-import javax.persistence.*;
 import javax.annotation.*;
 
 import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
+import javax.management.j2ee.Management;
+import javax.rmi.PortableRemoteObject;
 
-@Stateful
-@LocalBean
-public class SFSB2 implements Hello {
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
-    @PostConstruct
-    @TransactionAttribute(TransactionAttributeType.MANDATORY)
-    public void init() {
-        System.out.println("In SFSB2::init()");
-    }
-    
-    public String test() throws EJBException {
-	System.out.println("In SFSB2::test()");
-        return "SFSB2";
+public class Client {
+
+    private static SimpleReporterAdapter stat = 
+        new SimpleReporterAdapter("appserv-tests");
+
+    private static String appName;
+
+    public static void main(String args[]) {
+
+        appName = args[0]; 
+        stat.addDescription(appName);
+        Client client = new Client(args);       
+        client.doTest();	
+        stat.printSummary(appName + "ID");
     }
 
-    @PreDestroy
-    @TransactionAttribute(TransactionAttributeType.MANDATORY)
-    public void destroy() {
-        System.out.println("In SFSB2::destroy()");
+    public Client(String[] args) {}
+
+    public void doTest() {
+
+        try {
+
+            Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB!com.acme.Hello");
+            System.out.println("SFSB test : " + bean.test());
+
+            Hello1 bean1 = (Hello1) new InitialContext().lookup("java:global/" + appName + "/SFSB1!com.acme.Hello1");
+            System.out.println("SFSB1 test : " + bean1.test());
+
+            Hello2 bean2 = (Hello2) new InitialContext().lookup("java:global/" + appName + "/SFSB2!com.acme.Hello2");
+            System.out.println("SFSB2 test : " + bean2.test());
+
+            stat.addStatus("local main", stat.PASS);
+
+        } catch (Exception e) {
+            stat.addStatus("local main", stat.FAIL);
+            e.printStackTrace();
+        }
     }
+
 }

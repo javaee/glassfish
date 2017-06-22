@@ -41,53 +41,31 @@
 package com.acme;
 
 import javax.ejb.*;
+import javax.persistence.*;
 import javax.annotation.*;
 
 import javax.naming.InitialContext;
 
 import javax.management.j2ee.ManagementHome;
-import javax.management.j2ee.Management;
-import javax.rmi.PortableRemoteObject;
 
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+@Stateful
+@LocalBean
+public class SFSB1 implements Hello1 {
 
-public class Client {
-
-    private static SimpleReporterAdapter stat = 
-        new SimpleReporterAdapter("appserv-tests");
-
-    private static String appName;
-
-    public static void main(String args[]) {
-
-        appName = args[0]; 
-        stat.addDescription(appName);
-        Client client = new Client(args);       
-        client.doTest();	
-        stat.printSummary(appName + "ID");
+    @PostConstruct
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public void init() {
+        System.out.println("In SFSB1::init()");
+    }
+    
+    public String test() throws EJBException {
+	System.out.println("In SFSB1::test()");
+        return "SFSB1";
     }
 
-    public Client(String[] args) {}
-
-    public void doTest() {
-
-        try {
-
-            Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB!com.acme.Hello");
-            System.out.println("SFSB test : " + bean.test());
-
-            bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB1!com.acme.Hello");
-            System.out.println("SFSB1 test : " + bean.test());
-
-            bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB2!com.acme.Hello");
-            System.out.println("SFSB2 test : " + bean.test());
-
-            stat.addStatus("local main", stat.PASS);
-
-        } catch (Exception e) {
-            stat.addStatus("local main", stat.FAIL);
-            e.printStackTrace();
-        }
+    @PreDestroy
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public void destroy() {
+        System.out.println("In SFSB1::destroy()");
     }
-
 }

@@ -50,22 +50,22 @@ import javax.management.j2ee.ManagementHome;
 
 @Stateful
 @LocalBean
-public class SFSB1 implements Hello {
+public class SFSB2 implements Hello2 {
 
     @PostConstruct
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
     public void init() {
-        System.out.println("In SFSB1::init()");
+        System.out.println("In SFSB2::init()");
     }
     
     public String test() throws EJBException {
-	System.out.println("In SFSB1::test()");
-        return "SFSB1";
+	System.out.println("In SFSB2::test()");
+        return "SFSB2";
     }
 
     @PreDestroy
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
     public void destroy() {
-        System.out.println("In SFSB1::destroy()");
+        System.out.println("In SFSB2::destroy()");
     }
 }

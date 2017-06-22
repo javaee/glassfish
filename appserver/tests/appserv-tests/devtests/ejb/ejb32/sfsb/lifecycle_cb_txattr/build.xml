@@ -47,7 +47,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-ejb32-sfsb-lifecycle_cb_txn-App" default="usage" basedir=".">
+<project name="ejb-ejb32-sfsb-lifecycle_cb_txattr-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
@@ -71,7 +71,7 @@
     <target name="build" depends="compile">
         <antcall target="ejb-jar-common">
             <param name="ejbjar.classes" 
-              value="**/Hell*.class,**/S*.class"/>
+              value="**/H*.class,**/S*.class"/>
         </antcall>
     </target> 
     

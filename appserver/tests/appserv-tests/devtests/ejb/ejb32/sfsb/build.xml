@@ -55,7 +55,7 @@
     <target name="all">
         <antcall target="basic"/>
         <antcall target="descriptor"/>
-        <antcall target="lifecycle_cb_txn"/>
+        <antcall target="lifecycle_cb_txattr"/>
     </target>
 
     <target name="basic">
@@ -70,12 +70,11 @@
         <record name="descriptor.output" action="stop" />
     </target>
 
-    <target name="lifecycle_cb_txn">
-        <record name="lifecycle_cb_txn.output" action="start" />
-            <ant dir="lifecycle_cb_txn" target="all"/>
-        <record name="lifecycle_cb_txn.output" action="stop" />
+    <target name="lifecycle_cb_txattr">
+        <record name="lifecycle_cb_txattr.output" action="start" />
+            <ant dir="lifecycle_cb_txattr" target="all"/>
+        <record name="lifecycle_cb_txattr.output" action="stop" />
     </target>
-
 
     <target name="usage">
 	<echo>
