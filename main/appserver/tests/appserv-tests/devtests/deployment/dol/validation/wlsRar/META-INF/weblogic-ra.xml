@@ -1,3 +1,0 @@
-<weblogic-connector xmlns="http://www.bea.com/ns/weblogic/90">
-  <jndi-name>ResourceAdapter</jndi-name>
-</weblogic-connector>

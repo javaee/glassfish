@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<connector xmlns="http://java.sun.com/xml/ns/j2ee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+           http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+           version="1.5">
+    <description>1.5 validation test</description>
+    <display-name>Simple Resource Adapter</display-name>
+    <icon>
+      <small-icon>employee-service-icon16x16.jpg</small-icon>
+      <large-icon>employee-service-icon32x32.jpg</large-icon>
+    </icon>
+    <vendor-name>Java Software</vendor-name>
+    <eis-type>Generic Type</eis-type>
+    <resourceadapter-version>1.0Alpha</resourceadapter-version>
+    <license>
+      <description>license description</description>
+      <license-required>false</license-required>
+    </license>
+    <resourceadapter>
+        <resourceadapter-class>
+            connector.SimpleResourceAdapterImpl
+        </resourceadapter-class>
+        <config-property>
+            <description>ra config prop</description>
+            <config-property-name>
+                TestName
+            </config-property-name>
+            <config-property-type>
+                java.lang.String
+            </config-property-type>
+            <config-property-value>
+                ConfigPropertyForRA
+            </config-property-value>
+        </config-property>
+        <outbound-resourceadapter>
+          <connection-definition>
+            <managedconnectionfactory-class>
+              com.sun.connector.cciblackbox.CciLocalTxManagedConnectionFactory
+            </managedconnectionfactory-class>
+            <config-property>
+                <description>outbound ra config prop</description>
+                <config-property-name>ConnectionURL</config-property-name>
+                <config-property-type>java.lang.String</config-property-type>
+                <config-property-value>DBURL</config-property-value>
+            </config-property>
+            <connectionfactory-interface>
+                javax.resource.cci.ConnectionFactory
+            </connectionfactory-interface>
+            <connectionfactory-impl-class>
+                com.sun.connector.cciblackbox.CciConnectionFactory
+            </connectionfactory-impl-class>
+            <connection-interface>
+                javax.resource.cci.Connection
+            </connection-interface>
+            <connection-impl-class>
+                com.sun.connector.cciblackbox.CciConnection
+            </connection-impl-class>
+         </connection-definition>
+         <transaction-support>LocalTransaction</transaction-support>
+         <authentication-mechanism>
+           <description>auto mechanism</description>
+            <authentication-mechanism-type>
+                BasicPassword
+            </authentication-mechanism-type>
+            <credential-interface>
+                javax.resource.spi.security.PasswordCredential
+            </credential-interface>
+         </authentication-mechanism>
+         <reauthentication-support>false</reauthentication-support>
+        </outbound-resourceadapter>
+        <adminobject>
+          <adminobject-interface>connector.MyAdminObject</adminobject-interface>
+          <adminobject-class>connector.MyAdminObject</adminobject-class>
+          <config-property>
+            <config-property-name>ResetControl</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>NORESET</config-property-value>
+          </config-property>
+          <config-property>
+            <config-property-name>ExpectedResult</config-property-name>
+            <config-property-type>java.lang.Integer</config-property-type>
+            <config-property-value>88</config-property-value>
+          </config-property>
+        </adminobject>
+        <security-permission>
+           <description>security permission</description>
+           <security-permission-spec>sec perm1</security-permission-spec>
+        </security-permission>
+        <security-permission>
+           <description>security permission</description>
+           <security-permission-spec>sec perm2</security-permission-spec>
+        </security-permission>
+    </resourceadapter>
+</connector>

@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+
+<project name="web-mutual-auth" basedir="." default="usage">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &commonSecurity;
+    &testProperties;
+    
+    <target name="all" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="build"/>
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+        <javac srcdir="." destdir="./build" classpath="${env.APS_HOME}/lib/reporter.jar"
+            includes="WebSSLClient.java"/>
+    </target>
+
+    <target name="build" depends="compile">
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes" />
+            <param name="webclient.war.classes" value="**/*.class"/>  
+        </antcall>
+    </target>
+
+    <target name="build-publish-war" depends="build, publish-war-common" />
+
+    <target name="deploy" depends="init-common,build">
+        <antcall target="deploy-war-common"/>
+    </target>
+
+    <target name="re-deploy" depends="init-common,build">
+        <antcall target="deploy-war-common"/>
+    </target>
+
+    <target name="run" depends="init-common,init-security-util">
+        <!-- <property name="myhttps.host" value="localhost"/>
+         <property name="myhttps.port" value="8181"/> -->
+        <java classname="devtests.security.WebSSLClient">
+            <sysproperty key="javax.net.debug1" value="ssl,handshake,data,trustmanager"   />
+            <sysproperty key="sun.security.ssl.allowUnsafeRenegotiation" value="true"   />
+            <arg value="${s1asCN}"/>
+            <arg value="${https.port}"/>
+            <arg value="${contextroot}"/>
+            <arg value="${mykeystore.db.file}"/>
+            <arg value="${mytruststore.db.file}"/>
+            <arg value="${ssl.password}"/>
+            <classpath>
+                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="./build"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="setup" depends="init-common,prepare-store-common">
+        <antcall target="env-check" />
+        <antcall target="generate-ca-client-certs-pe" />
+        <antcall target="generate-ca-client-certs-ee" />
+        <antcall target="restart-server-instance-common"/>
+    </target>
+ 
+    <target name="unsetup">
+        <antcall target="restore"/>
+    </target>
+
+    <target name="restore" depends="init-common" >
+        <antcall target="remove-store-common"/>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
+
+
+
+<target name="generate-ca-client-certs-pe" depends="init-common" unless="isNSS">
+<!--client side -->
+    <exec executable="${java.home}/bin/keytool" failonerror="false">
+        <arg line="-delete -alias testcert1 -keystore ${mykeystore.db.file} -storepass ${ssl.password}"/>
+    </exec>
+    <exec executable="${java.home}/bin/keytool" failonerror="false">
+        <arg line="-delete -alias testca -keystore ${mytruststore.db.file} -storepass ${ssl.password}"/>
+    </exec>
+
+    <antcall target="import-cert-jks">
+        <param name="cert.alias" value="testca"/>
+        <param name="keystore.file" value="${mytruststore.db.file}"/>
+        <param name="cert.file" value="${env.APS_HOME}/devtests/security/web-mutual-ssl/certificate/testca.rfc"/>
+    </antcall>
+
+    <antcall target="convert-pkcs12-to-jks">
+        <param name="pkcs12.file" value="${env.APS_HOME}/devtests/security/web-mutual-ssl/certificate/testcert1.p12"/>
+        <param name="pkcs12.pass" value="${ssl.password}"/>
+        <param name="jks.file" value="${mykeystore.db.file}"/>
+        <param name="jks.pass" value="${ssl.password}"/>
+    </antcall>
+
+<!-- server side -->
+    <exec executable="${java.home}/bin/keytool" failonerror="false">
+        <arg line="-delete -alias testca -keystore ${admin.domain.dir}/${admin.domain}/config/cacerts.jks -storepass ${ssl.password}"/>
+    </exec>
+    <exec executable="${java.home}/bin/keytool" failonerror="true">
+        <arg line="-import -trustcacerts -alias testca -storepass '${ssl.password}' -noprompt "/>
+        <arg value="-file"/>
+        <arg file="${env.APS_HOME}/devtests/security/web-mutual-ssl/certificate/testca.rfc"/>
+        <arg value="-keystore"/>
+        <arg file="${admin.domain.dir}/${admin.domain}/config/cacerts.jks"/>
+    </exec>
+</target>
+
+<!-- 
+   generate selfsigned CA cert testca, and testcert1(issued by/signed by testca) in ${nss.db.dir};
+   export testca    to testca.rfc and then import to ${mytruststore.db.file};
+   export testcert1 to testcert.p12 and then import it to ${mykeystore.db.file}.
+-->   
+<target name="generate-ca-client-certs-ee" depends="init-common" if="isNSS">
+    <mkdir dir="build"/>
+    <echo message="${ssl.password}"   file="build/passfile"/>
+    <echo message="anything"          file="build/seedfile"/>
+
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-D -n testcert1  -d ${nss.db.dir}"/>
+    </exec>
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-D -n testca -d ${nss.db.dir}"/>
+    </exec>
+
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-S -x -n testca -s 'CN=testca, O=Sun, OU=JWS, L=Santa Clara, C=US' -t TCu,Pu,Pu -m 1111 -v 1111  -f ./build/passfile -z ./build/seedfile -d ${nss.db.dir}"/>
+    </exec>
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true" output="build/testca.rfc">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-L -n testca -a"/>
+        <arg value="-d"/>
+        <arg file="${nss.db.dir}"/>
+    </exec>
+    <antcall target="import-cert-jks">
+        <param name="cert.alias" value="testca"/>
+        <param name="keystore.file" value="${mytruststore.db.file}"/>
+        <param name="cert.file" value="build/testca.rfc"/>
+    </antcall>
+
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-S -n testcert1 -s 'CN=testcert1, O=Sun, OU=JWS, L=Santa Clara, C=US' -t Pu,Pu,Pu -m 2111 -v 2111  -c testca -f ./build/passfile -z ./build/seedfile -d ${nss.db.dir}"/>
+    </exec>
+    <antcall target="export-cert-p12-nss">
+        <param name="cert.file" value="${env.APS_HOME}/devtests/security/web-mutual-ssl/build/testcert1.p12"/>
+        <param name="cert.dir" value="${nss.db.dir}"/>
+        <param name="certdb.pwd" value="${ssl.password}"/>
+        <param name="cert.pwd" value="${ssl.password}"/>
+        <param name="cert.nickname" value="testcert1"/>
+    </antcall>
+    <antcall target="convert-pkcs12-to-jks">
+        <param name="pkcs12.file" value="${env.APS_HOME}/devtests/security/web-mutual-ssl/build/testcert1.p12"/>
+        <param name="pkcs12.pass" value="${ssl.password}"/>
+        <param name="jks.file" value="${mykeystore.db.file}"/>
+        <param name="jks.pass" value="${ssl.password}"/>
+    </antcall>
+    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
+        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+        <arg line="-D -n testcert1  -d ${nss.db.dir}"/>
+    </exec>
+    
+</target>
+
+</project>

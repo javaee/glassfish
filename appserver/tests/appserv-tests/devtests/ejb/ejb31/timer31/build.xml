@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../../report.xml">
+]>
+
+
+<project name="timer" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="nonpersistenttimer"/>
+        <antcall target="schedule_exp"/>
+        <antcall target="schedule_ann"/>
+        <antcall target="schedule_on_ejb_timeout"/>
+        <antcall target="aroundtimeout"/>
+        <antcall target="mdb"/>
+        <antcall target="keepstate"/>
+        <antcall target="methodintf"/>
+
+    </target>
+
+    <target name="nonpersistenttimer">
+        <record name="nonpersistenttimer.output" action="start" />
+            <ant dir="nonpersistenttimer" target="all"/>
+        <record name="nonpersistenttimer.output" action="stop" />
+    </target>
+
+    <target name="schedule_exp">
+        <record name="schedule_exp.output" action="start" />
+            <ant dir="schedule_exp" target="all"/>
+        <record name="schedule_exp.output" action="stop" />
+    </target>
+
+    <target name="schedule_ann">
+        <record name="schedule_ann.output" action="start" />
+            <ant dir="schedule_ann" target="all"/>
+        <record name="schedule_ann.output" action="stop" />
+    </target>
+
+    <target name="schedule_on_ejb_timeout">
+        <record name="schedule_on_ejb_timeout.output" action="start" />
+            <ant dir="schedule_on_ejb_timeout" target="all"/>
+        <record name="schedule_on_ejb_timeout.output" action="stop" />
+    </target>
+
+    <target name="aroundtimeout">
+        <record name="aroundtimeout.output" action="start" />
+            <ant dir="aroundtimeout" target="all"/>
+        <record name="aroundtimeout.output" action="stop" />
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="keepstate">
+        <record name="keepstate.output" action="start" />
+            <ant dir="keepstate" target="all"/>
+        <record name="keepstate.output" action="stop" />
+    </target>
+
+    <target name="methodintf">
+        <record name="methodintf.output" action="start" />
+            <ant dir="methodintf" target="all"/>
+        <record name="methodintf.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-timer tests)
+
+			ant nonpersistenttimer (Executes the non-persistent ejb-timer test)
+			ant schedule_exp (Executes the schedule_exp ejb-timer test)
+			ant schedule_ann (Executes the schedule_ann ejb-timer test)
+			ant schedule_on_ejb_timeout (Executes the schedule_on_ejb_timeout ejb-timer test)
+			ant aroundtimeout (Executes the aroundtimeout ejb-timer test)
+			ant mdb (Executes the mdb ejb-timer test)
+
+	</echo>
+    </target>
+</project>

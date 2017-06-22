@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY autodeployUtil SYSTEM "./../util/util.xml">
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+<!--
+    This makes sure that redeployment of an autodeployed app works.  Specifically, 
+    it tests that the validations (governing app refcs in particular) pass as
+    the autodeployed app is removed and then redeployed.
+-->
+ 
+<project name="autodeploy-simple" default="all" basedir=".">
+
+ 	&commonBuild;
+        &autodeployUtil;
+
+    <property name="testName" value="simpleautodeploy"/>
+        
+    <target name="prepare" depends="init">
+        <property name="result.property.file" value="${build}/result.properties"/>
+<echo>in simple/build.xml and build is ${build}</echo>            
+        <mkdir dir="${build}" />
+
+    </target>
+	
+    <target name="build" depends="prepare">
+        
+        <echo>Using previously-built ${autodeploy.archive}</echo>
+        <!--
+            Some earlier tests should have run already, so the app we use for autodeploy testing
+            should already be in place in the build directory.
+        -->
+    </target>
+    
+	
+    
+    <target name="private-all" depends="build">
+        
+        <antcall target="declare-test">
+            <param name="description" value="autodeploy/simple Test autodeploy, auto-redeploy, and autoundeploy"/>
+        </antcall>
+
+        <!--
+            The next task discards any previous temporary file used to gather property settings that
+            record the results of the autodeploy directory monitoring Java class.
+        -->
+        <delete file="${result.property.file}" quiet="true"/>
+        
+        <!--
+            Do the auto-deployment.
+       -->
+        <antcall target="deploy.autodeploy">
+            <param name="archive.name" value="${autodeploy.archive.name}"/>
+            <param name="archive.file" value="${autodeploy.archive}"/>
+            <param name="autodeploy.dir" value="${autodeploy.dir}"/>
+            <param name="deployResultPropertyName" value="deployResult1"/>
+        </antcall>
+
+        <!--
+            Redeploy the archive.  This used to trigger an error because the 
+            app ref was not removed before the app was removed.
+        -->
+        <antcall target="deploy.autodeploy">
+            <param name="archive.name" value="${autodeploy.archive.name}"/>
+            <param name="archive.file" value="${autodeploy.archive}"/>
+            <param name="autodeploy.dir" value="${autodeploy.dir}"/>
+            <param name="deployResultPropertyName" value="deployResult2"/>
+        </antcall>
+
+        <!--
+            Now undeploy the app.
+        -->
+        <antcall target="deploy.autoundeploy">
+            <param name="archive.file" value="${autodeploy.archive}"/>
+            <param name="archive.name" value="${autodeploy.archive.name}"/>
+            <param name="autodeploy.dir" value="${autodeploy.dir}"/>
+            <param name="undeployResultPropertyName" value="undeployResult"/>
+        </antcall>
+
+        <!--
+            Make the result properties of the several substeps accessible now because we need them in
+            the next several steps.  The prefix attribute helps avoid possible collisions with other
+            property names that might already be present.
+        -->
+        <property file="${result.property.file}" prefix="simple.autodeploy"/>
+
+        <!--
+            Decide whether the test was successful or not.  Make sure that the deploy and
+            undeploy results are good.
+        -->
+        <condition property="result" value="0">
+            <and>
+                <equals arg1="${simple.autodeploy.deployResult1}" arg2="0"/>
+                <equals arg1="${simple.autodeploy.deployResult2}" arg2="0"/>
+                <equals arg1="${simple.autodeploy.undeployResult}" arg2="0"/>
+            </and>
+        </condition>
+        
+        <!--
+            If the property "result" was not set by the "condition" task just above then something
+            went wrong and we set result to 1 now.
+        -->
+        <condition property="result" value="1">
+            <not>
+                <isset property="result"/>
+            </not>
+        </condition>
+        
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/output.log"/>
+        </antcall>
+
+    </target>
+    
+</project>

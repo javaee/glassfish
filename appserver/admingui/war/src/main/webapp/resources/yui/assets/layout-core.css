@@ -1,0 +1,192 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+.yui-layout-loading {
+    visibility: hidden;
+}
+
+body.yui-layout {
+    overflow: hidden;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+.yui-layout-doc {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.yui-layout-unit {
+    height: 50px;
+    width: 50px;
+    padding: 0;
+    margin: 0;
+    float: none;
+    z-index: 0;
+    /*overflow: hidden;*/
+}
+
+.yui-layout-unit-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.yui-layout-unit-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.yui-layout-unit-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.yui-layout-unit-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.yui-layout-unit-center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.yui-layout div.yui-layout-hd {
+    position: absolute;
+    top: 0;
+    left: 0;
+    zoom: 1;
+    width: 100%;
+    /*overflow: hidden;*/
+}
+.yui-layout div.yui-layout-bd {
+    position: absolute;
+    top: 0;
+    left: 0;
+    zoom: 1;
+    width: 100%;
+    /*overflow: hidden;*/
+}
+.yui-layout .yui-layout-noscroll div.yui-layout-bd {
+    overflow: hidden;
+}
+.yui-layout .yui-layout-scroll div.yui-layout-bd {
+    overflow: auto;
+}
+.yui-layout div.yui-layout-ft {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    zoom: 1;
+    /*overflow: hidden;*/
+}
+
+.yui-layout .yui-layout-unit div.yui-layout-hd h2 {
+    text-align: left;
+}
+
+.yui-layout .yui-layout-unit div.yui-layout-hd .collapse {
+    cursor: pointer;
+    height: 13px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 17px;
+    font-size: 0;
+}
+
+.yui-layout .yui-layout-unit div.yui-layout-hd .close {
+    cursor: pointer;
+    height: 13px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 17px;
+    font-size: 0;
+}
+.yui-layout .yui-layout-unit div.yui-layout-hd .collapse-close {
+    right: 25px;
+}
+
+
+.yui-layout .yui-layout-clip {
+    position: absolute;
+    height: 20px;
+    background-color: #c0c0c0;
+    display: none;
+}
+
+.yui-layout .yui-layout-clip .collapse {
+    cursor: pointer;
+    height: 13px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 17px;
+    font-size: 0px;
+}
+
+.yui-layout .yui-layout-wrap {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+}
+
+/*
+.yui-layout .yui-layout-unit .yui-content {
+    overflow: hidden;
+}
+.yui-layout .yui-layout-unit .yui-layout-scroll {
+    overflow: auto;
+}
+*/

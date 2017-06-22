@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+]>
+ 
+<project name="getweburl" default="all" basedir=".">
+
+ 	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+        
+	<target name="compile">
+                <mkdir dir="${build}" />        
+		<javac srcdir="." destdir="${env.APS_HOME}/devtests/deployment/util/build"
+			classpath="${inst}/lib/j2ee.jar:${inst}/lib/appserv-rt.jar:../../../../util/build"
+		/>		
+	</target>
+        
+        <target name="build-ear" unless="earfile.built">
+            <echo message="file ${build}/save/wstoejb.ear is present : ${earfile.built}"/>
+            <ant dir="../../../ear/wstoejb" target="assemble"/>
+            <mkdir dir="${build}/../save"/>
+            <copy file="${archivedir}/wstoejb.ear" todir="${build}/../save"/>
+            <copy file="${archivedir}/plan.jar" todir="${build}/../save"/>
+        </target>
+        
+        <target name="private-all" depends="compile">
+		<antcall target="declare-test">
+                    <param name="description" value="jsr88/targetmoduleid/DeployGetWebUrlTester test GetWebURL returned from deployment"/>
+                </antcall>        
+                <available property="earfile.built" file="${build}/../save/wstoejb.ear"/>
+                <antcall target="build-ear"/>
+		<antcall target="specialized.run.jsr88">
+                        <param name="deployer.class" value="devtests.deployment.jsr88.targetmoduleid.deploygetweburl.DeployGetWebUrlTester"/>
+			<param name="command" value="deploy"/>
+			<param name="arg.list" value="true ${build}/../save//wstoejb.ear ${build}/../save/plan.jar"/>
+		</antcall>          
+                <antcall target="processResult">
+                    <param name="result" value="0"/>                
+                </antcall>                 
+                <antcall target="common.undeploy.asadmin">
+                    <param name="arg.list" value="wstoejb"/>
+                </antcall>
+        </target>
+        
+</project>

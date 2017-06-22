@@ -1,0 +1,108 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2006-2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package com.sun.s1asdev.security.wss.sslclientcert.client;
+
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.s1asdev.security.wss.sslclientcert.ejbws.HelloEjb;
+import com.sun.s1asdev.security.wss.sslclientcert.ejbws.WssSslClientCertEjbService;
+import com.sun.s1asdev.security.wss.sslclientcert.servletws.HelloServlet;
+import com.sun.s1asdev.security.wss.sslclientcert.servletws.WssSslClientCertServletService;
+
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+public class Client {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    private static String testSuite = "Sec:WSS SSL Client Cert test ";
+
+    @WebServiceRef(wsdlLocation="https://@HOST@:@PORT@/WssSslClientCertEjbService/HelloEjb?WSDL")
+    private static WssSslClientCertEjbService ejbService;
+    @WebServiceRef(wsdlLocation="https://@HOST@:@PORT@/security-wss-sslclientcert/webservice/WssSslClientCertServletService/HelloServlet?WSDL")
+    private static WssSslClientCertServletService servletService;
+
+    public static void main(String[] args) {
+        stat.addDescription("security-wss-sslclientcert");
+        String description = null;
+        try {
+            // ejb ws
+            HelloEjb ejbPort = ejbService.getHelloEjbPort();
+            description = testSuite + " sslclientcert: ejb hello";
+            String ejbMsg = ejbPort.hello("Sun Ejb");
+            System.out.println(ejbMsg);
+            if (ejbMsg != null && ejbMsg.startsWith("Hello Ejb, CN=@HOST@")) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+
+            description = testSuite + " sslclientcert: ejb hello2";
+            String ejbMsg2 = ejbPort.hello2("Sun Ejb - 2");
+            System.out.println(ejbMsg2);
+            if (ejbMsg2 != null && ejbMsg2.startsWith("Hello Ejb 2, CN=@HOST@")) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        try {
+            // servlet ws
+            HelloServlet servletPort = servletService.getHelloServletPort();
+            description = testSuite + " sslclientcert: servlet hello";
+            String servletMsg = servletPort.hello("Sun Servlet");
+            System.out.println(servletMsg);
+            if (servletMsg != null && servletMsg.startsWith("Hello Servlet, CN=@HOST@")) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        stat.printSummary("security-wss-sslclientcert");
+    }
+}

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+<!ENTITY commonVersioning SYSTEM "../versioning-common.xml">
+<!ENTITY basicScenarios SYSTEM "../basic-scenarios.xml">
+]>
+
+<project name="simple-versioned-ejb" default="usage" basedir=".">
+
+    &commonBuild;
+    &commonVersioning;
+    &basicScenarios;
+
+    <loadproperties srcFile="../build.properties"/>
+    <!--
+        versionInfos: the property file included in the jar archives, this
+        file contains a version identifier as a property and is used by the
+        ejb to return the version informations.
+    -->
+    <property name="versionInfos" value="version-infos.properties"/>
+    <property name="testPackage" value="versionedejb"/>
+        
+    <property name="gfDDFile" value="glassfish-ejb-jar.xml"/>
+    <property name="gfDDDir" value="META-INF"/>
+
+    <loadproperties srcFile="../build.properties"/>
+
+    <property name="untaggedName" value="simple-versioned-ejb"/>
+    <property name="packaging" value="jar"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+    </target>
+
+    <!--
+        compile: compiles the 2 classes (servlet+client)
+    -->
+    <target name="compile" depends="prepare">
+        <javac srcdir="./src/"
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="gfv3.classpath" />
+        </javac>
+        <!--
+            generation of the property from witch the EJB read the
+            version information.
+        -->
+        <propertyfile file="${build}/${testPackage}/${versionInfos}">
+          <entry  key="version.identifier" value="${versionExpression}"/>
+        </propertyfile>
+        <property name="xmlFile" value="${gfDDDir}/${gfDDFile}"/>
+    	<antcall target="generate.xml.identifier"/>
+    </target>
+
+    <!-- assemble: package the ejb -->
+    <target name="assemble" depends="compile">        
+        <jar destfile="${archiveFile}" manifest="META-INF/MANIFEST.MF">
+            <fileset dir="${classPath}" includes="**/*.class, **/*.properties"/>
+            <fileset dir="." includes="META-INF/*.xml"/>
+        </jar>
+    </target>
+
+<!--
+  Currently, only the scenarios processing test.registred and test.notregistred
+  are supported.
+-->
+    <target name="main-all">
+        <antcall target="xml.version.information"/>
+        <antcall target="clean.scenario"/>
+    </target>
+</project>
