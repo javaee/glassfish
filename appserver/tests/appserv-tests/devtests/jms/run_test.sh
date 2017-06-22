@@ -75,7 +75,7 @@ run_test_id(){
  
 get_test_target(){
 	case $1 in
-		jdbc_all )
+		jms_all )
 			TARGET=all
 			export TARGET;;
 	esac
