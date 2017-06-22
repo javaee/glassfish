@@ -98,6 +98,7 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
+        <dependency>
             <groupId>org.glassfish.main.external</groupId>
             <artifactId>bean-validator</artifactId>
             <version>${project.version}</version>
