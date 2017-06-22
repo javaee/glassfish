@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.mbeanserver;
 
-import org.glassfish.grizzly.config.dom.Ssl;
 import org.glassfish.hk2.api.ServiceLocator;
 
 import javax.management.MBeanServer;
@@ -120,6 +119,10 @@ final class JMXMPConnectorStarter extends ConnectorStarter
         final Map<String, Object> env = new HashMap<String, Object>();
         env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol");
         env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+        env.put("jmx.remote.rmi.server.credential.types", new String[] {
+                String[].class.getName(),
+                String.class.getName() });
+
         JMXAuthenticator authenticator = getAccessController();
         if (authenticator != null)
         {
