@@ -797,7 +797,7 @@ public class BaseSeleniumTestClass {
     protected void assertTableRowCount(String tableId, int count) {
         Assert.assertEquals(count, getTableRowCount(tableId));
     }
- 
+
     protected void waitForTableRowCount(String tableID, int count) {
         WebDriverWait wait = new WebDriverWait(driver, 5);
         wait.until(presenceOfElementLocated(By.id(tableID)));

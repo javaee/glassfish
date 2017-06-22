@@ -327,7 +327,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     }
 
     //TODO-IDCINTER-41 Intermittent failures
-    //@Test
+    @Test
     public void testClusterResourcesPage() {
         final String jndiName = "jdbcResource" + generateRandomString();
         String target = "cluster" + generateRandomString();
@@ -337,9 +337,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_CLUSTER_TYPE);
 
-        clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
-        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, target), TRIGGER_CLUSTER_GENERAL_PAGE);
-        clickAndWait("propertyForm:clusterTabs:clusterResources", TRIGGER_CLUSTER_RESOURCES_PAGE);
+        goToClusterResourcesPage(target);
         assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
@@ -347,9 +345,13 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
+        
+        goToClusterResourcesPage(target);
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
+        
+        goToClusterResourcesPage(target);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
@@ -463,5 +465,11 @@ public class ClusterTest extends BaseSeleniumTestClass {
             }
             this.waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
         }
+    }
+    private void goToClusterResourcesPage(String clusterName) {
+        reset();
+        clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        clickAndWait("propertyForm:clusterTabs:clusterResources", TRIGGER_CLUSTER_RESOURCES_PAGE);
     }
 }

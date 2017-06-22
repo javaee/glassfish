@@ -147,7 +147,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
     }
 
     //TODO IDCINTER-41 Intermittent failures
-    //@Test
+    @Test
     public void testJmsPhysicalDestinations() {
         final String name = "dest" + generateRandomString();
         final String maxUnconsumed = Integer.toString(generateRandomNumber(100));

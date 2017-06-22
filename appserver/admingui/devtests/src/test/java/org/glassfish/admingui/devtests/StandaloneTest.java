@@ -139,7 +139,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     }
 
     //TODO IDCINTER-41 Intermittent failures
-    //@Test
+    @Test
     public void testStandaloneInstanceResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();
         String target = INSTANCE_PREFIX + generateRandomString();
@@ -149,9 +149,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_STANDALONE_TYPE);
 
-        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
-        clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, target), TRIGGER_GENERAL_INFO_PAGE);
-        clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
+        gotoStandAloneInstanceResourcesPage(target);
         assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
@@ -159,10 +157,13 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
+        
+        gotoStandAloneInstanceResourcesPage(target);
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
-
+        
+        gotoStandAloneInstanceResourcesPage(target);
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
@@ -242,6 +243,13 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     public  void gotoStandaloneInstancesPage() {
         reset();
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+    }
+    
+    private void gotoStandAloneInstanceResourcesPage(String instanceName) {
+        reset();
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, instanceName), TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
     }
 
 }
