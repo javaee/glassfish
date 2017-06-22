@@ -105,13 +105,7 @@ public class DirectAccessTest extends ConfigPersistence {
         javaConfigChanges.put("jvm-options", "-XFooBar=false");
         changes.put(javaConfigBean, javaConfigChanges);
 
-        try {
-            getHabitat().<ConfigSupport>getService(ConfigSupport.class)
-                .apply(changes);
-        }catch(Exception e){
-            e.printStackTrace();
-            throw e;
-        }
+        getHabitat().<ConfigSupport>getService(ConfigSupport.class).apply(changes);
     }
 
     public boolean assertResult(String s) {

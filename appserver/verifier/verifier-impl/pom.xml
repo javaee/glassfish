@@ -177,7 +177,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
             <optional>true</optional>
             <scope>provided</scope>
