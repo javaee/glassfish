@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 EJB 3.0//EN" "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_3_0-0.dtd">
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -41,13 +42,11 @@
 
 -->
 
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
-    <resource-ref>
-        <res-ref-name>jdbc/MyDS</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <mapped-name>jdbc/__default</mapped-name>
-    </resource-ref>
-</web-app>
+<sun-ejb-jar>
+	<enterprise-beans>
+		<message-destination>
+			<message-destination-name>MyQueueLink</message-destination-name>
+			<jndi-name>jdbc/__default</jndi-name>
+		</message-destination>
+	</enterprise-beans>
+</sun-ejb-jar>

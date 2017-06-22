@@ -132,6 +132,7 @@ public interface ResourceConstants {
     public static final String JAVA_COMP_SCOPE_PREFIX = "java:comp/";
     public static final String JAVA_MODULE_SCOPE_PREFIX = "java:module/";
     public static final String JAVA_GLOBAL_SCOPE_PREFIX = "java:global/";
+    public static final String JAVA_COMP_ENV_SCOPE_PREFIX = "java:comp/env/";
 
     public static enum TriState {
         TRUE, FALSE, UNKNOWN

@@ -41,13 +41,26 @@
 
 -->
 
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
-    <resource-ref>
-        <res-ref-name>jdbc/MyDS</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <mapped-name>jdbc/__default</mapped-name>
-    </resource-ref>
-</web-app>
+<ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:ejb="http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+	version="3.1">
+	<enterprise-beans>
+		<session>
+			<ejb-name>Invoker</ejb-name>
+			<ejb-class>gf.Invoker</ejb-class>
+			<session-type>Stateless</session-type>
+			<message-destination-ref>
+				<message-destination-ref-name>jms/MyQueue</message-destination-ref-name>
+				<message-destination-type>javax.jms.Queue</message-destination-type>
+				<message-destination-usage>Produces</message-destination-usage>
+				<message-destination-link>MyQueueLink</message-destination-link>
+			</message-destination-ref>
+		</session>
+	</enterprise-beans>
+	<assembly-descriptor>
+		<message-destination>
+			<message-destination-name>MyQueueLink</message-destination-name>
+		</message-destination>
+	</assembly-descriptor>
+</ejb-jar>

@@ -59,5 +59,8 @@
         <ant dir="CorrectURLCustomResource" target="private-all">
             <property name="build" value="${build}/CorrectURLCustomResource"/>
         </ant>
+        <ant dir="CorrectMessageDestResource" target="private-all">
+            <property name="build" value="${build}/CorrectMessageDestResource"/>
+        </ant>
     </target>
 </project>

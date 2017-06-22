@@ -40,19 +40,16 @@
 
 package gf;
 
+import javax.ejb.Stateless;
 import javax.annotation.Resource;
-import javax.sql.DataSource;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Queue;
 
-public class TestServlet {
-    // direct lookup
-    @Resource(mappedName="jdbc/__default")
-    DataSource dataSource1;
+@Stateless
+public class Invoker {
+    @Resource(name="jms/MyQueue")
+    Queue queue1;
 
-    // default data source lookup
-    @Resource
-    DataSource dataSource2;
-
-    // lookup through definition in the DD
-    @Resource(mappedName="java:comp/env/jdbc/MyDS")
-    DataSource dataSource3;
+    @Resource(mappedName="java:comp/env/jms/MyQueue")
+    Queue queue2;
 }
