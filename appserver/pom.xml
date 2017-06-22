@@ -734,9 +734,9 @@
                 <version>${jsp-impl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.web</groupId>
+                <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
-                <version>${org.glassfish.web.javax.el.version}</version>
+                <version>${javax.el.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.faces.extensions</groupId>
