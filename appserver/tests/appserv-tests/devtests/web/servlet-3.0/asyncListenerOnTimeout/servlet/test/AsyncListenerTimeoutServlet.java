@@ -50,9 +50,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AsyncListenerTimeoutServlet extends HttpServlet implements AsyncListener {
+    private static StringBuffer sb = new StringBuffer();
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+
+        if ("1".equals(req.getParameter("result"))) {
+            res.getWriter().println(sb.toString());
+            sb.delete(0, sb.length());
+            return;
+        }
 
         if (!req.isAsyncSupported()) {
             throw new ServletException("Async not supported when it should");
@@ -82,7 +89,9 @@ public class AsyncListenerTimeoutServlet extends HttpServlet implements AsyncLis
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
+        ac.getRequest().setAttribute("a", "A");
         ac.complete();
+        sb.append(ac.getRequest().getAttribute("a"));
     }
 
     public void onError(AsyncEvent event) throws IOException {
