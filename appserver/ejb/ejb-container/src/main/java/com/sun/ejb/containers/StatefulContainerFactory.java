@@ -109,17 +109,17 @@ public class StatefulContainerFactory extends BaseContainerFactory
 
     @LogMessageInfo(
         message = "TopLevel AvailabilityService.getAvailabilityEnabled: [{0}]",
-        level = "INFO")
+        level = "FINE")
     private static final String SFSB_BUILDER_TOP_LEVEL_AVAILABILITY_SERVICE_ENABLED = "AS-EJB-00036";
 
     @LogMessageInfo(
         message = "TopLevel EjbAvailabilityService.getAvailabilityEnabled: [{0}]",
-        level = "INFO")
+        level = "FINE")
     private static final String SFSB_BUILDER_EJB_AVAILABILITY_SERVICE_ENABLED = "AS-EJB-00037";
 
     @LogMessageInfo(
         message = "Global AvailabilityEnabled: [{0}], application AvailabilityEnabled: [{1}]",
-        level = "INFO")
+        level = "FINE")
     private static final String SFSB_BUILDER_GLOBAL_AND_APP_AVAILABILITY_ENABLED = "AS-EJB-00038";
 
     @LogMessageInfo(
@@ -129,12 +129,12 @@ public class StatefulContainerFactory extends BaseContainerFactory
 
     @LogMessageInfo(
         message = "StatefulContainerBuilder AvailabilityEnabled [{0}] for this application",
-        level = "INFO")
+        level = "FINE")
     private static final String SFSB_BUILDER_RESOLVED_AVAILABILITY_ENABLED = "AS-EJB-00040";
 
     @LogMessageInfo(
         message = "StatefulContainerBuilder.buildStoreManager() storeName: [{0}]",
-        level = "INFO")
+        level = "FINE")
     private static final String SFSB_BUILDER_STORE_NAME = "AS-EJB-00041";
 
     @LogMessageInfo(
