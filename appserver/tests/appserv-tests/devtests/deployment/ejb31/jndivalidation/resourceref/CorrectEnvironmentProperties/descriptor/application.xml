@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE project [
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,28 +41,22 @@
 
 -->
 
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-]>
+<application version="7" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
+    <description>Application description</description>
+    <module>
+        <web>
+            <web-uri>deployment-ejb31-jndivalidation-resourceref-CorrectEnvironmentProperties-web.war</web-uri>
+            <context-root>/deployment-ejb31-jndivalidation-resourceref-CorrectEnvironmentProperties-war</context-root>
+        </web>
+    </module>
+    <module>
+        <ejb>deployment-ejb31-jndivalidation-resourceref-CorrectEnvironmentProperties-ejb.jar</ejb>
+    </module>
 
-<project name="resourceref" default="all" basedir=".">
+    <env-entry>
+        <env-entry-name>java:app/env/appLevelValue1</env-entry-name>
+        <env-entry-type>java.lang.Integer</env-entry-type>
+        <env-entry-value>10</env-entry-value>
+    </env-entry>
 
-    &commonBuild;
-
-    <target name="private-all">
-        <ant dir="IncorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/IncorrectJDBCResource"/>
-        </ant>
-        <ant dir="CorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/CorrectJDBCResource"/>
-        </ant>
-        <ant dir="CorrectURLCustomResource" target="private-all">
-            <property name="build" value="${build}/CorrectURLCustomResource"/>
-        </ant>
-        <ant dir="CorrectMessageDestResource" target="private-all">
-            <property name="build" value="${build}/CorrectMessageDestResource"/>
-        </ant>
-        <ant dir="CorrectEnvironmentProperties" target="private-all">
-            <property name="build" value="${build}/CorrectEnvironmentProperties"/>
-        </ant>
-    </target>
-</project>
+</application>

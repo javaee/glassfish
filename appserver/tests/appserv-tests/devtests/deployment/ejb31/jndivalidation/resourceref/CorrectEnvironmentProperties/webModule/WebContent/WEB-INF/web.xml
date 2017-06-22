@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE project [
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,28 +41,25 @@
 
 -->
 
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-]>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <env-entry>
+        <env-entry-name>myValue1</env-entry-name>
+        <env-entry-type>java.lang.Integer</env-entry-type>
+        <env-entry-value>10</env-entry-value>
+    </env-entry>
 
-<project name="resourceref" default="all" basedir=".">
+    <env-entry>
+        <env-entry-name>java:comp/env/myValue2</env-entry-name>
+        <env-entry-type>java.lang.Integer</env-entry-type>
+        <env-entry-value>10</env-entry-value>
+    </env-entry>
 
-    &commonBuild;
-
-    <target name="private-all">
-        <ant dir="IncorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/IncorrectJDBCResource"/>
-        </ant>
-        <ant dir="CorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/CorrectJDBCResource"/>
-        </ant>
-        <ant dir="CorrectURLCustomResource" target="private-all">
-            <property name="build" value="${build}/CorrectURLCustomResource"/>
-        </ant>
-        <ant dir="CorrectMessageDestResource" target="private-all">
-            <property name="build" value="${build}/CorrectMessageDestResource"/>
-        </ant>
-        <ant dir="CorrectEnvironmentProperties" target="private-all">
-            <property name="build" value="${build}/CorrectEnvironmentProperties"/>
-        </ant>
-    </target>
-</project>
+    <env-entry>
+        <env-entry-name>java:global/forejb</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>Blah</env-entry-value>
+    </env-entry>
+</web-app>
