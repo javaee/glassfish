@@ -140,6 +140,7 @@
         <javassist.version>3.20.0-GA</javassist.version>
         <javax.el.version>2.2.4</javax.el.version>
         <javax.el-api.version>2.2.4</javax.el-api.version>
+        <org.glassfish.javax.el.version>3.0.1-b08</org.glassfish.javax.el.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <pfl.version>4.0.0-b004</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
@@ -816,7 +817,7 @@
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
-                <version>${javax.el.version}</version>
+                <version>${org.glassfish.javax.el.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.web</groupId>
