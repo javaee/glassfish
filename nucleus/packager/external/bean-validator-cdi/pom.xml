@@ -63,6 +63,7 @@
                         </Export-Package>
 
                         <Import-Package>
+                            javax.enterprise.inject,
                             javax.enterprise.inject.*,
                             *
                         </Import-Package>
