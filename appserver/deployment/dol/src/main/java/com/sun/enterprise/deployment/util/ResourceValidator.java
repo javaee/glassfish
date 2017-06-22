@@ -144,6 +144,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                     EnvironmentProperty next = (EnvironmentProperty) it.next();
                     parseResources(next, ejb);
                 }
+
+                for (Iterator it = ejb.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
+                    parseResources((ResourceDescriptor) it.next(), ejb);
+                }
             }
         }
 
@@ -171,6 +175,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             for (Iterator it = env.getEnvironmentProperties().iterator(); it.hasNext(); ) {
                 parseResources((EnvironmentProperty) it.next(), env);
             }
+
+            for (Iterator it = env.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
+                parseResources((ResourceDescriptor) it.next(), env);
+            }
         }
     }
 
@@ -194,6 +202,18 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         myNamespace.store(name, env);
     }
 
+    /**
+     * TODO: Implement, devtests
+     */
+    private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env) {
+        return;
+    }
+
+    /**
+     * @param rawName to be converted
+     * @param env
+     * @return The logical JNDI name which has a java: prefix
+     */
     private String getLogicalJNDIName(String rawName, JndiNameEnvironment env) {
         String logicalJndiName = rawNameToLogicalJndiName(rawName);
         boolean treatComponentAsModule = DOLUtils.getTreatComponentAsModule(env);
@@ -204,7 +224,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * convert name from java:comp/xxx to java:module/xxx
+     * Convert name from java:comp/xxx to java:module/xxx.
      */
     private String logicalCompJndiNameToModule(String logicalCompName) {
         String tail = logicalCompName.substring(ResourceConstants.JAVA_COMP_SCOPE_PREFIX.length());
@@ -212,9 +232,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Generate the name of an environment dependency in the java:
-     * namespace.  This is the lookup string used by a component to access
-     * the dependency.
+     * Attach default prefix - java:comp/env/.
      */
     private String rawNameToLogicalJndiName(String rawName) {
         return (rawName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX)) ?
@@ -353,6 +371,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (jndiName.length() == 0)
             return;
 
+        // Annotations provided by Java EE
+        if (jndiName.equals("java:module/ModuleName") || jndiName.equals("java:app/AppName") ||
+                jndiName.equals("java:comp/InAppClientContainer"))
+            return;
+
         validateJNDIRefs(jndiName, env);
     }
 
@@ -405,6 +428,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         return false;
     }
 
+    /**
+     * A class to record all the logical JNDI names of resources defined in the application in the appropriate scopes.
+     * App scoped resources, Resource Definitions are also stored in this data structure.
+     */
     private static class JNDINamespace {
         private Map<String, List> componentNamespaces;
 
