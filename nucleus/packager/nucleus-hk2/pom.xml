@@ -94,18 +94,19 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>asm-all</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
-   	    <groupId>org.glassfish.hk2.external</groupId>
+   	    <groupId>org.glassfish.main.external</groupId>
             <artifactId>bean-validator</artifactId>
-	    <version>${bean.validator.version}</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
+            <groupId>org.glassfish.main.external</groupId>
+            <artifactId>bean-validator-cdi</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
