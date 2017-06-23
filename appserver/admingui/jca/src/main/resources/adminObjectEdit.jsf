@@ -100,7 +100,6 @@
     setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
     setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
     gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
-    setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
     
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
@@ -131,6 +130,16 @@
             mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resourceTypes[0]}");
         }
         mapPut(map="#{pageSession.attrsMap}" key="adminObjectInterface" value="#{pageSession.valueMap.resType}");
+        //To get the admin-object-config-props
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-config-properties"
+                       attrs="#{pageSession.attrsMap}"
+                       method="GET"
+                       result="#{requestScope.result}");
+        gf.buildConfidentialPropsTable(propsMaps="#{requestScope.propTable.data.extraProperties.properties}"
+                                       confidentialList="#{requestScope.result.data.extraProperties.confidentialConfigProps}"
+                                       result="#{pageSession.tableList}"
+                                       hasConfidentialProps="#{pageSession.hasConfidential}");
+
         //To get the get-admin-object-class-names
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-class-names"
                        attrs="#{pageSession.attrsMap}"
@@ -157,7 +166,7 @@
     "<br><br>
     
 #include "/jca/adminObjectAttr.inc"
-#include "/common/shared/propertyDescTable.inc"
+#include "/common/resourceNode/confidentialPropsTable.inc"
     
     <sun:hidden id="helpKey" value="$resource{help_jca.adminObjectEdit}" />
 </sun:form>
