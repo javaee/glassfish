@@ -733,10 +733,27 @@ class PartItem
         // read values
         in.defaultReadObject();
 
+        if (repository != null) {
+            if (repository.isDirectory()) {
+                                // Check path for nulls
+                if (repository.getPath().contains("\0")) {
+                    throw new IOException("The repository " + repository.getPath()
+                            + " contains a null character");
+                }
+            } else {
+                throw new IOException("The repository " + repository.getAbsolutePath()
+                        + " is not a directory");
+            }
+        }
+
         OutputStream output = getOutputStream();
         if (cachedContent != null) {
             output.write(cachedContent);
         } else {
+            if (dfosFile != null && dfosFile.getPath().contains("\0")) {
+                throw new IOException("The dfosFile " + dfosFile.getPath()
+                        + " contains a null character");
+            }
             FileInputStream input = new FileInputStream(dfosFile);
             Streams.copy(input, output, false);
             deleteFile(dfosFile);
