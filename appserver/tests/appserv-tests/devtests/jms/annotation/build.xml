@@ -3,7 +3,7 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "../../../config/common.xml">
-<!ENTITY reporting   SYSTEM "../../report.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
 ]>
 
 <project name="annotation" default="usage" basedir=".">
