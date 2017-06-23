@@ -461,7 +461,7 @@
       <!-- CDI support -->
       <dependency>
           <groupId>org.jboss.weld.se</groupId>
-          <artifactId>weld-se-shaded</artifactId>
+          <artifactId>weld-se-core</artifactId>
       </dependency>
       <dependency>
           <groupId>javax.enterprise</groupId>

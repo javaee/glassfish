@@ -82,6 +82,11 @@ get_test_target(){
 
 }
 
+merge_result_files(){
+	cat $APS_HOME/test_resultsValid.xml $APS_HOME/security-gtest-results.xml > $APS_HOME/temp.xml
+	mv $APS_HOME/temp.xml $APS_HOME/test_resultsValid.xml 
+}
+
 run_test_id(){
 	source `dirname $0`/../../../common_test.sh
 	kill_process
@@ -92,6 +97,7 @@ run_test_id(){
 	test_init
 	get_test_target $1
 	test_run
+	merge_result_files
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
