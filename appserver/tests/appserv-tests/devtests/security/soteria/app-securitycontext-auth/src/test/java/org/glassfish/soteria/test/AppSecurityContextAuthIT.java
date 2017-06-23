@@ -138,7 +138,9 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
     public void testContextHasAccessToResource(){
         Assert.assertHasAccessToResource(
                 "web",
-                readFromServer("/servlet?name=reza"), "foo", "bar");
+                "reza",
+                "/protectedServlet",
+                readFromServer("/servlet?name=reza"));
     }
     
     @Test
