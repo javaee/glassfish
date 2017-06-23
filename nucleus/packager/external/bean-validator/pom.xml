@@ -205,8 +205,9 @@
             <artifactId>hibernate-validator</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <!-- 
+        <!-- This dependency is not required in latest hibernate jars. Keeping this in commented form for reference.
+            <dependency>-->
+            <!--
                 Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
                 bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
                 constant pool entries referring to google classes, so we need to package google jtype classes as well.
@@ -214,10 +215,10 @@
                 Because of shade-plugin, the dependency is remove from hibernate-validator pom, so we need to add it
                 here so that we can package these classes.
             -->
-            <groupId>com.googlecode.jtype</groupId>
+            <!--<groupId>com.googlecode.jtype</groupId>
             <artifactId>jtype</artifactId>
             <optional>true</optional>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
