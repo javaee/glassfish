@@ -104,6 +104,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             application = dc.getModuleMetaData(Application.class);
             DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
             target = commandParams.target;
+            if (application == null)
+                return;
             parseResources();
             processResources();
         }
@@ -203,10 +205,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * TODO: Implement, devtests
+     * TODO: App client doesn't support some resource descriptors. Might need to fail deployment in such cases.
      */
     private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env) {
-        return;
+        String name = getLogicalJNDIName(resourceDescriptor.getName(), env);
+        myNamespace.store(name, env);
     }
 
     /**
