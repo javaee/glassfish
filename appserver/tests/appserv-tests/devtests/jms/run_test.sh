@@ -43,10 +43,8 @@ list_test_ids(){
 }
  
 test_run(){
-  $S1AS_HOME/bin/asadmin start-domain domain1
   cd $APS_HOME/devtests/jms
   ant $TARGET | tee $TEST_RUN_LOG
-  $S1AS_HOME/bin/asadmin stop-domain domain1
 }
  
 
