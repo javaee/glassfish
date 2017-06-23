@@ -65,11 +65,12 @@ public class AppDBIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppSecurityContextEJB");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppDBIT");
 
     @AfterClass
     public static void printSummary(){
         stat.printSummary();
+    }
     
 
     @Deployment(testable = false)
