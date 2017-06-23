@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -39,28 +38,6 @@
     only if the new code is made subject to such option by the copyright
     holder.
 
--->
+--%>
 
-<!DOCTYPE sun-web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 Servlet 2.3//EN' 'http://www.sun.com/software/sunone/appserver/dtds/sun-web-app_2_3-0.dtd'>
-
-<sun-web-app httpservlet-security-provider="GFConsoleAuthModule">
- <security-role-mapping>
-    <role-name>admin</role-name>
-    <principal-name>admin</principal-name>
-    <group-name>asadmin</group-name>
- </security-role-mapping>
- <session-config>
-     <session-manager>
-	 <manager-properties>
-	     <property name="sessionFilename" value="" />
-	 </manager-properties>
-     </session-manager>
- </session-config>
-
- <locale-charset-info>
-	<parameter-encoding default-charset="UTF-8" />
- </locale-charset-info>
-
-<class-loader delegate="true" extra-class-path="WEB-INF/extra/webui-jsf-suntheme-4.0.2.10.jar:WEB-INF/extra/dojo-ajax-nodemo-0.4.1.jar:WEB-INF/extra/webui-jsf-4.0.2.10.jar:WEB-INF/extra/commons-fileupload-1.3.2.jar:WEB-INF/extra/commons-io-1.3.1.jar:WEB-INF/extra/json-1.0.jar:WEB-INF/extra/prototype-1.5.0.jar" />
-
-</sun-web-app>
+this is a test

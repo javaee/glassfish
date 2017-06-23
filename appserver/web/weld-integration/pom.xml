@@ -124,7 +124,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core-impl</artifactId>
+                    <artifactId>weld-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.weld</groupId>

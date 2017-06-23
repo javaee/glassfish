@@ -120,6 +120,9 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.admin.cli.AdminMain</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>bean-validator.jar</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
