@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletMapping;
 
-public class BForwardToCNamedDispatcher extends HttpServlet {
+public class BIncludeCNamedDispatcher extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -73,7 +73,7 @@ public class BForwardToCNamedDispatcher extends HttpServlet {
         request.getServletContext().log(this.getClass().getSimpleName() + " ASYNC_MAPPING attribute: " 
                 + asyncMapping);
         RequestDispatcher rd = request.getServletContext().getNamedDispatcher("ServletC");
-        rd.forward(request, response);
+        rd.include(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

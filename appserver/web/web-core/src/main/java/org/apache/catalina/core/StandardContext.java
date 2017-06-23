@@ -3465,7 +3465,7 @@ public class StandardContext
         wrapper.addMapping(pattern);
 
         // Update context mapper
-        mapper.addWrapper(pattern, wrapper, jspWildCard, true);
+        mapper.addWrapper(pattern, wrapper, jspWildCard, name, true);
 
         if (notifyContainerListeners) {
             fireContainerEvent("addServletMapping", pattern);
