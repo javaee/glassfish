@@ -118,39 +118,16 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         myNamespace = new JNDINamespace();
         parseResources(application);
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.warType())) {
-            parseResources(bd);
+            parseResources((JndiNameEnvironment) bd);
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.carType())) {
-            parseResources(bd);
+            parseResources((JndiNameEnvironment) bd);
         }
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.ejbType())) {
-            parseResources(bd);
+            parseResources((JndiNameEnvironment) bd);
             EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
-            for (EjbDescriptor ejb : ebd.getEjbs()) {
-                for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-                    ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
-                    parseResources(next, ejb);
-                }
-
-                for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
-                    ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
-                    parseResources(next, ejb);
-                }
-
-                for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
-                    MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-                    parseResources(next, ejb);
-                }
-
-                for (Iterator it = ejb.getEnvironmentProperties().iterator(); it.hasNext();) {
-                    EnvironmentProperty next = (EnvironmentProperty) it.next();
-                    parseResources(next, ejb);
-                }
-
-                for (Iterator it = ejb.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
-                    parseResources((ResourceDescriptor) it.next(), ejb);
-                }
-            }
+            for (EjbDescriptor ejb : ebd.getEjbs())
+                parseResources(ejb);
         }
 
         String appName = DOLUtils.getApplicationName(application);
@@ -159,28 +136,25 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         myNamespace.storeAppScopedResources(resourcesList, appName);
     }
 
-    private void parseResources(BundleDescriptor bd) {
-        if (bd instanceof JndiNameEnvironment) {
-            JndiNameEnvironment env = (JndiNameEnvironment) bd;
-            for (Iterator it = env.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-                parseResources((ResourceReferenceDescriptor) it.next(), env);
-            }
+    private void parseResources(JndiNameEnvironment env) {
+        for (Iterator it = env.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((ResourceReferenceDescriptor) it.next(), env);
+        }
 
-            for (Iterator it = env.getResourceEnvReferenceDescriptors().iterator(); it.hasNext(); ) {
-                parseResources((ResourceEnvReferenceDescriptor) it.next(), env);
-            }
+        for (Iterator it = env.getResourceEnvReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((ResourceEnvReferenceDescriptor) it.next(), env);
+        }
 
-            for (Iterator it = env.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext(); ) {
-                parseResources((MessageDestinationReferenceDescriptor) it.next(), env);
-            }
+        for (Iterator it = env.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((MessageDestinationReferenceDescriptor) it.next(), env);
+        }
 
-            for (Iterator it = env.getEnvironmentProperties().iterator(); it.hasNext(); ) {
-                parseResources((EnvironmentProperty) it.next(), env);
-            }
+        for (Iterator it = env.getEnvironmentProperties().iterator(); it.hasNext(); ) {
+            parseResources((EnvironmentProperty) it.next(), env);
+        }
 
-            for (Iterator it = env.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
-                parseResources((ResourceDescriptor) it.next(), env);
-            }
+        for (Iterator it = env.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((ResourceDescriptor) it.next(), env);
         }
     }
 
