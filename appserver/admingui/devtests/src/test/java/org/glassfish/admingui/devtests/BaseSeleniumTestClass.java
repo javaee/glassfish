@@ -615,7 +615,7 @@ public class BaseSeleniumTestClass {
         final ExceptionSwallowingLoop<String> loop = new ExceptionSwallowingLoop<String>() {
             @Override
             public String operation() {
-                WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                WebElement link = elementFinder.findElement(By.id(baseId).linkText(value), TIMEOUT);
                 return (link == null) ? null : (String) link.getAttribute("id");
             }
         };
@@ -799,14 +799,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForTableRowCount(String tableID, int count) {
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(presenceOfElementLocated(By.id(tableID)));
-        try {
-            int tableCount = getTableRowCount(tableID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        sleep(500);
+        waitForLoad(TIMEOUT, new TableRowCountCallBack(tableID, count));        
     }
 
     // Look at all those params. Maybe this isn't such a hot idea.
@@ -1142,6 +1135,27 @@ public class BaseSeleniumTestClass {
             }
         }
     };
+    
+    class TableRowCountCallBack implements WaitForLoadCallBack {
+        private String tableId;
+        private int expectedCount;
+
+        public TableRowCountCallBack(String tableId, int expectedCount) {
+            this.tableId = tableId;
+            this.expectedCount = expectedCount;
+        }
+
+        @Override
+        public boolean executeTest() {
+            try {
+                int count = getTableRowCount(tableId);
+                return (count == expectedCount);
+            } catch (SeleniumException se) {
+                return false;
+            }
+        }
+
+    }
 
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;
