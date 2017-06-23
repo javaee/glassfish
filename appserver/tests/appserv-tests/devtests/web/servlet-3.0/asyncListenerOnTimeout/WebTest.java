@@ -54,6 +54,7 @@ public class WebTest {
         new SimpleReporterAdapter("appserv-tests");
 
     private static final String EXPECTED_RESPONSE = "Hello world";
+    private static final String EXPECTED_SB_RESULT = "A";
 
     private String host;
     private String port;
@@ -71,8 +72,10 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest("wrap=true");
-            webTest.doTest("wrap=false");
+            webTest.doTest("wrap=true", EXPECTED_RESPONSE);
+            webTest.doTest("result=1", EXPECTED_SB_RESULT);
+            webTest.doTest("wrap=false", EXPECTED_RESPONSE);
+            webTest.doTest("result=1", EXPECTED_SB_RESULT);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -82,7 +85,7 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void doTest(String mode) throws Exception {
+    public void doTest(String mode, String expectedResponse) throws Exception {
 
         InputStream is = null;
         BufferedReader input = null;
@@ -108,13 +111,13 @@ public class WebTest {
             String response = null;
             while ((response = input.readLine()) != null) {
                 System.out.println(response);
-                if (EXPECTED_RESPONSE.equals(response)) {
+                if (expectedResponse.equals(response)) {
                     count++;
                 }
             }
             if (count != 1) {
                 throw new Exception("Missing or wrong response. Expected: " +
-                    EXPECTED_RESPONSE + ", received: " + response +
+                    expectedResponse + ", received: " + response +
                     ". With count = " + count);
             }
         } finally {
