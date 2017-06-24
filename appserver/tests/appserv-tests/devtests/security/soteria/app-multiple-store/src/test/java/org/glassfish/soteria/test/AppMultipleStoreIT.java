@@ -58,7 +58,7 @@ public class AppMultipleStoreIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppSecurityContextEJB");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppMultipleStore");
 
     @AfterClass
     public static void printSummary(){
