@@ -64,11 +64,14 @@
 
     <modules>
         <module>common</module>
-        <module>app-mem-basic</module>
+        <!--module>app-mem-basic</module>
         <module>app-custom</module>
         <module>app-securitycontext-auth</module>
         <module>app-double-ham</module>
-        <module>app-ham-ordering</module>
+        <module>app-ham-ordering</module-->
+        <module>app-custom-identity-store-handler</module>
+        <!--module>app-multiple-store</module>
+        <module>app-multiple-store-backup</module-->
         <!-- default role-mapping test is disable till the feature is available
         <module>app-no-role-mapping</module>-->
         

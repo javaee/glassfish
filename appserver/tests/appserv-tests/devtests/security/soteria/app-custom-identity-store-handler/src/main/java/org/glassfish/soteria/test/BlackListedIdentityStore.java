@@ -42,7 +42,7 @@ package org.glassfish.soteria.test;
 import static javax.security.enterprise.identitystore.CredentialValidationResult.INVALID_RESULT;
 import static javax.security.enterprise.identitystore.CredentialValidationResult.NOT_VALIDATED_RESULT;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
-import static org.glassfish.soteria.test.Utils.unmodifiableSet;
+import static org.glassfish.soteria.Utils.unmodifiableSet;
 
 import java.util.Set;
 

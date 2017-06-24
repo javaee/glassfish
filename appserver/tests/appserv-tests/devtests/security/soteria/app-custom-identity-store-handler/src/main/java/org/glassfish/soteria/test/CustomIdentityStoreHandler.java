@@ -59,7 +59,7 @@ import static javax.security.enterprise.identitystore.CredentialValidationResult
 import static javax.security.enterprise.identitystore.CredentialValidationResult.Status.VALID;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
-import static org.glassfish.soteria.test.CdiUtils.getBeanReferencesByType;
+import static org.glassfish.soteria.cdi.CdiUtils.getBeanReferencesByType;
 
 /**
  *

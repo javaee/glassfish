@@ -43,7 +43,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
-import static org.glassfish.soteria.test.Utils.unmodifiableSet;
+import static org.glassfish.soteria.Utils.unmodifiableSet;
 
 import java.util.HashMap;
 import java.util.HashSet;
