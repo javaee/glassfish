@@ -59,6 +59,21 @@
       <url>https://github.com/javaee/glassfish</url>
     </scm>
     
+    <repositories>
+        <!-- TODO: remove me, I'm here for testing only-->
+        <repository>
+          <id>jvnet-nexus-staging</id>
+          <name>Java.net Staging Repositoriy</name>
+          <url>https://maven.java.net/content/repositories/staging/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+    </repositories>
+
     <properties>
         <jms-api.version>2.0.1</jms-api.version>
         <jsp-api.version>2.3.2-b01</jsp-api.version>
@@ -72,7 +87,7 @@
         <javax.interceptor-api.version>1.2</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
         <javax.transaction-api.version>1.2.1</javax.transaction-api.version>
-        <jaxws-api.version>2.2.8</jaxws-api.version>
+        <jaxws-api.version>2.3.0</jaxws-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <cdi-api.version>1.2</cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
@@ -103,11 +118,11 @@
         <jsftemplating.version>2.1.2</jsftemplating.version>
         <uc-pkg-client.version>1.122-57.2889</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
-        <webservices.version>2.3.2-b608</webservices.version>
+        <webservices.version>2.4.0-b170625.0941</webservices.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <woodstox.version>4.2.0</woodstox.version>
-        <jaxb-api.version>2.2.13-b141020.1521</jaxb-api.version>
-        <jaxb.version>2.2.12-b141219.1637</jaxb.version>
+        <jaxb-api.version>2.3.0</jaxb-api.version>
+        <jaxb.version>2.3.0-b170624.2321</jaxb.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.6.3-M1</eclipselink.version>
