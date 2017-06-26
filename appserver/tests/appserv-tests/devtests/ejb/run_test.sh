@@ -317,6 +317,7 @@ post_test_run(){
     upload_test_results
     delete_bundle
     cd ${dname}
+}
 
 
 list_test_ids(){
