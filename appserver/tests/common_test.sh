@@ -216,10 +216,9 @@ check_successful_run(){
 	FILE=$APS_HOME/test_results.html
 	if [ -f $FILE ];then
    		echo "File $FILE exists.Test build successful"
-   		echo "SUCCESS" > $WORKSPACE/results/testsresult.log
 	else
    		echo "File $FILE does not exist.There is problem in test build."
-   		echo "FAILURE" > $WORKSPACE/results/testsresult.log
+   exit 1
 fi
 }
 
