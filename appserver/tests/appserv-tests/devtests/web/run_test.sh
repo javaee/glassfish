@@ -265,14 +265,16 @@ run_test_id(){
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
-    copy_test_artifects
-    upload_test_results
-    delete_bundle
-    cd -
 }
 
 list_test_ids(){
     echo web_all
+}
+post_test_run(){
+    copy_test_artifects
+    upload_test_results
+    delete_bundle
+    cd -
 }
 
 OPT=$1
@@ -282,5 +284,6 @@ case $OPT in
     list_test_ids )
         list_test_ids;;
     run_test_id )
+        trap post_test_run EXIT
         run_test_id $TEST_ID ;;
 esac
