@@ -59,7 +59,7 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 @RunWith(Arquillian.class)
-public class AppCustomIT extends ArquillianBase {
+public class AppHAMOrderingIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule

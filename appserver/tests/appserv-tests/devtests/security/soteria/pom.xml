@@ -66,6 +66,8 @@
         <module>common</module>
         <module>app-mem-basic</module>
         <module>app-custom</module>
+	<module>app-custom-session</module>
+        <module>app-custom-rememberme</module> 
         <module>app-securitycontext-auth</module>
         <module>app-double-ham</module>
         <module>app-ham-ordering</module>

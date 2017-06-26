@@ -40,57 +40,37 @@
 
 package org.glassfish.soteria.test;
 
-import static org.glassfish.soteria.test.Assert.*;
-import static org.glassfish.soteria.test.ShrinkWrap.mavenWar;
+import static java.util.Arrays.asList;
+import static javax.security.enterprise.identitystore.CredentialValidationResult.INVALID_RESULT;
+import static javax.security.enterprise.identitystore.CredentialValidationResult.NOT_VALIDATED_RESULT;
 
-import org.glassfish.soteria.test.ArquillianBase;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.HashSet;
 
-import org.junit.Rule;
-import org.junit.AfterClass;
-import org.junit.rules.TestWatcher;
+import javax.enterprise.context.RequestScoped;
+import javax.security.enterprise.credential.Credential;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
 
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+@RequestScoped
+public class TestIdentityStore implements IdentityStore {
 
-@RunWith(Arquillian.class)
-public class AppCustomIT extends ArquillianBase {
-    private static SimpleReporterAdapter stat =
-            new SimpleReporterAdapter("appserv-tests");
-    @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppDoubleHam");
+    @Override
+    public CredentialValidationResult validate(Credential credential) {
+        if (credential instanceof UsernamePasswordCredential) {
+            return validate((UsernamePasswordCredential) credential);
+        }
 
-    @AfterClass
-    public static void printSummary(){
-      stat.printSummary();
-    }
-   
-    @Deployment(testable = false)
-    public static Archive<?> createDeployment() {
-        return mavenWar();
+        return NOT_VALIDATED_RESULT;
     }
 
-    @Test
-    public void testBasicHAM() {
+    public CredentialValidationResult validate(UsernamePasswordCredential usernamePasswordCredential) {
 
-        DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-        credentialsProvider.addCredentials("reza", "secret1");
+        if (usernamePasswordCredential.compareTo("reza", "secret1")) {
+            return new CredentialValidationResult("reza", new HashSet<>(asList("foo", "bar")));
+        }
 
-        getWebClient().setCredentialsProvider(credentialsProvider);
-
-        assertNotAuthenticatedError(
-                responseFromServer("/servlet"));
-    }
-    
-    @Test
-    public void testCustomHam() {
-        assertNotAuthenticatedError(
-                responseFromServer("/servlet?name=reza&password=secret1"));
+        return INVALID_RESULT;
     }
 
 }
