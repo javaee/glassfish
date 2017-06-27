@@ -166,8 +166,9 @@ a global transaction!
 	    <ant dir="web2connector" target="${connector-target}" />
 		<echo message="@@## web2connector (second time) ##@@"/>
             <ant dir="web2connector" target="${connector-target}" />
-		<echo message="@@## redeployRar ##@@"/>
-            <ant dir="redeployRar" target="${connector-target}" />
+        <!-- this test is disabled because of dependency on point base database jar which is not available -->
+		<!--echo message="@@## redeployRar ##@@"/>
+            <ant dir="redeployRar" target="${connector-target}" /-->
 		<echo message="@@## nonstringmcfproperties ##@@"/>
             <ant dir="nonstringmcfproperties" target="${connector-target}" />
 		<echo message="@@## nonstringraproperties ##@@"/>

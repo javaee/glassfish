@@ -131,7 +131,7 @@
                         <param name="tx.mode" value="tx"/>
                 </antcall>
 		-->
-                <antcall target="reconfig-common"/>
+                <!--antcall target="reconfig-common"/-->
     </target>
 
     <target name="undeploy">
@@ -140,7 +140,7 @@
                 <antcall target="delete-pool"/>
 		-->
 		<antcall target="undeploy-common"/>
-                <antcall target="reconfig-common"/>
+        <!--antcall target="reconfig-common"/-->
     </target>
 
 
@@ -180,7 +180,7 @@
         <arg line="--port ${admin.port}"/>
         <arg line=":-Djdbc.drivers=${jdbc.drivers}"/>
       </exec>
-      <antcall target="reconfig-common" />
+    <!--antcall target="reconfig-common"/-->
 </target>
 
 <target name="delete-JVM-options">
@@ -192,7 +192,7 @@
         <arg line="--port ${admin.port}"/>
         <arg line=":-Djdbc.drivers=${jdbc.drivers}"/>
       </exec>
-      <antcall target="reconfig-common" />
+    <!--antcall target="reconfig-common"/-->
 </target>
 
 <target name="create-rar">
