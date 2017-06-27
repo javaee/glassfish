@@ -273,6 +273,11 @@ public final class StatefulSessionContainer
                 "since passivation is disabled",
         level = "INFO")
     private static final String SFSB_NOT_RESTORED_AFTER_RESTART = "AS-EJB-00050";
+
+    @LogMessageInfo(
+        message = "Exception in backingStore.size()",
+        level   = "WARNING")
+    private static final String ERROR_WHILE_BACKSTORE_SIZE_ACCESS = "AS-EJB-00063";
     
     // We do not want too many ORB task for passivation
     public static final int MIN_PASSIVATION_BATCH_COUNT = 8;
@@ -552,7 +557,14 @@ public final class StatefulSessionContainer
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new StatefulSessionBeanStatsProvider(this, getContainerId(), appName, modName, ejbName);
+        StatefulSessionBeanStatsProvider statsProvider = new StatefulSessionBeanStatsProvider(
+            this, getContainerId(), appName, modName, ejbName);
+        try {
+            statsProvider.setPassiveCount(backingStore.size());
+        } catch (BackingStoreException e) {
+            _logger.log(Level.WARNING, ERROR_WHILE_BACKSTORE_SIZE_ACCESS, e);
+        }
+        return statsProvider;
     }
 
 
