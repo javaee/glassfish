@@ -53,6 +53,7 @@ public class Ejb extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from EJB Monitoring Tests!");
+        test21738();
         someTests();
         moreTests();
         testMyEjb();
