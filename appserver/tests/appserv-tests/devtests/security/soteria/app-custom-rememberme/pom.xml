@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-<!DOCTYPE project [
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,34 +40,32 @@
 
 -->
 
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-<!ENTITY commonRun SYSTEM "./../../../config/run.xml">
-<!ENTITY testProperties SYSTEM "./build.properties">
-<!ENTITY commonSecurity SYSTEM "./../common.xml">
-]>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.glassfish.soteria.test</groupId>
+    <artifactId>soteria</artifactId>
+    <version>5.0-SNAPSHOT</version>
+  </parent>
 
+	<artifactId>app-custom-rememberme</artifactId>
+	<packaging>war</packaging>
+	
+	<build>
+        <finalName>app-custom-rememberme</finalName>
+	</build>
+    
+    <properties>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+    </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.glassfish.soteria.test</groupId>
+      <artifactId>common</artifactId>
+      <version>5.0-SNAPSHOT</version>           
+      <scope>test</scope>
+      </dependency>
+  </dependencies>
 
-<project name="jsr375R" basedir="." default="usage" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-
-   &commonSetup;
-   &commonBuild;
-   &commonRun;
-   &testProperties;
-   &commonSecurity;
-    <property environment="env"/>
-    <get src="http://central.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar" dest="${env.APS_HOME}/lib/maven-ant-tasks-2.1.3.jar"/>
-    <path id="maven-ant-tasks.classpath" path="${env.APS_HOME}/lib/maven-ant-tasks-2.1.3.jar" />
-    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
-           uri="antlib:org.apache.maven.artifact.ant"
-           classpathref="maven-ant-tasks.classpath" />
-    <target name="all" depends="runMaven"/>
-    <target name="runMaven">
-      <artifact:mvn mavenHome="${env.M2_HOME}" fork="true">
-        <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
-        <jvmarg value="-Dmaven.javadoc.skip=true" />
-        <arg value="clean"/>
-        <arg value="verify"/>
-      </artifact:mvn>
-    </target>
 </project>
