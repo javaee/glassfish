@@ -85,8 +85,15 @@
                             );
                         }
                     }
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    if (#{pageSession.hasPropertyTable}){
+                        if (#{pageSession.hasConfidential}){
+                            gf.combineProperties(tableList="#{pageSession.tableList}" combined="#{requestScope.newList}");
+                        }
+                        if (!#{pageSession.hasConfidential}){
+                            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        }
+                    }
                     removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
                     javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                     gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
@@ -99,6 +106,14 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{resCompId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    if (#{pageSession.hasConfidential}){
+                        gf.combineProperties(tableList="#{pageSession.tableList}" combined="#{requestScope.newList}");
+                    }
+
+                    if (!#{pageSession.hasConfidential}){
+                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    }
                     if ("#{pageSession.isConcurrent}=true") {
                         convertArrayToCommaString(array="#{pageSession.contextInfo}"  commaString="#{requestScope.tmp}");
                         mapPut(map="#{pageSession.valueMap}" key="contextInfo" value="#{requestScope.tmp}");
@@ -145,15 +160,6 @@
                         gf.createEntity(endpoint="#{requestScope.endp}" attrs="#{requestScope.refsMap}" convertToFalse={"enabled"});
                     }
 
-
-                    if (#{pageSession.hasConfidential}){
-                        gf.combineProperties(tableList="#{pageSession.tableList}" combined="#{requestScope.newList}");
-                    }
-
-                    if (!#{pageSession.hasConfidential}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    }
                     removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
                     javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                     urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{requestScope.encodeName}");
