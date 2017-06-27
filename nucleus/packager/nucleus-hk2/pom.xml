@@ -94,10 +94,6 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>asm-all</artifactId>
         </dependency>
-<!--        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>-->
         <dependency>
    	    <groupId>org.glassfish.main.external</groupId>
             <artifactId>bean-validator</artifactId>
