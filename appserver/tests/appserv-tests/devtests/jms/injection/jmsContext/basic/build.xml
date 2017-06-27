@@ -57,13 +57,13 @@
         <antcall target="ejbInterceptorRequestScoped"/>
         <antcall target="servletRequestScoped"/>
         <antcall target="jspRequestScoped"/>
-        <antcall target="jsfRequestScoped"/>
+        <!--antcall target="jsfRequestScoped"/-->
         <antcall target="wsRequestScoped"/>
         <antcall target="sessionBeanTransactionScoped"/>
         <antcall target="ejbInterceptorTransactionScoped"/>
         <antcall target="servletTransactionScoped"/>
         <antcall target="jspTransactionScoped"/>
-        <antcall target="jsfTransactionScoped"/>
+        <!--antcall target="jsfTransactionScoped"/-->
         <antcall target="wsTransactionScoped"/>
     </target>
 
