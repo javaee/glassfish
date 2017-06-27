@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
@@ -156,6 +157,22 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         for (Iterator it = env.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
             parseResources((ResourceDescriptor) it.next(), env);
         }
+
+        for (Iterator it = env.getEntityManagerReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((EntityManagerReferenceDescriptor) it.next(), env);
+        }
+
+        for (Iterator it = env.getEntityManagerFactoryReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((EntityManagerFactoryReferenceDescriptor) it.next(), env);
+        }
+
+        for (Iterator it = env.getEjbReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((EjbReferenceDescriptor) it.next(), env);
+        }
+
+        for (Iterator it = env.getServiceReferenceDescriptors().iterator(); it.hasNext(); ) {
+            parseResources((ServiceReferenceDescriptor) it.next(), env);
+        }
     }
 
     private void parseResources(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
@@ -166,6 +183,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     private void parseResources(ResourceEnvReferenceDescriptor resEnvRef, JndiNameEnvironment env) {
         resEnvRef.checkType();
+        String name = getLogicalJNDIName(resEnvRef.getName(), env);
+        myNamespace.store(name, env);
     }
 
     private void parseResources(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env) {
@@ -183,6 +202,26 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      */
     private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env) {
         String name = getLogicalJNDIName(resourceDescriptor.getName(), env);
+        myNamespace.store(name, env);
+    }
+
+    private void parseResources(EntityManagerReferenceDescriptor emRef, JndiNameEnvironment env) {
+        String name = getLogicalJNDIName(emRef.getName(), env);
+        myNamespace.store(name, env);
+    }
+
+    private void parseResources(EntityManagerFactoryReferenceDescriptor entMgrFacRef, JndiNameEnvironment env) {
+        String name = getLogicalJNDIName(entMgrFacRef.getName(), env);
+        myNamespace.store(name, env);
+    }
+
+    private void parseResources(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
+        String name = getLogicalJNDIName(ejbRef.getName(), env);
+        myNamespace.store(name, env);
+    }
+
+    private void parseResources(ServiceReferenceDescriptor serviceRef, JndiNameEnvironment env) {
+        String name = getLogicalJNDIName(serviceRef.getName(), env);
         myNamespace.store(name, env);
     }
 
@@ -226,29 +265,46 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.ejbType())) {
             accept(bd);
             EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
-            for (EjbDescriptor ejb : ebd.getEjbs()) {
-                for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-                    ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
-                    accept(next, ejb);
-                }
-
-                for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
-                    ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
-                    accept(next, ejb);
-                }
-
-                for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
-                    MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-                    accept(next, ejb);
-                }
-
-                for (Iterator it = ejb.getEnvironmentProperties().iterator(); it.hasNext();) {
-                    EnvironmentProperty next = (EnvironmentProperty) it.next();
-                    accept(next, ejb);
-                }
-            }
+            for (EjbDescriptor ejb : ebd.getEjbs())
+                accept(ejb);
         }
         accept(application);
+    }
+
+    private void accept(EjbDescriptor ejb) {
+        // TODO: MDB: priority order for destination?
+        if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
+            EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
+            String jndiName = descriptor.getJndiName();
+            if (jndiName == null || "".equals(jndiName)) {
+                MessageDestinationDescriptor destDescriptor = descriptor.getMessageDestination();
+                if (destDescriptor != null)
+                    jndiName = destDescriptor.getJndiName();
+            }
+            if (jndiName == null || "".equals(jndiName)) {
+                jndiName = descriptor.getActivationConfigValue("destinationLookup");
+            }
+            validateJNDIRefs(jndiName, ejb);
+        }
+        for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
+            ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
+            accept(next, ejb);
+        }
+
+        for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
+            ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
+            accept(next, ejb);
+        }
+
+        for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
+            MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
+            accept(next, ejb);
+        }
+
+        for (Iterator it = ejb.getEnvironmentProperties().iterator(); it.hasNext();) {
+            EnvironmentProperty next = (EnvironmentProperty) it.next();
+            accept(next, ejb);
+        }
     }
 
     private void accept(BundleDescriptor bd) {
@@ -272,6 +328,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
             for (Iterator<EnvironmentProperty> itr = nameEnvironment.getEnvironmentProperties().iterator(); itr.hasNext();) {
                 accept(itr.next(), nameEnvironment);
+            }
+
+            for (PersistenceUnitsDescriptor pus : bd.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
+                for (PersistenceUnitDescriptor pu : pus.getPersistenceUnitDescriptors()) {
+                    accept(pu, nameEnvironment);
+                }
             }
         }
     }
@@ -354,6 +416,20 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             return;
 
         validateJNDIRefs(jndiName, env);
+    }
+
+    /**
+     * @param pu - Persistence Unit Descriptor
+     * @param env
+     */
+    private void accept(PersistenceUnitDescriptor pu, JndiNameEnvironment env) {
+        String jtaDataSourceName = pu.getJtaDataSource();
+        String nonJtaDataSourceName = pu.getNonJtaDataSource();
+
+        if (jtaDataSourceName != null && jtaDataSourceName.length() > 0)
+            validateJNDIRefs(jtaDataSourceName, env);
+        if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0)
+            validateJNDIRefs(nonJtaDataSourceName, env);
     }
 
     private void accept(NamedDescriptor resRef, JndiNameEnvironment env) {
