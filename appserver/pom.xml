@@ -59,21 +59,6 @@
       <url>https://github.com/javaee/glassfish</url>
     </scm>
     
-    <repositories>
-        <!-- TODO: remove me, I'm here for testing only-->
-        <repository>
-          <id>jvnet-nexus-staging</id>
-          <name>Java.net Staging Repositoriy</name>
-          <url>https://maven.java.net/content/repositories/staging/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-    </repositories>
-
     <properties>
         <jms-api.version>2.0.1</jms-api.version>
         <jsp-api.version>2.3.2-b01</jsp-api.version>
