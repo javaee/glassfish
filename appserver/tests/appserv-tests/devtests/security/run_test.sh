@@ -119,12 +119,12 @@ run_test_id(){
 }
 
 list_test_ids(){
-	echo "security_all=${SOLARIS_POOL}"
+	echo security_all
 }
 
 OPT=$1
 TEST_ID=$2
-export SOLARIS_POOL="solaris-sparc"
+
 case $OPT in
 	list_test_ids )
 		list_test_ids;;
