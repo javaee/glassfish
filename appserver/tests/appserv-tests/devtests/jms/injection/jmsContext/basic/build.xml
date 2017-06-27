@@ -44,7 +44,7 @@
 
 <!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
-<!ENTITY reporting   SYSTEM "../../../../report.xml">
+<!ENTITY reporting   SYSTEM "../../../report.xml">
 ]>
 
 <project name="jms-injection-jmsContext-basic-request" default="usage" basedir=".">
