@@ -42,11 +42,11 @@
 
 -->
 
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../config/run.xml">
 <!ENTITY testProperties SYSTEM "./build.properties">
-<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+<!ENTITY commonSecurity SYSTEM "./../common.xml">
 ]>
 
 

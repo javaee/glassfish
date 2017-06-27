@@ -37,58 +37,78 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.soteria.test;
 
-import static org.glassfish.soteria.test.Assert.*;
+import static org.glassfish.soteria.test.Assert.assertAuthenticated;
+import static org.glassfish.soteria.test.Assert.assertDefaultNotAuthenticated;
+import static org.glassfish.soteria.test.Assert.assertNotAuthenticated;
 import static org.glassfish.soteria.test.ShrinkWrap.mavenWar;
-import static org.junit.Assert.assertTrue;
-import org.glassfish.soteria.test.ArquillianBase;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 import org.junit.Rule;
 import org.junit.AfterClass;
 import org.junit.rules.TestWatcher;
 
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 @RunWith(Arquillian.class)
-public class AppCustomIT extends ArquillianBase {
+public class AppCustomIdentityStoreHandlerIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppHamOrdering");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppCustomIdentityStoreHandler");
 
     @AfterClass
     public static void printSummary(){
-      stat.printSummary();
+        stat.printSummary();
     }
-   
+
     @Deployment(testable = false)
     public static Archive<?> createDeployment() {
         return mavenWar();
     }
 
     @Test
-    public void testAuthenticatedValidateRequestAndSecureResponse() {
-        WebResponse response = responseFromServer("/servlet?name=reza&password=secret1");
-        assertDefaultAuthenticated(response);
-        assertTrue("Response did not contain correct ordering of validateRequest,secureResponse",
-                response.getContentAsString().contains("OrderingList: validateRequest,doGet,secureResponse"));
+    public void testAuthenticated() {
+        assertAuthenticated(
+            "web", "reza", 
+            readFromServer("/servlet?name=reza&password=secret1"),
+            // Only groups from the 
+            "baz");
     }
 
     @Test
-    public void testAuthenticatedcleanSubject() {
-        WebResponse response = responseFromServer("/servlet?name=reza&password=secret1&doLogout=True");
-        assertDefaultAuthenticated(response);
-        assertTrue("Response did not  correct ordering of validateRequest,secureResponse,cleanSubject",
-                response.getContentAsString().contains("OrderingList: validateRequest,doGet,cleanSubject,secureResponse"));
+    public void testBlacklisted() {
+        assertNotAuthenticated(
+            "web", "rudy", 
+            readFromServer("/servlet?name=rudy&password=pw"),
+            "foo", "bar");
+    }
+
+    @Test
+    public void testNotAuthenticated() {
+        assertDefaultNotAuthenticated(
+            readFromServer("/servlet"));
+    }
+
+    @Test
+    public void testNotAuthenticatedWrongName() {
+        assertNotAuthenticated(
+            "web", "reza", 
+            readFromServer("/servlet?name=romo&password=secret1"),
+            "foo", "bar", "baz");
+    }
+
+    @Test
+    public void testNotAuthenticatedWrongPassword() {
+        assertNotAuthenticated(
+            "web", "reza", 
+            readFromServer("/servlet?name=reza&password=wrongpassword"),
+            "foo", "bar", "baz");
     }
 
 }
