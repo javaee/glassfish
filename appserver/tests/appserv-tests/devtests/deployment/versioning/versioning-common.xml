@@ -566,13 +566,13 @@
   <antcall target="_get-client-stubs.asadmin"/>
   <antcall target="_get-client-stubs-negative.asadmin"/>
 </target>
-<!--
-  Performs a negative-test with  get-client-stubs command when appName doesn't exist.
-  Test result is based on return code
-  @param ${xmlVersionIdentifier} (optional)
--->
-<target name="_get-client-stubs.asadmin" depends="prepare.get-client-stubs.asadmin, asadmin.with.result"/>
 
+<target name="_get-client-stubs.asadmin" depends="prepare.get-client-stubs.asadmin, asadmin.with.result"/>
+ <!--
+    Performs a negative-test with  get-client-stubs command when appName doesn't exist.
+    Test result is based on return code
+     @param ${xmlVersionIdentifier} (optional)
+ -->
 <target name="_get-client-stubs-negative.asadmin" depends="prepare.get-client-stubs-negative.asadmin, asadmin.with.result, run.negative"/>
 
 <target name="prepare.get-client-stubs-negative.asadmin" depends="process.appname,process.target">
