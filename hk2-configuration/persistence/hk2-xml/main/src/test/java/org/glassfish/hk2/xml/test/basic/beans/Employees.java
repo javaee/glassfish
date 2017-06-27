@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.basic.beans;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -67,6 +68,7 @@ public interface Employees {
     
     @XmlElement(name="employee")
     public void setEmployees(List<Employee> employees);
+    @NotNull
     public List<Employee> getEmployees();
     public Employee lookupEmployee(String employeeName);
     public void addEmployee(String employeeName);

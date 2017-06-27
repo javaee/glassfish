@@ -109,6 +109,32 @@ public class AddsTest {
         Assert.assertNull(root.getCompanyName());
     }
     
+    /**
+     * Tests that we can call createAndAdd successfully on a root with no required elements
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testCreateAndAddWithValidation() {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.createEmptyHandle(Employees.class);
+        rootHandle.startValidating();
+        
+        Assert.assertNull(rootHandle.getRoot());
+        
+        rootHandle.addRoot();
+        Employees root = rootHandle.getRoot();
+        
+        Assert.assertNotNull(root);
+        Assert.assertNull(root.getFinancials());
+        Assert.assertEquals(0, root.getEmployees().size());
+        Assert.assertNull(root.getCompanyName());
+        
+        root.setCompanyName(DAVE);
+        Assert.assertEquals(DAVE, root.getCompanyName());
+    }
+    
     private void addToExistingTree(ServiceLocator locator, Hub hub, XmlRootHandle<Employees> rootHandle, boolean inRegistry, boolean inHub) {
         Employees employees = rootHandle.getRoot();
         
