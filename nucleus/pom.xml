@@ -124,6 +124,8 @@
 
         <glassfish-corba.version>4.0.1</glassfish-corba.version>
         <stax-api.version>1.0-2</stax-api.version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
         <management-api.version>1.1-rev-1</management-api.version>
         <servlet-api.version>4.0.0-b07</servlet-api.version>
         <grizzly.version>2.4.0-beta8</grizzly.version>
@@ -171,7 +173,6 @@
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
         <javadoc.skip>false</javadoc.skip>
         <deploy.skip>false</deploy.skip>
-	<bean.validator.version>2.5.0-b06</bean.validator.version>
     </properties>
 
     <modules>
@@ -692,6 +693,16 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+           <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator-cdi</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss.logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
