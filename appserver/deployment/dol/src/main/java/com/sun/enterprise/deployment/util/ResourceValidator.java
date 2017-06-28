@@ -284,7 +284,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (jndiName == null || "".equals(jndiName)) {
                 jndiName = descriptor.getActivationConfigValue("destinationLookup");
             }
-            validateJNDIRefs(jndiName, ejb);
+            // validateJNDIRefs(jndiName, ejb);
         }
         for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
             ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
