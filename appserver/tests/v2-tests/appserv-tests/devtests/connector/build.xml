@@ -14,7 +14,7 @@
 
     <property name="connector-target" value="all"/>
     <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
-    <property name="xmlfile" value="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.xml" />
+    <property name="xmlfile" value="${env.APS_HOME}/../v2-tests/appserv-tests/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.html" />
 
 
@@ -105,6 +105,9 @@
     </target>
 
     <target name="clean">
+        <delete file="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.xml"/>
+        <delete file="${env.APS_HOME}/../v2-tests/appserv-tests/test_resultsValid.xml"/>
+        <delete file="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.html"/>
         <antcall target="connector">
         <param name="connector-target" value="clean"/>
         </antcall>

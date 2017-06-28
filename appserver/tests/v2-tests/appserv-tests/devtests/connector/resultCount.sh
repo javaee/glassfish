@@ -1,6 +1,8 @@
 #!/bin/sh
 
 total=28
+pass=0
+fail=0
 OUTPUT_FILE=$ROOT/connector.output
 echo "------------------------"
 which grep
