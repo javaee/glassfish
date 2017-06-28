@@ -11,8 +11,12 @@
     &commonSetup;
     &commonBuild;
     &commonRun;
-    
+
     <property name="connector-target" value="all"/>
+    <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
+    <property name="xmlfile" value="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.xml" />
+    <property name="htmlfile" value="${env.APS_HOME}/../v2-tests/appserv-tests/test_results.html" />
+
 
     <target name="pe-all">
         <antcall target="backup-config-pe"/>
@@ -205,5 +209,12 @@ a global transaction!
       <exec executable="sh">
         <arg value="./resultCount.sh"/>
       </exec>
+        <antcall target="transfer"/>
+    </target>
+
+    <target name="transfer">
+        <xslt style="${stylesheet}"
+              in="${xmlfile}" out="${htmlfile}"
+              basedir="." destdir="." />
     </target>
 </project>
