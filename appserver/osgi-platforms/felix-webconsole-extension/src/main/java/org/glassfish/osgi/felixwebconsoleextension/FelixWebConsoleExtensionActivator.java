@@ -85,7 +85,8 @@ public class FelixWebConsoleExtensionActivator implements BundleActivator {
     private void registerWebConsoleSecurityProvider() {   	   	 
     	 final GlassFishSecurityProvider secprovider = new GlassFishSecurityProvider();
     	 secprovider.setBundleContext(context);
-         ServiceRegistration reg = context.registerService(WebConsoleSecurityProvider.class.getName(), secprovider, null);
+//         ServiceRegistration reg = context.registerService(WebConsoleSecurityProvider.class.getName(), secprovider, null);
+        context.registerService(WebConsoleSecurityProvider.class.getName(), secprovider, null);
          logger.logp(Level.INFO, "FelixWebConsoleExtensionActivator", "start", "Registered {0}", new Object[]{secprovider});
 	}
 
@@ -125,7 +126,8 @@ public class FelixWebConsoleExtensionActivator implements BundleActivator {
 
     private void registerBrandingPlugin() {
         final GlassFishBrandingPlugin service = new GlassFishBrandingPlugin();
-        ServiceRegistration reg = context.registerService(BrandingPlugin.class.getName(), service, null);
+//        ServiceRegistration reg = context.registerService(BrandingPlugin.class.getName(), service, null);
+        context.registerService(BrandingPlugin.class.getName(), service, null);
         logger.logp(Level.INFO, "FelixWebConsoleExtensionActivator", "start", "Registered {0}", new Object[]{service});
     }
 

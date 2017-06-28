@@ -201,12 +201,14 @@ public class JDKServiceTag {
         File dir = new File(jrePath + File.separator + "lib");
         if (dir.isDirectory()) {
             String[] children = dir.list();
-            for (String name : children) {
-                File f = new File(dir, name + File.separator + "libjava.so");
-                if (f.exists()) {
-                    definedId.append(" " + name);
-                }
+            if (children != null) {
+                for (String name : children) {
+                    File f = new File(dir, name + File.separator + "libjava.so");
+                    if (f.exists()) {
+                        definedId.append(" " + name);
+                    }
 
+                }
             }
         }
 

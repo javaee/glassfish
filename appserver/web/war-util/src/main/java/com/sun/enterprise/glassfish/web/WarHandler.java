@@ -294,7 +294,7 @@ public class WarHandler extends AbstractArchiveHandler {
             int baseFileLen = base.getPath().length();
             final boolean ignoreHiddenJarFiles = webXmlParser.isIgnoreHiddenJarFiles();
 
-            for (File file : libDir.listFiles(
+            File[] files = libDir.listFiles(
                     new FileFilter() {
                         @Override
                         public boolean accept(File pathname) {
@@ -304,19 +304,21 @@ public class WarHandler extends AbstractArchiveHandler {
                                     (!ignoreHiddenJarFiles ||
                                     !fileName.startsWith(".")));
                         }
-                    }))
-            {
-                try {
-                    if (file.isDirectory()) {
-                        // support exploded jar file
-                        cloader.addRepository("WEB-INF/lib/" + file.getName() + "/", file);
-                    } else {
-                        cloader.addJar(file.getPath().substring(baseFileLen),
-                                new JarFile(file), file);
+                    });
+            if (files != null) {
+                for (File file : files) {
+                    try {
+                        if (file.isDirectory()) {
+                            // support exploded jar file
+                            cloader.addRepository("WEB-INF/lib/" + file.getName() + "/", file);
+                        } else {
+                            cloader.addJar(file.getPath().substring(baseFileLen),
+                                    new JarFile(file), file);
+                        }
+                    } catch (Exception e) {
+                        // Catch and ignore any exception in case the JAR file
+                        // is empty.
                     }
-                } catch (Exception e) {
-                    // Catch and ignore any exception in case the JAR file
-                    // is empty.
                 }
             }
         }

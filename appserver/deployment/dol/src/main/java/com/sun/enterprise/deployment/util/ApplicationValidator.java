@@ -345,7 +345,8 @@ public class ApplicationValidator extends ComponentValidator
     }
 
     // Reads resource definition descriptor at application level
-    CommonResourceBundleDescriptor commonResourceBundleDescriptor = (CommonResourceBundleDescriptor) application;
+    CommonResourceBundleDescriptor commonResourceBundleDescriptor = application != null ? 
+            (CommonResourceBundleDescriptor) application : null;
     Vector appLevel = new Vector();
     if (commonResourceBundleDescriptor != null) {
       Set<ResourceDescriptor> resourceDescriptors = commonResourceBundleDescriptor
@@ -460,7 +461,7 @@ public class ApplicationValidator extends ComponentValidator
           // the resource adapter name do not contains # symbol, it is a
           // standalone resource adapter
 
-        } else if (poundIndex > 0) {
+        } else {
           // the resource adapter name is of the format "xx#xxx", this is an
           // invalid name
           deplLogger.log(

@@ -88,8 +88,10 @@ public class DirectoryScanner extends JavaEEScanner implements Scanner {
                     return pathname.getAbsolutePath().endsWith(".class");
                 }
         });
-        for (File file : dirFiles) {
-            entries.add(file.getPath().substring(top.getPath().length()+1));
+        if (dirFiles != null) {
+            for (File file : dirFiles) {
+                entries.add(file.getPath().substring(top.getPath().length() + 1));
+            }
         }
         
         File[] subDirs = directory.listFiles(new FileFilter() {
@@ -97,8 +99,10 @@ public class DirectoryScanner extends JavaEEScanner implements Scanner {
                     return pathname.isDirectory();
                 }
         });
-        for (File subDir : subDirs) {
-            init(top, subDir);
+        if (subDirs != null) {
+            for (File subDir : subDirs) {
+                init(top, subDir);
+            }
         }
     }
     
