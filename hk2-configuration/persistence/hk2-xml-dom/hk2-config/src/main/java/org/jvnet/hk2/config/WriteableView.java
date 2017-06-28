@@ -893,6 +893,11 @@ private class ProtectedList extends AbstractList {
                         public Iterator<Node> iterator() {
                             return nodes.iterator();
                         }
+                        
+                        @Override
+                        public String toString() {
+                           return nodes.iterator().next().getName();
+                        }
                     };
                 }
 
