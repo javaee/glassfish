@@ -185,7 +185,6 @@
             <param name="admin.command" value="delete-resource-adapter-config"/>
             <param name="operand.props" value="testjdbcra"/>
          </antcall>
-         <!--antcall target="reconfig-common"/-->
      </target>
 
 </project>
