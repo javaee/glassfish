@@ -49,6 +49,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} );
+        urlencode(value="#{pageSession.configName}" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/httpListeners.jsf");
         setPageSessionAttribute(key="childType" value="network-listener");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners");
