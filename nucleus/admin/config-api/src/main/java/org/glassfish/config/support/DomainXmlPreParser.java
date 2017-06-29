@@ -46,6 +46,7 @@ import java.io.*;
 import java.io.InputStream;
 import java.net.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -93,7 +94,8 @@ class DomainXmlPreParser {
         try {
             instanceName = instanceNameIn;
             in = domainXml.openStream();
-            reader = xif.createXMLStreamReader(domainXml.toExternalForm(), in);
+            InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset().toString());
+            reader = xif.createXMLStreamReader(domainXml.toExternalForm(), isr);
             parse();
             postProcess();
             validate();
