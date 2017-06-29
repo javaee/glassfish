@@ -372,7 +372,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         String jndiName = resRef.getJndiName();
         // The default values
-        if (jndiName.equals("java:comp/DefaultDataSource") || jndiName.equals("java:comp/DefaultJMSConnectionFactory"))
+        if (jndiName != null && (jndiName.equals("java:comp/DefaultDataSource") || jndiName.equals("java:comp/DefaultJMSConnectionFactory")))
             return;
 
         if (resRef.isORB() || resRef.isWebServiceContext()) {
@@ -380,7 +380,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
 
         if (resRef.isURLResource()) {
-            if (!(jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))) {
+            if (jndiName != null && !(jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))) {
                 try {
                     // for jndi-name like "http://localhost:8080/index.html"
                     new java.net.URL(jndiName);
@@ -407,12 +407,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (resourceEnvRef.isEJBContext() || resourceEnvRef.isValidator() || resourceEnvRef.isValidatorFactory() || resourceEnvRef.isCDIBeanManager())
             return;
 
-        if (jndiName.equals("java:comp/DefaultManagedExecutorService") ||
-                jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
-                jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
-                jndiName.equals("java:comp/DefaultContextService") ||
-                jndiName.equals("java:comp/UserTransaction") ||
-                jndiName.equals("java:comp/TransactionSynchronizationRegistry"))
+        if (jndiName != null &&
+                (jndiName.equals("java:comp/DefaultManagedExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
+                        jndiName.equals("java:comp/DefaultContextService") ||
+                        jndiName.equals("java:comp/UserTransaction") ||
+                        jndiName.equals("java:comp/TransactionSynchronizationRegistry")))
             return;
 
         // Validate Managed Bean references now
@@ -437,6 +438,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         } else if( env instanceof BundleDescriptor ) {
             bd = (BundleDescriptor) env;
         }
+
+        if (jndiName == null)
+            return null;
 
         if( bd != null ) {
             String appName = null;
@@ -536,9 +540,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         String jtaDataSourceName = pu.getJtaDataSource();
         String nonJtaDataSourceName = pu.getNonJtaDataSource();
 
-        if (jtaDataSourceName != null && jtaDataSourceName.length() > 0)
+        if (jtaDataSourceName != null && jtaDataSourceName.length() > 0 && !jtaDataSourceName.equals("java:comp/DefaultDataSource"))
             validateJNDIRefs(jtaDataSourceName, env);
-        if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0)
+        if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0 && !nonJtaDataSourceName.equals("java:comp/DefaultDataSource"))
             validateJNDIRefs(nonJtaDataSourceName, env);
     }
 
