@@ -29,7 +29,8 @@ Checking out files: 100% (33230/33230), done.
 * [Configure](https://help.github.com/articles/configuring-a-remote-for-a-fork/) the remote for your fork.  
 ```
 $ git remote add upstream git@github.com:javaee/glassfish.git
- 
+```
+```
 $ git remote -v
 origin    git@github.com:your-githubid/glassfish.git (fetch)
 origin    git@github.com:your-githubid/glassfish.git (push)
