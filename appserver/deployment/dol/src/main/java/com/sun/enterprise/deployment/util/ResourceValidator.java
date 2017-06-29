@@ -369,7 +369,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     // TODO: Decide what to do in case of ORB,
-    // TODO: java:comp/DefaultManagedExecutorService, DefaultManagedScheduledExecutorService, DefaultManagedThreadFactory, DefaultContextService
     private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         String jndiName = resRef.getJndiName();
         // The default values
@@ -406,6 +405,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
         String jndiName = resourceEnvRef.getJndiName();
         if (resourceEnvRef.isEJBContext() || resourceEnvRef.isValidator() || resourceEnvRef.isValidatorFactory() || resourceEnvRef.isCDIBeanManager())
+            return;
+
+        if (jndiName.equals("java:comp/DefaultManagedExecutorService") ||
+                jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
+                jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
+                jndiName.equals("java:comp/DefaultContextService") ||
+                jndiName.equals("java:comp/UserTransaction") ||
+                jndiName.equals("java:comp/TransactionSynchronizationRegistry"))
             return;
 
         // Validate Managed Bean references now
