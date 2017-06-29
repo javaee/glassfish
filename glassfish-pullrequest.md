@@ -47,8 +47,6 @@ $ git checkout -b Iss_21702
 ```
 $ git add main/appserver/pom.xml
 $ git commit -m "my commit message"
-[Iss_21702 daf0e8a259] Update Java EE version in master pom.xml to EE8
- 1 file changed, 1 insertion(+), 1 deletion(-)
  ```
  * Push your changes in a remote branch of your fork  
  ```
