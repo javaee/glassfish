@@ -40,17 +40,7 @@ upstream    git@github.com:javaee/glassfish.git (push)
 ### Raise Pull Request 
 * Sync the master of your fork with upstream master  
 ```  
-$ git fetch upstream
-remote: Counting objects: 50, done.
-remote: Total 50 (delta 27), reused 27 (delta 27), pack-reused 23
-Unpacking objects: 100% (50/50), done.
-From https://github.com/javaee/glassfish
- * [new branch]      embedded-experiments -> upstream/embedded-experiments
- * [new branch]      gf-jdk9    -> upstream/gf-jdk9
- * [new branch]      gf-ri-jsr375 -> upstream/gf-ri-jsr375
- * [new branch]      master     -> upstream/master
- * [new branch]      pr/21728   -> upstream/pr/21728
- 
+$ git fetch upstream 
 $ git checkout master
 $ git merge upstream/master
 $ git push origin master #push local master to github fork.
