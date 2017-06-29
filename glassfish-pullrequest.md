@@ -39,7 +39,7 @@ upstream    git@github.com:javaee/glassfish.git (push)
 
 ### Raise Pull Request 
 * Sync the master of your fork with upstream master  
-```
+```  
 $ git fetch upstream
 remote: Counting objects: 50, done.
 remote: Total 50 (delta 27), reused 27 (delta 27), pack-reused 23
