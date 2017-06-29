@@ -38,7 +38,7 @@ upstream    git@github.com:javaee/glassfish.git (push)
 * If you have configured HTTPS URLs for your remotes and want to change to GIT URLs, refer to [this doc](https://help.github.com/articles/changing-a-remote-s-url/) to re-configure the remote URLs.
 
 ### Raise Pull Request 
-* Sync the master of your fork with upstream master
+* Sync the master of your fork with upstream master  
 ```
 $ git fetch upstream
 remote: Counting objects: 50, done.
@@ -55,21 +55,21 @@ $ git checkout master
 $ git merge upstream/master
 $ git push origin master #push local master to github fork.
 ```
-* Create a local topic branch in your fork from your master.
+* Create a local topic branch in your fork from your master.  
 ```
 $ git checkout -b Iss_21702
 Switched to a new branch 'Iss_21702'
 ```
 * Do the development in your branch.
 * Build and test your changes (Run quicklook and the dev tests)
-* Commit Changes
+* Commit Changes  
 ```
 $ git add main/appserver/pom.xml
 $ git commit -m "Update Java EE version in master pom.xml to EE8"
 [Iss_21702 daf0e8a259] Update Java EE version in master pom.xml to EE8
  1 file changed, 1 insertion(+), 1 deletion(-)
  ```
- * Push your changes in a remote branch of your fork
+ * Push your changes in a remote branch of your fork  
  ```
  $ git push origin Iss_21702
 Counting objects: 5, done.
