@@ -38,7 +38,7 @@ upstream    git@github.com:javaee/glassfish.git (push)
 * If you have configured HTTPS URLs for your remotes and want to change to GIT URLs, refer to [this doc](https://help.github.com/articles/changing-a-remote-s-url/) to re-configure the remote URLs.
 
 ### Raise Pull Request 
-* Sync the 'master'  of your fork with upstream master
+* Sync the master of your fork with upstream master
 ```
 $ git fetch upstream
 remote: Counting objects: 50, done.
