@@ -17,14 +17,6 @@ $ git config --global user.email "your.name@example.com"
 * [Clone](https://help.github.com/articles/cloning-a-repository/) your forked repository
 ```
 $ git clone git@github.com:your-githubid/glassfish.git
-Cloning into 'glassfish'...
-remote: Counting objects: 800145, done.
-remote: Compressing objects: 100% (7/7), done.
-remote: Total 800145 (delta 0), reused 0 (delta 0), pack-reused 800138
-Receiving objects: 100% (800145/800145), 255.24 MiB | 2.59 MiB/s, done.
-Resolving deltas: 100% (415989/415989), done.
-Checking connectivity... done.
-Checking out files: 100% (33230/33230), done.
 ```
 * [Configure](https://help.github.com/articles/configuring-a-remote-for-a-fork/) the remote for your fork.  
 ```
@@ -48,7 +40,6 @@ $ git push origin master #push local master to github fork.
 * Create a local topic branch in your fork from your master.  
 ```
 $ git checkout -b Iss_21702
-Switched to a new branch 'Iss_21702'
 ```
 * Do the development in your branch.
 * Build and test your changes (Run quicklook and the dev tests)
