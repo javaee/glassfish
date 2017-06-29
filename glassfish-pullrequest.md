@@ -29,8 +29,6 @@ Checking out files: 100% (33230/33230), done.
 * [Configure](https://help.github.com/articles/configuring-a-remote-for-a-fork/) the remote for your fork.  
 ```
 $ git remote add upstream git@github.com:javaee/glassfish.git
-```
-```
 $ git remote -v
 origin    git@github.com:your-githubid/glassfish.git (fetch)
 origin    git@github.com:your-githubid/glassfish.git (push)
@@ -85,8 +83,8 @@ To https://github.com/your-githubid/glassfish.git
 ```
 * Before even raising a Pull Request, please raise an issue if it doesn't exist. We would like every pull request to be associated with an issue. Submit the Pull Request referring to the issue number.
 * Raise a Pull Request.
-	* Make sure you put a proper 'title' for the Pull Request. The title of the Pull Request would become the commit message. So instead of giving 'title' like "Iss xxxx" or "Fixes #xxxxx", consider giving a proper one line 'title' for the Pull Request like "Fixes xxx : <brief description about the issue/fix>"
-	* In the Pull Request description(body), please mention "Fixes #xxxxx" in order to link the Pull Request with the Issue you are fixing.
+* Make sure you put a proper 'title' for the Pull Request. The title of the Pull Request would become the commit message. So instead of giving 'title' like "Iss xxxx" or "Fixes #xxxxx", consider giving a proper one line 'title' for the Pull Request like "Fixes xxx : <brief description about the issue/fix>"
+* In the Pull Request description(body), please mention "Fixes #xxxxx" in order to link the Pull Request with the Issue you are fixing.
 
 ### Trigger GlassFish CI pipeline on your Pull Request
 
