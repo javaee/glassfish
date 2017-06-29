@@ -75,12 +75,12 @@ $ git commit -m "my commit message"
 1. If an external contributor (a contributor who is not a member of the 'glassfish' team in GitHub ) raises a Pull Request, glassfishrobot would update the pull request with the following two comments  
 **\"Review needed from GlassFish team members\"**   
 **\"Please sign Oracle Contributor Agreement(OCA) to contribute in GlassFish project if you have not done that already.\"**  
-In that case please follow the [Prerequisite](#pre) section of this document
+In that case please follow the [Prerequisite](#pre)  
 2. Once you sign the OCA, one of the GlassFish team member would review your Pull Request  
 3. If the code review is approved, the reviewer would start the GlassFish CI pipeline for you \(i.e one of the GlassFish team member would perform step 1 of [Workflow for GitHub javaee glassfish team members](#tmwf) on your behalf\)
 4. Please follow step 2 to 7 of [Workflow for GitHub javaee glassfish team members](#tmwf) to merge your Pull Request with javaee/glassfish master
 
 Please note that the GlassFish administrator will not merge your pull request with the GitHub javaee/glassfish master branch if
 
-* There are test failures
+* There are CI test failures
 * The code reviewer does not approve your changes
