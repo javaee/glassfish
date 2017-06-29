@@ -42,8 +42,10 @@ package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -113,7 +115,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Parse all the resources and store them in a namespace.
+     * Parse all the resources and store them in a namespace before starting the validation.
      */
     private void parseResources() {
         myNamespace = new JNDINamespace();
@@ -131,10 +133,22 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 parseResources(ejb);
         }
 
+        // Parse the Managed Beans
+        parseManagedBeans();
+
+        // Parse AppScoped resources
         String appName = DOLUtils.getApplicationName(application);
         Map<String, List> resourcesList =
                 (Map<String, List>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         myNamespace.storeAppScopedResources(resourcesList, appName);
+    }
+
+    private void parseManagedBeans() {
+        for (BundleDescriptor bd : application.getBundleDescriptors()) {
+            for (ManagedBeanDescriptor managedBean : bd.getManagedBeans()) {
+                myNamespace.store(managedBean.getGlobalJndiName(), (JndiNameEnvironment)bd);
+            }
+        }
     }
 
     private void parseResources(JndiNameEnvironment env) {
@@ -255,6 +269,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 rawName : ResourceConstants.JAVA_COMP_ENV_SCOPE_PREFIX + rawName;
     }
 
+    /**
+     * Start of validation logic.
+     */
     private void processResources() {
         for (BundleDescriptor bd : application.getBundleDescriptorsOfType(DOLUtils.warType())) {
             accept(bd);
@@ -305,6 +322,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             EnvironmentProperty next = (EnvironmentProperty) it.next();
             accept(next, ejb);
         }
+
+        for (Iterator it = ejb.getEjbReferenceDescriptors().iterator(); it.hasNext();) {
+            EjbReferenceDescriptor next = (EjbReferenceDescriptor) it.next();
+            accept(next, ejb);
+        }
     }
 
     private void accept(BundleDescriptor bd) {
@@ -330,15 +352,24 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 accept(itr.next(), nameEnvironment);
             }
 
+            for (Iterator<EjbReferenceDescriptor> itr = nameEnvironment.getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
+                accept(itr.next(), nameEnvironment);
+            }
+
             for (PersistenceUnitsDescriptor pus : bd.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
                 for (PersistenceUnitDescriptor pu : pus.getPersistenceUnitDescriptors()) {
                     accept(pu, nameEnvironment);
                 }
             }
+
+            for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
+                accept(mbd, nameEnvironment);
+            }
         }
     }
 
-    // TODO: Decide what to do in case of ORB
+    // TODO: Decide what to do in case of ORB,
+    // TODO: java:comp/DefaultManagedExecutorService, DefaultManagedScheduledExecutorService, DefaultManagedThreadFactory, DefaultContextService
     private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         String jndiName = resRef.getJndiName();
         // The default values
@@ -369,11 +400,73 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * Custom resources might also get stored in the general resources section depending on their type.
      * 2) All resources specified under resource-env-ref tag go in here.
      *
-     * @param resRef
+     * @param resourceEnvRef
      * @param env
      */
-    private void accept(ResourceEnvReferenceDescriptor resRef, JndiNameEnvironment env) {
-        return;
+    private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
+        String jndiName = resourceEnvRef.getJndiName();
+        if (resourceEnvRef.isEJBContext() || resourceEnvRef.isValidator() || resourceEnvRef.isValidatorFactory() || resourceEnvRef.isCDIBeanManager())
+            return;
+
+        // Validate Managed Bean references now
+        String newName = convertModuleOrAppJNDIName(jndiName, env);
+        if (!myNamespace.find(newName, env)) {
+            // Every type of resource taken care of. Validate any custom resources now.
+            validateJNDIRefs(jndiName, env);
+        }
+    }
+
+    /**
+     * Convert JNDI names beginning with java:module and java:app to their corresponding java:global names.
+     *
+     * @param jndiName
+     * @param env
+     * @return
+     */
+    private String convertModuleOrAppJNDIName(String jndiName, JndiNameEnvironment env) {
+        BundleDescriptor bd = null;
+        if( env instanceof EjbDescriptor ) {
+            bd = ((EjbDescriptor)env).getEjbBundleDescriptor();
+        } else if( env instanceof BundleDescriptor ) {
+            bd = (BundleDescriptor) env;
+        }
+
+        if( bd != null ) {
+            String appName = null;
+            if (!application.isVirtual()) {
+                appName = application.getAppName();
+            }
+            String moduleName = bd.getModuleDescriptor().getModuleName();
+            StringBuffer javaGlobalName = new StringBuffer("java:global/");
+            if (jndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX)) {
+                if (appName != null) {
+                    javaGlobalName.append(appName);
+                    javaGlobalName.append("/");
+                }
+
+                // Replace java:app/ with the fully-qualified global portion
+                int javaAppLength = ResourceConstants.JAVA_APP_SCOPE_PREFIX.length();
+                javaGlobalName.append(jndiName.substring(javaAppLength));
+            }
+            else if (jndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX)) {
+                if (appName != null) {
+                    javaGlobalName.append(appName);
+                    javaGlobalName.append("/");
+                }
+
+                javaGlobalName.append(moduleName);
+                javaGlobalName.append("/");
+
+                // Replace java:module/ with the fully-qualified global portion
+                int javaModuleLength = ResourceConstants.JAVA_MODULE_SCOPE_PREFIX.length();
+                javaGlobalName.append(jndiName.substring(javaModuleLength));
+            }
+            else {
+                return "";
+            }
+            return javaGlobalName.toString();
+        }
+        return "";
     }
 
     /**
@@ -419,6 +512,16 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
+     * TODO: Check what to implement
+     * @param ejbRef
+     * @param env
+     */
+    private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
+
+    }
+
+    /**
+     * TODO: devtests
      * @param pu - Persistence Unit Descriptor
      * @param env
      */
@@ -430,6 +533,36 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             validateJNDIRefs(jtaDataSourceName, env);
         if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0)
             validateJNDIRefs(nonJtaDataSourceName, env);
+    }
+
+    /**
+     * Validate resources defined in a managed bean
+     * @param managedBean
+     * @param env
+     */
+    private void accept(ManagedBeanDescriptor managedBean, JndiNameEnvironment env) {
+        for (Iterator itr = managedBean.getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
+            EjbReferenceDescriptor aRef = (EjbReferenceDescriptor) itr.next();
+            accept(aRef, env);
+        }
+
+        for (Iterator it = managedBean.getResourceReferenceDescriptors().iterator(); it.hasNext();) {
+            ResourceReferenceDescriptor next =
+                    (ResourceReferenceDescriptor) it.next();
+            accept(next, env);
+        }
+
+        for (Iterator it = managedBean.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
+            ResourceEnvReferenceDescriptor next =
+                    (ResourceEnvReferenceDescriptor) it.next();
+            accept(next, env);
+        }
+
+        for (Iterator it = managedBean.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
+            MessageDestinationReferenceDescriptor next =
+                    (MessageDestinationReferenceDescriptor) it.next();
+            accept(next, env);
+        }
     }
 
     private void accept(NamedDescriptor resRef, JndiNameEnvironment env) {
