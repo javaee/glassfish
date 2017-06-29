@@ -80,7 +80,7 @@ Total 5 (delta 4), reused 0 (delta 0)
 remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
 To https://github.com/your-githubid/glassfish.git
  * [new branch]            Iss_21702 -> Iss_21702
-```
+ ```
 * Before even raising a Pull Request, please raise an issue if it doesn't exist. We would like every pull request to be associated with an issue. Submit the Pull Request referring to the issue number.
 * Raise a Pull Request.
 * Make sure you put a proper 'title' for the Pull Request. The title of the Pull Request would become the commit message. So instead of giving 'title' like "Iss xxxx" or "Fixes #xxxxx", consider giving a proper one line 'title' for the Pull Request like "Fixes xxx : <brief description about the issue/fix>"
