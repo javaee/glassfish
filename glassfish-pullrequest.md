@@ -46,7 +46,7 @@ $ git checkout -b Iss_21702
 * Commit Changes  
 ```
 $ git add main/appserver/pom.xml
-$ git commit -m "Update Java EE version in master pom.xml to EE8"
+$ git commit -m "my commit message"
 [Iss_21702 daf0e8a259] Update Java EE version in master pom.xml to EE8
  1 file changed, 1 insertion(+), 1 deletion(-)
  ```
@@ -61,17 +61,17 @@ $ git commit -m "Update Java EE version in master pom.xml to EE8"
 
 ### Trigger GlassFish CI pipeline on your Pull Request
 
-#### Workflow for GitHub javaee glassfish team members
-1. To trigger the pipeline CI run(to run all GlassFish devtests), add a comment on the pull request that says **\"@glassfishrobot Run CI tests please\"** (case insensitive). You can add it as an original comment text \(with only this text\)  or separate comment with only this text. Including this text as part of a longer comment is not supported. This step is mandatory. When you add such a comment, our infrastructure would know that you want to run all CI tests for your pull request.There is a polling job which runs every 5 minutes to see if there is new pull request. 
-2. Within 5 minutes you would get a comment from **glassfishrobot**\(GlassFish CI bot\) that says \"Starting CI tests run\". That means all the gating tests have been triggered on your pull request in GlassFish CI infrastructure.
+#### <a name="tmwf"></a>Workflow for GitHub javaee glassfish team members
+1. To trigger the pipeline CI run(to run all GlassFish gating tests), add a comment on the pull request that says **\"@glassfishrobot Run CI tests please\"** (case insensitive). You can add it as an original comment text \(with only this text\)  or separate comment with only this text. Including this text as part of a longer comment is not supported. This step is mandatory. When you add such a comment, our infrastructure would know that you want to run all CI tests for your pull request.There is a polling job which runs every 5 minutes to see if there is new pull request. 
+2. Within 5 minutes you would get a comment from **glassfishrobot**\(GlassFish CI bot\) that says **\"Starting CI tests run\"**. That means all the gating tests have been triggered on your pull request in GlassFish CI infrastructure.
 3. On completion of all the tests, glassfishrobot will add a comment in your pull request that says **\"All CI tests successful\"** if all the tests are passed or **\"One or more CI tests failed\"** in case there are test failures.
-4. You can get the test results (junit report) for different test suites that run on your Pull Request under http://download.oracle.com/glassfish/prs/\<your-PullRequest-number\>/test-results\-\-\<date-time\>/index.html. 
+4. You can get the test results (junit report) for different test suites that run on your Pull Request under **http://download.oracle.com/glassfish/prs/\<your-PullRequest-number\>/test-results\-\-\<date-time\>/index.html**
 5. In case of test failure(s), re-work or fix your code and request for retry on the same PR repeating steps 1-4.
 6. In case you rereun the GlassFish CI pipeline, new folder would get created under http://download.oracle.com/glassfish/prs/\<your-PullRequest-number\> named test-results\-\-\<date-time\> containing tests results for all tests that run in GlassFish CI pipeline.
-7. If hudson tests pass and code review has been approved, changes will be merged by the administrator.
+7. If CI tests pass and code review has been approved, changes will be merged by the administrator.
 
 
-#### Workflow for contributors who are **not** member of GitHub javaee glassfish team members
+#### Workflow for contributors who are not member of GitHub javaee glassfish team members
 1. If an external contributor (a contributor who is not a member of the 'glassfish' team in GitHub ) raises a Pull Request, glassfishrobot would update the pull request with the following two comments  
 **\"Review needed from GlassFish team members\"**   
 **\"Please sign Oracle Contributor Agreement(OCA) to contribute in GlassFish project if you have not done that already.\"**  
