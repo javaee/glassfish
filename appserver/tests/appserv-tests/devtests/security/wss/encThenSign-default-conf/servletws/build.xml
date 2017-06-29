@@ -58,7 +58,7 @@
     <!--<target name="all" 
     depends="clean, build, setup, deploy, run, undeploy, unsetup"/>-->
     <target name="all" depends="clean">
-      <echo message="Known failure see https://jira.oraclecorp.com/jira/browse/IDCINTER-82"/>
+      <echo message="FIXME: Known failure."/>
     </target>
     
 
