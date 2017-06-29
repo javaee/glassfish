@@ -175,12 +175,7 @@ public class ApplicationHandlers {
                 oneRow.put("sniffers", snifferList.toString());
 
                 if (snifferList.contains("web")) {
-                    String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+ encodedAppName +"/get-context-root.xml?" +
-                            "modulename=" + encodedModuleName;
-                    Map map = (Map)RestUtil.restRequest(endpoint, null, "GET", null, false).get("data");
-                    Map props = (Map)map.get("properties");
-                    String contextRoot = (String) props.get("contextRoot");
-                    getLaunchInfo(appName, contextRoot, oneRow);
+                    getLaunchInfo(appName, null, oneRow);
                 }
 
                 //JWS is disabled only if the property is present and is set to false.   Otherwise, its enabled.

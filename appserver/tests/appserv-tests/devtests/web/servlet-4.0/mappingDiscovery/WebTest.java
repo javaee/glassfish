@@ -75,7 +75,7 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            boolean contextRootMatch = webTest.run("GET", 200, false, "/", ".*ServletC.MappingImpl\\{matchValue=.*pattern=/.*servletName=,.*mappingMatch=CONTEXT_ROOT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING: null.*");
+            boolean contextRootMatch = webTest.run("GET", 200, false, "/", ".*ServletC.MappingImpl\\{matchValue=.*pattern=/.*servletName=.*,.*mappingMatch=CONTEXT_ROOT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING: null.*");
             boolean defaultMatch = webTest.run("GET", 200, false, "//foo", ".*ServletC.MappingImpl\\{matchValue=foo.*pattern=/,.*servletName=ServletC.*mappingMatch=DEFAULT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING: null.*");
             boolean exactMatch = webTest.run("GET", 200, false, "/ServletC", ".*ServletC.MappingImpl\\{matchValue=ServletC.*pattern=/ServletC.*servletName=ServletC.*mappingMatch=EXACT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING: null.*");
             boolean extensionMatch = webTest.run("GET", 200, false, "/foo.Issue73", ".*ServletC.MappingImpl\\{matchValue=foo.*pattern=\\*\\.Issue73.*servletName=ServletC.*mappingMatch=EXTENSION\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING: null.*");
