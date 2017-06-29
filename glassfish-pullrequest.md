@@ -1,6 +1,6 @@
 ## GlassFish Fork Pull Request Based Workflow on GitHub
 
-### Prerequisite 
+### <a name="pre"></a>Prerequisite 
 Please sign the Oracle Contributor Agreement \([OCA](http://www.oracle.com/technetwork/community/oca-486395.html)\) and get your GitHub ID's included. If you signed the OCA but GitHub ID is not included,  please send an email to [David Delabassee](mailto:david.delabassee@oracle.com) to fix it. You can then work with the respective project owners or reviewers to get your pull requests reviewed and approved.
 
 ### One time setup
@@ -75,7 +75,7 @@ $ git commit -m "my commit message"
 1. If an external contributor (a contributor who is not a member of the 'glassfish' team in GitHub ) raises a Pull Request, glassfishrobot would update the pull request with the following two comments  
 **\"Review needed from GlassFish team members\"**   
 **\"Please sign Oracle Contributor Agreement(OCA) to contribute in GlassFish project if you have not done that already.\"**  
-In that case please follow the [Prerequisite](#Prerequisite) section of this document
+In that case please follow the [Prerequisite](#pre) section of this document
 2. Once you sign the OCA, one of the GlassFish team member would review your Pull Request  
 3. If the code review is approved, the reviewer would start the GlassFish CI pipeline for you \(i.e one of the GlassFish team member would perform step 1 of [Workflow for GitHub javaee glassfish team members](#tmwf) on your behalf\)
 4. Please follow step 2 to 7 of [Workflow for GitHub javaee glassfish team members](#tmwf) to merge your Pull Request with javaee/glassfish master
