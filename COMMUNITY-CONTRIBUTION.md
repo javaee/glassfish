@@ -24,7 +24,7 @@ There are several different tests that are currently available in GlassFish. Qui
 
 **Contribute Code**
 
-Contributing to project GlassFish can be done in various ways: bug fixes, enhancements, new features, or even whole modules.
+Contributing to project GlassFish can be done in various ways: bug fixes, enhancements, new features, or even whole modules. If you want to raise a Pull Request with your changes, please refer [GlassFish Fork Pull Request Based Workflow on GitHub](glassfish-pullrequest.md)
 
 
 #### Contribute Samples

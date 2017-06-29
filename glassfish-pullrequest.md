@@ -26,7 +26,7 @@ Resolving deltas: 100% (415989/415989), done.
 Checking connectivity... done.
 Checking out files: 100% (33230/33230), done.
 ```
-* [Configure](https://help.github.com/articles/configuring-a-remote-for-a-fork/) the remote for your fork.
+* [Configure](https://help.github.com/articles/configuring-a-remote-for-a-fork/) the remote for your fork.  
 ```
 $ git remote add upstream git@github.com:javaee/glassfish.git
  
@@ -36,7 +36,7 @@ origin    git@github.com:your-githubid/glassfish.git (push)
 upstream    git@github.com:javaee/glassfish.git (fetch)
 upstream    git@github.com:javaee/glassfish.git (push)
 ```
-\(If you have configured HTTPS URLs for your remotes and want to change to GIT URLs, refer to [this doc](https://help.github.com/articles/changing-a-remote-s-url/) to re-configure the remote URLs.\)
+* If you have configured HTTPS URLs for your remotes and want to change to GIT URLs, refer to [this doc](https://help.github.com/articles/changing-a-remote-s-url/) to re-configure the remote URLs.
 
 ### Raise Pull Request 
 * Sync the 'master'  of your fork with upstream master
