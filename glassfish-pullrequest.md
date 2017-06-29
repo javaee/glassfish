@@ -62,14 +62,6 @@ $ git commit -m "Update Java EE version in master pom.xml to EE8"
  * Push your changes in a remote branch of your fork  
  ```
  $ git push origin Iss_21702
- Counting objects: 5, done.
- Delta compression using up to 4 threads.
- Compressing objects: 100% (5/5), done.
- Writing objects: 100% (5/5), 470 bytes | 0 bytes/s, done.
- Total 5 (delta 4), reused 0 (delta 0)
- remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
- To https://github.com/your-githubid/glassfish.git
- \* [new branch]            Iss_21702 -> Iss_21702
  ```
 * Before even raising a Pull Request, please raise an issue if it doesn't exist. We would like every pull request to be associated with an issue. Submit the Pull Request referring to the issue number.
 * Raise a Pull Request.
