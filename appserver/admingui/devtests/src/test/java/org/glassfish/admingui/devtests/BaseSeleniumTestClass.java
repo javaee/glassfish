@@ -413,7 +413,7 @@ public class BaseSeleniumTestClass {
         if (IS_SECURE_ADMIN_ENABLED) {
             try {
                 waitForLoginPageLoad(timeout);
-                String passwordFile = SeleniumHelper.getParameter("AS_ADMIN_PASSWORDFILE", null);
+                String passwordFile = SeleniumHelper.getParameter("AS_ADMIN_PASSWORDFILE", "");
                 String password = FileUtils.readFileToString(new File(passwordFile));
                 if (password.isEmpty()) {
                     password = "admin";
