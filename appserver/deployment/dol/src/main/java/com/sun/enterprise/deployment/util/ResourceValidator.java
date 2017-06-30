@@ -42,21 +42,16 @@ package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.resourcebase.resources.util.ResourceUtil;
 import org.glassfish.resourcebase.resources.api.ResourceConstants;
 
 import javax.inject.Inject;
@@ -138,8 +133,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         // Parse AppScoped resources
         String appName = DOLUtils.getApplicationName(application);
-        Map<String, List> resourcesList =
-                (Map<String, List>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
+        Map<String, List<String>> resourcesList =
+                (Map<String, List<String>>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         myNamespace.storeAppScopedResources(resourcesList, appName);
     }
 
@@ -152,40 +147,40 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private void parseResources(JndiNameEnvironment env) {
-        for (Iterator it = env.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((ResourceReferenceDescriptor) it.next(), env);
+        for (Object next : env.getResourceReferenceDescriptors()) {
+            parseResources((ResourceReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getResourceEnvReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((ResourceEnvReferenceDescriptor) it.next(), env);
+        for (Object next : env.getResourceEnvReferenceDescriptors()) {
+            parseResources((ResourceEnvReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((MessageDestinationReferenceDescriptor) it.next(), env);
+        for (Object next : env.getMessageDestinationReferenceDescriptors()) {
+            parseResources((MessageDestinationReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getEnvironmentProperties().iterator(); it.hasNext(); ) {
-            parseResources((EnvironmentProperty) it.next(), env);
+        for (Object next : env.getEnvironmentProperties()) {
+            parseResources((EnvironmentProperty) next, env);
         }
 
-        for (Iterator it = env.getAllResourcesDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((ResourceDescriptor) it.next(), env);
+        for (Object next : env.getAllResourcesDescriptors()) {
+            parseResources((ResourceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getEntityManagerReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((EntityManagerReferenceDescriptor) it.next(), env);
+        for (Object next : env.getEntityManagerReferenceDescriptors()) {
+            parseResources((EntityManagerReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getEntityManagerFactoryReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((EntityManagerFactoryReferenceDescriptor) it.next(), env);
+        for (Object next : env.getEntityManagerFactoryReferenceDescriptors()) {
+            parseResources((EntityManagerFactoryReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getEjbReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((EjbReferenceDescriptor) it.next(), env);
+        for (Object next : env.getEjbReferenceDescriptors()) {
+            parseResources((EjbReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = env.getServiceReferenceDescriptors().iterator(); it.hasNext(); ) {
-            parseResources((ServiceReferenceDescriptor) it.next(), env);
+        for (Object next : env.getServiceReferenceDescriptors()) {
+            parseResources((ServiceReferenceDescriptor) next, env);
         }
     }
 
@@ -241,7 +236,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * @param rawName to be converted
-     * @param env
      * @return The logical JNDI name which has a java: prefix
      */
     private String getLogicalJNDIName(String rawName, JndiNameEnvironment env) {
@@ -303,57 +297,52 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             }
             // validateJNDIRefs(jndiName, ejb);
         }
-        for (Iterator it = ejb.getResourceReferenceDescriptors().iterator(); it.hasNext(); ) {
-            ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) it.next();
-            accept(next, ejb);
+        for (Object next : ejb.getResourceReferenceDescriptors()) {
+            accept((ResourceReferenceDescriptor) next, ejb);
         }
 
-        for (Iterator it = ejb.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
-            ResourceEnvReferenceDescriptor next = (ResourceEnvReferenceDescriptor) it.next();
-            accept(next, ejb);
+        for (Object next : ejb.getResourceEnvReferenceDescriptors()) {
+            accept((ResourceEnvReferenceDescriptor) next, ejb);
         }
 
-        for (Iterator it = ejb.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
-            MessageDestinationReferenceDescriptor next = (MessageDestinationReferenceDescriptor) it.next();
-            accept(next, ejb);
+        for (Object next : ejb.getMessageDestinationReferenceDescriptors()) {
+            accept((MessageDestinationReferenceDescriptor) next, ejb);
         }
 
-        for (Iterator it = ejb.getEnvironmentProperties().iterator(); it.hasNext();) {
-            EnvironmentProperty next = (EnvironmentProperty) it.next();
-            accept(next, ejb);
+        for (Object next : ejb.getEnvironmentProperties()) {
+            accept((EnvironmentProperty) next, ejb);
         }
 
-        for (Iterator it = ejb.getEjbReferenceDescriptors().iterator(); it.hasNext();) {
-            EjbReferenceDescriptor next = (EjbReferenceDescriptor) it.next();
-            accept(next, ejb);
+        for (Object next : ejb.getEjbReferenceDescriptors()) {
+            accept((EjbReferenceDescriptor) next, ejb);
         }
     }
 
     private void accept(BundleDescriptor bd) {
         if (bd instanceof JndiNameEnvironment) {
             JndiNameEnvironment nameEnvironment = (JndiNameEnvironment) bd;
-            for (Iterator<ResourceReferenceDescriptor> itr = nameEnvironment.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : nameEnvironment.getResourceReferenceDescriptors()) {
+                accept((ResourceReferenceDescriptor) next, nameEnvironment);
             }
 
-            for (Iterator<ResourceEnvReferenceDescriptor> itr = nameEnvironment.getResourceEnvReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : nameEnvironment.getResourceEnvReferenceDescriptors()) {
+                accept((ResourceEnvReferenceDescriptor) next, nameEnvironment);
             }
 
-            for (Iterator<MessageDestinationReferenceDescriptor> itr = nameEnvironment.getMessageDestinationReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : nameEnvironment.getMessageDestinationReferenceDescriptors()) {
+                accept((MessageDestinationReferenceDescriptor) next, nameEnvironment);
             }
 
-            for (Iterator<MessageDestinationDescriptor> itr = bd.getMessageDestinations().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : bd.getMessageDestinations()) {
+                accept((MessageDestinationDescriptor) next, nameEnvironment);
             }
 
-            for (Iterator<EnvironmentProperty> itr = nameEnvironment.getEnvironmentProperties().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : nameEnvironment.getEnvironmentProperties()) {
+                accept((EnvironmentProperty) next, nameEnvironment);
             }
 
-            for (Iterator<EjbReferenceDescriptor> itr = nameEnvironment.getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
-                accept(itr.next(), nameEnvironment);
+            for (Object next : nameEnvironment.getEjbReferenceDescriptors()) {
+                accept((EjbReferenceDescriptor) next, nameEnvironment);
             }
 
             for (PersistenceUnitsDescriptor pus : bd.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
@@ -362,22 +351,27 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 }
             }
 
+            // TODO: Need to limit this to some types of descriptors only?
             for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
                 accept(mbd, nameEnvironment);
             }
         }
     }
 
-    // TODO: Decide what to do in case of ORB,
+    /**
+     * Validate resources stored in ResourceRefDescriptor.
+     */
     private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         String jndiName = resRef.getJndiName();
         // The default values
-        if (jndiName != null && (jndiName.equals("java:comp/DefaultDataSource") || jndiName.equals("java:comp/DefaultJMSConnectionFactory")))
+        if (jndiName != null &&
+                (jndiName.equals("java:comp/DefaultDataSource") ||
+                        jndiName.equals("java:comp/DefaultJMSConnectionFactory") ||
+                        jndiName.equals("java:comp/ORB")))
             return;
 
-        if (resRef.isORB() || resRef.isWebServiceContext()) {
+        if (resRef.isWebServiceContext())
             return;
-        }
 
         if (resRef.isURLResource()) {
             if (jndiName != null && !(jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))) {
@@ -394,13 +388,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * TODO: Implement
-     * 1) Since a custom JNDI resource is stored in this, we need to exclude all normal references and validate only the custom resources.
-     * Custom resources might also get stored in the general resources section depending on their type.
-     * 2) All resources specified under resource-env-ref tag go in here.
-     *
-     * @param resourceEnvRef
-     * @param env
+     * Validate resources stored in ResourceEnvRefDescriptor.
+     * Managed Bean references are validated here.
      */
     private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
         String jndiName = resourceEnvRef.getJndiName();
@@ -427,9 +416,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * Convert JNDI names beginning with java:module and java:app to their corresponding java:global names.
      *
-     * @param jndiName
-     * @param env
-     * @return
+     * @return the converted name with java:global JNDI prefix.
      */
     private String convertModuleOrAppJNDIName(String jndiName, JndiNameEnvironment env) {
         BundleDescriptor bd = null;
@@ -448,7 +435,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 appName = application.getAppName();
             }
             String moduleName = bd.getModuleDescriptor().getModuleName();
-            StringBuffer javaGlobalName = new StringBuffer("java:global/");
+            StringBuilder javaGlobalName = new StringBuilder("java:global/");
             if (jndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX)) {
                 if (appName != null) {
                     javaGlobalName.append(appName);
@@ -483,9 +470,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
      * We might be duplicating our validation efforts since we are already validating message destination separately.
-     *
-     * @param msgDestRef
-     * @param env
      */
     private void accept(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env) {
         if (msgDestRef.isLinkedToMessageDestination()) {
@@ -499,9 +483,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * Validate references to environment entries.
      * Also validate custom resources of primitive data types.
-     *
-     * @param envProp
-     * @param env
      */
     private void accept(EnvironmentProperty envProp, JndiNameEnvironment env) {
         String jndiName = "";
@@ -524,17 +505,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * TODO: Check what to implement
-     * @param ejbRef
-     * @param env
      */
     private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
 
     }
 
     /**
-     * TODO: devtests
-     * @param pu - Persistence Unit Descriptor
-     * @param env
+     * Validate Data Source in a PUD.
      */
     private void accept(PersistenceUnitDescriptor pu, JndiNameEnvironment env) {
         String jtaDataSourceName = pu.getJtaDataSource();
@@ -547,32 +524,23 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Validate resources defined in a managed bean
-     * @param managedBean
-     * @param env
+     * Validate resources defined in a managed bean.
      */
     private void accept(ManagedBeanDescriptor managedBean, JndiNameEnvironment env) {
-        for (Iterator itr = managedBean.getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
-            EjbReferenceDescriptor aRef = (EjbReferenceDescriptor) itr.next();
-            accept(aRef, env);
+        for (Object next : managedBean.getEjbReferenceDescriptors()) {
+            accept((EjbReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = managedBean.getResourceReferenceDescriptors().iterator(); it.hasNext();) {
-            ResourceReferenceDescriptor next =
-                    (ResourceReferenceDescriptor) it.next();
-            accept(next, env);
+        for (Object next : managedBean.getResourceReferenceDescriptors()) {
+            accept((ResourceReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = managedBean.getResourceEnvReferenceDescriptors().iterator(); it.hasNext();) {
-            ResourceEnvReferenceDescriptor next =
-                    (ResourceEnvReferenceDescriptor) it.next();
-            accept(next, env);
+        for (Object next : managedBean.getResourceEnvReferenceDescriptors()) {
+            accept((ResourceEnvReferenceDescriptor) next, env);
         }
 
-        for (Iterator it = managedBean.getMessageDestinationReferenceDescriptors().iterator(); it.hasNext();) {
-            MessageDestinationReferenceDescriptor next =
-                    (MessageDestinationReferenceDescriptor) it.next();
-            accept(next, env);
+        for (Object next : managedBean.getMessageDestinationReferenceDescriptors()) {
+            accept((MessageDestinationReferenceDescriptor) next, env);
         }
     }
 
@@ -584,8 +552,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * Validate the given JNDI name by checking in domain.xml and in resources defined within the app.
      * In case a null jndi name is passed, we fail the deployment.
      *
-     * @param jndiName
-     * @param env
+     * @param jndiName to be validated.
      */
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
         if(!isResourceInDomainXML(jndiName)) {
@@ -602,11 +569,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Validate the given resource in the corresponding target using domain.xml serverbeans.
+     * Validate the given resource in the corresponding target using domain.xml server beans.
      * For resources defined outside the application.
      *
-     * @param jndiName
-     * @return
+     * @param jndiName to be validated
+     * @return True if resource is present in domain.xml in the corresponding target. False otherwise.
      */
     private boolean isResourceInDomainXML(String jndiName) {
         if (jndiName == null)
@@ -618,11 +585,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
 
         Cluster cluster = domain.getClusterNamed(target);
-        if (cluster != null) {
-            return cluster.isResourceRefExists(jndiName);
-        }
-
-        return false;
+        return cluster != null && cluster.isResourceRefExists(jndiName);
     }
 
     /**
@@ -630,19 +593,19 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * App scoped resources, Resource Definitions are also stored in this data structure.
      */
     private static class JNDINamespace {
-        private Map<String, List> componentNamespaces;
+        private Map<String, List<String>> componentNamespaces;
 
-        private Map<String, List> moduleNamespaces;
+        private Map<String, List<String>> moduleNamespaces;
 
-        private List appNamespace;
+        private List<String> appNamespace;
 
-        private List globalNameSpace;
+        private List<String> globalNameSpace;
 
         private JNDINamespace() {
-            componentNamespaces = new HashMap<String,List>();
-            moduleNamespaces = new HashMap<String,List>();
-            appNamespace = new ArrayList();
-            globalNameSpace = new ArrayList();
+            componentNamespaces = new HashMap<String,List<String>>();
+            moduleNamespaces = new HashMap<String,List<String>>();
+            appNamespace = new ArrayList<>();
+            globalNameSpace = new ArrayList<>();
         }
 
         /**
@@ -651,17 +614,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
          * @param resources - App scoped resources
          * @param appName
          */
-        private void storeAppScopedResources(Map<String, List> resources, String appName) {
+        private void storeAppScopedResources(Map<String, List<String>> resources, String appName) {
             if (resources == null)
                 return;
-            List appLevelResources = resources.get(appName);
+            List<String> appLevelResources = resources.get(appName);
             appNamespace.addAll(appLevelResources);
-            for (String key: resources.keySet()) {
-                if (key.equals(appName))
-                    continue;
-                else {
-                    String moduleName = key;
-                    List jndiNames = moduleNamespaces.get(moduleName);
+            for (String moduleName: resources.keySet()) {
+                if (!moduleName.equals(appName)) {
+                    List<String> jndiNames = moduleNamespaces.get(moduleName);
                     if (jndiNames == null) {
                         jndiNames = new ArrayList<String>();
                         jndiNames.addAll(resources.get(moduleName));
@@ -676,16 +636,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         /**
          * Store the jndi name in the correct scope. Will be stored only if jndi name is javaURL.
-         *
-         * @param jndiName
-         * @param env
          */
         public void store(String jndiName, JndiNameEnvironment env) {
             if (jndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX)) {
                 String componentId = DOLUtils.getComponentEnvId(env);
-                List jndiNames = componentNamespaces.get(componentId);
+                List<String> jndiNames = componentNamespaces.get(componentId);
                 if (jndiNames == null) {
-                    jndiNames = new ArrayList<String>();
+                    jndiNames = new ArrayList<>();
                     jndiNames.add(jndiName);
                     componentNamespaces.put(componentId, jndiNames);
                 }
@@ -695,9 +652,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             }
             else if (jndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX)) {
                 String moduleName = DOLUtils.getModuleName(env);
-                List jndiNames = moduleNamespaces.get(moduleName);
+                List<String> jndiNames = moduleNamespaces.get(moduleName);
                 if (jndiNames == null) {
-                    jndiNames = new ArrayList<String>();
+                    jndiNames = new ArrayList<>();
                     jndiNames.add(jndiName);
                     moduleNamespaces.put(moduleName, jndiNames);
                 }
@@ -715,10 +672,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         /**
          * Find the jndi name in our namespace.
-         *
-         * @param jndiName
-         * @param env
-         * @return
+         * @return True if the jndi name is found in the namespace. False otherwise.
          */
         public boolean find(String jndiName, JndiNameEnvironment env) {
             if (jndiName == null)
@@ -727,18 +681,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (jndiName.startsWith(ResourceConstants.JAVA_COMP_SCOPE_PREFIX)) {
                 String componentId = DOLUtils.getComponentEnvId(env);
                 List jndiNames = componentNamespaces.get(componentId);
-                if (jndiNames == null)
-                    return false;
-                else
-                    return jndiNames.contains(jndiName);
+                return jndiNames != null && jndiNames.contains(jndiName);
             }
             else if (jndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX)) {
                 String moduleName = DOLUtils.getModuleName(env);
                 List jndiNames = moduleNamespaces.get(moduleName);
-                if (jndiNames == null)
-                    return false;
-                else
-                    return jndiNames.contains(jndiName);
+                return jndiNames != null && jndiNames.contains(jndiName);
             }
             else if (jndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX))
                 return appNamespace.contains(jndiName);

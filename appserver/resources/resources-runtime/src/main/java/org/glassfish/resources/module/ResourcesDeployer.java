@@ -250,7 +250,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             if (ResourceUtil.hasResourcesXML(archive, locator)) {
 
                 Map<String,Map<String, List>> appScopedResources = new HashMap<String,Map<String,List>>();
-                Map<String, List> jndiNames = new HashMap<String, List>();
+                Map<String, List<String>> jndiNames = new HashMap<String, List<String>>();
                 Map<String, String> fileNames = new HashMap<String, String>();
 
                 String appName = getAppNameFromDeployCmdParams(dc);
