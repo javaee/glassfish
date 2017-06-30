@@ -58,6 +58,7 @@
 <property file="build.properties" />
 
     <target name="all">
+        <antcall target="setup"/>
         <delete>
            <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>
         </delete>
@@ -102,22 +103,28 @@
 <!--    <ant dir="solarisRealm" target="all"/>-->                  <!-- DISABLED -->
         <ant dir="jaccApi" target="all"/>
         <record name="security.output" action="stop" />
+        <antcall target="unsetup"/>
         <antcall target="report"/>
     </target>
 
     <target name="ejb">
+        <antcall target="setup"/>
         <ant dir="negativeRealmPerApp" target="all"/>
         <ant dir="realmPerApp" target="all"/>  
-        <ant dir="sful" target="all"/>  
+        <ant dir="sful" target="all"/>
+        <antcall target="unsetup"/>
     </target>
+
     <target name="soteria">
-      <delete>
-         <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>
-      </delete>
-      <record name="soteria.output" action="start" />
-      <ant dir="soteria" target="all"/>
-      <record name="soteria.output" action="stop" />
-      <antcall target="report"/>
+        <antcall target="setup"/>
+        <delete>
+           <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>
+        </delete>
+        <record name="soteria.output" action="start" />
+        <ant dir="soteria" target="all"/>
+        <record name="soteria.output" action="stop" />
+        <antcall target="unsetup"/>
+        <antcall target="report"/>
     </target>
                                                                                                                             
    <target name="usage">
@@ -128,4 +135,31 @@
 			ant web (Executes the web tests TBD)
 	</echo>
     </target>
+
+    <target name="setup">
+        <antcall target="start-database"/>
+        <ant target="startDomain"/>
+    </target>
+
+    <target name="unsetup">
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+        <antcall target="stop-database"/>
+    </target>
+
+    <target name="start-database" depends="init-common">
+        <echo message="Starting database --dbport ${db.port}"/>
+        <!-- spawn is added to prevent a hang on Windows -->
+        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
+            <arg line="start-database --dbport ${db.port}"/>
+        </exec>
+    </target>
+
+    <target name="stop-database" depends="init-common">
+        <echo message="Stopping database --dbport ${db.port}"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="stop-database  --dbport ${db.port}"/>
+        </exec>
+    </target>
+
 </project>

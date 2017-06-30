@@ -102,6 +102,7 @@
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
             <java classname="@{classname}" fork="true" classpath="${THE_CLASSPATH}">
+                <jvmarg line="${jacocojvmarg}" />
                 <jvmarg value="${javaprops}"/>
                 <jvmarg value="-DHADAS=${env.HADAS}"/>
                 <jvmarg value="-DNUM_TESTS=${num_tests}"/>
@@ -473,7 +474,7 @@
     <target name="teardown" depends="stopdb">
     </target>
 
-    <target name="init" depends="build, init-path">
+    <target name="init" depends="build, init-path, get-jacoco-jvm-arg">
     </target>
 
     <target name="clean">

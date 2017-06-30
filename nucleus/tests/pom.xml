@@ -86,6 +86,49 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                            <configuration>
+                                <destFile>${jacoco.ut.execution.data.file}</destFile>
+                                <propertyName>surefireArgLine</propertyName>
+                                <classDumpDir>${project.build.directory}/jacoco-classes/</classDumpDir>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                    <executions>
+                        <execution>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <target>
+                                    <echo message="${nucleus.home}  Adding jacoco jvm arg to domain.xml :- ${surefireArgLine}" />
+                                    <!--copy file="${nucleus.home}/domains/domain1/config/domain.xml"
+                                      tofile="${nucleus.home}/domains/domain1/config/domain.xml.bak"
+                                      overwrite="true" /-->
+                                    <replaceregexp  file="${nucleus.home}/domains/domain1/config/domain.xml"
+                                                match="&lt;java-config (.*)&gt;"
+                                                replace="&lt;java-config \1&gt;${line.separator}
+        &lt;jvm-options&gt;${surefireArgLine}&lt;/jvm-options&gt;"
+                                                byline="true"/>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+            </plugin>
         </plugins>
     </build>
 

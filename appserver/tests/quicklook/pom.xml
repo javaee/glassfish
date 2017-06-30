@@ -58,6 +58,8 @@
     <properties>
         <jruby-all.version>1.5.4</jruby-all.version>
         <jruby-all.classifier>1.3.1</jruby-all.classifier>
+        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.ft.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ft.exec</jacoco.ft.execution.data.file>
     </properties>
     <build>
         <plugins>
@@ -78,6 +80,9 @@
                                 
                                 <echo message="compile classpath: ${compile_classpath}"/>
                                 <echo message="plugin classpath:  ${plugin_classpath}"/>
+
+				                <echo message="Code coverage enable:  ${coverage.code}"/>
+
                                 <if>
                                     <equals arg1="${test.gd}" arg2="true" />
                                     <then>
@@ -251,8 +256,31 @@
                         <version>1</version>
                         <scope>system</scope>
                         <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.ant</artifactId>
+                        <version>${jacoco.version}</version>
                     </dependency>                     
                 </dependencies>
+            </plugin>
+            <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+            <execution>
+                <id>prepare-agent</id>
+                <goals>
+                    <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                    <destFile>${jacoco.ft.execution.data.file}</destFile>
+                    <propertyName>jacocojvmarg</propertyName>
+                    <classDumpDir>${project.build.directory}/jacoco-classes/</classDumpDir>
+                </configuration>
+            </execution>
+            </executions>
             </plugin>
         </plugins>
     </build>
@@ -261,6 +289,12 @@
             <id>report</id>
             <properties>
                 <test.report>test-output</test.report>
+            </properties>
+        </profile>
+        <profile>
+            <id>coverage-report</id>
+            <properties>
+                <coverage.code>true</coverage.code>
             </properties>
         </profile>
         <profile>

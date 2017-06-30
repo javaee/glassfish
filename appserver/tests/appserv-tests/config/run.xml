@@ -76,8 +76,14 @@
 
 <target name="startDomain" depends="startDomainUnix, startDomainWindows"/>
 
-<target name="startDomainUnix" depends="init-common" if="isUnix">
-    <echo message="Starting DAS"/>
+<target name="startDomainUnix" depends="init-common, attach-jacoco-agent" if="isUnix">
+    <echo message="Starting DAS "/>
+    <if>
+        <istrue value="${coverage.code}" />
+        <then>
+            <echo message="Starting Code coverage with jvm arg :- ${jacocojvmarg}" />
+        </then>
+    </if>
     <exec executable="${ASADMIN}">
         <arg line="start-domain"/>
     </exec>
@@ -95,7 +101,7 @@
     <antcall target="dumpThreadStack"/>
 </target>
 
-<target name="startDomainWindows" depends="init-common" if="isWindows">
+<target name="startDomainWindows" depends="init-common, attach-jacoco-agent" if="isWindows">
     <echo message="Starting DAS"/>
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
@@ -194,6 +200,84 @@
 	<arg line="${appserver.instance.name}"/>
 </exec>
 
+</target>
+
+<target name="jacoco-prerequisite" >
+    <get src="http://central.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar"
+     dest="/tmp/maven-ant-tasks-2.1.3.jar"
+     usetimestamp="true" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+         uri="antlib:org.apache.maven.artifact.ant">
+        <classpath location="/tmp/maven-ant-tasks-2.1.3.jar" />
+    </typedef>
+
+    <!--   download ant-contrib and jacoco-ant jar  -->
+    <property name="jacoco.ft.execution.data.file" value="${basedir}/target/coverage-reports/jacoco-ft.exec" />
+    <property name="jacocoantjar.loc" value="/tmp/jacoco-dependencies/" />
+
+    <artifact:dependencies pathId="dependency.classpath" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+        <dependency groupId="org.jacoco" artifactId="org.jacoco.ant" version="0.7.9" scope="test"/>
+        <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b3" scope="test" />
+    </artifact:dependencies>
+
+    <!-- include jacoco-jar in classpath -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath refid="dependency.classpath" />
+    </taskdef>
+    <!-- include ant-contrib in classpath -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath refid="dependency.classpath" />
+    </taskdef>
+</target>
+
+<target name="get-jacoco-jvm-arg" depends="jacoco-prerequisite">
+<if>
+    <istrue value="${coverage.code}" />
+    <then>
+        <jacoco:agent property="jacocojvmarg" destfile="${jacoco.ft.execution.data.file}" classdumpdir="${basedir}/target/jacoco-classes/"
+                  xmlns:jacoco="antlib:org.jacoco.ant"/>
+    </then>
+    <else>
+        <property name="jacocojvmarg" value=" "/>
+    </else>
+</if>
+</target>
+
+<target name="attach-jacoco-agent" depends="jacoco-prerequisite">
+<if>
+    <istrue value="${coverage.code}" />
+    <then>
+         <jacoco:agent property="jacocojvmarg" destfile="${jacoco.ft.execution.data.file}" classdumpdir="${basedir}/target/jacoco-classes/"
+                      xmlns:jacoco="antlib:org.jacoco.ant"/>
+         <copy todir="${env.S1AS_HOME}/domains/domain1/lib/ext/" >
+            <fileset dir="${org.jacoco:org.jacoco.ant:jar}/../" includes="**/*.jar"/>
+         </copy>
+        <!-- check if jacoco agent is already added as jvm option in domain.xml -->
+        <loadfile property="already.attached" srcfile="${env.S1AS_HOME}/domains/domain1/config/domain.xml">
+            <filterchain>
+                <linecontainsregexp>
+                    <regexp pattern="${jacoco.ft.execution.data.file}"/>
+                </linecontainsregexp>
+            </filterchain>
+        </loadfile>
+        <!-- if jacoco jvm option is not added add it -->
+        <if>
+            <not>
+                <isset property="already.attached" />
+            </not>
+            <then>
+                <replaceregexp  file="${env.S1AS_HOME}/domains/domain1/config/domain.xml"
+                                match="&lt;java-config (.*)&gt;"
+                                replace="&lt;java-config \1&gt;${line.separator}
+        &lt;jvm-options&gt;${jacocojvmarg}&lt;/jvm-options&gt;"
+                                byline="true"/>
+            </then>
+        </if>
+    </then>
+    <else>
+        <property name="jacocojvmarg" value=" "/>
+    </else>
+</if>
 </target>
 
 <macrodef name="run-test">

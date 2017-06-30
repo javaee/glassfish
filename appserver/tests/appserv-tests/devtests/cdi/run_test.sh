@@ -47,11 +47,11 @@ test_run(){
 	# Run the tests
 	set +e
 	ant clean
-	$S1AS_HOME/bin/asadmin start-domain
-	$S1AS_HOME/bin/asadmin start-database
+	#$S1AS_HOME/bin/asadmin start-domain
+	#$S1AS_HOME/bin/asadmin start-database
 	ant $TARGET | tee $TEST_RUN_LOG
-	$S1AS_HOME/bin/asadmin stop-domain
-	$S1AS_HOME/bin/asadmin stop-database
+	#$S1AS_HOME/bin/asadmin stop-domain
+	#$S1AS_HOME/bin/asadmin stop-database
 	set -e
 }
 

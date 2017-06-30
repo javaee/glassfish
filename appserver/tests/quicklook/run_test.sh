@@ -45,6 +45,7 @@ copy_ql_results(){
 	cp -r test-output/* $WORKSPACE/results/
 	cp test-output/TESTS-TestSuites.xml $WORKSPACE/results/junitreports/test_results_junit.xml
 	cp quicklook_summary.txt $WORKSPACE/results || true
+	cp -r `pwd`/target/ $WORKSPACE/results/ || true
 }
 
 run_test_id(){
@@ -75,6 +76,7 @@ run_test_id(){
 		fi
 		cp $WORKSPACE/nucleus/domains/domain1/logs/server.log* $WORKSPACE/results
 		cp $TEST_RUN_LOG $WORKSPACE/results/
+		cp -r `pwd`/target/ $WORKSPACE/results/ || true
 	elif [[ $1 = "ql_gf_web_profile_all" || $1 = "ql_gf_embedded_profile_all" ]]; then
 		download_test_resources web.zip tests-maven-repo.zip version-info.txt
 		unzip_test_resources $WORKSPACE/bundles/web.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
@@ -101,6 +103,7 @@ post_test_run(){
 	  		cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/ || true
 	  		cp $WORKSPACE/nucleus/domains/domain1/logs/server.log* $WORKSPACE/results || true
 		    cp $TEST_RUN_LOG $WORKSPACE/results/ || true
+		    cp -r `pwd`/target/ $WORKSPACE/results/ || true
 	  	fi
 	fi
     upload_test_results

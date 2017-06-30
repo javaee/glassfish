@@ -134,6 +134,7 @@ copy_test_artifects(){
 	cp $APS_HOME/test_results*.* $WORKSPACE/results/ || true
 	cp `pwd`/*/*logs.zip $WORKSPACE/results/ || true
 	cp `pwd`/*/*/*logs.zip $WORKSPACE/results/ || true
+	find . -type d -name "target" -exec cp --parents -r {} $WORKSPACE/results/ \; || true
 }
 
 

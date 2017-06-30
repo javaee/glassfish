@@ -61,7 +61,7 @@ test_run(){
   antTarget="all-ee"
   if [ -z "$DEPL_TARGET" ]
   then
-      $S1AS_HOME/bin/asadmin start-domain
+      #$S1AS_HOME/bin/asadmin start-domain
       antTarget="all"
   fi
   # Get rid of any lingering password file from an earlier run
@@ -73,10 +73,10 @@ test_run(){
   cp tests-results.xml $APS_HOME/tests-results.xml
   cp results.html $APS_HOME/test_results.html 
 
-  if [ -z "$DEPL_TARGET" ]
-  then
-      $S1AS_HOME/bin/asadmin stop-domain
-  fi
+  #if [ -z "$DEPL_TARGET" ]
+  #then
+      #$S1AS_HOME/bin/asadmin stop-domain
+  #fi
    if [[ $1 = "deployment_cluster_all" ]]; then
       cp -r $APS_HOME/devtests/deployment/server-logs/ $WORKSPACE/results/
   fi  

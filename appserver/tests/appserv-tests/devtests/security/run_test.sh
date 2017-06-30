@@ -58,8 +58,8 @@ test_run(){
 	$OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanager -b "dc=sfbay,dc=sun,dc=com" -Z 1636 --useJavaKeystore $S1AS_HOME/domains/domain1/config/keystore.jks -W changeit -N s1as
 
 
-	$S1AS_HOME/bin/asadmin start-database
-	$S1AS_HOME/bin/asadmin start-domain
+	#$S1AS_HOME/bin/asadmin start-database
+	#$S1AS_HOME/bin/asadmin start-domain
 	pushd $APS_HOME/devtests/security	
 	rm count.txt || true
   PROXY_HOST=`echo ${http_proxy} | cut -d':' -f2 | ${SED} 's/\/\///g'`
@@ -76,8 +76,8 @@ test_run(){
 	ant $TARGET |tee $TEST_RUN_LOG
   unset ANT_OPTS
 
-	$S1AS_HOME/bin/asadmin stop-domain
-	$S1AS_HOME/bin/asadmin stop-database
+	#$S1AS_HOME/bin/asadmin stop-domain
+	#$S1AS_HOME/bin/asadmin stop-database
 	$OPENDS_HOME/bin/stop-ds -p 4444 -D "cn=Directory Manager" -w dmanager -P $OPENDS_HOME/config/admin-truststore -U $OPENDS_HOME/config/admin-keystore.pin
 
 	egrep 'FAILED= *0' count.txt

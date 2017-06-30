@@ -48,7 +48,7 @@
     <property file="${basedir}/gfproject/derby.properties"/>
     <import file="${basedir}/gfproject/db-targets.xml"/>
 	<import file="${basedir}/gfproject/utils.xml"/>
-    
+
     <description>Builds, tests, and runs the project V3 Quicklook</description>
 
     <target name="all_cluster">
@@ -626,6 +626,57 @@
     <property name="APPCLIENT" value="${glassfish.home}\bin\appclient.bat"/>
 </target>
 
+<target name="attach-jacoco-agent" >
+    <if>
+        <istrue value="${coverage.code}" />
+        <then>
+             <!-- check if jacoco agent is already added as jvm option in domain.xml -->
+             <loadfile property="already.attached" srcfile="${glassfish.home}/domains/domain1/config/domain.xml">
+                <filterchain>
+                    <linecontainsregexp>
+                        <regexp pattern="${jacoco.ft.execution.data.file}"/>
+                    </linecontainsregexp>
+                </filterchain>
+            </loadfile>
+            <!-- if jacoco jvm option is not added add it -->
+            <if>
+                    <not>
+                            <isset property="already.attached" />
+                    </not>
+                    <then>
+                        <copy file="${glassfish.home}/domains/domain1/config/domain.xml"
+                              tofile="${glassfish.home}/domains/domain1/config/domain.xml.bak"
+                              overwrite="true" />
+                        <replaceregexp  file="${glassfish.home}/domains/domain1/config/domain.xml"
+                                        match="&lt;java-config (.*)&gt;"
+                                        replace="&lt;java-config \1&gt;${line.separator}
+        &lt;jvm-options&gt;${jacocojvmarg}&lt;/jvm-options&gt;"
+                                        byline="true"/>
+                    </then>
+            </if>
+            <!-- grant security permission to jacoco ant jars-->
+            <copy file="${glassfish.home}/domains/domain1/config/server.policy"
+                  tofile="${glassfish.home}/domains/domain1/config/server.policy.bak"
+                  overwrite="true" />
+            <echo file="${glassfish.home}/domains/domain1/config/server.policy" append="true">
+grant codeBase "file:${maven.repo.local}/org/jacoco/-" {
+permission java.security.AllPermission;
+};
+            </echo>
+        </then>
+        <else>
+            <property name="jacocojvmarg" value=" "/>
+        </else>
+    </if>
+</target>
+
+<target name="de-attach-jacoco-agent" if="already.attached">
+    <move file="${glassfish.home}/domains/domain1/config/domain.xml.bak"
+          tofile="${glassfish.home}/domains/domain1/config/domain.xml" />
+    <move file="${glassfish.home}/domains/domain1/config/server.policy.bak"
+          tofile="${glassfish.home}/domains/domain1/config/server.policy" />
+</target>
+
 <target name="start-server-hk2" depends="setOSConditions" if="v3">
    
     <echo>+-----------------------------+</echo>
@@ -639,7 +690,7 @@
     <antcall target="start-server-hk2-windows"/>
 </target>
 
-<target name="start-server-hk2-windows" if="isWindows">
+<target name="start-server-hk2-windows" if="isWindows" depends="attach-jacoco-agent">
     <exec executable="cmd" spawn="true">	
         <env key="GlassFish_Platform" value="HK2"/>
         <arg value="/c"/>
@@ -648,7 +699,7 @@
     </exec>
 </target>
     
-<target name="start-server-hk2-unix" if="isUnix">
+<target name="start-server-hk2-unix" if="isUnix" depends="attach-jacoco-agent">
     <exec executable="${glassfish.home}/bin/asadmin">        
         <env key="GlassFish_Platform" value="HK2"/>
         <arg value="start-domain"/>
@@ -673,7 +724,7 @@
     -->
 </target>
 
-<target name="start-server-felix-windows" if="isWindows">
+<target name="start-server-felix-windows" if="isWindows" depends="attach-jacoco-agent">
     <exec executable="cmd" spawn="true">
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
@@ -685,7 +736,7 @@
     </waitfor> 
 </target>
 
-<target name="start-server-felix-unix" if="isUnix">
+<target name="start-server-felix-unix" if="isUnix" depends="attach-jacoco-agent">
     <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="start-domain"/>
         <arg value="domain1"/>
@@ -717,7 +768,7 @@
     <antcall target="stop-server-windows"/>
 </target>
     
-<target name="stop-server-windows" if="isWindows">
+<target name="stop-server-windows" if="isWindows" depends="de-attach-jacoco-agent">
      <exec executable="cmd">	
          <arg value="/c"/>
          <arg value="${glassfish.home}\bin\asadmin.bat"/>
@@ -725,7 +776,7 @@
      </exec>
 </target>
          
-<target name="stop-server-unix" if="isUnix">
+<target name="stop-server-unix" if="isUnix" depends="de-attach-jacoco-agent">
      <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="stop-domain"/>
     </exec>
