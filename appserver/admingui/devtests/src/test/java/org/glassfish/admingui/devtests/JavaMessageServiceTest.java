@@ -146,7 +146,6 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         sat.deleteAllStandaloneInstances();
     }
 
-    //TODO IDCINTER-41 Intermittent failures
     @Test
     public void testJmsPhysicalDestinations() {
         final String name = "dest" + generateRandomString();
@@ -155,9 +154,15 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         final String maxTotalMemory = Integer.toString(generateRandomNumber(100));
         final String maxProducers = Integer.toString(generateRandomNumber(500));
         final String consumerFlowLimit = Integer.toString(generateRandomNumber(5000));
+        final String instanceName = "in" + generateRandomString();
 
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:serverInstTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
+        StandaloneTest sat = new StandaloneTest();
+        sat.deleteAllStandaloneInstances();
+        sat.createStandAloneInstance(instanceName);
+        sat.startInstance(instanceName);
+
+        clickAndWait(getLinkIdByLinkText(sat.ID_INSTANCE_TABLE, instanceName), sat.TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait("propertyForm:standaloneInstanceTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_PHYSICAL_DESTINATION);
 
         setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:NameTextProp:NameText", name);
@@ -192,9 +197,9 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:configs:topActionsGroup1:flushButton", TRIGGER_FLUSH);
 //        this.selectTableRowByValue("propertyForm:configs", name); // Deselect row. This is ugly, but will have to stay this way for now
 
-        reset();
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:serverInstTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
+        sat.gotoStandaloneInstancesPage();
+        clickAndWait(getLinkIdByLinkText(sat.ID_INSTANCE_TABLE, instanceName), sat.TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait("propertyForm:standaloneInstanceTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
         deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
     }
 

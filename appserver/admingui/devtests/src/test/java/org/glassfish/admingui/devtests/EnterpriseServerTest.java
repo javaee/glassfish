@@ -116,7 +116,6 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         assertTableRowCount("propertyForm:sysPropsTable", count);
     }
 
-    //TODO IDCINTER-41 Intermittent failures
     @Test
     public void testServerResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();

@@ -138,7 +138,6 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         deleteStandAloneInstance(instanceName);
     }
 
-    //TODO IDCINTER-41 Intermittent failures
     @Test
     public void testStandaloneInstanceResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();

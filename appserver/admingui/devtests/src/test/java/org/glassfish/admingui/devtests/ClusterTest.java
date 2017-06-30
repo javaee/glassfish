@@ -326,7 +326,6 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
     }
 
-    //TODO-IDCINTER-41 Intermittent failures
     @Test
     public void testClusterResourcesPage() {
         final String jndiName = "jdbcResource" + generateRandomString();
