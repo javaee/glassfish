@@ -147,15 +147,9 @@ public class ApplicationValidator extends ComponentValidator
                 accept(injectable);
             }
 
-            for(BundleDescriptor bundle : application.getBundleDescriptors()) {
-                boolean validationRequired  = (bundle instanceof EjbBundleDescriptor)
-                        || (bundle instanceof ApplicationClientDescriptor);
-                for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
-                    if( validationRequired ) {
-                        next.validate();
-                    }
-                }
-            }
+            for(BundleDescriptor bundle : application.getBundleDescriptors())
+                for(ManagedBeanDescriptor next : bundle.getManagedBeans())
+                    next.validate();
 
             super.accept(descriptor);
         } else {
