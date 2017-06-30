@@ -168,7 +168,9 @@
         <glassfish.json.version>1.0.4</glassfish.json.version>
         <java.net.username>${user.name}</java.net.username>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
+        <hibernate-validator.version.upperbound>7</hibernate-validator.version.upperbound>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
+        <javax.validation.version.upperbound>3</javax.validation.version.upperbound>
         <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
         <javax.el.version>2.2.5</javax.el.version>
         <jtype.version>0.1.0</jtype.version>

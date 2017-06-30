@@ -91,6 +91,18 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            javax.validation.*;resolution:=optional;version="${range;[==,${javax.validation.version.upperbound});${javax.validation.version}}
+",
+                            org.hibernate.validator.*;resolution:=optional;version="${range;[==,${hibernate-validator.version.upperbound});${hibernate-validator.version}}",
+                            *
+                        </Import-Package>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
