@@ -167,6 +167,14 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
+        <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+       </dependency>
+       <dependency>
+          <groupId>com.fasterxml</groupId>
+          <artifactId>classmate</artifactId>
+       </dependency>
 
         <!-- Test scope -->
         <dependency>

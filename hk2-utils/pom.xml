@@ -145,10 +145,20 @@
           <artifactId>javax.el-api</artifactId>
           <scope>test</scope>
        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <scope>test</scope>
-        </dependency>
+       <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+          <scope>test</scope>
+       </dependency>
+       <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging</artifactId>
+          <optional>true</optional>
+       </dependency>
+       <dependency>
+          <groupId>com.fasterxml</groupId>
+          <artifactId>classmate</artifactId>
+          <optional>true</optional>
+       </dependency>
     </dependencies>
 </project>
