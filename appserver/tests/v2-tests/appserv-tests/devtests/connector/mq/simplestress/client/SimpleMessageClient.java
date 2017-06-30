@@ -18,7 +18,7 @@ public class SimpleMessageClient implements Runnable{
 
     public static void main(String[] args) {
         int NUM_CLIENTS = 50;
-        int TIME_OUT = 20000;
+        int TIME_OUT = 30000;
         try {
             for (int i =0; i < NUM_CLIENTS; i++) {
                 Thread client = new Thread(new SimpleMessageClient(i));
@@ -54,6 +54,11 @@ public class SimpleMessageClient implements Runnable{
 
             for (int i =0; i < NUM_CLIENTS; i++) {
                 TextMessage msg = (TextMessage) msgConsumer.receive(TIME_OUT);
+                if(msg==null) {
+                    System.out.println("Received null so waiting.");
+                    Thread.sleep(TIME_OUT);
+                    msg = (TextMessage) msgConsumer.receive(TIME_OUT);
+                }
                 System.out.println("Received :::::: " + msg.getText());
             }
             stat.addStatus("Simple Stress test", stat.PASS);
