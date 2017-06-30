@@ -9,6 +9,8 @@ import java.sql.*;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Enumeration;
+import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * Holds the java.sql.Connection object, which is to be 
@@ -438,8 +440,88 @@ public class ConnectionHolder implements Connection{
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
 	checkValidity();    
     	return con.prepareStatement(sql,columnNames);
-    } 
-    
+    }
+
+    @Override
+    public Clob createClob() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Blob createBlob() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public NClob createNClob() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public SQLXML createSQLXML() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean isValid(int timeout) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+
+    }
+
+    @Override
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+
+    }
+
+    @Override
+    public String getClientInfo(String name) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Properties getClientInfo() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void setSchema(String schema) throws SQLException {
+
+    }
+
+    @Override
+    public String getSchema() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void abort(Executor executor) throws SQLException {
+
+    }
+
+    @Override
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        return 0;
+    }
+
     /**
      * Removes the given <code>Savepoint</code> object from the current transaction.
      *
@@ -582,5 +664,14 @@ public class ConnectionHolder implements Connection{
     void setActive(boolean actv) {
         active = actv;
     }
-    
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;
+    }
 }
