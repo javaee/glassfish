@@ -54,6 +54,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.devtests.util.ElementFinder;
 import org.glassfish.admingui.devtests.util.SeleniumHelper;
@@ -410,8 +411,17 @@ public class BaseSeleniumTestClass {
     public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
         open(url);
         if (IS_SECURE_ADMIN_ENABLED) {
-           waitForLoginPageLoad(timeout);
-           handleLogin("admin", "admin", triggerText);
+            try {
+                waitForLoginPageLoad(timeout);
+                String passwordFile = SeleniumHelper.getParameter("AS_ADMIN_PASSWORDFILE", null);
+                String password = FileUtils.readFileToString(new File(passwordFile));
+                if (password.isEmpty()) {
+                    password = "admin";
+                }
+                handleLogin("admin", password, triggerText);
+            } catch (IOException ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
           waitForPageLoad(triggerText, timeout);
        }
