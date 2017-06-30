@@ -351,7 +351,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 }
             }
 
-            // TODO: Need to limit this to some types of descriptors only?
             for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
                 accept(mbd, nameEnvironment);
             }
@@ -390,6 +389,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * Validate resources stored in ResourceEnvRefDescriptor.
      * Managed Bean references are validated here.
+     * TODO: Move everything to JNDI names check?
      */
     private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
         String jndiName = resourceEnvRef.getJndiName();
@@ -544,8 +544,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
     }
 
-    private void accept(NamedDescriptor resRef, JndiNameEnvironment env) {
-        validateJNDIRefs(resRef.getJndiName(), env);
+    private void accept(MessageDestinationDescriptor msgDest, JndiNameEnvironment env) {
+        validateJNDIRefs(msgDest.getJndiName(), env);
     }
 
     /**
