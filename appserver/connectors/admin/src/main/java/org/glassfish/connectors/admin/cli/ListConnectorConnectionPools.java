@@ -84,7 +84,7 @@ public class ListConnectorConnectionPools implements AdminCommand {
     @Inject
     private Domain domain;
 
-    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
+    @Param(primary = true, optional = true, alias = "targetName", obsolete = true)
     private String target ;
     
 

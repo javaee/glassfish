@@ -74,12 +74,14 @@ test_init(){
 	ANT_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/ant-1.7.1; export ANT_HOME
 	APS_HOME=$WORKSPACE/main/appserver/tests/appserv-tests; export APS_HOME
 	TEST_RUN_LOG=tests-run.log; export TEST_RUN_LOG
+  export M2_HOME=$MAVEN_3_0_3
         #workaround for OSGI timestamp issue
         find $S1AS_HOME -type f | xargs touch > /dev/null
 	echo S1AS_HOME is $S1AS_HOME
 	echo ANT_HOME is $ANT_HOME
+  echo M2_HOME is $M2_HOME
 	echo APS_HOME is $APS_HOME
-	PATH=$ANT_HOME/bin:$PATH; export PATH
+	PATH=$M2_HOME/bin:$ANT_HOME/bin:$PATH; export PATH
 	java -version
 	ant -version
 	rm -rf $WORKSPACE/results

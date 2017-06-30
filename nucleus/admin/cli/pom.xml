@@ -120,6 +120,12 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.admin.cli.AdminMain</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <!-- adding bean-validator as explicit dependency 
+                                 for admin cli as bean-validator repackaged module
+                                 is now part of nucleus/packager/external/bean-validator -->
+                            <Class-Path>bean-validator.jar</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
