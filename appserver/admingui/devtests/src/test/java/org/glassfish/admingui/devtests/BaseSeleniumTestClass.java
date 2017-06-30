@@ -47,6 +47,7 @@ import org.openqa.selenium.*;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.*;
@@ -130,7 +131,8 @@ public class BaseSeleniumTestClass {
             helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
+                String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+                URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
