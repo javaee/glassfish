@@ -195,6 +195,7 @@
         <javax.jsr311.version>1.1.1</javax.jsr311.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <classmate.version>1.3.3</classmate.version>
+        <springcontext.version>4.3.9.RELEASE</springcontext.version>
 
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
@@ -763,7 +764,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
-                <version>3.2.3.RELEASE</version>
+                <version>${springcontext.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
