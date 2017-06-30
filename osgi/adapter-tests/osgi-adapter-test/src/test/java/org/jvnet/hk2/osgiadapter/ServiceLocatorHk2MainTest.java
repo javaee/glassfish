@@ -134,7 +134,7 @@ public class ServiceLocatorHk2MainTest {
                 provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
                         "javax.inject").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId("org.javassist").artifactId(
-						"javassist").version("3.20.0-GA").startLevel(4)),
+						"javassist").version("3.22.0-CR2").startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
 						"asm-all-repackaged").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
