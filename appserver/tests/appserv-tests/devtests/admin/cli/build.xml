@@ -146,7 +146,42 @@
                         logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, config-modularity, teardown"/>
 
-    <target name="cluster" depends="init">
+   <!-- modification for splitting test -->
+      
+    <target name="cli-group-1" depends="setup, monitoring, zombie, ports, instance, cluster,
+                        configs, sync, domain, backup, tokens, validation, node,teardown"/>
+   <target name="cli-group-2" depends="setup,logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
+                        restart-domain, config-modularity, teardown"/>
+
+
+
+     <target name="cli-group-1-master" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-1"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results_cli_group_1.html"/>
+    </target>
+
+    <target name="cli-group-2-master" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-2-master"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results_cli_group_2.html"/>
+    </target>
+
+
+
+   <!-- modification for splitting test -->
+   
+   
+
+   <target name="cluster" depends="init">
         <runtest classname="admin.ClusterTest"/>
     </target>
 

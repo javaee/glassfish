@@ -78,7 +78,13 @@ get_test_target(){
 		admin_cli_all )
 			TARGET=all
 			export TARGET;;
-	esac
+	       cli-group-1 )
+                       TARGET=cli-group-1-master
+                       export TARGET;;
+               cli-group-2 )
+                       TARGET=cli-group-2-master
+                       export TARGET;;
+        esac
 
 }
 
