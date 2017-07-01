@@ -56,7 +56,6 @@
     <modules>
         <module>main</module>
         <module>test1</module>
-        <module>test2</module>
         <module>schema</module>
         <module>integration-test</module>
     </modules>
