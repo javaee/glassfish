@@ -362,12 +362,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      */
     private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         String jndiName = resRef.getJndiName();
-        // The default values
-        if (jndiName != null &&
-                (jndiName.equals("java:comp/DefaultDataSource") ||
-                        jndiName.equals("java:comp/DefaultJMSConnectionFactory") ||
-                        jndiName.equals("java:comp/ORB")))
-            return;
 
         if (resRef.isWebServiceContext())
             return;
@@ -389,20 +383,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * Validate resources stored in ResourceEnvRefDescriptor.
      * Managed Bean references are validated here.
-     * TODO: Move everything to JNDI names check?
+     * TODO: Need to fail deployment in case a JNDI lookup is used to get a validator?
      */
     private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
         String jndiName = resourceEnvRef.getJndiName();
         if (resourceEnvRef.isEJBContext() || resourceEnvRef.isValidator() || resourceEnvRef.isValidatorFactory() || resourceEnvRef.isCDIBeanManager())
-            return;
-
-        if (jndiName != null &&
-                (jndiName.equals("java:comp/DefaultManagedExecutorService") ||
-                        jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
-                        jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
-                        jndiName.equals("java:comp/DefaultContextService") ||
-                        jndiName.equals("java:comp/UserTransaction") ||
-                        jndiName.equals("java:comp/TransactionSynchronizationRegistry")))
             return;
 
         // Validate Managed Bean references now
@@ -495,11 +480,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (jndiName.length() == 0)
             return;
 
-        // Annotations provided by Java EE
-        if (jndiName.equals("java:module/ModuleName") || jndiName.equals("java:app/AppName") ||
-                jndiName.equals("java:comp/InAppClientContainer"))
-            return;
-
         validateJNDIRefs(jndiName, env);
     }
 
@@ -555,7 +535,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @param jndiName to be validated.
      */
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
-        if(!isResourceInDomainXML(jndiName)) {
+        if(!isResourceInDomainXML(jndiName) && !isDefaultResource(jndiName)) {
             // convert comp to module if req
             String convertedJndiName = null;
             if (jndiName != null)
@@ -586,6 +566,28 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         Cluster cluster = domain.getClusterNamed(target);
         return cluster != null && cluster.isResourceRefExists(jndiName);
+    }
+
+    /**
+     * Default resources provided by GF.
+     */
+    private boolean isDefaultResource(String jndiName) {
+        return (jndiName != null &&
+                (jndiName.equals("java:comp/DefaultDataSource") ||
+                        jndiName.equals("java:comp/DefaultJMSConnectionFactory") ||
+                        jndiName.equals("java:comp/ORB") ||
+                        jndiName.equals("java:comp/DefaultManagedExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
+                        jndiName.equals("java:comp/DefaultContextService") ||
+                        jndiName.equals("java:comp/UserTransaction") ||
+                        jndiName.equals("java:comp/TransactionSynchronizationRegistry") ||
+                        jndiName.equals("java:comp/BeanManager") ||
+                        jndiName.equals("java:comp/ValidatorFactory") ||
+                        jndiName.equals("java:comp/Validator") ||
+                        jndiName.equals("java:module/ModuleName") ||
+                        jndiName.equals("java:app/AppName") ||
+                        jndiName.equals("java:comp/InAppClientContainer")));
     }
 
     /**
