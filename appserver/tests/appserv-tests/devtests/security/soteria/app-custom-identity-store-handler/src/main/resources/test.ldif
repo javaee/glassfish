@@ -1,0 +1,79 @@
+dn: dc=net
+objectclass: top
+objectclass: dcObject
+objectclass: organization
+dc: net
+o: net
+
+dn: dc=jsr375,dc=net
+objectclass: top
+objectclass: dcObject
+objectclass: organization
+dc: jsr375
+o: jsr375
+
+dn: ou=caller,dc=jsr375,dc=net
+objectclass: top
+objectclass: organizationalUnit
+ou: caller
+
+dn: uid=rudy,ou=caller,dc=jsr375,dc=net
+objectclass: top
+objectclass: uidObject
+objectclass: person
+uid: rudy
+cn: Rudy De Busscher
+sn: Rudy
+userPassword: pw
+
+dn: uid=reza,ou=caller,dc=jsr375,dc=net
+objectclass: top
+objectclass: uidObject
+objectclass: person
+uid: reza
+cn: Reza Rahman
+sn: Reza
+userPassword: secret1
+
+dn: uid=alex,ou=caller,dc=jsr375,dc=net
+objectclass: top
+objectclass: uidObject
+objectclass: person
+uid: alex
+cn: Alex Kosowski
+sn: Alex
+userPassword: secret2
+
+dn: uid=arjan,ou=caller,dc=jsr375,dc=net
+objectclass: top
+objectclass: uidObject
+objectclass: person
+uid: arjan
+cn: Arjan Tijms
+sn: Arjan
+userPassword: secret3
+
+dn: ou=group,dc=jsr375,dc=net
+objectclass: top
+objectclass: organizationalUnit
+ou: group
+
+dn: cn=foo,ou=group,dc=jsr375,dc=net
+objectclass: top
+objectclass: groupOfNames
+cn: foo
+member: uid=reza,ou=caller,dc=jsr375,dc=net
+member: uid=arjan,ou=caller,dc=jsr375,dc=net
+
+dn: cn=bar,ou=group,dc=jsr375,dc=net
+objectclass: top
+objectclass: groupOfNames
+cn: bar
+member: uid=reza,ou=caller,dc=jsr375,dc=net
+
+dn: cn=kaz,ou=group,dc=jsr375,dc=net
+objectclass: top
+objectclass: groupOfNames
+cn: kaz
+member: uid=alex,ou=caller,dc=jsr375,dc=net
+
