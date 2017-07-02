@@ -621,16 +621,16 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 return;
             List<String> appLevelResources = resources.get(appName);
             appNamespace.addAll(appLevelResources);
-            for (String moduleName: resources.keySet()) {
-                if (!moduleName.equals(appName)) {
-                    List<String> jndiNames = moduleNamespaces.get(moduleName);
+            for (Map.Entry<String, List<String>> entry: resources.entrySet()) {
+                if (!entry.getKey().equals(appName)) {
+                    List<String> jndiNames = moduleNamespaces.get(entry.getKey());
                     if (jndiNames == null) {
                         jndiNames = new ArrayList<String>();
-                        jndiNames.addAll(resources.get(moduleName));
-                        moduleNamespaces.put(moduleName, jndiNames);
+                        jndiNames.addAll(entry.getValue());
+                        moduleNamespaces.put(entry.getKey(), jndiNames);
                     }
                     else {
-                        jndiNames.addAll(resources.get(moduleName));
+                        jndiNames.addAll(resources.get(entry.getValue()));
                     }
                 }
             }
