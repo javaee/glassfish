@@ -41,6 +41,10 @@
 package gf;
 
 import javax.annotation.Resource;
+import javax.ejb.EJBContext;
+import javax.ejb.SessionContext;
+import javax.ejb.MessageDrivenContext;
+import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ContextService;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
@@ -94,6 +98,14 @@ public class TestServlet {
 
     // java:comp/Validator
     @Resource Validator validator;
+
+    @Resource SessionContext sessionContext;
+
+    @Resource MessageDrivenContext messageDrivenContext;
+
+    @Resource EJBContext ejbContext;
+
+    @Resource TimerService timerService;
 
 
     // Stored in Env Props
