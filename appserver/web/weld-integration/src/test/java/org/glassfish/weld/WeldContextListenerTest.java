@@ -47,7 +47,7 @@ import org.easymock.EasyMockSupport;
 import static junit.framework.Assert.*;
 import static org.easymock.EasyMock.*;
 
-import org.jboss.weld.el.WeldELContextListener;
+import org.jboss.weld.module.web.el.WeldELContextListener;
 import org.junit.Test;
 
 import javax.el.ELResolver;
