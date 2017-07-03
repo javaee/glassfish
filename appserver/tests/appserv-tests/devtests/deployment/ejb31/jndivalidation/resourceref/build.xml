@@ -71,5 +71,8 @@
         <ant dir="DefaultResources" target="private-all">
             <property name="build" value="${build}/DefaultResources"/>
         </ant>
+        <ant dir="JDBCResInAnotherApp" target="private-all">
+            <property name="build" value="${build}/JDBCResInAnotherApp"/>
+        </ant>
     </target>
 </project>

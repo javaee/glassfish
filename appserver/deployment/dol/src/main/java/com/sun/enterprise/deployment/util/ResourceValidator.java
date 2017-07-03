@@ -55,6 +55,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.resourcebase.resources.api.ResourceConstants;
 
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.logging.Level;
@@ -529,7 +531,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Validate the given JNDI name by checking in domain.xml and in resources defined within the app.
+     * Strategy for validating a given jndi name
+     * 1) Check in domain.xml
+     * 2) Check in the resources defined within the app. These have not been binded to the namespace yet.
+     * 3) Check for resources defined by an earlier application.
+     *
      * In case a null jndi name is passed, we fail the deployment.
      *
      * @param jndiName to be validated.
@@ -541,9 +547,15 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (jndiName != null)
                 convertedJndiName = getLogicalJNDIName(jndiName, env);
             if (!myNamespace.find(convertedJndiName, env)) {
-                deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
-                        new Object[] {jndiName});
-                throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
+                // Do a context lookup
+                try {
+                    InitialContext ctx = new InitialContext();
+                    ctx.lookup(jndiName);
+                } catch (NamingException e) {
+                    deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
+                            new Object[] {jndiName});
+                    throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
+                }
             }
         }
     }
