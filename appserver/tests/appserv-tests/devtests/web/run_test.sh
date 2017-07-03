@@ -261,7 +261,7 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
 	get_test_target $1
-	test_run -s webtier-dev-tests-bg	
+	test_run -s webtier-dev-tests
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
