@@ -3635,4 +3635,16 @@ public class LogFacade {
             level = "WARNING"
     )
     public static final String NONCACHEABLE_UNSAFE_PUSH_METHOD_EXCEPTION = prefix + "00548";
+
+    @LogMessageInfo(
+            message = "The repository '{0}' is not a directory",
+            level = "WARNING"
+    )
+    public static final String REPOSITORY_IS_NOT_A_DIRECTORY = prefix + "00549";
+
+    @LogMessageInfo(
+            message = "The repository '{0}' contains a null character",
+            level = "WARNING"
+    )
+    public static final String REPOSITORY_PATH_CONTAIN_NULL_CHARACTER = prefix + "00550";
 }

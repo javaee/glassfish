@@ -66,6 +66,7 @@ import org.apache.catalina.util.RequestUtil;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -736,13 +737,15 @@ class PartItem
         if (repository != null) {
             if (repository.isDirectory()) {
                                 // Check path for nulls
-                if (repository.getPath().contains("\0")) {
-                    throw new IOException("The repository " + repository.getPath()
-                            + " contains a null character");
+                if (repository.getPath() == null || repository.getPath().contains("\0")) {
+                    String msg = MessageFormat.format(
+                            rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), repository.getPath());
+                    throw new IOException(msg);
                 }
             } else {
-                throw new IOException("The repository " + repository.getAbsolutePath()
-                        + " is not a directory");
+                String msg = MessageFormat.format(
+                        rb.getString(LogFacade.REPOSITORY_IS_NOT_A_DIRECTORY), repository.getAbsolutePath());
+                throw new IOException(msg);
             }
         }
 
@@ -750,9 +753,10 @@ class PartItem
         if (cachedContent != null) {
             output.write(cachedContent);
         } else {
-            if (dfosFile != null && dfosFile.getPath().contains("\0")) {
-                throw new IOException("The dfosFile " + dfosFile.getPath()
-                        + " contains a null character");
+            if (dfosFile != null && (dfosFile.getPath() == null || dfosFile.getPath().contains("\0"))) {
+                String msg = MessageFormat.format(
+                        rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), dfosFile.getPath());
+                throw new IOException(msg);
             }
             FileInputStream input = new FileInputStream(dfosFile);
             Streams.copy(input, output, false);
