@@ -276,6 +276,18 @@ run_test_id(){
 
 list_test_ids(){
     echo web_all
+    echo jsp 
+    echo taglib 
+    echo el 
+    echo servlet 
+    echo web-container 
+    echo security 
+    echo http-connector 
+    echo comet 
+    echo misc 
+    echo clustering 
+    echo ha 
+    echo embedded-all
 }
 
 OPT=$1
