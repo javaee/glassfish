@@ -169,5 +169,7 @@ case $OPT in
     list_test_ids;;
   run_test_id )
     run_test_id $TEST_ID ;;
+  deployment_all )
+    test_run;;
 esac
 
