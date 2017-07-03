@@ -279,8 +279,27 @@ list_test_ids(){
     echo jsp 
     echo taglib 
     echo el 
-    echo servlet 
-    echo web-container 
+    echo servlet-1
+    echo servlet-2
+    echo servlet-3
+    echo servlet-4
+    echo servlet-5
+    echo servlet-6
+    echo servlet-7
+    echo servlet-8
+    echo servlet-9
+    echo servlet-10
+    echo servlet-11
+    echo servlet-12
+    echo servlet-13 
+    echo web-container-1
+    echo web-container-2
+    echo web-container-3
+    echo web-container-4
+    echo web-container-5 
+    echo web-container-6
+    echo web-container-7
+    echo web-container-8 
     echo security 
     echo http-connector 
     echo comet 

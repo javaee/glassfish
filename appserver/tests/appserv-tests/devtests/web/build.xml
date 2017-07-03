@@ -166,7 +166,7 @@
         <antcall target="finish-report"/>
     </target>
 
-    <target name="servlet" depends="init-report">
+    <target name="servlet-1" depends="init-report">
         <ant dir="applicationDispatcher" target="all"/>
         <ant dir="cacheControlResponseHeaders" target="all"/>
         <ant dir="cacheFilterMappingDispatcher" target="all"/>
@@ -182,7 +182,11 @@
         <ant dir="servletInitBeforeGetServletConfig" target="all"/>
         <ant dir="listenerFilterServletInit" target="all"/>  
         <ant dir="filterMultipleInit" target="all"/>  
-        <ant dir="filterURIMapping" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="servlet-2" depends="init-report">
+    <ant dir="filterURIMapping" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="getAttributeAfterForward" target="all"/>
         <ant dir="getAttributeAfterInclude" target="all"/>
@@ -197,7 +201,11 @@
         <ant dir="multiByteGETQueryParamDefaultCharset" target="all"/>
         <ant dir="multiByteGETQueryParamFormHintField" target="all"/>
         <ant dir="multiByteGETQueryParamLocaleCharsetMap" target="all"/>
-        <ant dir="multiByteGETQueryParamSetCharEncoding" target="all"/>
+     <antcall target="finish-report"/>
+    </target>
+    
+    <target name="servlet-3" depends="init-report">
+    <ant dir="multiByteGETQueryParamSetCharEncoding" target="all"/>
         <ant dir="multiBytePOSTFormHintField" target="all"/>
         <ant dir="multibyteValue" target="all"/>
         <ant dir="queryString" target="all"/>
@@ -212,7 +220,11 @@
         <ant dir="requestDispatcherMultipleForward" target="all"/>
         <ant dir="requestDispatcherPathWithParams" target="all"/>
         <ant dir="responseErrorMessageEncoding" target="all"/>
-        <ant dir="responseExceptionMessageEncoding" target="all"/>
+     <antcall target="finish-report"/>
+    </target>
+    
+    <target name="servlet-4" depends="init-report">
+   <ant dir="responseExceptionMessageEncoding" target="all"/>
         <ant dir="includeErrorPageAfterResponseCommit" target="all"/>
         <ant dir="reuseSessionId" target="all"/>
         <ant dir="securityConstraintWildcardMapping" target="all"/>
@@ -227,7 +239,11 @@
         <ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/>
         <ant dir="servlet-3.0/asyncContextDispatchWithException" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
-        <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
+    <antcall target="finish-report"/>
+    </target>
+
+   <target name="servlet-5" depends="init-report">
+   <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeoutDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
@@ -242,7 +258,11 @@
         <ant dir="servlet-3.0/javaxServletContextOrderedLibs" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/multiWebFragmentsResources" target="all"/>
-        <ant dir="servlet-3.0/multipart" target="all"/>
+    <antcall target="finish-report"/>
+    </target>
+    
+     <target name="servlet-6" depends="init-report">
+     <ant dir="servlet-3.0/multipart" target="all"/>
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/resourceURLFromLocalJar" target="all"/>
@@ -257,7 +277,11 @@
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByInstance" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletOverrideDefaultAndJspServletMappings" target="all"/>
         <ant dir="servlet-3.0/servletContextCompletePreliminaryFilterRegistration" target="all"/>
-        <ant dir="servlet-3.0/servletContextCompletePreliminaryServletRegistration" target="all"/>
+      <antcall target="finish-report"/>
+    </target>
+    
+     <target name="servlet-7" depends="init-report">
+    <ant dir="servlet-3.0/servletContextCompletePreliminaryServletRegistration" target="all"/>
         <ant dir="servlet-3.0/servletContextCreateServletAndFilter" target="all"/>
         <ant dir="servlet-3.0/servletContextCreateServletWithServletSecurity" target="all"/>
         <ant dir="servlet-3.0/servletContextGetRealPathFromLocalJar" target="all"/>
@@ -272,7 +296,12 @@
         <ant dir="servlet-3.0/sessionCookieConfigDeclarative" target="all"/>
         <ant dir="servlet-3.0/sessionCookieConfigProgrammatic" target="all"/>
         <ant dir="servlet-3.0/sessionCookieCustomNameProgrammatic" target="all"/>
-        <ant dir="servlet-3.0/sessionCookieCustomNameSunWebXml" target="all"/>
+     <antcall target="finish-report"/>
+    </target>
+      
+     
+       <target name="servlet-8" depends="init-report">
+       <ant dir="servlet-3.0/sessionCookieCustomNameSunWebXml" target="all"/>
         <ant dir="servlet-3.0/sessionCookieCustomNameWebXmlSunWebXmlPrecedence" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeCustomCookieName" target="all"/>
@@ -287,6 +316,10 @@
         <ant dir="servlet-3.0/webServletAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotationWithWebFragment" target="all"/>
+      <antcall target="finish-report"/>
+    </target>
+
+      <target name="servlet-9" depends="init-report">
         <ant dir="servlet-3.0/xmlOverrideUrlPatternWithWebFragment" target="all"/>
         <ant dir="servlet-3.0/filterWithEmptyUrl" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
@@ -302,6 +335,10 @@
         <ant dir="servletFilterDefaultInvocationOrder" target="all"/>
         <ant dir="servletFilterMappingWithServletNameAndURLPattern" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+
+      <target name="servlet-10" depends="init-report">
         <ant dir="servletLoadOnStartupMultipleInit" target="all"/>
         <ant dir="servletMappingWithMultipleURLPatterns" target="all"/>
         <ant dir="servletRelativeContextURLsEquals" target="all"/>
@@ -317,6 +354,10 @@
         <ant dir="servletResourceInjectionHttpSessionListener" target="all"/>
         <ant dir="servletResourceInjectionRequestAttributeListener" target="all"/>
         <ant dir="servletResourceInjectionRequestListener" target="all"/>
+       <antcall target="finish-report"/>
+    </target>
+
+       <target name="servlet-11" depends="init-report">
         <ant dir="servletResourceInjectionServletInstance" target="all"/>
         <ant dir="servletResourceInjectionServletInstanceLoadOnStartup" target="all"/>
         <ant dir="servletResponseQuotedContentTypeImbalance" target="all"/>
@@ -332,6 +373,11 @@
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="setMultiValuedResponseHeader" target="all"/>
+         <antcall target="finish-report"/>
+    </target>
+
+
+       <target name="servlet-12" depends="init-report">       
         <ant dir="standalonewar" target="all"/>  
         <ant dir="sessionWithoutCookie" target="all"/>  
         <ant dir="createSessionInServletRequestListener" target="all"/>  
@@ -347,6 +393,10 @@
         <ant dir="servlet-3.1/servletContextGetVirtualServerName" target="all"/>
         <ant dir="localeEncodingMapping" target="all"/>
         <ant dir="servlet-4.0/setSessionTimeout" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+
+       <target name="servlet-13" depends="init-report">  
         <ant dir="servlet-4.0/addJspFile" target="all"/>
         <ant dir="servlet-4.0/defaultContextPath" target="all"/>
         <ant dir="servlet-4.0/defaultContextPathEar" target="all"/>
@@ -364,7 +414,7 @@
         <antcall target="finish-report"/>
     </target>
 
-    <target name="web-container" depends="init-report">
+    <target name="web-container-1" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
         <ant dir="accessLoggingBadRequests" target="all"/>
@@ -379,8 +429,12 @@
         <ant dir="commonsLogging" target="all"/>
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
         <ant dir="contextPathXmlConfig" target="all"/>
-        <ant dir="contextRoot" target="all"/>
-        <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
+        <ant dir="contextRoot" target="all"/> 
+        <antcall target="finish-report"/>
+    </target>
+
+     <target name="web-container-2" depends="init-report">
+     <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
         <ant dir="contextXmlConfig" target="all"/> 
         <ant dir="contextXmlLifecycleListener" target="all"/>
         <ant dir="contextXmlLifecycleListenerGlobal" target="all"/>
@@ -395,7 +449,11 @@
         <ant dir="explodedWar" target="all"/>
         <ant dir="extraClassPathJarUrl" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
-        <ant dir="formHintField" target="all"/>
+      <antcall target="finish-report"/>
+    </target>
+       
+       <target name="web-container-3" depends="init-report">
+       <ant dir="formHintField" target="all"/>
         <ant dir="formHintFieldPostWithQueryParam" target="all"/>
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
         <ant dir="formHintFieldPrecedence" target="all"/>
@@ -410,6 +468,10 @@
         <ant dir="log4jLocallyBundled" target="all"/>
         <ant dir="log4jXmlInEarFile" target="all"/>
         <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
+       <antcall target="finish-report"/>
+    </target>
+
+      <target name="web-container-4" depends="init-report">
         <ant dir="monitorHttpService" target="all"/>
         <ant dir="monitorServletInstance" target="all"/>
         <ant dir="monitorWebRequest" target="all"/>
@@ -425,7 +487,11 @@
         <ant dir="serverRedirectWithQueryString" target="all"/>
         <ant dir="servletRequestLongUri" target="all"/>
         <ant dir="sessionIdCustomGenerator" target="all"/>
-        <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+     
+    <target name="web-container-5" depends="init-report">
+    <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
         <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
@@ -440,7 +506,11 @@
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="threadPoolIdleTimeout" target="all"/>
-        <ant dir="useBundledJsf" target="all"/>
+      <antcall target="finish-report"/>
+    </target>
+    
+   <target name="web-container-6" depends="init-report">
+    <ant dir="useBundledJsf" target="all"/>
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
@@ -455,7 +525,11 @@
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="virtualServerDefaultWebModuleReconfig" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
-        <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
+    <antcall target="finish-report"/>
+    </target>
+
+    <target name="web-container-7" depends="init-report">
+    <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerLogFile" target="all"/>
@@ -470,7 +544,11 @@
         <ant dir="virtualServerWithCustomValves" target="all"/>
         <ant dir="virtualServerWithCustomErrorReportValve" target="all"/>
         <ant dir="webappAlternateDocroot" target="all"/>
-        <ant dir="webappAlternateDocrootTagFile" target="all"/>
+      <antcall target="finish-report"/>
+    </target>
+
+     <target name="web-container-8" depends="init-report">      
+     <ant dir="webappAlternateDocrootTagFile" target="all"/>
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
         <ant dir="webappLoaderEmptyJar" target="all"/>
@@ -486,7 +564,7 @@
         <ant dir="jsessionIdParameter" target="all"/>
         <ant dir="setWebContextParam" target="all"/>
         <ant dir="contextRootDuplicate" target="all"/>
-        <antcall target="finish-report"/>
+      <antcall target="finish-report"/>
     </target>
 
     <target name="security" depends="init-report">
