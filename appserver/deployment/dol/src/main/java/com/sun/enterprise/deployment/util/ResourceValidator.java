@@ -541,11 +541,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @param jndiName to be validated.
      */
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
+        if (jndiName == null) {
+            deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
+                    new Object[] {null});
+            throw new DeploymentException("Null JNDI resource");
+        }
         if(!isResourceInDomainXML(jndiName) && !isDefaultResource(jndiName)) {
             // convert comp to module if req
-            String convertedJndiName = null;
-            if (jndiName != null)
-                convertedJndiName = getLogicalJNDIName(jndiName, env);
+            String convertedJndiName = getLogicalJNDIName(jndiName, env);
             if (!myNamespace.find(convertedJndiName, env)) {
                 // Do a context lookup
                 try {
