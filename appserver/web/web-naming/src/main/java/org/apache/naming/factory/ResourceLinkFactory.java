@@ -104,6 +104,11 @@ public class ResourceLinkFactory
     public static void setGlobalContext(Context newGlobalContext) {
         if (globalContext != null)
             return;
+        SecurityManager securityManager = System.getSecurityManager();
+        if (securityManager != null) {
+            securityManager.checkPermission(new RuntimePermission(
+                    ResourceLinkFactory.class.getName() + ".setGlobalContext"));
+        }
         globalContext = newGlobalContext;
     }
 
