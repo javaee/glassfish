@@ -179,11 +179,16 @@ public class WeldSniffer extends GenericSniffer {
     }
 
     // there is a beans.xml.
-    if (beanDiscoveryMode == null || beanDiscoveryMode.equals("all")) {
+    if ( beanDiscoveryMode == null ) {
       return true;
-    } else if (beanDiscoveryMode.equals("none")) {
-      // beanDiscoveryMode = none
-      return false;
+    } else {
+      if (beanDiscoveryMode.equals( "annotated") || beanDiscoveryMode.equals("all")) {
+        return true;
+      } else if (beanDiscoveryMode.equals("none")) {
+        // beanDiscoveryMode = none
+        return false;
+      }
+
     }
 
     // last case is beanDiscoveryMode = annotated

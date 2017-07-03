@@ -162,6 +162,11 @@
             <artifactId>javax.ejb-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
@@ -185,6 +190,12 @@
           <groupId>org.glassfish.annotations</groupId>
           <artifactId>logging-annotation-processor</artifactId>
           <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

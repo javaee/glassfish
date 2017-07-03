@@ -81,8 +81,7 @@
 	    <param name="admin.command" value="delete-admin-object"/>
 	    <param name="operand.props" value="--target ${appserver.instance.name} eis/jdbcAdmin"/>
 	 </antcall>
-	 <antcall target="reconfig-common"/>
-     </target>
+	 </target>
     
     <target name="restart">
     <antcall target="restart-server-instance-common"/>
@@ -100,8 +99,7 @@
 	    <param name="admin.command" value="delete-resource-adapter-config"/>
 	    <param name="operand.props" value="${appname}App#jdbcra"/>
 	 </antcall>
-	 <antcall target="reconfig-common"/>
-     </target>
+	 </target>
 
     <target name="unsetup">
     <antcall target="execute-sql-connector">
