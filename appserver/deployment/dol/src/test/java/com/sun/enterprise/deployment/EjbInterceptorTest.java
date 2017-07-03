@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,51 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.deployment;
+
+import org.junit.Test;
+
+import static junit.framework.Assert.assertNull;
+
+import static junit.framework.Assert.assertSame;
+import static org.easymock.EasyMock.*;
+
+import org.easymock.EasyMockSupport;
 
 import javax.enterprise.inject.spi.Interceptor;
 
-/**
- * Contains information about 1 ejb interceptor.
- */ 
+public class EjbInterceptorTest {
 
-public class EjbInterceptor extends InterceptorDescriptor
-{
+  @Test
+  public void testGetSetInterceptor() throws Exception {
+    EjbInterceptor ejbInterceptor = new EjbInterceptor();
+    assertNull( ejbInterceptor.getInterceptor() );
 
-    private EjbBundleDescriptor ejbBundleDescriptor;
-    private boolean cdiInterceptor = false;
-    private Interceptor interceptor;
+    EasyMockSupport mockSupport = new EasyMockSupport();
+    Interceptor interceptor = mockSupport.createMock( Interceptor.class );
 
-    public EjbBundleDescriptor getEjbBundleDescriptor() {
-	    return ejbBundleDescriptor;
-    }
+    ejbInterceptor.setInterceptor( interceptor );
+    assertSame( interceptor, ejbInterceptor.getInterceptor() );
+  }
 
-    public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
-	    ejbBundleDescriptor = bundleDescriptor;
-        super.setBundleDescriptor(bundleDescriptor);
-    }
-
-    public String toString() {
-        return "EjbInterceptor class = " + getInterceptorClassName();
-    }
-
-    public void setCDIInterceptor(boolean flag) {
-        cdiInterceptor = flag;
-    }
-
-    public boolean isCDIInterceptor() {
-        return cdiInterceptor;
-    }
-
-    /**
-     * @return The interceptor.  May be null when CDI is not enabled.
-     */
-    public Interceptor getInterceptor() {
-        return interceptor;
-    }
-
-    public void setInterceptor( Interceptor interceptor ) {
-        this.interceptor = interceptor;
-    }
 }

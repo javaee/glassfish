@@ -39,7 +39,9 @@
                destdir="${component.classes.dir}"
                failonerror="true">
             <classpath>
-                <pathelement location="${env.S1AS_HOME}/lib/j2ee.jar"/>
+		<fileset dir="${env.S1AS_HOME}/modules">
+		    <include name="**/*.jar" />
+		</fileset>
             </classpath>
             <include name="com/sun/jdbcra/**"/>
             <include name="com/sun/appserv/**"/>
