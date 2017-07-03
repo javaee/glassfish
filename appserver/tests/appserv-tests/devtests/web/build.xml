@@ -144,6 +144,7 @@
         <ant dir="jspconfig" target="all"/>
         <ant dir="welcomePageSecurityConstraintExactMatch" target="all"/>
         <ant dir="welcomePageSecurityConstraintJspExtension" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="taglib" depends="init-report">
@@ -162,6 +163,7 @@
         <ant dir="elFunctionWithoutParams" target="all"/>
         <ant dir="elUninterpretedTag" target="all"/>
         <ant dir="elequals" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="servlet" depends="init-report">
@@ -359,6 +361,7 @@
         <ant dir="servlet-4.0/compositeTrailerSupplier" target="all"/>
         <ant dir="servlet-4.0/pushArbitraryMethod" target="all"/>
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="web-container" depends="init-report">
@@ -483,6 +486,7 @@
         <ant dir="jsessionIdParameter" target="all"/>
         <ant dir="setWebContextParam" target="all"/>
         <ant dir="contextRootDuplicate" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="security" depends="init-report">
@@ -524,6 +528,7 @@
         <ant dir="servlet-3.1/changeSessionId" target="all"/>
         <ant dir="servlet-3.1/denyUncoveredHttpMethods" target="all"/>
         <ant dir="servlet-3.1/anyAuthenticatedUser" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="http-connector" depends="init-report">
@@ -568,14 +573,17 @@
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
         <ant dir="wrongTransport" target="all"/>
         <ant dir="trailerHeader" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="comet" depends="init-report">
         <ant dir="cometEcho" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="misc" depends="init-report">
         <ant dir="genDocSchema" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="weblogicDD" depends="init-report">
@@ -598,10 +606,12 @@
         <ant dir="networkListenerTarget" target="all"/>
         <ant dir="portUnificationTarget" target="all"/>
         <ant dir="wrongTransportTarget" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="ha" depends="init-report">
         <ant dir="ha/ssoFailover" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="init-report" unless="report.inited">
