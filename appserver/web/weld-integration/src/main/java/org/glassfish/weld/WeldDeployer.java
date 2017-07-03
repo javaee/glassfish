@@ -68,6 +68,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.glassfish.web.deployment.descriptor.AppListenerDescriptorImpl;
+import org.glassfish.weld.connector.WeldUtils;
 import org.glassfish.weld.services.*;
 import org.glassfish.weld.util.Util;
 import org.jboss.weld.bootstrap.WeldBootstrap;
@@ -75,6 +76,8 @@ import org.jboss.weld.bootstrap.api.Environments;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeanDiscoveryMode;
 import org.jboss.weld.bootstrap.spi.BootstrapConfiguration;
+import org.jboss.weld.bootstrap.spi.EEModuleDescriptor;
+import org.jboss.weld.bootstrap.spi.helpers.EEModuleDescriptorImpl;
 import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.injection.spi.InjectionServices;
 import org.jboss.weld.security.spi.SecurityServices;
@@ -97,6 +100,8 @@ import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import org.glassfish.web.deployment.descriptor.ServletFilterDescriptor;
 import org.glassfish.web.deployment.descriptor.ServletFilterMappingDescriptor;
 import org.jboss.weld.resources.spi.ResourceLoader;
+import org.jboss.weld.module.ejb.WeldEjbModule;
+import org.jboss.weld.module.WeldModule;
 
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer>
@@ -115,16 +120,16 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     // Note...this constant is also defined in org.apache.catalina.connector.AsyncContextImpl.  If it changes here it must
     // change there as well.  The reason it is duplicated is so that a dependency from web-core to gf-weld-connector
     // is not necessary.
-    private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
+    private static final String WELD_LISTENER = "org.jboss.weld.module.web.servlet.WeldListener";
 
-    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.servlet.WeldTerminalListener";
+    private static final String WELD_TERMINATION_LISTENER = "org.jboss.weld.module.web.servlet.WeldTerminalListener";
 
     private static final String WELD_SHUTDOWN = "weld_shutdown";
 
     //This constant is used to indicate if bootstrap shutdown has been called or not.
     private static final String WELD_BOOTSTRAP_SHUTDOWN = "weld_bootstrap_shutdown";
 
-    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.servlet.ConversationFilter";
+    private static final String WELD_CONVERSATION_FILTER_CLASS = "org.jboss.weld.module.web.servlet.ConversationFilter";
     private static final String WELD_CONVERSATION_FILTER_NAME = "CDI Conversation Filter";
     @Inject
     private Events events;
@@ -484,7 +489,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
             BootstrapConfigurationImpl bootstrapConfiguration = new BootstrapConfigurationImpl();
             deploymentImpl.getServices().add(BootstrapConfiguration.class, bootstrapConfiguration);
-
+        
             addWeldListenerToAllWars(context);
         } else {
             deploymentImpl.scanArchive(archive, ejbs, context);
@@ -543,12 +548,17 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     InjectionManager injectionMgr = services.getService(InjectionManager.class);
                     InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr, bundle, deploymentImpl);
 
-                    if (logger.isLoggable(Level.FINE)) {
+
+                     if (logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE,
                                    CDILoggerInfo.ADDING_INJECTION_SERVICES,
                                    new Object [] {injectionServices, bda.getId()});
                     }
                     bda.getServices().add(InjectionServices.class, injectionServices);
+                    EEModuleDescriptor eeModuleDescriptor = getEEModuleDescriptor( bda );
+                    if ( eeModuleDescriptor != null ) {
+                        bda.getServices().add(EEModuleDescriptor.class, eeModuleDescriptor);
+                    }
 
                     //Relevant in WAR BDA - WEB-INF/lib BDA scenarios
                     for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
@@ -558,6 +568,10 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                                        new Object [] {injectionServices, subBda.getId()});
                         }
                         subBda.getServices().add(InjectionServices.class, injectionServices);
+                        eeModuleDescriptor = getEEModuleDescriptor( bda );
+                        if ( eeModuleDescriptor != null ) {
+                            bda.getServices().add(EEModuleDescriptor.class, eeModuleDescriptor);
+                        }
                     }
                 }
 
@@ -574,6 +588,22 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         appInfo.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
 
         return wbApp;
+    }
+
+    private EEModuleDescriptor getEEModuleDescriptor( BeanDeploymentArchive beanDeploymentArchive ) {
+        EEModuleDescriptor eeModuleDescriptor = null;
+        if ( beanDeploymentArchive instanceof BeanDeploymentArchiveImpl ) {
+            WeldUtils.BDAType bdaType = ( ( BeanDeploymentArchiveImpl ) beanDeploymentArchive ).getBDAType();
+            if ( bdaType.equals ( WeldUtils.BDAType.JAR ) ) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl( beanDeploymentArchive.getId(), EEModuleDescriptor.ModuleType.EJB_JAR );
+            } else if ( bdaType.equals ( WeldUtils.BDAType.WAR ) ) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl( beanDeploymentArchive.getId(), EEModuleDescriptor.ModuleType.WEB );
+            } else if ( bdaType.equals ( WeldUtils.BDAType.RAR ) ) {
+                eeModuleDescriptor = new EEModuleDescriptorImpl( beanDeploymentArchive.getId(), EEModuleDescriptor.ModuleType.CONNECTOR );
+            }
+        }
+
+        return eeModuleDescriptor;
     }
 
     private void addWeldListenerToAllWars(DeploymentContext context) {
