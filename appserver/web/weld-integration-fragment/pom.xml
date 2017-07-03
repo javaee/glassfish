@@ -50,7 +50,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>weld-integration-fragment</artifactId>
-    <packaging>jar</packaging>
+    <packaging>glassfish-jar</packaging>
     <name>Weld Integration Fragment</name>
     <description>This fragment bundle extends the weld osgi bundle to export additional packages from the weld-osgi-bundle as they are used in Weld generated proxies</description>
     
@@ -89,13 +89,15 @@
 
                        added for weld 2.2.9.Final:
                                 org.jboss.weld.security
+
+                                added org.jboss.weld.contexts for Weld 3.0  It may not be necessary.  After all testing take it out.
                        -->
                             <Export-Package>
                                 org.jboss.weld.proxy.util,
                                 org.jboss.weld.bean.proxy.util,
                                 org.jboss.weld.context.http,
-                                org.jboss.weld.context.bound,
-                                org.jboss.weld.context.cache,
+                                org.jboss.weld.contexts.bound,
+                                org.jboss.weld.contexts.cache,
                                 org.jboss.weld.bean.builtin.ee,
                                 javassist.util.proxy,
                                 org.jboss.weld.interceptor.proxy,
@@ -106,13 +108,8 @@
                                 org.jboss.weld.util.collections,
                                 org.jboss.weld.annotated.slim,
                                 org.jboss.weld.annotated.slim.backed,
-                                org.jboss.classfilewriter,
-                                org.jboss.classfilewriter.annotations,
-                                org.jboss.classfilewriter.attributes,
-                                org.jboss.classfilewriter.code,
-                                org.jboss.classfilewriter.constpool,
-                                org.jboss.classfilewriter.util,
-                                org.jboss.weld.security
+                                org.jboss.weld.contexts,
+				org.jboss.weld.security
                             </Export-Package>
                             <Import-Package>org.glassfish.weld</Import-Package>
                             <Bundle-Description>${project.description}</Bundle-Description> 
