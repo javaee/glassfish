@@ -39,13 +39,13 @@
  */
 package org.glassfish.hk2.xml.test.basic.beans;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
@@ -125,11 +125,15 @@ public class Commons {
     private Commons() {}
     
     public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri) throws Exception {
-        testInterfaceJaxbUnmarshalling(locator, uri, null);
+        testInterfaceJaxbUnmarshalling(locator, uri, null, null);
     }
     
     public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, XMLStreamReader reader) throws Exception {
-        testInterfaceJaxbUnmarshalling(locator, null, reader);
+        testInterfaceJaxbUnmarshalling(locator, null, reader, null);
+    }
+    
+    public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, InputStream stream) throws Exception {
+        testInterfaceJaxbUnmarshalling(locator, null, null, stream);
     }
     
     /**
@@ -138,12 +142,15 @@ public class Commons {
      * 
      * @throws Exception
      */
-    private static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
+    private static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri, XMLStreamReader reader, InputStream is) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
         XmlRootHandle<Museum> rootHandle;
         if (uri != null) {
             rootHandle = xmlService.unmarshal(uri, Museum.class);
+        }
+        else if (is != null) {
+            rootHandle = xmlService.unmarshal(is, Museum.class);
         }
         else {
             rootHandle = xmlService.unmarshal(reader, Museum.class, true, true);

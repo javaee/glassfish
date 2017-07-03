@@ -96,6 +96,26 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
+    @Test
+    // @org.junit.Ignore
+    public void testInterfaceJaxbUnmarshallingStream() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        InputStream is = getStream(Commons.MUSEUM1_FILE);
+        try {
+            Commons.testInterfaceJaxbUnmarshalling(locator, is);
+        }
+        finally {
+            is.close();
+        }
+    }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
     @Test 
     // @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
