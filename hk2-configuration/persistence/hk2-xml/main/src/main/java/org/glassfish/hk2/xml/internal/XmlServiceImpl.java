@@ -440,8 +440,7 @@ public class XmlServiceImpl implements XmlService {
         DynamicChangeInfo<T> changeControl = impl.getChangeInfo();
         
         if (changeControl == null) {
-            localParser.marshal(outputStream, rootHandle);
-            return;
+            throw new IllegalStateException("May not marshal an unfinished rootHandle");
         }
         
         changeControl.getReadLock().lock();

@@ -196,7 +196,6 @@ public class MarshallTest {
     public void testMarshalAttributeReferences() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(REFEREES1_FILE);
         
@@ -216,6 +215,42 @@ public class MarshallTest {
         FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
         try {
           rootHandle.marshal(fos);
+        }
+        finally {
+            fos.close();
+        }
+        
+        checkFile(REF3);
+    }
+    
+    /**
+     * Attribute references cannot be done with JAXB.  So this
+     * file is kept separately for this purpose
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testMarshalAttributeReferencesUsingXmlService() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(REFEREES1_FILE);
+        
+        XmlRootHandle<ReferencesBean> rootHandle = xmlService.unmarshal(url.toURI(), ReferencesBean.class, false, false);
+        
+        ReferencesBean references = rootHandle.getRoot();
+        
+        RefereeBean hayes = references.getReferees().get(0);
+        RefereeBean cheek = references.getReferees().get(1);
+        
+        Assert.assertNotNull(hayes);
+        Assert.assertNotNull(cheek);
+        
+        Assert.assertEquals(hayes, references.getFirstReferee());
+        Assert.assertEquals(cheek, references.getLastReferee());
+        
+        FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
+        try {
+          xmlService.marshal(fos, rootHandle);
         }
         finally {
             fos.close();

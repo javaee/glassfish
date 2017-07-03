@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.test.negative.api;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -51,6 +53,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
@@ -64,6 +67,7 @@ import org.junit.Test;
  *
  */
 public class NegativeAPITest {
+    private final static File OUTPUT_FILE = new File("negative-output.xml");
     private final static Filter PARSER_REMOVE_FILTER = BuilderHelper.createContractFilter(XmlServiceParser.class.getName());
     
     private final URL DOMAIN_URL = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
@@ -238,6 +242,52 @@ public class NegativeAPITest {
         finally {
             reader.close();
         }
+    }
+    
+    /**
+     * If the parser is gone an exception is thrown (InputStream version)
+     * @throws Exception
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testNoParserXmlServiceMarshal() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<DomainBean> handle = xmlService.unmarshal(DOMAIN_URL.toURI(), DomainBean.class);
+        
+        removeParser(locator);
+        
+        FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
+        try {
+          xmlService.marshal(fos, handle);
+        }
+        finally {
+            fos.close();
+        }
+    }
+    
+    /**
+     * If the parser is gone an exception is thrown (InputStream version)
+     * @throws Exception
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testXmlServiceEmptyHandleBadInput() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        xmlService.createEmptyHandle(NegativeAPITest.class);
+    }
+    
+    /**
+     * If the parser is gone an exception is thrown (InputStream version)
+     * @throws Exception
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testXmlServiceCreateBeanBadInput() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        xmlService.createBean(NegativeAPITest.class);
     }
     
     private static void removeParser(ServiceLocator locator) {
