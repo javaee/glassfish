@@ -1755,7 +1755,10 @@ public abstract class BaseContainer
                 // 299 impl will instantiate and inject the instance, but PostConstruct
                 // is still our responsibility
                 interceptorInstances[i] =
-                            jcdiService.createInterceptorInstance(interceptorClasses[i], ejbBundle);
+                            jcdiService.createInterceptorInstance(interceptorClasses[i],
+                                                                  ejbBundle,
+                                                                  context.getJCDIInjectionContext(),
+                                                                  context.getContainer().getEjbDescriptor().getInterceptorClasses() );
             }
 
             interceptorManager.initializeInterceptorInstances(interceptorInstances);

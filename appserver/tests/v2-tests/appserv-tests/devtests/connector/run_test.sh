@@ -1,7 +1,8 @@
+#!/bin/bash -ex
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -38,7 +39,52 @@
 # holder.
 #
 
-resourceref.invalid.poolname=Invalid pool name! Check whether the pool exists.
-resourceref.invalid.auth-realm-name=Invalid realm name! Check whether the realm exists.
-resourceref.invalid.server-ref=Invalid server name! Check whether the server exists.
-resourceref.invalid.cluster-ref=Invalid cluster name! Check whether the cluster exists.
+#Contract 1. returns the TEST ID, which you assigned in step 3.a
+list_test_ids(){
+  echo connector_all
+}
+ 
+test_run(){
+  #test functions goes here, maven test or ant test etc.
+  export HUDSON=true
+  export ROOT=`pwd`
+  echo $ROOT
+  cd $APS_HOME/../v2-tests/appserv-tests
+  ant startDomain startDerby
+  antTarget="clean all report"
+  cd $ROOT
+  time ant $antTarget | tee $TEST_RUN_LOG
+  antStatus=$?
+  cd $APS_HOME/../v2-tests/appserv-tests
+  ant stopDomain stopDerby
+}
+ 
+#Contract 2. does the clean up, downloads the tests/build sources and eventually runs tests
+run_test_id(){
+  #a common util script located at main/appserver/tests/common_test.sh
+  source `dirname $0`/../../../../common_test.sh
+  kill_process
+  delete_gf
+  download_test_resources glassfish.zip version-info.txt
+  unzip_test_resources $WORKSPACE/bundles/glassfish.zip
+  cd `dirname $0`
+  test_init
+
+  #run the actual test function
+  test_run
+
+  delete_bundle
+  cd -
+}
+ 
+#Contract 3. script init code.
+OPT=$1
+TEST_ID=$2
+case $OPT in
+  list_test_ids )
+    list_test_ids;;
+  run_test_id )
+    run_test_id $TEST_ID ;;
+  connector_all )
+    test_run;;
+esac
