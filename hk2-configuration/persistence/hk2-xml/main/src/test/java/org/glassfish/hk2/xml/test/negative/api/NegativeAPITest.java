@@ -46,8 +46,13 @@ import java.net.URL;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -59,12 +64,19 @@ import org.junit.Test;
  *
  */
 public class NegativeAPITest {
+    private final static Filter PARSER_REMOVE_FILTER = BuilderHelper.createContractFilter(XmlServiceParser.class.getName());
+    
     private final URL DOMAIN_URL = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
     private final XMLInputFactory xif = XMLInputFactory.newInstance();
+    
     
     private XMLStreamReader openDomainReader() throws Exception {
         InputStream is = DOMAIN_URL.openStream();
         return xif.createXMLStreamReader(is);
+    }
+    
+    private InputStream openDomainInputStream() throws Exception {
+        return DOMAIN_URL.openStream();
     }
     
     /**
@@ -147,6 +159,89 @@ public class NegativeAPITest {
         finally {
             reader.close();
         }
+    }
+    
+    /**
+     * XmlService.unmarshal with null URI
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullInputStreamXmlServiceUnmarshal() {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        xmlService.unmarshal((InputStream) null, DomainBean.class);
+    }
+    
+    /**
+     * XmlService.unmarshal with null bean
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullBeanXmlServiceUnmarshalInputStream() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        InputStream reader = openDomainInputStream();
+        try {
+            xmlService.unmarshal(reader, null, false, false);
+        }
+        finally {
+            reader.close();
+        }
+    }
+    
+    /**
+     * XmlService.unmarshal with null bean
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testBeanIsClassXmlServiceUnmarshalInputStream() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        InputStream reader = openDomainInputStream();
+        try {
+            xmlService.unmarshal(reader, NegativeAPITest.class, true, false);
+        }
+        finally {
+            reader.close();
+        }
+    }
+    
+    /**
+     * If the parser is gone an exception is thrown (URI version)
+     * @throws Exception
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testNoParserXmlServiceUnmarshalURI() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        removeParser(locator);
+        
+        xmlService.unmarshal(DOMAIN_URL.toURI(), DomainBean.class);
+    }
+    
+    /**
+     * If the parser is gone an exception is thrown (InputStream version)
+     * @throws Exception
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testNoParserXmlServiceUnmarshalInputStream() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        removeParser(locator);
+        
+        InputStream reader = openDomainInputStream();
+        try {
+          xmlService.unmarshal(reader, DomainBean.class, false, false);
+        }
+        finally {
+            reader.close();
+        }
+    }
+    
+    private static void removeParser(ServiceLocator locator) {
+        ServiceLocatorUtilities.removeFilter(locator, PARSER_REMOVE_FILTER);
     }
 
 }

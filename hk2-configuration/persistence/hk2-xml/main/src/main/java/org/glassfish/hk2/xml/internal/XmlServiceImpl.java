@@ -460,10 +460,6 @@ public class XmlServiceImpl implements XmlService {
     /* package */ DynamicConfigurationService getDynamicConfigurationService() {
         return dynamicConfigurationService;
     }
-    
-    public JAUtilities getJAUtilities() {
-        return jaUtilities;
-    }
 
     public ServiceLocator getServiceLocator() {
         return serviceLocator;
