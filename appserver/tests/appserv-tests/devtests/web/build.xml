@@ -146,7 +146,7 @@
         <ant dir="welcomePageSecurityConstraintJspExtension" target="all"/>
     </target>
 
-    <target name="taglib" depends="init-report">
+    <target name="taglib" depends="init-report,finish-report">
         <ant dir="jstlHtmlParamOutsideFmtMessage" target="all"/>
         <ant dir="jstlLocaleSupportAPI" target="all"/>
         <ant dir="tagPluginForEach" target="all"/>
