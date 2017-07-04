@@ -78,8 +78,12 @@
         <antcall target="run-ejbtests"/>
         <antcall target="run-urltests"/>
         <antcall target="run-webtests"/>
+        <antcall target="run-prog-auth"/>
     </target>
 
+    <target name="run-prog-auth">
+      <ant dir="prog-auth" target="all"/>
+    </target>
     <target name="run-test" depends="init-common">
         <java classname="javax.security.jacc.Test" fork="yes"
             classpath="${s1astest.classpath}"/>
