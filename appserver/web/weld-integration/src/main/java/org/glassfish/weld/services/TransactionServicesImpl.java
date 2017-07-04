@@ -40,7 +40,7 @@
 
 package org.glassfish.weld.services;
 
-import static javax.transaction.Status.STATUS_ACTIVE;
+import static javax.transaction.Status.*;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -65,7 +65,18 @@ public class TransactionServicesImpl implements TransactionServices {
 
     public boolean isTransactionActive() {
         try {
-            return transactionManager.getStatus() == STATUS_ACTIVE;
+            int curStatus = transactionManager.getStatus();
+            if ( curStatus == STATUS_ACTIVE ||
+                  curStatus == STATUS_MARKED_ROLLBACK ||
+                  curStatus == STATUS_PREPARED ||
+                  curStatus == STATUS_UNKNOWN ||
+                  curStatus == STATUS_PREPARING ||
+                  curStatus == STATUS_COMMITTING ||
+                  curStatus == STATUS_ROLLING_BACK ) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (SystemException e) {
             throw new RuntimeException("Unable to determine transaction status", e);
         }

@@ -217,20 +217,11 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostConstruct
                 continue;
             }
 
-            boolean validationRequired  = (bundle instanceof EjbBundleDescriptor)
-                    || (bundle instanceof ApplicationClientDescriptor);
-
             boolean isCDIBundle = (jcdiService != null && jcdiService.isJCDIEnabled(bundle));
 
             for(ManagedBeanDescriptor next : bundle.getManagedBeans()) {
 
                 try {
-
-                    // TODO Should move this to regular DOL processing stage                                      
-                    if( validationRequired ) {
-                        next.validate();
-                    }
-
                     Set<String> interceptorClasses = next.getAllInterceptorClasses();
 
 
