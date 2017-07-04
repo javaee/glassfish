@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "../../../../../config/run.xml">
+<!ENTITY commonJMS SYSTEM "../../../config/common.xml">
+]>
+
+<project name="subscriptionScope-standalone" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &commonJMS;
+
+    <target name="all" depends="clean">
+        <antcall target="doTest-embedded"/> <!-- Test EMBEDDED jms service -->
+        <antcall target="setup"/>
+        <antcall target="doTest-local"/> <!-- Test LOCAL jms service -->
+        <antcall target="unsetup"/>
+    </target>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <exec executable="${ASADMIN}" failonerror="true">
+            <arg line="set configs.config.server-config.jms-service.type=LOCAL"/>
+        </exec>
+        <antcall target="stopDomain"/>
+        <antcall target="startDomain"/>
+    </target>
+
+    <target name="doTest-embedded" depends="init-common">
+        <antcall target="InstanceScopeDurableWithoutName-embedded"/>
+        <antcall target="InstanceScopeDurableWithName-embedded"/>
+        <antcall target="InstanceScopeNondurableWithoutName-embedded"/>
+        <antcall target="InstanceScopeNondurableWithName-embedded"/>
+        <antcall target="ClusterScopeDurableWithoutName-embedded"/>
+        <antcall target="ClusterScopeDurableWithName-embedded"/>
+        <antcall target="ClusterScopeNondurableWithoutName-embedded"/>
+        <antcall target="ClusterScopeNondurableWithName-embedded"/>
+        <antcall target="noScopeDurableWithName-embedded"/>
+        <antcall target="noScopeDurableNoClientIdWithName-embedded"/>
+        <antcall target="noScopeNondurableWithoutName-embedded"/>
+        <antcall target="noScopeNondurableWithName-embedded"/>
+    </target>
+
+    <target name="doTest-local" depends="init-common">
+        <antcall target="InstanceScopeDurableWithoutName-local"/>
+        <antcall target="InstanceScopeDurableWithName-local"/>
+        <antcall target="InstanceScopeNondurableWithoutName-local"/>
+        <antcall target="InstanceScopeNondurableWithName-local"/>
+        <antcall target="ClusterScopeDurableWithoutName-local"/>
+        <antcall target="ClusterScopeDurableWithName-local"/>
+        <antcall target="ClusterScopeNondurableWithoutName-local"/>
+        <antcall target="ClusterScopeNondurableWithName-local"/>
+        <antcall target="noScopeDurableWithName-local"/>
+        <antcall target="noScopeDurableNoClientIdWithName-local"/>
+        <antcall target="noScopeNondurableWithoutName-local"/>
+        <antcall target="noScopeNondurableWithName-local"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <exec executable="${ASADMIN}" failonerror="true">
+            <arg line="set configs.config.server-config.jms-service.type=EMBEDDED"/>
+        </exec>
+        <antcall target="stopDomain"/>
+        <antcall target="startDomain"/>
+    </target>
+
+    <target name="InstanceScopeDurableWithoutName-embedded">
+        <record name="InstanceScopeDurableWithoutName-embedded.output" action="start" />
+            <ant dir="embedded/InstanceScope/durableWithoutName" target="all"/>
+        <record name="InstanceScopeDurableWithoutName-embedded.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeDurableWithName-embedded">
+        <record name="InstanceScopeDurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/InstanceScope/durableWithName" target="all"/>
+        <record name="InstanceScopeDurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeNondurableWithoutName-embedded">
+        <record name="InstanceScopeNondurableWithoutName-embedded.output" action="start" />
+            <ant dir="embedded/InstanceScope/nondurableWithoutName" target="all"/>
+        <record name="InstanceScopeNondurableWithoutName-embedded.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeNondurableWithName-embedded">
+        <record name="InstanceScopeNondurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/InstanceScope/nondurableWithName" target="all"/>
+        <record name="InstanceScopeNondurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeDurableWithoutName-embedded">
+        <record name="ClusterScopeDurableWithoutName-embedded.output" action="start" />
+            <ant dir="embedded/ClusterScope/durableWithoutName" target="all"/>
+        <record name="ClusterScopeDurableWithoutName-embedded.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeDurableWithName-embedded">
+        <record name="ClusterScopeDurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/ClusterScope/durableWithName" target="all"/>
+        <record name="ClusterScopeDurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeNondurableWithoutName-embedded">
+        <record name="ClusterScopeNondurableWithoutName-embedded.output" action="start" />
+            <ant dir="embedded/ClusterScope/nondurableWithoutName" target="all"/>
+        <record name="ClusterScopeNondurableWithoutName-embedded.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeNondurableWithName-embedded">
+        <record name="ClusterScopeNondurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/ClusterScope/nondurableWithName" target="all"/>
+        <record name="ClusterScopeNondurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="noScopeDurableWithName-embedded">
+        <record name="noScopeDurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/noScope/durableWithName" target="all"/>
+        <record name="noScopeDurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="noScopeDurableNoClientIdWithName-embedded">
+        <record name="noScopeDurableNoClientIdWithName-embedded.output" action="start" />
+            <ant dir="embedded/noScope/durableNoClientIdWithName" target="all"/>
+        <record name="noScopeDurableNoClientIdWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="noScopeNondurableWithoutName-embedded">
+        <record name="noScopeNondurableWithoutName-embedded.output" action="start" />
+            <ant dir="embedded/noScope/nondurableWithoutName" target="all"/>
+        <record name="noScopeNondurableWithoutName-embedded.output" action="stop" />
+    </target>
+
+    <target name="noScopeNondurableWithName-embedded">
+        <record name="noScopeNondurableWithName-embedded.output" action="start" />
+            <ant dir="embedded/noScope/nondurableWithName" target="all"/>
+        <record name="noScopeNondurableWithName-embedded.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeDurableWithoutName-local">
+        <record name="InstanceScopeDurableWithoutName-local.output" action="start" />
+            <ant dir="local/InstanceScope/durableWithoutName" target="all"/>
+        <record name="InstanceScopeDurableWithoutName-local.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeDurableWithName-local">
+        <record name="InstanceScopeDurableWithName-local.output" action="start" />
+            <ant dir="local/InstanceScope/durableWithName" target="all"/>
+        <record name="InstanceScopeDurableWithName-local.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeNondurableWithoutName-local">
+        <record name="InstanceScopeNondurableWithoutName-local.output" action="start" />
+            <ant dir="local/InstanceScope/nondurableWithoutName" target="all"/>
+        <record name="InstanceScopeNondurableWithoutName-local.output" action="stop" />
+    </target>
+
+    <target name="InstanceScopeNondurableWithName-local">
+        <record name="InstanceScopeNondurableWithName-local.output" action="start" />
+            <ant dir="local/InstanceScope/nondurableWithName" target="all"/>
+        <record name="InstanceScopeNondurableWithName-local.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeDurableWithoutName-local">
+        <record name="ClusterScopeDurableWithoutName-local.output" action="start" />
+            <ant dir="local/ClusterScope/durableWithoutName" target="all"/>
+        <record name="ClusterScopeDurableWithoutName-local.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeDurableWithName-local">
+        <record name="ClusterScopeDurableWithName-local.output" action="start" />
+            <ant dir="local/ClusterScope/durableWithName" target="all"/>
+        <record name="ClusterScopeDurableWithName-local.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeNondurableWithoutName-local">
+        <record name="ClusterScopeNondurableWithoutName-local.output" action="start" />
+            <ant dir="local/ClusterScope/nondurableWithoutName" target="all"/>
+        <record name="ClusterScopeNondurableWithoutName-local.output" action="stop" />
+    </target>
+
+    <target name="ClusterScopeNondurableWithName-local">
+        <record name="ClusterScopeNondurableWithName-local.output" action="start" />
+            <ant dir="local/ClusterScope/nondurableWithName" target="all"/>
+        <record name="ClusterScopeNondurableWithName-local.output" action="stop" />
+    </target>
+
+    <target name="noScopeDurableWithName-local">
+        <record name="noScopeDurableWithName-local.output" action="start" />
+            <ant dir="local/noScope/durableWithName" target="all"/>
+        <record name="noScopeDurableWithName-local.output" action="stop" />
+    </target>
+
+    <target name="noScopeDurableNoClientIdWithName-local">
+        <record name="noScopeDurableNoClientIdWithName-local.output" action="start" />
+            <ant dir="local/noScope/durableNoClientIdWithName" target="all"/>
+        <record name="noScopeDurableNoClientIdWithName-local.output" action="stop" />
+    </target>
+
+    <target name="noScopeNondurableWithoutName-local">
+        <record name="noScopeNondurableWithoutName-local.output" action="start" />
+            <ant dir="local/noScope/nondurableWithoutName" target="all"/>
+        <record name="noScopeNondurableWithoutName-local.output" action="stop" />
+    </target>
+
+    <target name="noScopeNondurableWithName-local">
+        <record name="noScopeNondurableWithName-local.output" action="start" />
+            <ant dir="local/noScope/nondurableWithName" target="all"/>
+        <record name="noScopeNondurableWithName-local.output" action="stop" />
+    </target>
+</project>
