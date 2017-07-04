@@ -570,7 +570,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             return;
 
         String jndiName = ejbRef.getLookupName();
-        if (jndiName == null) {
+        if (!ejbRef.hasLookupName()) {
             jndiName = ejbRef.getMappedName();
         }
 
@@ -631,7 +631,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @param jndiName to be validated.
      */
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env) {
-        if (jndiName == null) {
+        if (jndiName == null || jndiName == "") {
             deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                     new Object[] {null});
             throw new DeploymentException("Null JNDI resource");
