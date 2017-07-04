@@ -1,4 +1,0 @@
-delete-jms-resource jms/jdbcjmsauth_QCF1
-delete-jms-resource jms/jdbcjmsauth_QCF2
-
-quit

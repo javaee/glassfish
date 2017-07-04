@@ -1,0 +1,195 @@
+#!/bin/sh
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# The contents of this file are subject to the terms of either the GNU
+# General Public License Version 2 only ("GPL") or the Common Development
+# and Distribution License("CDDL") (collectively, the "License").  You
+# may not use this file except in compliance with the License.  You can
+# obtain a copy of the License at
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
+# language governing permissions and limitations under the License.
+#
+# When distributing the software, include this License Header Notice in each
+# file and include the License file at LICENSE.txt.
+#
+# GPL Classpath Exception:
+# Oracle designates this particular file as subject to the "Classpath"
+# exception as provided by Oracle in the GPL Version 2 section of the License
+# file that accompanied this code.
+#
+# Modifications:
+# If applicable, add the following below the License Header, with the fields
+# enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyright [year] [name of copyright owner]"
+#
+# Contributor(s):
+# If you wish your version of this file to be governed by only the CDDL or
+# only the GPL Version 2, indicate your decision by adding "[Contributor]
+# elects to include this software in this distribution under the [CDDL or GPL
+# Version 2] license."  If you don't indicate a single choice of license, a
+# recipient has the option to distribute your version of this file under
+# either the CDDL, the GPL Version 2 or to extend the choice of license to
+# its licensees as provided above.  However, if you add GPL Version 2 code
+# and therefore, elected the GPL Version 2 license, then the option applies
+# only if the new code is made subject to such option by the copyright
+# holder.
+#
+
+#--- Extract environment properties --- "sed" doesn't work with iastools.zip used in windows
+
+for x in `cat $APS_HOME/devtests/jdbc/config/ee-config.properties`
+do
+    varval=`echo $x |cut -d'=' -f1`
+
+    if [ $varval = "admin.user" ];
+    then
+        AS_ADMIN_USER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.port" ];
+    then
+        AS_ADMIN_PORT=`echo $x |cut -d'=' -f2`
+    fi
+    
+    if [ $varval = "admin.host" ];
+    then
+        AS_ADMIN_HOST=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "orb.port" ];
+    then
+        ORB_LISTENER_1_PORT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "http.port" ];
+    then
+        HTTP_LISTENER_1_PORT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "https.port" ];
+    then
+        SSL_PORT=`echo $x |cut -d'=' -f2`
+    fi
+    
+    if [ $varval = "admin.password" ];
+    then
+        AS_ADMIN_PASSWORD=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.domain" ];
+    then
+        AS_ADMIN_DOMAIN=`echo $x |cut -d'=' -f2`
+    fi
+    if [ $varval = "nodeagent.name" ];
+    then
+        AS_ADMIN_NODEAGENT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "server.instance.name" ];
+    then
+        AS_ADMIN_SERVER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "cluster.name" ];
+    then
+        CLUSTER_NAME="sqe-cluster"
+    fi
+
+    if [ $varval = "clustered.instance.name" ];
+    then
+        CLUSTERED_INSTANCE_NAME="clustered_server"
+    fi
+
+    if [ $varval = "install.type" ];
+    then
+        INSTALL_TYPE=`echo $x |cut -d'=' -f2`
+    fi
+
+done
+
+ASADMIN=${ASADMIN}/bin/asadmin
+DAS_PORT=4848
+
+HTTP_LISTENER_1_PORT="8079"
+HTTP_LISTENER_2_PORT="1042"
+ORB_LISTENER_1_PORT="3699"
+SSL_PORT="1059"
+SSL_MUTUALAUTH_PORT="1058"
+JMX_SYSTEM_CONNECTOR_PORT="8687"
+
+export AS_ADMIN_USER
+export AS_ADMIN_PASSWORD
+export AS_ADMIN_PORT
+export AS_ADMIN_HOST
+export AS_ADMIN_DOMAIN
+export AS_ADMIN_NODEAGENT
+export AS_ADMIN_SERVER
+export CLUSTER_NAME
+export CLUSTERED_INSTANCE_NAME
+
+LOG_DIR=$APS_HOME/devtests/jdbc/logs
+
+if [ ${INSTALL_TYPE} = "standalone" -o ${INSTALL_TYPE} = "all" ]; then
+#  ----------------
+    # Stop server instance: sqe-server----
+    echo "stopping sever instance:${AS_ADMIN_SERVER}..."
+    ${S1AS_HOME}/bin/asadmin stop-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${AS_ADMIN_SERVER}
+
+    ${S1AS_HOME}/bin/asadmin delete-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${AS_ADMIN_SERVER}
+fi
+
+if [ ${INSTALL_TYPE} = "cluster" -o ${INSTALL_TYPE} = "all" ]; then
+#  ----------------
+    # Create server instance: sqe-server----
+    echo "stopping cluster ${CLUSTER_NAME}"
+    ${S1AS_HOME}/bin/asadmin stop-cluster \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${CLUSTER_NAME}
+
+
+${S1AS_HOME}/bin/asadmin delete-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${CLUSTERED_INSTANCE_NAME}_1
+
+${S1AS_HOME}/bin/asadmin delete-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${CLUSTERED_INSTANCE_NAME}_2
+
+    ${S1AS_HOME}/bin/asadmin delete-cluster \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${CLUSTER_NAME}
+fi
+
+
+echo "stopping nodeagent....."
+$S1AS_HOME/bin/asadmin stop-node-agent $AS_ADMIN_NODEAGENT
+
+
+
+echo "Deleting nodeagent....."
+${S1AS_HOME}/bin/asadmin delete-node-agent ${AS_ADMIN_NODEAGENT}
+
+echo "Deleting nodeagent config....."
+${S1AS_HOME}/bin/asadmin delete-node-agent-config ${AS_ADMIN_NODEAGENT}
+
+echo "stopping domain...."
+${S1AS_HOME}/bin/asadmin stop-domain ${AS_ADMIN_DOMAIN}
+
+
+${S1AS_HOME}/bin/asadmin delete-domain ${AS_ADMIN_DOMAIN}
+echo "EE domain,server instance and nodeagent has been deleted"
+
