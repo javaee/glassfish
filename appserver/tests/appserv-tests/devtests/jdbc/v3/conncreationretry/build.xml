@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+	<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
+	<!ENTITY run SYSTEM "./../../../../config/run.xml">
+	<!ENTITY eeSetup SYSTEM "./../../config/ee-common.xml">
+	<!ENTITY eeProperties SYSTEM "./../../config/ee-properties.xml">
+        ]>
+
+<project name="mix" default="usage" basedir=".">
+
+
+    &commonSetup;
+    &commonBuild;
+    &run;
+    &testproperties;
+
+    <!--&eeSetup;
+    &eeProperties;
+    &testproperties;-->
+
+    <target name="all" depends="build,deploy, run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+      <antcall target="compile-common">
+        <param name="src" value="servlet"/>
+      </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+	<property name="hasWebclient" value="true"/>
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/>
+        </antcall>
+
+        <antcall target="ejb-jar-common">
+	    <param name="ejbjar.classes" value="**/*.class"/>
+	</antcall>
+
+	<delete file="${assemble.dir}/${appname}.ear"/>
+        <mkdir dir="${assemble.dir}"/>
+
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+
+        <ear earfile="${assemble.dir}/${appname}App.ear" 
+	     appxml="${application.xml}">
+	     <fileset dir="${assemble.dir}">
+	        <include name="*.jar"/>
+	        <include name="*.war"/>
+	     </fileset>
+	</ear>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="create-jdbc-stuff"/>
+        <antcall target="deploy-common"/>
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/create_pointbase.sql"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="stop-derby"/>
+
+	<parallel>
+        	<antcall target="run-test-1"/>
+		<sequential>
+			<sleep seconds="15"/>
+			<antcall target="start-derby"/>
+		</sequential>
+	</parallel>
+
+    </target>
+
+    <target name="run-test-1" depends="init-common">
+        <antcall target="runwebclient-common">
+  	    <param name="testsuite.id" value="web-to-ejb (ear based)"/>
+	</antcall>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+        <antcall target="delete-jdbc-stuff"/>
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="create-jdbc-stuff" depends="init-common">
+
+        <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="${poolname}"/>
+            <param name="db.class" value="org.apache.derby.jdbc.ClientDataSource"/>
+            <param name="jdbc.resource.type" value="javax.sql.DataSource"/>
+            <param name="jdbc.resource.name" value="${resourcename}"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.connection_creation_retry_attempts=10"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.connection_creation_retry_interval_in_seconds=5"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.steady_pool_size=1"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.max_pool_size=1"/>
+        </antcall>
+
+    </target>
+
+    <target name="delete-jdbc-stuff" depends="init-common">
+        <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="${resourcename}"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="${poolname}"/>
+        </antcall>
+    </target>
+
+    <target name="start-derby">
+        <echo message="Starting Derby DB Server ..."/>
+            <java classname="org.apache.derby.drda.NetworkServerControl"
+                  classpath="${db.classpath}" fork="true" spawn="true">
+                <arg line="-h 0.0.0.0 -p 1527 start"/>
+                <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
+            </java>
+        <echo message="Derby DB Server started..."/>
+    </target>
+
+    <target name="stop-derby">
+        <echo message="Stopping Derby DB Server ..."/>
+            <java classname="org.apache.derby.drda.NetworkServerControl"
+                  classpath="${db.classpath}" failonerror="true" fork="true">
+                <arg line="-h 0.0.0.0 -p 1527 shutdown"/>
+            </java>
+    </target>
+</project>

@@ -353,9 +353,9 @@ public class ClusterTest extends BaseSeleniumTestClass {
         goToClusterResourcesPage(target);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
-        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonEnabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
-        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonDisabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
         jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_CLUSTER_TYPE);
     }
 

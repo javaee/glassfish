@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="ejb-ejb30-persistence-tx_propagation-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="ejb-setup,build,setup,deploy,run,undeploy,unsetup"/>
+    <target name="all-appclient-exposed-dsd" depends="appclient-setup,build,setup,deploy,run,undeploy,unsetup"/>
+
+    <target name="appclient-setup" depends="init-common">
+        <copy file="client/Client.java.dsd" tofile="client/Client.java" overwrite="yes"/>
+        <copy file="ejb/SfulBean.java.nodsd" tofile="ejb/SfulBean.java" overwrite="yes"/>
+    </target>
+
+    <target name="ejb-setup" depends="init-common">
+        <copy file="ejb/SfulBean.java.dsd" tofile="ejb/SfulBean.java" overwrite="yes"/>
+        <copy file="client/Client.java.nodsd" tofile="client/Client.java" overwrite="yes"/>
+    </target>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="setup" depends="init-common">
+<!--      <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+            <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
+            <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+       <antcall target="asadmin-common"> 
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.property.connectionAttributes=;create=true"/>
+       </antcall>-->
+
+
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/drop.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+<!--        <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+        </antcall>-->
+
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}/lib"/>
+        <jar destfile="${assemble.dir}/lib/${appname}-lib.jar" 
+             basedir="${build.classes.dir}"
+             includes="**/Person.class">
+        </jar>        
+        <jar destfile="${assemble.dir}/lib/${appname}-par1.jar">
+             <metainf file="descriptor/persistence.xml"/>
+        </jar>
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/Sful*.class"/>
+            <param name="appclientjar.classes" 
+              value="**/Client.class,**/Sful.class"/>
+        </antcall>
+        <jar destfile="${assemble.dir}/${appname}App.ear" update="yes"
+             basedir="${assemble.dir}"
+             includes="lib/${appname}-lib.jar, lib/${appname}-par1.jar">
+        </jar>
+
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+<!--        <antcall target="runclient-standalone"/>-->
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="runclient-standalone" depends="clean-db">
+       <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${simple.client}">
+              <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+        </java>
+    </target>
+
+    <target name="clean-db" depends="init-common">
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/drop.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+    </target>
+
+</project>

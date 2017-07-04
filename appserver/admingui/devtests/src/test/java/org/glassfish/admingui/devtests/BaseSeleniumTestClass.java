@@ -575,14 +575,23 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForButtonEnabled(String buttonId) {
-//        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", BUTTON_TIMEOUT);
         waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, false));
     }
 
+    protected void waitForButtonEnabledMessage(String buttonId) {
+        String enabledMessage = "i18n.msg.enableResourceSuccessful";
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, false));
+        waitForPageLoad(enabledMessage, TIMEOUT);
+    }
+
     protected void waitForButtonDisabled(String buttonId) {
-        String value = selenium.getEval(CURRENT_WINDOW + ".document.getElementById('" + buttonId + "').disabled");
-//        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", BUTTON_TIMEOUT);
         waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, true));
+    }
+
+    protected void waitForButtonDisabledMessage(String buttonId) {
+        String disabledMessage = "i18n.msg.disableResourceSuccessful";
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, true));
+        waitForPageLoad(disabledMessage, TIMEOUT);
     }
 
     protected void waitForCondition(String js, int timeOutInMillis) {
@@ -883,11 +892,13 @@ public class BaseSeleniumTestClass {
             String statusId,
             String generalTriggerText,
             String targetTriggerText,
-            String state) {
+            String state,
+            String enableResourceOnTargetsStatus) {
         pressButton(tableSelectMutlipleId);
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
+        waitForPageLoad(enableResourceOnTargetsStatus, TIMEOUT);
 
         clickAndWait(generalTabId, generalTriggerText);
         Assert.assertEquals(state, getText(statusId));
@@ -910,6 +921,8 @@ public class BaseSeleniumTestClass {
         final String enableStatus = "Enabled on 2 of 2 Target(s)";
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
         final String TRIGGER_MANAGE_TARGETS = "Manage Resource Targets";
+        final String enableResourceOnTargetsStatus = "i18n.msg.enableResourceOnTargetsSuccessful";
+        final String disableResourceOnTargetsStatus = "i18n.msg.disableResourceOnTargetsSuccessful";
         final String DEFAULT_SERVER = "server";
 
         reset();
@@ -928,7 +941,8 @@ public class BaseSeleniumTestClass {
                 enableOrDisableTextFieldId,
                 resEditTriggerText,
                 TRIGGER_EDIT_RESOURCE_TARGETS,
-                disableStatus);
+                disableStatus,
+                disableResourceOnTargetsStatus);
 
         //Enable all targets
         testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
@@ -938,7 +952,8 @@ public class BaseSeleniumTestClass {
                 enableOrDisableTextFieldId,
                 resEditTriggerText,
                 TRIGGER_EDIT_RESOURCE_TARGETS,
-                enableStatus);
+                enableStatus,
+                enableResourceOnTargetsStatus);
 
         //Test the manage targets : Remove the server from targets.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);

@@ -1,3 +1,0 @@
--exportcontents: !*
-Bundle-Activator: org.glassfish.osgijdbc_test.JDBCActivator
-
