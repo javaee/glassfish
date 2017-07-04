@@ -676,13 +676,14 @@ public class WebServiceTesterServlet extends HttpServlet {
         
         File[] files = path != null ? path.listFiles() : null;
         List<File> result = new ArrayList<File>();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    result.addAll(getListOfFiles(f));
-                } else {
-                    result.add(f);
-                }
+        if (files == null) {
+            return result;
+        }
+        for (File f : files) {
+            if (f.isDirectory()) {
+                result.addAll(getListOfFiles(f));
+            } else {
+                result.add(f);
             }
         }
         return result;

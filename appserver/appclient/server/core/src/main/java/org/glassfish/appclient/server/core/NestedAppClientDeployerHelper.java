@@ -437,10 +437,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final FileFilter filter) throws IOException {
         if (dirContainingJARs.exists() && dirContainingJARs.isDirectory()) {
             File[] files = dirContainingJARs.listFiles(filter);
-            if (files != null) {
-                for (File jar : files) {
-                    addJar(cpForFacade, puScanTargets, jar.toURI(), dependencyURIsProcessed);
-                }
+            if (files == null) {
+                return;
+            }
+            for (File jar : files) {
+                addJar(cpForFacade, puScanTargets, jar.toURI(), dependencyURIsProcessed);
             }
         }
 
@@ -936,41 +937,42 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              * each contained file for download.
              */
             File[] files = physicalFile().listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.isDirectory()) {
-                        final Artifact nestedDirArtifact = newArtifact(this, f.toURI());
-                        if (nestedDirArtifact != null) {
-                            nestedDirArtifact.processArtifact(
-                                    artifactURIsProcessed,
-                                    downloadsForReferencedArtifacts,
-                                    downloadsForReferencedArtifacts);
-                        }
-                    } else {
-                        /*
-                     * The file inside the directory is not another directory,
-                     * so simply include it as another download with no
-                     * special processing.
-                         */
-                        URI fileURI = f.toURI();
-                        /*
-                     * Note that for Java Web Start support we need to sign JARs.
-                     * Even though this JAR appears as just another file in this
-                     * directory that was referenced from some JAR file in the app,
-                     * it might actually be referenced directly from the Class-Path
-                     * of JAR that will appear on the runtime class path.  That
-                     * means we'll want to sign the JAR.
-                         */
-                        if (f.getName().endsWith(".jar")) {
-                            fileURI = signedJARManager.addJAR(fileURI);
-                        }
-                        final URI fileURIWithinEAR = earDirUserURI(dc()).resolve(earURI.relativize(fileURI));
-                        Artifacts.FullAndPartURIs fileDependency
-                                = new FullAndPartURIs(fileURI, fileURIWithinEAR);
-//                                earURI.relativize(fileURI));
-                        downloadsForReferencedArtifacts.add(fileDependency);
-                        artifactURIsProcessed.add(fileURIWithinEAR);
+            if (files == null) {
+                return;
+            }
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    final Artifact nestedDirArtifact = newArtifact(this, f.toURI());
+                    if (nestedDirArtifact != null) {
+                        nestedDirArtifact.processArtifact(
+                                artifactURIsProcessed,
+                                downloadsForReferencedArtifacts,
+                                downloadsForReferencedArtifacts);
                     }
+                } else {
+                    /*
+                 * The file inside the directory is not another directory,
+                 * so simply include it as another download with no
+                 * special processing.
+                     */
+                    URI fileURI = f.toURI();
+                    /*
+                 * Note that for Java Web Start support we need to sign JARs.
+                 * Even though this JAR appears as just another file in this
+                 * directory that was referenced from some JAR file in the app,
+                 * it might actually be referenced directly from the Class-Path
+                 * of JAR that will appear on the runtime class path.  That
+                 * means we'll want to sign the JAR.
+                     */
+                    if (f.getName().endsWith(".jar")) {
+                        fileURI = signedJARManager.addJAR(fileURI);
+                    }
+                    final URI fileURIWithinEAR = earDirUserURI(dc()).resolve(earURI.relativize(fileURI));
+                    Artifacts.FullAndPartURIs fileDependency
+                            = new FullAndPartURIs(fileURI, fileURIWithinEAR);
+//                                earURI.relativize(fileURI));
+                    downloadsForReferencedArtifacts.add(fileDependency);
+                    artifactURIsProcessed.add(fileURIWithinEAR);
                 }
             }
         }

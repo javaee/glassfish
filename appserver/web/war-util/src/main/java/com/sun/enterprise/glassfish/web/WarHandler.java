@@ -305,20 +305,21 @@ public class WarHandler extends AbstractArchiveHandler {
                                     !fileName.startsWith(".")));
                         }
                     });
-            if (files != null) {
-                for (File file : files) {
-                    try {
-                        if (file.isDirectory()) {
-                            // support exploded jar file
-                            cloader.addRepository("WEB-INF/lib/" + file.getName() + "/", file);
-                        } else {
-                            cloader.addJar(file.getPath().substring(baseFileLen),
-                                    new JarFile(file), file);
-                        }
-                    } catch (Exception e) {
-                        // Catch and ignore any exception in case the JAR file
-                        // is empty.
+            if (files == null) {
+                return;
+            }
+            for (File file : files) {
+                try {
+                    if (file.isDirectory()) {
+                        // support exploded jar file
+                        cloader.addRepository("WEB-INF/lib/" + file.getName() + "/", file);
+                    } else {
+                        cloader.addJar(file.getPath().substring(baseFileLen),
+                                new JarFile(file), file);
                     }
+                } catch (Exception e) {
+                    // Catch and ignore any exception in case the JAR file
+                    // is empty.
                 }
             }
         }

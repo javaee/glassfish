@@ -679,7 +679,6 @@ public class AppClientFacade {
 
     private static class JavaVersion {
         private String versionString = System.getProperty("java.version");
-//        private int versionAsInt = initVersionAsInt();
 
         private int initVersionAsInt() {
             int firstDot = versionString.indexOf(".");
@@ -699,10 +698,6 @@ public class AppClientFacade {
     //        }
             return version;
         }
-
-//        private int asInt() {
-//            return versionAsInt;
-//        }
 
         @Override
         public String toString() {
