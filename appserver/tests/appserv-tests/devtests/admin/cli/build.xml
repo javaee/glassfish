@@ -162,7 +162,7 @@
         <record name="admin.output" action="stop" />
         <antcall target="stacker"/>
         <antcall target="dev-report"/>
-        <echo message="Detailed results available under ${env.APS_HOME}/test_results_cli_group_1.html"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
     <target name="cli-group-2-master" depends="clean,init">
@@ -172,7 +172,7 @@
         <record name="admin.output" action="stop" />
         <antcall target="stacker"/>
         <antcall target="dev-report"/>
-        <echo message="Detailed results available under ${env.APS_HOME}/test_results_cli_group_2.html"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
 

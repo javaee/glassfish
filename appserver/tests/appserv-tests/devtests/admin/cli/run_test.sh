@@ -90,6 +90,8 @@ get_test_target(){
 
 list_test_ids(){
 	echo admin_cli_all
+        echo cli-group-1-master
+        echo cli-group-2-master
 }
 
 OPT=$1
