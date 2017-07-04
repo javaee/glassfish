@@ -737,7 +737,7 @@ class PartItem
         if (repository != null) {
             if (repository.isDirectory()) {
                                 // Check path for nulls
-                if (repository.getPath() == null || repository.getPath().contains("\0")) {
+                if (repository.getPath() != null && repository.getPath().contains("\0")) {
                     String msg = MessageFormat.format(
                             rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), repository.getPath());
                     throw new IOException(msg);
@@ -808,7 +808,7 @@ class PartItem
     }
 
     private void deleteFile(File file) {
-        if (!file.delete() && log.isLoggable(Level.FINE)) {
+        if (file != null && !file.delete() && log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Cannot delete file: " + file);
         }
     }
