@@ -134,7 +134,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             parseResources((JndiNameEnvironment) bd);
             EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
             for (EjbDescriptor ejb : ebd.getEjbs())
-                parseResources(ejb);
+                parseEJB(ejb);
         }
 
         // Parse the Managed Beans
@@ -145,6 +145,75 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         Map<String, List<String>> resourcesList =
                 (Map<String, List<String>>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         myNamespace.storeAppScopedResources(resourcesList, appName);
+    }
+
+    private void parseEJB(EjbDescriptor ejb) {
+        String javaGlobalName = getJavaGlobalJndiNamePrefix(ejb);
+        myNamespace.store(javaGlobalName, ejb);
+
+        // interfaces now
+        if (ejb.isRemoteInterfacesSupported()) {
+            String intf = ejb.getHomeClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+        }
+
+        if (ejb.isRemoteBusinessInterfacesSupported()) {
+            for (String intf : ejb.getRemoteBusinessClassNames()) {
+                String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+                myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            }
+        }
+
+        if (ejb.isLocalInterfacesSupported()) {
+            String intf = ejb.getLocalHomeClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+        }
+
+        if (ejb.isLocalBusinessInterfacesSupported()) {
+            for (String intf : ejb.getLocalBusinessClassNames()) {
+                String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+                myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            }
+        }
+
+        if (ejb.isLocalBean()) {
+            String intf = ejb.getEjbClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+        }
+
+        parseResources(ejb);
+    }
+
+    protected String getJavaGlobalJndiNamePrefix(EjbDescriptor ejbDescriptor) {
+
+        String appName = null;
+
+        Application app = ejbDescriptor.getApplication();
+        if ( ! app.isVirtual() ) {
+            appName = ejbDescriptor.getApplication().getAppName();
+        }
+
+        EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
+        String modName = ejbBundle.getModuleDescriptor().getModuleName();
+
+        String ejbName = ejbDescriptor.getName();
+
+        StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
+
+        if (appName != null) {
+            javaGlobalPrefix.append(appName);
+            javaGlobalPrefix.append("/");
+        }
+
+        javaGlobalPrefix.append(modName);
+        javaGlobalPrefix.append("/");
+        javaGlobalPrefix.append(ejbName);
+
+
+        return javaGlobalPrefix.toString();
     }
 
     private void parseManagedBeans() {
@@ -493,10 +562,24 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * TODO: Check what to implement
+     * TODO: In Progress
      */
     private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
+        // we only need to worry about those references which are not linked yet
+        if(ejbRef.getEjbDescriptor() != null)
+            return;
 
+        String jndiName = ejbRef.getLookupName();
+        if (jndiName == null) {
+            jndiName = ejbRef.getMappedName();
+        }
+
+        String newName = convertModuleOrAppJNDIName(jndiName, env);
+        // JNDI names starting with java:app and java:module are taken care of
+        if (!myNamespace.find(newName, env)) {
+            // fall through
+            validateJNDIRefs(jndiName, env);
+        }
     }
 
     /**
