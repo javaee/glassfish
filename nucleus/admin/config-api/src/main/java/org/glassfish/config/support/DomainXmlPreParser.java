@@ -90,11 +90,12 @@ class DomainXmlPreParser {
             throw new IllegalArgumentException();
 
         InputStream in = null;
+        InputStreamReader isr = null;
 
         try {
             instanceName = instanceNameIn;
             in = domainXml.openStream();
-            InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset().toString());
+            isr = new InputStreamReader(in, Charset.defaultCharset().toString());
             reader = xif.createXMLStreamReader(domainXml.toExternalForm(), isr);
             parse();
             postProcess();
@@ -107,6 +108,13 @@ class DomainXmlPreParser {
             throw new DomainXmlPreParserException(e2);
         }
         finally {
+            try {
+                if(isr != null) {
+                    isr.close();
+                }
+            } catch (IOException ex) {
+                // ignore!
+            }
             cleanup(in);
         }
     }
