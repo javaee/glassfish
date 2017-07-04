@@ -54,7 +54,7 @@
     </target>
     
     <target name="run" depends="init-common">
-      <property file="${env.APS_HOME}/devtests/connector/config/oracle.properties" />	
+      <property file="${env.APS_HOME}/../v2-tests/appserv-tests/devtests/connector/config/oracle.properties"/>
       <exec executable="${APPCLIENT}" failonerror="true">
           <env key="APPCPATH" value="${env.S1AS_HOME}/domains/domain1/lib/ext/Oranxo.jar:${env.APS_HOME}/lib/reporter.jar"/>
           <arg line="-client ${assemble.dir}/${appname}AppClient.jar"/>

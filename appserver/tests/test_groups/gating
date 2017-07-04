@@ -19,3 +19,4 @@ servlet_tck_all
 findbugs_all
 embedded_publisher_all
 copyright
+connector_all

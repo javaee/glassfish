@@ -13,6 +13,7 @@ import javax.resource.spi.ConnectionManager;
 import javax.resource.ResourceException;
 import javax.naming.Reference;
 
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 /**
@@ -119,7 +120,12 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
     public int getLoginTimeout() throws SQLException{
     	return	loginTimeout;
     }
-    
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
+    }
+
     /**
      * Set the login timeout
      *
@@ -184,5 +190,15 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
      */
     public void setReference(Reference reference) {
     	this.reference = reference;
-    }    
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;
+    }
 }

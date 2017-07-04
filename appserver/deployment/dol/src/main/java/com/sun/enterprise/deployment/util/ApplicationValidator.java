@@ -147,6 +147,10 @@ public class ApplicationValidator extends ComponentValidator
                 accept(injectable);
             }
 
+            for(BundleDescriptor bundle : application.getBundleDescriptors())
+                for(ManagedBeanDescriptor next : bundle.getManagedBeans())
+                    next.validate();
+
             super.accept(descriptor);
         } else {
             super.accept(descriptor);
