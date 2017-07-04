@@ -82,10 +82,15 @@ run_test_id(){
   unzip_test_resources "$WORKSPACE/bundles/main.zip -d main/"
   copyright_run
   generate_copyright_results
-  upload_test_results
-  delete_bundle
 }
 
+post_test_run(){
+    if [[ $? -ne 0 ]]; then
+      generate_copyright_results
+    fi
+    upload_test_results
+    delete_bundle
+}
 
 list_test_ids(){
 	echo copyright
@@ -98,5 +103,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+    trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac

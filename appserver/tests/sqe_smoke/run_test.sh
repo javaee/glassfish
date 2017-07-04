@@ -58,13 +58,7 @@ test_run_sqe_smoke(){
         
         cd $SPS_HOME
         ant start-domain v3g-smoke-test stop-domain
-        
-        # Archiving
-        cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results 
-	cp $SPS_HOME/summaryreport-v3smoke.html $WORKSPACE/results/ST-GP-report.html
-	cp $SPS_HOME/count.txt $WORKSPACE/results
-	cp $SPS_HOME/test_resultsValid.xml $WORKSPACE/results
-        find $SPS_HOME/reports -name security-gtest-results-valid.xml -exec cp '{}' $WORKSPACE/results \; > /dev/null || true        
+        archive_artifacts
 }
 
 run_test_id(){
@@ -86,9 +80,15 @@ run_test_id(){
     generate_junit_report_sqe $1 $resultGtest $WORKSPACE/results/test_results_gtest_junit.xml
     merge_junit_xmls $WORKSPACE/results/test_results_junit.xml $WORKSPACE/results/test_results_gtest_junit.xml
     change_junit_report_class_names
-    upload_test_results
-    delete_bundle
-    cd -
+}
+
+archive_artifacts(){
+	# Archiving
+    cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results 
+	cp $SPS_HOME/summaryreport-v3smoke.html $WORKSPACE/results/ST-GP-report.html
+	cp $SPS_HOME/count.txt $WORKSPACE/results
+	cp $SPS_HOME/test_resultsValid.xml $WORKSPACE/results
+    find $SPS_HOME/reports -name security-gtest-results-valid.xml -exec cp '{}' $WORKSPACE/results \; > /dev/null || true        
 }
 merge_junit_xmls(){
   JUD_1=$1
@@ -189,6 +189,15 @@ kill_clean(){
   if [ ${#1} -ne 0 ] ; then kill -9 $1 ; fi 
 }
 
+post_test_run(){
+	if [[ $? -ne 0 ]]; then
+	  archive_artifacts
+	fi
+    upload_test_results
+    delete_bundle
+    cd -
+}
+
 OPT=$1
 TEST_ID=$2
 
@@ -196,5 +205,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+		trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac
