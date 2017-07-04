@@ -40,10 +40,11 @@
 #
 
 USAGE="Usage:\n\n 1. rq.sh -l ---> List all available test identifiers without running them\n\
-	   2. rq.sh -b <branch> -a ---> For running all tests\n\
+	   2. rq.sh -b <branch> -a ---> For running all tests in remote branch\n\
 	   3. rq.sh -b <branch> -g <test_group_name> ---> For running a test group\n\
 	   4. rq.sh -b <branch> -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests\n\
-	   5. rq.sh -b <branch> -a -e <email-id> ---> For getting the test results in the email id.This workes with -a -t and -g options"
+	   5. rq.sh -u <glassfish binary url> -a ---> For running all tests with GlassFish binary provided in the url.-u option works with -a, -g and -t options as well\n\
+	   6. rq.sh -b <branch> -a -e <email-id> ---> For getting the test results in the email id.This workes with -a -t and -g options"
 	   
 
 list_test_ids(){
@@ -83,6 +84,7 @@ while getopts ":b:t:g:e:u:al" opt; do
 		echo ${test_ids[@]} | tr " " "\n"
 		exit 0;;
 	e)  email=$OPTARG;;
+	u)  url=$OPTARG;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
 		exit 1 ;;         
@@ -91,8 +93,8 @@ done
 
 shift $((OPTIND-1))
 
-if [[ -z $branch ]]; then
-	echo "branch is missing"
+if [[ -z $branch && -z $url ]]; then
+	echo "Please provide a remote branch or a glassfish binary url to trigger glassfish remote queue"
 	echo -e $USAGE
 	exit 1
 fi
@@ -108,7 +110,7 @@ if [[ -z $email && ! -z $branch ]]; then
 fi
 fork_origin=`git config --get remote.origin.url`
 test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`
-params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&EMAIL_ID=${email}"
+params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&URL=${url}&EMAIL_ID=${email}"
 status=`curl -s -o /dev/null -w "%{http_code}" -X POST "${GLASSFISH_REMOTE_QUEUE_URL}/buildWithParameters?${params}&delay=0sec"`
 echo "----------------------------------------------------------------------------"
 if [[ ${status} -eq 201 ]]; then
