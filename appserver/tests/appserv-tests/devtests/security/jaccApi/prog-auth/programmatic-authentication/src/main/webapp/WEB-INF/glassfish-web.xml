@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -40,28 +42,13 @@
 
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:template match="/">
-        <table border="1">
-            <tr bgcolor="#9acd32">
-                <th>Status</th>
-                <th>Test</th>
-                <th>Description</th>
-            </tr>
-            <xsl:for-each select="tests/test">
-                <tr>
-                    <xsl:choose>
-                        <xsl:when test="result/@status = 'PASSED'">
-                            <td bgcolor="green">[PASSED] </td>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <td bgcolor="red">[FAILED] </td>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <td><xsl:value-of select="@name"/> </td>
-                    <td><xsl:value-of select="@description"/></td>
-                </tr>
-            </xsl:for-each>
-        </table>
-    </xsl:template>
-</xsl:stylesheet>
+<glassfish-web-app>
+
+    <security-role-mapping>
+        <role-name>architect</role-name>
+        <group-name>architect</group-name>
+    </security-role-mapping>
+
+    <parameter-encoding default-charset="UTF-8" />
+
+</glassfish-web-app>

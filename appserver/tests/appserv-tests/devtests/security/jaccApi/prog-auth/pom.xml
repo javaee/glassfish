@@ -43,19 +43,17 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>net.java</groupId>
-        <artifactId>jvnet-parent</artifactId>
-        <version>3</version>
-        <relativePath/>
+      <groupId>org.glassfish.main</groupId>
+      <artifactId>glassfish-nucleus-parent</artifactId>
+      <version>5.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.soteria.test</groupId>
-    <artifactId>soteria</artifactId>
-    <version>5.0-SNAPSHOT</version>
+    <groupId>org.glassfish.jaccApi.test</groupId>    
+    <artifactId>prog-auth</artifactId>
     <packaging>pom</packaging>
     
-    <name>Soteria ${project.version} Integration tests and examples</name>
-    
+    <name>Programmatic authetication with JACC api</name>
     <properties>
         <glassfish.version>5.0</glassfish.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -64,23 +62,8 @@
 
     <modules>
         <module>common</module>
-        <module>app-mem-basic</module>
-        <module>app-custom</module>
-	<module>app-custom-session</module>
-        <module>app-custom-rememberme</module> 
-        <module>app-securitycontext-auth</module>
-        <module>app-securitycontext-auth-ejb</module>
-        <module>app-double-ham</module>
-        <module>app-ham-ordering</module>
-        <module>app-db</module>
-        <module>app-custom-identity-store-handler</module>
-        <module>app-multiple-store</module>
-        <module>app-multiple-store-backup</module>
-        <!-- default role-mapping test is disable till the feature is available
-        <module>app-no-role-mapping</module>-->
-        
+        <module>programmatic-authentication</module>       
     </modules>
-    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -90,39 +73,35 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-            <dependency>
-            <groupId>com.unboundid</groupId>
-            <artifactId>unboundid-ldapsdk</artifactId>
-            <version>4.0.0</version>
-        </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>            
-        </dependency>      
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+       
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.23</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>        
-        <dependency>
-            <groupId>javax.security.enterprise</groupId>
-            <artifactId>javax.security.enterprise-api</artifactId>
-            <version>1.0-b06</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.soteria</groupId>
-            <artifactId>javax.security.enterprise</artifactId>
-            <version>1.0-b07</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-glassfish-remote-3.1</artifactId>
@@ -135,11 +114,6 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${APS_HOME}/lib/reporter.jar</systemPath>
-        </dependency>
-        <dependency>
-        <groupId>com.unboundid</groupId>
-            <artifactId>unboundid-ldapsdk</artifactId>
-            <version>4.0.0</version>
         </dependency>
     </dependencies>
     
@@ -168,4 +142,5 @@
             </plugin>       
         </plugins>
     </build>
-   </project>
+
+</project>

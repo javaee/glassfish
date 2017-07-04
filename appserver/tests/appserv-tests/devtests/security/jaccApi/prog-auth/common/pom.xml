@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -40,28 +41,42 @@
 
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:template match="/">
-        <table border="1">
-            <tr bgcolor="#9acd32">
-                <th>Status</th>
-                <th>Test</th>
-                <th>Description</th>
-            </tr>
-            <xsl:for-each select="tests/test">
-                <tr>
-                    <xsl:choose>
-                        <xsl:when test="result/@status = 'PASSED'">
-                            <td bgcolor="green">[PASSED] </td>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <td bgcolor="red">[FAILED] </td>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <td><xsl:value-of select="@name"/> </td>
-                    <td><xsl:value-of select="@description"/></td>
-                </tr>
-            </xsl:for-each>
-        </table>
-    </xsl:template>
-</xsl:stylesheet>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.glassfish.jaccApi.test</groupId>
+        <artifactId>prog-auth</artifactId>
+        <version>5.0-SNAPSHOT</version>        
+    </parent>
+    
+    <artifactId>jaccApi-common</artifactId>
+    
+    <packaging>jar</packaging>
+    <name>Java EE 7 Sample: jaccApi- common</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.9.2</version>            
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.23</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
