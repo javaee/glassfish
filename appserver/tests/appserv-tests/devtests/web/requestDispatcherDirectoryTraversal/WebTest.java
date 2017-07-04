@@ -53,17 +53,23 @@ public class WebTest {
 
     private static final String TEST_NAME
         = "request-dispatcher-directory-traversal";
+    private static final String TEST_NAME2
+        = "request-dispatcher-directory-traversal-type2";
+    private static final String TEST_NAME3
+        = "request-dispatcher-directory-traversal-type3";
 
     private static final String EXPECTED = "This is OK.";
 
     private String host;
     private String port;
     private String contextRoot;
+    private String appserverTestPath;
 
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
         contextRoot = args[2];
+        appserverTestPath = args[3];
     }
     
     public static void main(String[] args) {
@@ -78,6 +84,8 @@ public class WebTest {
             invoke();
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
+            stat.addStatus(TEST_NAME2, stat.FAIL);
+            stat.addStatus(TEST_NAME3, stat.FAIL);
             ex.printStackTrace();
         }
     }
@@ -85,6 +93,7 @@ public class WebTest {
     private void invoke() throws Exception {
 
         Socket sock = null;
+        Socket soc1 = null;
         OutputStream os = null;
         InputStream is = null;
         BufferedReader bis = null;
@@ -113,6 +122,54 @@ public class WebTest {
             } else {
                 System.err.println("Missing expected response: " + EXPECTED);
             }
+
+            // Validating the ".." file traversal check
+            soc1 = new Socket(host, 4848);
+            os = soc1.getOutputStream();
+            get = "GET " + "/theme/META-INF/%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af"
+                    + "%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af"
+                    + "%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af"
+                    + "%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af"
+                    + "%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae%c0%af%c0%ae%c0%ae"
+                    + "%c0" + appserverTestPath + "/domains/domain1/config/local-password HTTP/1.1\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("Host: localhost\n".getBytes());
+            os.write("\n".getBytes());
+            is = soc1.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line1 = null;
+            while ((line1 = bis.readLine()) != null) {
+                if (line1.contains("200")) {
+                    stat.addStatus(TEST_NAME2, stat.FAIL);
+                    break;
+                } else {
+                    stat.addStatus(TEST_NAME2, stat.PASS);
+                    break;
+                }
+            }
+
+            // Validating the ":" file traversal check
+            os = soc1.getOutputStream();
+            get = "GET " + "resource/file%3a///etc/passwd/ HTTP/1.1\n";
+            System.out.println(get);
+            os.write(get.getBytes());
+            os.write("Host: localhost\n".getBytes());
+            os.write("\n".getBytes());
+            is = soc1.getInputStream();
+            bis = new BufferedReader(new InputStreamReader(is));
+            String line2 = null;
+            while ((line2 = bis.readLine()) != null) {
+                if (line2.contains("200")) {
+                    stat.addStatus(TEST_NAME3, stat.FAIL);
+                    break;
+                } else {
+                    stat.addStatus(TEST_NAME3, stat.PASS);
+                    break;
+                }
+            }
+
+
         } finally {
             try {
                 if (os != null) os.close();
@@ -122,6 +179,9 @@ public class WebTest {
             } catch (IOException ex) {}
             try {
                 if (sock != null) sock.close();
+            } catch (IOException ex) {}
+            try {
+                if (soc1 != null) soc1.close();
             } catch (IOException ex) {}
             try {
                 if (bis != null) bis.close();
