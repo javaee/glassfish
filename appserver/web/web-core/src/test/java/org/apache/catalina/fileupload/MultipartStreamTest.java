@@ -37,14 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.apache.catalina.fileupload;
 
-import static org.junit.Assert.assertNotNull;
+package org.apache.catalina.fileupload;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 
 /**
