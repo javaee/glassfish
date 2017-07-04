@@ -344,12 +344,12 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
-        
+
         goToClusterResourcesPage(target);
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
-        
+
         goToClusterResourcesPage(target);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);

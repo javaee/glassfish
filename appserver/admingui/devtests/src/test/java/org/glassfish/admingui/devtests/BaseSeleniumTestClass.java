@@ -416,10 +416,12 @@ public class BaseSeleniumTestClass {
                 String passwordFile = SeleniumHelper.getParameter("AS_ADMIN_PASSWORDFILE", "");
                 String password = FileUtils.readFileToString(new File(passwordFile));
                 if (password.isEmpty()) {
-                    password = "admin";
+                    throw new Exception("Password should not be empty.");
                 }
                 handleLogin("admin", password, triggerText);
             } catch (IOException ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
@@ -811,7 +813,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForTableRowCount(String tableID, int count) {
-        waitForLoad(TIMEOUT, new TableRowCountCallBack(tableID, count));        
+        waitForLoad(TIMEOUT, new TableRowCountCallBack(tableID, count));
     }
 
     // Look at all those params. Maybe this isn't such a hot idea.
@@ -1147,7 +1149,7 @@ public class BaseSeleniumTestClass {
             }
         }
     };
-    
+
     class TableRowCountCallBack implements WaitForLoadCallBack {
         private String tableId;
         private int expectedCount;
@@ -1166,7 +1168,6 @@ public class BaseSeleniumTestClass {
                 return false;
             }
         }
-
     }
 
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {

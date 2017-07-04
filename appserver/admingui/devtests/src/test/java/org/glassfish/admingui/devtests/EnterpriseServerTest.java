@@ -130,15 +130,15 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
-        
+
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
-        
+
         gotoServerResourcesPage();
-        
+
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
-        
+
         gotoServerResourcesPage();
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
@@ -155,7 +155,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     public void gotoDasPage() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
     }
-    
+
     private void gotoServerResourcesPage() {
         reset();
         gotoDasPage();
