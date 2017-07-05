@@ -528,7 +528,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 } catch (NamingException e) {
                     deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                             new Object[] {jndiName});
-                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName), e);
+                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
+                    de.initCause(e);
                     throw de;
                 }
             }
