@@ -146,11 +146,12 @@ public class EjbServicesImpl implements EjbServices {
     }
 
     public void registerInterceptors(EjbDescriptor<?> ejbDesc, InterceptorBindings interceptorBindings) {
-
+    	//no need to continue with this work around as jboss has provided the resolution for https://issues.jboss.org/browse/WELD-2184
+    	
         // Work around bug that ejbDesc might be internal 299 descriptor.
-        if( ejbDesc instanceof org.jboss.weld.ejb.InternalEjbDescriptor ) {
-            ejbDesc = ((org.jboss.weld.ejb.InternalEjbDescriptor<?>)ejbDesc).delegate();
-        }
+       /* if( ejbDesc instanceof org.jboss.weld.module.ejb.InternalEjbDescriptor ) {
+            ejbDesc = ((org.jboss.weld.module.ejb.InternalEjbDescriptor<?>)ejbDesc).delegate();
+        }*/
 
          com.sun.enterprise.deployment.EjbDescriptor glassfishEjbDesc = (com.sun.enterprise.deployment.EjbDescriptor)
                 ((EjbDescriptorImpl<?>) ejbDesc).getEjbDescriptor();
@@ -356,6 +357,7 @@ public class EjbServicesImpl implements EjbServices {
         ejbInt.setBundleDescriptor(bundle);
         ejbInt.setInterceptorClassName(interceptor.getBeanClass().getName());
         ejbInt.setCDIInterceptor(true);
+        ejbInt.setInterceptor( interceptor );
 
         return ejbInt;
     }

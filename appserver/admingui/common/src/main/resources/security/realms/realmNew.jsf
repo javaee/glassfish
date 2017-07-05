@@ -77,8 +77,9 @@
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showUserButton" value="#{false}" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}/security-service");
         setPageSessionAttribute(key="rest-api" value="true");
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
         createMap(result="#{pageSession.valueMap}");

@@ -46,6 +46,7 @@ import java.io.*;
 import java.io.InputStream;
 import java.net.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -88,15 +89,15 @@ class DomainXmlPreParser {
         if (domainXml == null || xif == null || !StringUtils.ok(instanceNameIn))
             throw new IllegalArgumentException();
 
-        InputStream in = null;
-
-        try {
-            instanceName = instanceNameIn;
-            in = domainXml.openStream();
-            reader = xif.createXMLStreamReader(domainXml.toExternalForm(), in);
-            parse();
-            postProcess();
-            validate();
+        instanceName = instanceNameIn;
+        try (
+                InputStream in = domainXml.openStream();
+                InputStreamReader isr = new InputStreamReader(in, Charset.defaultCharset().toString())
+        ) {
+                reader = xif.createXMLStreamReader(domainXml.toExternalForm(), isr);
+                parse();
+                postProcess();
+                validate();
         }
         catch (DomainXmlPreParserException e) {
             throw e;
@@ -105,7 +106,7 @@ class DomainXmlPreParser {
             throw new DomainXmlPreParserException(e2);
         }
         finally {
-            cleanup(in);
+            cleanup();
         }
     }
 
@@ -143,13 +144,11 @@ class DomainXmlPreParser {
         }
     }
 
-    private void cleanup(InputStream in) {
+    private void cleanup() {
         // this code is so ugly that it lives here!!
         try {
             if (reader != null)
                 reader.close();
-            if (in != null)
-                in.close();
             reader = null;
         }
         catch (Exception ex) {
