@@ -141,8 +141,12 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
         gotoServerResourcesPage();
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
-        waitForButtonEnabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonEnabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
+
+        gotoServerResourcesPage();
+        selectTableRowByValue("propertyForm:resourcesTable", jndiName);
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:button2");
         waitForButtonDisabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
 
         /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
