@@ -115,6 +115,9 @@ test_run(){
 
 list_test_ids(){
     echo transaction_ee_all
+    echo transaction-ee-1
+    echo transaction-ee-2
+    echo transaction-ee-3
 }
 
 get_test_target(){
@@ -122,6 +125,9 @@ get_test_target(){
 		transaction_ee_all )
 			TARGET=all
 			export TARGET;;
+                * )
+                        TARGET=*
+                        export TARGET;;
 	esac
 
 }
