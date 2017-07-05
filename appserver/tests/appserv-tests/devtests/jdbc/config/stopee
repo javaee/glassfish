@@ -1,0 +1,113 @@
+#!/bin/sh
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# The contents of this file are subject to the terms of either the GNU
+# General Public License Version 2 only ("GPL") or the Common Development
+# and Distribution License("CDDL") (collectively, the "License").  You
+# may not use this file except in compliance with the License.  You can
+# obtain a copy of the License at
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
+# language governing permissions and limitations under the License.
+#
+# When distributing the software, include this License Header Notice in each
+# file and include the License file at LICENSE.txt.
+#
+# GPL Classpath Exception:
+# Oracle designates this particular file as subject to the "Classpath"
+# exception as provided by Oracle in the GPL Version 2 section of the License
+# file that accompanied this code.
+#
+# Modifications:
+# If applicable, add the following below the License Header, with the fields
+# enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyright [year] [name of copyright owner]"
+#
+# Contributor(s):
+# If you wish your version of this file to be governed by only the CDDL or
+# only the GPL Version 2, indicate your decision by adding "[Contributor]
+# elects to include this software in this distribution under the [CDDL or GPL
+# Version 2] license."  If you don't indicate a single choice of license, a
+# recipient has the option to distribute your version of this file under
+# either the CDDL, the GPL Version 2 or to extend the choice of license to
+# its licensees as provided above.  However, if you add GPL Version 2 code
+# and therefore, elected the GPL Version 2 license, then the option applies
+# only if the new code is made subject to such option by the copyright
+# holder.
+#
+
+for x in `cat $APS_HOME/devtests/jdbc/config/ee-config.properties`
+do
+    varval=`echo $x |cut -d'=' -f1`
+
+    if [ $varval = "admin.user" ];
+    then
+        AS_ADMIN_USER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.port" ];
+    then
+        AS_ADMIN_PORT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.password" ];
+    then
+        AS_ADMIN_PASSWORD=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.domain" ];
+    then
+        AS_ADMIN_DOMAIN=`echo $x |cut -d'=' -f2`
+    fi
+    if [ $varval = "nodeagent.name" ];
+    then
+        AS_ADMIN_NODEAGENT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "server.instance.name" ];
+    then
+        AS_ADMIN_SERVER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "cluster.name" ];
+    then
+        CLUSTER_NAME="sqe-cluster"
+    fi
+
+    if [ $varval = "clustered.instance.name" ];
+    then
+        CLUSTERED_INSTANCE_NAME="clustered_server"
+    fi
+
+done
+
+
+export AS_ADMIN_USER
+export AS_ADMIN_PASSWORD
+export AS_ADMIN_PORT
+export AS_ADMIN_DOMAIN
+export AS_ADMIN_NODEAGENT
+export AS_ADMIN_SERVER
+export CLUSTER_NAME
+export CLUSTERED_INSTANCE_NAME
+
+##---  End Variables Definitions --------
+
+# stop standalone server instance ----
+
+# stop nodeagent ----
+echo "stopping nodeagent:${AS_ADMIN_NODEAGENT}..."
+${S1AS_HOME}/bin/asadmin stop-node-agent ${AS_ADMIN_NODEAGENT}
+
+# sleep ----
+echo "sleeping for 15 seconds..."
+sleep 15
+
+# stop domain ----
+echo "stopping domain ${AS_ADMIN_DOMAIN}..."
+${S1AS_HOME}/bin/asadmin stop-domain ${AS_ADMIN_DOMAIN}
+
+echo "***All Server Processes Stopped!"
