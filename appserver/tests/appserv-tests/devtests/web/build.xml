@@ -360,15 +360,6 @@
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
 
-    <target name="21940-failures" depends="init-report">
-        <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
-        <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
-        <ant dir="servlet-4.0/defaultContextPathEar" target="all"/>
-        <ant dir="serverRedirectWithQueryString" target="all"/>
-        <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
-        <ant dir="ha/ssoFailover" target="all"/>
-    </target>
-
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
