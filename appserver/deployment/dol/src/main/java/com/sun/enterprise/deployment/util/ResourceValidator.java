@@ -560,7 +560,19 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      */
     private boolean isDefaultResource(String jndiName) {
         return (jndiName != null &&
-                (jndiName.equals("java:module/ModuleName") ||
+                (jndiName.equals("java:comp/DefaultDataSource") ||
+                        jndiName.equals("java:comp/DefaultJMSConnectionFactory") ||
+                        jndiName.equals("java:comp/ORB") ||
+                        jndiName.equals("java:comp/DefaultManagedExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
+                        jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
+                        jndiName.equals("java:comp/DefaultContextService") ||
+                        jndiName.equals("java:comp/UserTransaction") ||
+                        jndiName.equals("java:comp/TransactionSynchronizationRegistry") ||
+                        jndiName.equals("java:comp/BeanManager") ||
+                        jndiName.equals("java:comp/ValidatorFactory") ||
+                        jndiName.equals("java:comp/Validator") ||
+                        jndiName.equals("java:module/ModuleName") ||
                         jndiName.equals("java:app/AppName") ||
                         jndiName.equals("java:comp/InAppClientContainer")));
     }
