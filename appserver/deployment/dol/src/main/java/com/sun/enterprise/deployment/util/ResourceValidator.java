@@ -43,7 +43,6 @@ package com.sun.enterprise.deployment.util;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -51,7 +50,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
@@ -94,9 +92,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     @Inject
     Domain domain;
-
-    @Inject @Named( ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Server server;
 
     JNDINamespace myNamespace;
     
@@ -524,7 +519,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             // convert comp to module if req
             String convertedJndiName = getLogicalJNDIName(jndiName, env);
             if (!myNamespace.find(convertedJndiName, env)) {
-                // Do a context lookup only if we are on the correct instance
+                // Do a context lookup only if we are on the correct instance - Cluster case
                 try {
                     if(loadOnCurrentInstance()) {
                         InitialContext ctx = new InitialContext();
@@ -679,29 +674,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Copied from ApplicationLifeCycle.java
+     * Copy from ApplicationLifeCycle.java
+     * TODO: Cluster case - Implement
      */
     private boolean loadOnCurrentInstance() {
-        final DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
-        final Properties appProps = dc.getAppProps();
-        if (commandParams.enabled) {
-            // if the current instance match with the target
-            if (domain.isCurrentInstanceMatchingTarget(commandParams.target, commandParams.name(), server.getName(), dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class))) {
-                return true;
-            }
-            if (server.isDas()) {
-                String objectType =
-                        appProps.getProperty(ServerTags.OBJECT_TYPE);
-                if (objectType != null) {
-                    // if it's a system application needs to be loaded on DAS
-                    if (objectType.equals(DeploymentProperties.SYSTEM_ADMIN) ||
-                            objectType.equals(DeploymentProperties.SYSTEM_ALL)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return true;
     }
-
 }
