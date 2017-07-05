@@ -41,11 +41,27 @@
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:template match="/">
-<xsl:for-each select="tests/test">  
-[<xsl:value-of select="result/@status"/>] <xsl:value-of select="@name"/> : <xsl:value-of select="@description"/>
-</xsl:for-each>
-
-</xsl:template>
-
+    <xsl:template match="/">
+        <table border="1">
+            <tr bgcolor="#9acd32">
+                <th>Status</th>
+                <th>Test</th>
+                <th>Description</th>
+            </tr>
+            <xsl:for-each select="tests/test">
+                <tr>
+                    <xsl:choose>
+                        <xsl:when test="result/@status = 'PASSED'">
+                            <td bgcolor="green">[PASSED] </td>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <td bgcolor="red">[FAILED] </td>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <td><xsl:value-of select="@name"/> </td>
+                    <td><xsl:value-of select="@description"/></td>
+                </tr>
+            </xsl:for-each>
+        </table>
+    </xsl:template>
 </xsl:stylesheet>

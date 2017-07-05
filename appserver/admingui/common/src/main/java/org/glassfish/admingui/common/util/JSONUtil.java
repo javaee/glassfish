@@ -142,6 +142,7 @@ public class JSONUtil {
 		    case '\\':
 		    case '\'':
 		    case '"':
+                    case '=':
 			builder.append("\\");
 			builder.append(ch);
 			break;

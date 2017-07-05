@@ -1,0 +1,289 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<property environment="env"/>
+
+<target name="init-common" 
+	depends="setdefaultmode, setToolProperty,setS1ASclassPath,setS1AS80classPath,setS1WSclassPath,
+			setJWSDPclassPath,setTimeStamp">
+
+    <exec executable="uname" outputproperty="hostname">
+       <arg line="-n"/>
+    </exec>    
+    <exec executable="uname" outputproperty="osname">
+       <arg line="-s"/>
+    </exec>
+    
+   <property name="pe" value="Platform Edition of S1AS"/>
+
+<!-- Appserv properties -->
+   <property name="classpathsuffix.file" value="classpathsuffix.txt"/>
+   <property name="apptype" value="application"/>
+   <property name="appuser" value="j2ee"/>
+   <property name="apppwd" value="j2ee"/>   
+   <property name="authrealmname" value="file"/>
+   <property name="serverinstance.name" value="test-server"/>  
+   <echo  file="${admin.password.file}"  append="false"/>
+   <property name="as.props"
+     value="--user ${admin.user} --passwordfile ${admin.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+    <property name="createtables.value" value="false"/>
+    <property name="dropandcreatetables.value" value="false"/>
+    <property name="uniquetables.value" value="false"/>
+    <property name="droptables.value" value="false"/>
+<!-- resource properties -->
+    <property name="dest.type" value="queue"/>
+    <property name="dest.name" value="Queue"/>
+    <property name="jms.factory.name" value="jms/QCFactory"/>
+    <property name="jms.factory.type" value="javax.jms.QueueConnectionFactory"/>
+    <property name="jms.resource.name" value="jms/SampleQueue"/>
+    <property name="jms.resource.type" value="javax.jms.Queue"/>
+    <property name="jms.factory.type" 
+              value="javax.jms.QueueConnectionFactory" />
+    <property name="queue.property.name" value="imqDestinationName" />
+    <property name="queue.property.value" value="SampleQueue" />
+
+    <property name="jdbc.conpool.name" value="sqe-jdbc-pool"/>
+    <property name="jdbc.resource.name" value="jdbc/s1qeDB"/>
+    <property name="jdbc.resource.type" value="javax.sql.DataSource"/>
+    <property name="jdbc.xaresource.type" value="javax.sql.XADataSource"/>
+    <property name="pm.resource.name"   value="jdo/s1qePM" />
+    <property name="pm.factory.class" value="com.sun.jdo.spi.persistence.support.sqlstore.impl.PersistenceManagerFactoryImpl" />
+    <property name="imq.client.id" value=""/>
+    <property name="additional-params" value=""/>
+    <property name="ee-prefix" value=""/>
+
+<!-- MQ broker properties -->
+    <property name="mqbroker1.name" value="sqebroker1"/>
+    <property name="mqbroker1.port" value="7678"/>
+    <property name="mqbroker1.hostname" value="localhost"/>
+    <property name="mqbroker2.name" value="sqebroker2"/>
+    <property name="mqbroker2.port" value="7679"/>
+    <property name="mqbroker2.hostname" value="localhost"/>
+    <property name="mqbroker.name" value="sqebroker"/>
+    <property name="mqbroker.port" value="7676"/>
+    <property name="mqbroker.hostname" value="default_JMS_host"/>
+    <property name="mqadmin.user" value="admin"/>
+    <property name="mqadmin.password" value="admin"/>
+
+    <!-- pointbase properties -->
+    <!-- Changed to derby properties 
+    <property file="${env.APS_HOME}/devtests/jdbc/config/pointbase.properties"/>
+    <property name="db.root" value="${env.S1AS_HOME}/pointbase"/>
+    <property name="db.classpath" value="${db.root}/lib/pbtools.jar:${db.root}/lib/pbclient.jar:${db.root}/lib/pbembedded.jar"/>-->
+    <property file="${env.APS_HOME}/config/derby.properties"/>
+    <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
+    <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar:${env.APS_HOME}/sqetests/connector/lib/cci-derby-proc.jar"/>
+
+<!-- Test Harness properties -->
+    <property name="glassfish-acc.xml" value="${env.S1AS_HOME}/domains/domain1/config/glassfish-acc.xml"/>
+    <property name="build.base.dir" 
+        value="${env.APS_HOME}/build/${execution.mode}/${os.arch}_${hostname}_${osname}/${module}"/>
+    <property name="build.classes.dir" value="${build.base.dir}/classes"/>
+    <property name="assemble.dir" value="${build.base.dir}/archive"/>
+    <property name="results.dir" value="${build.base.dir}/results"/>
+
+    <property name="s1astest.classpath" value="${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}:${db.classpath}:${env.APS_HOME}/lib/testdriver.jar"/>
+
+    <property name="s1as80test.classpath" value="${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${s1as80.classpath}:${db.classpath}:${env.APS_HOME}/lib/testdriver.jar"/>
+
+    <property name="s1wstest.classpath" value="${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${s1ws.classpath}:${env.APS_HOME}/lib/testdriver.jar"/>
+
+    <property name="jwsdptest.classpath" value="${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${jwsdp.classpath}:${env.APS_HOME}/lib/testdriver.jar"/>
+
+    <property name="ejbjar.classes" value="**/*Local*.class,**/*Remote*.class,**/*Home*.class,**/*Bean*.class,**/*.dbschema,**/*EJB*.class,**/*Exception.class"/>
+
+    <property name="appclientjar.classes" value="**/*Local*.class,**/*Remote*.class,**/*Client*.class" />
+    <property name="webclient.war.files" value="${build.classes.dir}"/>
+    <property name="webclient.war.classes" value="**/*Servlet*.class"/>
+    <property name="war.classes" value="**/*class"/>
+
+    <property name="test.name" value=""/>
+    <property name="test.description" value=""/>
+    <property name="component.name" value="${appname}App"/>
+
+    <property name="test.base" value="pe"/>
+    <property name="base.report.dir" 
+	value="${env.APS_HOME}/reports/${test.base}-${execution.mode}"/>
+<!--
+    <property name="results.golden.list.file" 
+	value="${env.APS_HOME}/build-config/results_baseline.properties"/>
+    <property name="results.analysis.file" value="test_analysis"/>
+    <property name="results.list.file" 
+	value="${env.rPS_HOME}/build-config/results.properties"/>
+    <property name="results.summary.file" value="summaryreport"/>
+-->
+<!-- Test Harness properties for WebTest ============ -->
+    <property name="webtest.classname" value="org.apache.tomcat.task.GTest"/>
+    <property name="webtest.classpath" value="${env.APS_HOME}/lib/testdriver.jar:${env.APS_HOME}/lib/commons-logging.jar"/>
+    <property name="webtest.report.dir" value="${base.report.dir}/${os.arch}_${hostname}_${osname}"/>
+    <antcall target="create-report-dir" />
+</target>
+
+<target name="create-report-dir" unless="${webtest.report.dir}">
+  <mkdir dir="${webtest.report.dir}"/>
+</target>
+
+<!-- default is PE mode of operation -->
+<target name="setdefaultmode" unless="execution.mode">
+    <echo message="So you are using Platform Edition"/>
+    <property file="${env.APS_HOME}/devtests/jdbc/config/pe-config.properties"/>
+    <antcall target="print-props"/>
+</target>
+
+<target name="setS1ASclassPath" unless="s1as.classpath">
+  <path id="s1as_classpath_jars">
+    <fileset dir="${env.S1AS_HOME}/lib" includes="*.jar,*.zip"/>
+    <fileset dir="${env.APS_HOME}/lib" includes="**/*.jar,**/*.zip"/>
+    <fileset dir="${env.ANT_HOME}/lib" includes="*.jar"/>
+  </path>
+  <pathconvert pathsep=":" 
+    property="s1as.classpath" 
+    refid="s1as_classpath_jars"/>
+</target>
+
+<target name="setS1AS80classPath" if="AS80">
+  <path id="s1as80_classpath_jars">
+    <fileset dir="${env.S1AS80_HOME}/lib" includes="*.jar,*.zip"/>
+    <fileset dir="${env.APS_HOME}/lib" includes="**/*.jar,**/*.zip"/>
+    <fileset dir="${env.S1AS80_HOME}/lib/ant/lib" includes="*.jar"/>
+  </path>
+  <pathconvert pathsep=":"
+    property="s1as80.classpath"
+    refid="s1as80_classpath_jars"/>
+</target>
+
+<target name="setS1WSclassPath" if="isS1WS">
+  <path id="s1ws_classpath_jars">
+    <fileset dir="${env.IWS_SERVER_HOME}/bin/https/jar" 
+includes="*.jar"/>
+  </path>
+  <pathconvert pathsep=":" 
+    property="s1ws.classpath" 
+    refid="s1ws_classpath_jars"/>
+</target>
+
+<target name="setJWSDPclassPath" if="isJWSDP">
+  <path id="jwsdp_classpath_jars">
+    <fileset dir="${env.JWSDP_HOME}/common/lib" includes="*.jar"/>
+    <fileset dir="${env.JWSDP_HOME}/jstl/lib" includes="*.jar"/>
+  </path>
+  <pathconvert pathsep=":"
+    property="jwsdp.classpath"
+    refid="jwsdp_classpath_jars"/>
+</target>
+
+<target name="setToolProperty" 
+  depends="setOSConditions,setToolWin,setToolUnix">
+</target>
+
+<target name="setOSConditions">  
+  <condition property="isUnix">
+    <os family="unix"/>
+  </condition>
+  <condition property="isWindows">
+    <os family="windows" />
+  </condition>
+</target>
+
+<target name="setToolWin" if="isWindows">  
+  <property name="APPCLIENT" value="${env.S1AS_HOME}/bin/appclient.bat"/>
+  <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin.bat"/>
+  <property name="IMQCMD" value="${env.S1AS_HOME}/imq/bin/imqcmd.exe"/>
+  <property name="IMQBROKERD" value="${env.S1AS_HOME}/imq/bin/imqbrokerd.exe"/>
+  <property name="ASANT" value="${env.S1AS_HOME}/bin/asant.bat"/>
+  <property name="CAPTURESCHEMA" value="${env.S1AS_HOME}/bin/capture-schema.bat"/>
+  <property name="CHECKPATCH" value="${env.S1AS_HOME}/bin/checkpatch.bat"/>
+  <property name="INSTALLPATCH" value="${env.S1AS_HOME}/bin/installpatch.bat"/>
+  <property name="JSPC" value="${env.S1AS_HOME}/bin/jspc.bat"/>
+  <property name="LISTPATCH" value="${env.S1AS_HOME}/bin/listpatch.bat"/>
+  <property name="PACKAGE-APPCLIENT" value="${env.S1AS_HOME}/bin/package-appclient.bat"/>
+  <property name="VERIFIER" value="${env.S1AS_HOME}/bin/verifier.bat"/>
+  <property name="RMIC" value="${env.S1AS_HOME}/jdk/bin/rmic.exe"/>
+  <property name="TNAMESERV" value="${env.S1AS_HOME}/jdk/bin/tnameserv.exe"/>
+  <property name="WSCOMPILE" value="${env.S1AS_HOME}/bin/wscompile.bat"/>
+</target>
+
+<target name="setToolUnix" if="isUnix">  
+  <property name="APPCLIENT" value="${env.S1AS_HOME}/bin/appclient"/>
+  <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin"/>
+  <property name="IMQCMD" value="${env.S1AS_HOME}/imq/bin/imqcmd"/>
+  <property name="IMQBROKERD" value="${env.S1AS_HOME}/imq/bin/imqbrokerd"/>
+  <property name="ASANT" value="${env.S1AS_HOME}/bin/asant"/>
+  <property name="CAPTURESCHEMA" value="${env.S1AS_HOME}/bin/capture-schema"/>
+  <property name="CHECKPATCH" value="${env.S1AS_HOME}/bin/checkpatch"/>
+  <property name="INSTALLPATCH" value="${env.S1AS_HOME}/bin/installpatch"/>
+  <property name="JSPC" value="${env.S1AS_HOME}/bin/jspc"/>
+  <property name="LISTPATCH" value="${env.S1AS_HOME}/bin/listpatch"/>
+  <property name="PACKAGE-APPCLIENT" value="${env.S1AS_HOME}/bin/package-appclient"/>
+  <property name="VERIFIER" value="${env.S1AS_HOME}/bin/verifier"/>
+  <property name="RMIC" value="${env.S1AS_HOME}/jdk/bin/rmic"/>
+  <property name="TNAMESERV" value="${env.S1AS_HOME}/jdk/bin/tnameserv"/>
+  <property name="WSCOMPILE" value="${env.S1AS_HOME}/bin/wscompile"/>
+</target>
+
+<target name="fixFiles" depends="setOSConditions" >
+  <antcall target="convUnix" />
+  <antcall target="convWin" />
+</target>
+
+<target name="convUnix" if="isUnix">
+  <fixcrlf srcdir="."
+    eol="lf" eof="remove"
+    includes="**/*.MF"/>
+  <echo message="fixed files for Unix"/>
+</target>
+
+<target name="convWin" if="isWindows">
+  <fixcrlf srcdir="."
+    eol="crlf" eof="asis"
+    includes="**/*.MF"/>
+  <echo message="fixed files for Windows"/>
+</target>
+
+<target name="setTimeStamp">
+ <tstamp>
+    <format property="date" pattern="d-MMMM-yyyy" locale="en"/>
+  </tstamp>
+</target>
+
+<target name="ee-common" depends="setToolProperty"/>
+

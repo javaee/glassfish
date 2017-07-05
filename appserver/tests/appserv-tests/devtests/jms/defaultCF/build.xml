@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="jms-default-connection-factory-ejbApp" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="clean,build,create-resources,deploy,run,undeploy,delete-resources"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.classes.dir}"/>
+        <echo message="common.xml: Compiling test source files" level="verbose"/>
+        <javac srcdir="ejb"
+            destdir="${build.classes.dir}"
+            classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar"
+            debug="on"
+            includeantruntime="false"
+            failonerror="true">
+            <compilerarg value="-Djava.endorsed.dirs=${env.S1AS_HOME}/modules/endorsed"/>
+        </javac>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/SessionBeanDefault*.class" />
+            <param name="appclientjar.classes" 
+              value="**/*Client.class,**/SessionBeanDefault*.class" />
+        </antcall>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="create-resources" depends="init-common">
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="create_resources.asadmin"/>
+        </antcall>
+    </target>
+    
+    <target name="delete-resources" depends="init-common">
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="delete_resources.asadmin"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="init-common">
+        <java fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${assemble.dir}/${appname}-client.jar:${env.APS_HOME}/lib/reporter.jar"
+              classname="org.glassfish.test.jms.defaultcf.client.Client">
+            <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+        <echo>         
+          ant all to test jms default connection factory
+        </echo>
+    </target>
+</project>

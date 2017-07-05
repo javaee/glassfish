@@ -57,11 +57,7 @@
     &testproperties;
     &commonSecurity;
 
-    <!--<target name="all" depends="clean, build-providers, setup, build-deploy, run, undeploy, unsetup"/>-->
-    <target name="all">
-        <echo message="FIXME: failing test due to a bug in saaj-ri 1.4.0-b11" />
-        <echo message="Known failure see IDCINTER-82"/>
-    </target>
+    <target name="all" depends="clean, build-providers, setup, build-deploy, run, undeploy, unsetup"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
