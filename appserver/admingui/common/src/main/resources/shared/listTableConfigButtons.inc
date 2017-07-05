@@ -61,7 +61,8 @@
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
 
             if (#{pageSession['rest-api']}){
-                gf.deleteConfigCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", target="#{pageSession.valueMap['target']}", selectedRows="${selectedRows}");
+                urlencode(value="#{pageSession.valueMap['target']}" encoding="UTF-8" result="#{encodedTargetName}");
+                gf.deleteConfigCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", target="#{encodedTargetName}", selectedRows="${selectedRows}");
             }
             //REST-TODO: need to ensure page that has additionalDeleteHandler to change to use rest-api
             if (#{pageSession.additionalDeleteHandler}){
