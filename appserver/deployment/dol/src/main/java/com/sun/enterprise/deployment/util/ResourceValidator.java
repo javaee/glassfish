@@ -545,10 +545,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         String newName = convertModuleOrAppJNDIName(jndiName, env);
         // JNDI names starting with java:app and java:module are taken care of
-        if (!myNamespace.find(newName, env)) {
-            // fall through
-            validateJNDIRefs(jndiName, env);
-        }
+//        if (!myNamespace.find(newName, env)) {
+//            // fall through
+//            validateJNDIRefs(jndiName, env);
+//        }
     }
 
     /**
