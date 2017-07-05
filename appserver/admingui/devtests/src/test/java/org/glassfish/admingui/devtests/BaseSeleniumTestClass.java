@@ -413,10 +413,13 @@ public class BaseSeleniumTestClass {
         if (IS_SECURE_ADMIN_ENABLED) {
             try {
                 waitForLoginPageLoad(timeout);
-                String passwordFile = SeleniumHelper.getParameter("AS_ADMIN_PASSWORDFILE", "");
+                String passwordFile = SeleniumHelper.getParameter("passwordfile", "");
                 String password = FileUtils.readFileToString(new File(passwordFile));
-                if (password.isEmpty()) {
-                    throw new Exception("Password should not be empty.");
+                if(password.isEmpty() || !(password.startsWith("AS_ADMIN_PASSWORD=")) || password.length() <= 18) {
+                  throw new Exception("Password is not set correctly.");
+                } else {
+                    int index = password.indexOf("=");
+                    password = password.substring(index + 1, password.length() - 1);
                 }
                 handleLogin("admin", password, triggerText);
             } catch (IOException ex) {
