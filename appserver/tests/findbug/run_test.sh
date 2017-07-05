@@ -53,6 +53,12 @@ findbugs_run(){
 	# Run findbugs on open source ws.
 	echo "Running findbugs on ws"
 	cd $WORKSPACE/main
+  
+      if [ -n "$TARGET_DIR" ]; then
+        echo "Running findbugs in $TARGET_DIR"
+        cd $TARGET_DIR
+      fi
+
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -Pfindbugs clean install
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -Pfindbugs findbugs:findbugs
 
