@@ -134,8 +134,19 @@ run_test_id(){
       findbugs_low_priority_all_run
       generate_findbugs_low_priority_all_result;;
   esac
-  upload_test_results
-  delete_bundle
+}
+
+post_test_run(){
+    if [[ $? -ne 0 ]]; then
+    	if [[ $TEST_ID = "findbugs_all" ]]; then
+	  		generate_findbugs_result || true
+	  	fi
+	  	if [[ $TEST_ID = "findbugs_low_priority_all" ]]; then
+	  		generate_findbugs_low_priority_all_result || true
+	  	fi
+	fi
+    upload_test_results
+    delete_bundle
 }
 
 
@@ -151,5 +162,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+        trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac
