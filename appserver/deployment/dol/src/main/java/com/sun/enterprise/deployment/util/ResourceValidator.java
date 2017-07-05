@@ -165,82 +165,50 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
 
         for (Object next : env.getMessageDestinationReferenceDescriptors()) {
-            parseResources((MessageDestinationReferenceDescriptor) next, env);
+            storeResource(((MessageDestinationReferenceDescriptor) next).getName(), env);
         }
 
         for (Object next : env.getEnvironmentProperties()) {
-            parseResources((EnvironmentProperty) next, env);
+            storeResource(((EnvironmentProperty) next).getName(), env);
         }
 
+        /**
+         * TODO: App client doesn't support some resource descriptors. Might need to fail deployment in such cases.
+         */
         for (Object next : env.getAllResourcesDescriptors()) {
-            parseResources((ResourceDescriptor) next, env);
+            storeResource(((ResourceDescriptor) next).getName(), env);
         }
 
         for (Object next : env.getEntityManagerReferenceDescriptors()) {
-            parseResources((EntityManagerReferenceDescriptor) next, env);
+            storeResource(((EntityManagerReferenceDescriptor) next).getName(), env);
         }
 
         for (Object next : env.getEntityManagerFactoryReferenceDescriptors()) {
-            parseResources((EntityManagerFactoryReferenceDescriptor) next, env);
+            storeResource(((EntityManagerFactoryReferenceDescriptor) next).getName(), env);
         }
 
         for (Object next : env.getEjbReferenceDescriptors()) {
-            parseResources((EjbReferenceDescriptor) next, env);
+            storeResource(((EjbReferenceDescriptor) next).getName(), env);
         }
 
         for (Object next : env.getServiceReferenceDescriptors()) {
-            parseResources((ServiceReferenceDescriptor) next, env);
+            storeResource(((ServiceReferenceDescriptor) next).getName(), env);
         }
     }
 
     private void parseResources(ResourceReferenceDescriptor resRef, JndiNameEnvironment env) {
         resRef.checkType();
-        String name = getLogicalJNDIName(resRef.getName(), env);
-        myNamespace.store(name, env);
+        storeResource(resRef.getName(), env);
     }
 
     private void parseResources(ResourceEnvReferenceDescriptor resEnvRef, JndiNameEnvironment env) {
         resEnvRef.checkType();
-        String name = getLogicalJNDIName(resEnvRef.getName(), env);
-        myNamespace.store(name, env);
+        storeResource(resEnvRef.getName(), env);
     }
 
-    private void parseResources(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(msgDestRef.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    private void parseResources(EnvironmentProperty envProp, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(envProp.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    /**
-     * TODO: App client doesn't support some resource descriptors. Might need to fail deployment in such cases.
-     */
-    private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(resourceDescriptor.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    private void parseResources(EntityManagerReferenceDescriptor emRef, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(emRef.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    private void parseResources(EntityManagerFactoryReferenceDescriptor entMgrFacRef, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(entMgrFacRef.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    private void parseResources(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(ejbRef.getName(), env);
-        myNamespace.store(name, env);
-    }
-
-    private void parseResources(ServiceReferenceDescriptor serviceRef, JndiNameEnvironment env) {
-        String name = getLogicalJNDIName(serviceRef.getName(), env);
-        myNamespace.store(name, env);
+    private void storeResource(String name, JndiNameEnvironment env) {
+        String logicalJNDIName = getLogicalJNDIName(name, env);
+        myNamespace.store(logicalJNDIName, env);
     }
 
     /**
@@ -292,7 +260,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private void accept(EjbDescriptor ejb) {
-        // TODO: MDB: priority order for destination?
+        // TODO: MDB
         if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
             EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
             String jndiName = descriptor.getJndiName();
@@ -392,7 +360,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     /**
      * Validate resources stored in ResourceEnvRefDescriptor.
      * Managed Bean references are validated here.
-     * TODO: Need to fail deployment in case a JNDI lookup is used to get a validator?
      */
     private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env) {
         String jndiName = resourceEnvRef.getJndiName();
@@ -493,7 +460,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * TODO: Check what to implement
+     * TODO: @EJB
      */
     private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
 
@@ -566,7 +533,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 } catch (NamingException e) {
                     deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                             new Object[] {jndiName});
-                    throw new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
+                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName), e);
+                    throw de;
                 }
             }
         }
@@ -597,19 +565,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      */
     private boolean isDefaultResource(String jndiName) {
         return (jndiName != null &&
-                (jndiName.equals("java:comp/DefaultDataSource") ||
-                        jndiName.equals("java:comp/DefaultJMSConnectionFactory") ||
-                        jndiName.equals("java:comp/ORB") ||
-                        jndiName.equals("java:comp/DefaultManagedExecutorService") ||
-                        jndiName.equals("java:comp/DefaultManagedScheduledExecutorService") ||
-                        jndiName.equals("java:comp/DefaultManagedThreadFactory") ||
-                        jndiName.equals("java:comp/DefaultContextService") ||
-                        jndiName.equals("java:comp/UserTransaction") ||
-                        jndiName.equals("java:comp/TransactionSynchronizationRegistry") ||
-                        jndiName.equals("java:comp/BeanManager") ||
-                        jndiName.equals("java:comp/ValidatorFactory") ||
-                        jndiName.equals("java:comp/Validator") ||
-                        jndiName.equals("java:module/ModuleName") ||
+                (jndiName.equals("java:module/ModuleName") ||
                         jndiName.equals("java:app/AppName") ||
                         jndiName.equals("java:comp/InAppClientContainer")));
     }
@@ -654,7 +610,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                         moduleNamespaces.put(entry.getKey(), jndiNames);
                     }
                     else {
-                        jndiNames.addAll(resources.get(entry.getValue()));
+                        jndiNames.addAll(entry.getValue());
                     }
                 }
             }
