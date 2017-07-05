@@ -42,11 +42,13 @@ package com.sun.s1asdev.jdbc.tracingsql.logger;
 
 import org.glassfish.api.jdbc.SQLTraceListener;
 import org.glassfish.api.jdbc.SQLTraceRecord;
-import javax.sql.*;
-import java.sql.*;
-import javax.naming.*;
-import java.rmi.*;
-import java.util.*;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class TraceLogger implements SQLTraceListener {
    
@@ -63,21 +65,27 @@ public class TraceLogger implements SQLTraceListener {
      */
     public void sqlTrace(SQLTraceRecord record) {
 
-	try {
-	    //System.out.println("### ds=" + ds);
+        try {
+            //System.out.println("### ds=" + ds);
 
-	    Object[] params = record.getParams();
-	    StringBuffer argsBuf = new StringBuffer();
-	    if(params != null && params.length > 0) {
-		for(Object param : params) {
-                    argsBuf.append(param.toString() + ";");
-		}
-	    }
-	    //System.out.println(">>>>> class=" + record.getClassName() + " method=" + record.getMethodName() + " args=" + argsBuf.toString());
-	    writeRecord(ds, record.getClassName(), record.getMethodName(), argsBuf.toString());
-	} catch(Exception ex) {
-	    ex.printStackTrace();
-	}
+            Object[] params = record.getParams();
+            StringBuffer argsBuf = new StringBuffer();
+            if (params != null && params.length > 0) {
+                for (Object param : params) {
+                    if (param != null) {
+                        argsBuf.append(param.toString() + ";");
+                    }
+                }
+            }
+            System.out.println(
+                "SQLTrace called: Details: class=" + record.getClassName() +
+                    " method=" + record.getMethodName() + " args=" +
+                    argsBuf.toString());
+            writeRecord(ds, record.getClassName(), record.getMethodName(),
+                argsBuf.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void writeRecord(DataSource ds, String classname, String methodname, String args) {
