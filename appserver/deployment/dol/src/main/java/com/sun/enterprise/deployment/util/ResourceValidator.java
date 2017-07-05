@@ -332,6 +332,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         // TODO: MDB
         if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
             EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
+            boolean validationRequired = descriptor.getMessageListenerType().equals("javax.jms.MessageListener");
             String jndiName = descriptor.getJndiName();
             if (jndiName == null || "".equals(jndiName)) {
                 MessageDestinationDescriptor destDescriptor = descriptor.getMessageDestination();
@@ -341,7 +342,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (jndiName == null || "".equals(jndiName)) {
                 jndiName = descriptor.getActivationConfigValue("destinationLookup");
             }
-            // validateJNDIRefs(jndiName, ejb);
+            if (validationRequired)
+                validateJNDIRefs(jndiName, ejb);
         }
         for (Object next : ejb.getResourceReferenceDescriptors()) {
             accept((ResourceReferenceDescriptor) next, ejb);
@@ -616,7 +618,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 } catch (NamingException e) {
                     deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                             new Object[] {jndiName});
-                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName), e);
+                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
+                    de.initCause(e);
                     throw de;
                 }
             }
