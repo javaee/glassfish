@@ -625,7 +625,7 @@ public class ApplicationArchivist extends Archivist<Application> {
                 if (!appArchive.exists("META-INF/application.xml")) {
                     if (aModule.getModuleType().equals(DOLUtils.warType())) {
                         WebBundleDescriptor wbd = (WebBundleDescriptor) descriptor;
-                        if (wbd.getContextRoot() != null && wbd.getContextRoot() != "")
+                        if (wbd.getContextRoot() != null && !wbd.getContextRoot().equals(""))
                             aModule.setContextRoot(wbd.getContextRoot());
                         else
                             aModule.setContextRoot(aModule.getModuleName());
