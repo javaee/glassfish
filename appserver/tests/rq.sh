@@ -83,7 +83,7 @@ while getopts ":b:t:g:e:u:al" opt; do
 	l)	test_ids=(`list_test_ids`)
 		echo ${test_ids[@]} | tr " " "\n"
 		exit 0;;
-	e)  email=$OPTARG;;
+	e)  GLASSFISH_REMOTE_QUEUE_EMAIL=$OPTARG;;
 	u)  url=$OPTARG;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
@@ -103,15 +103,16 @@ if [[ -z $test_ids ]]; then
 	echo -e $USAGE
 	exit 1
 fi
-if [[ -z $email && ! -z $branch ]]; then
+if [[ -z $GLASSFISH_REMOTE_QUEUE_EMAIL && ! -z $branch ]]; then
 	echo "EMAIL_ID is missing"
 	echo -e $USAGE
 	exit 1
 fi
 fork_origin=`git config --get remote.origin.url`
 test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`
-params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&URL=${url}&EMAIL_ID=${email}"
+params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&URL=${url}&EMAIL_ID=${GLASSFISH_REMOTE_QUEUE_EMAIL}"
 status=`curl -s -o /dev/null -w "%{http_code}" -X POST "${GLASSFISH_REMOTE_QUEUE_URL}/buildWithParameters?${params}&delay=0sec"`
+echo $status
 echo "----------------------------------------------------------------------------"
 if [[ ${status} -eq 201 ]]; then
 	printf "RQ triggered successfully. You would get the job link via email shortly\n"
