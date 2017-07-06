@@ -333,14 +333,19 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
             EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
             boolean validationRequired = descriptor.getMessageListenerType().equals("javax.jms.MessageListener");
-            String jndiName = descriptor.getJndiName();
+            // Do not validate in case the MQ destination is specified directly
+            String destination = descriptor.getActivationConfigValue("destination");
+            if (destination != null && destination.length() > 0)
+                validationRequired = false;
+
+            String jndiName = descriptor.getActivationConfigValue("destinationLookup");
+            if (jndiName == null || "".equals(jndiName)) {
+                jndiName = descriptor.getJndiName();
+            }
             if (jndiName == null || "".equals(jndiName)) {
                 MessageDestinationDescriptor destDescriptor = descriptor.getMessageDestination();
                 if (destDescriptor != null)
                     jndiName = destDescriptor.getJndiName();
-            }
-            if (jndiName == null || "".equals(jndiName)) {
-                jndiName = descriptor.getActivationConfigValue("destinationLookup");
             }
             if (validationRequired)
                 validateJNDIRefs(jndiName, ejb);
