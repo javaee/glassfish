@@ -299,7 +299,7 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
 	get_test_target $1
-	if [[ $1 = "ejb_all" ]]; then
+	if [[ $1 = "ejb_all" ] -o [ $1 = ejb_group* ]]; then
 		test_run_ejb
 	elif [[ $1 = "ejb_timer_cluster_all" ]]; then
 		test_run_ejb_timer_cluster
