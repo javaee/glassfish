@@ -327,8 +327,8 @@ public class ApplicationValidator extends ComponentValidator
     final String APPCLIENT_LEVEL = "ACLevel:";
     final String WEBBUNDLE_LEVEL = "WBDLevel:";
 
-    Set<EnvironmentProperty> environmentProperties = application
-        .getEnvironmentProperties();
+    Set<EnvironmentProperty> environmentProperties = application != null ? application
+        .getEnvironmentProperties() : null;
 
     for (EnvironmentProperty environmentProperty : environmentProperties) {
       String jndiName = environmentProperty.getName();
