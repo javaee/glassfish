@@ -42,6 +42,8 @@ package org.glassfish.admingui.devtests.util;
 import com.thoughtworks.selenium.Selenium;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -114,7 +116,13 @@ public class SeleniumHelper {
     }
 
     public String getBaseUrl() {
-        return "http://localhost:" + getParameter("admin.port", "4848");
+        String hostName = null;
+        try {
+            hostName = InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "http://" + hostName + ":" + getParameter("admin.port", "4848");
     }
 
     public WebDriver getDriver() {
