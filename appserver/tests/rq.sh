@@ -43,8 +43,8 @@ USAGE="Usage:\n\n 1. rq.sh -l ---> List all available test identifiers without r
 	   2. rq.sh -b <branch> -a ---> For running all tests in remote branch\n\
 	   3. rq.sh -b <branch> -g <test_group_name> ---> For running a test group\n\
 	   4. rq.sh -b <branch> -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests\n\
-	   5. rq.sh -u <glassfish binary url> -a ---> For running all tests with GlassFish binary provided in the url.-u option works with -a, -g and -t options as well\n\
-	   6. rq.sh -b <branch> -a -e <email-id> ---> For getting the test results in the email id.This workes with -a -t and -g options"
+	   5. rq.sh -u <glassfish binary url>  -a|-u|-t ---> For running all tests with GlassFish binary provided in the http url.-u option works with -a, -g and -t options as well\n\
+	   6. rq.sh -b <branch> -a|-u|-t -e <email-id> ---> For getting the test results in the email id.This works with -a -t and -g options"
 	   
 
 list_test_ids(){
@@ -115,7 +115,7 @@ status=`curl -s -o /dev/null -w "%{http_code}" -X POST "${GLASSFISH_REMOTE_QUEUE
 echo $status
 echo "----------------------------------------------------------------------------"
 if [[ ${status} -eq 201 ]]; then
-	printf "RQ triggered successfully. You would get the job link via email shortly\n"
+	printf "RQ triggered successfully. You will get the job link via email shortly\n"
 	echo "----------------------------------------------------------------------------"
 else
 	printf "Issue in RQ client.Please check your settings\n"
