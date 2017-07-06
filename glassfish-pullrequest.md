@@ -12,7 +12,7 @@ $ git config --global user.email "your.name@example.com"
 * [Check](https://help.github.com/articles/checking-for-existing-ssh-keys/) for existing SSH keys. If existing SSH keys are not present, please [generate](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) new SSH keys.
 * Login to GitHub with your credentials.
 * [Add](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/) your SSH key to your GitHub Account.
-* [Fork](https://help.github.com/articles/fork-a-repo/)the [GlassFish](https://github.com/javaee/glassfish/) GitHub repository.
+* [Fork](https://help.github.com/articles/fork-a-repo/) the [GlassFish](https://github.com/javaee/glassfish/) GitHub repository.
  \(If you get an error message "You have existing forks of this repository”, then it means you have already forked the repository or you have your own repository named glassfish. You can either reuse the old fork or delete your exisiting glassfish repository. In case you delete, you need to re-fork it.\)
 * [Clone](https://help.github.com/articles/cloning-a-repository/) your forked repository.
 ```
