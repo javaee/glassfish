@@ -1,9 +1,9 @@
-## GlassFish Fork Pull Request Based Workflow on GitHub
+# GlassFish Fork Pull Request Based Workflow on GitHub
 
-### <a name="pre"></a>Prerequisite 
+## <a name="pre"></a>Prerequisite 
 Please sign the Oracle Contributor Agreement \([OCA](http://www.oracle.com/technetwork/community/oca-486395.html)\) and get your GitHub username included. If you signed the OCA but GitHub username is not included,  please send an email to [David Delabassee](mailto:david.delabassee@oracle.com) to fix it. You can then work with the respective project/module owners or reviewers to get your pull requests reviewed and approved.
 
-### One Time Setup
+## One Time Setup
 * [Setup](https://help.github.com/articles/set-up-git/) Git.
  ```
 $ git config --global user.name "Your Name"
@@ -29,7 +29,7 @@ upstream    git@github.com:javaee/glassfish.git (push)
 ```
 * If you have configured HTTPS URLs for your remotes and want to change to GIT URLs, refer to [this doc](https://help.github.com/articles/changing-a-remote-s-url/) to re-configure the remote URLs.
 
-### Raising a Pull Request 
+## Raising a Pull Request 
 * Sync the master of your fork with upstream master.  
 ```  
 $ git fetch upstream 
@@ -57,9 +57,9 @@ $ git commit -m "my commit message"
 * Make sure you put a proper 'title' for the Pull Request. The title of the Pull Request would become the commit message. Instead of giving 'title' like "Iss xxxx" or "Fixes #xxxxx", consider giving a proper one line 'title' for the Pull Request like "Fixes xxx : <brief description about the issue/fix>"
 * In the Pull Request description (body), please mention "Fixes #xxxxx" in order to link the Pull Request with the Issue you are fixing.
 
-### Triggering GlassFish CI tests on your Pull Request
+## Triggering GlassFish CI tests on your Pull Request
 
-##### <a name="tmwf"></a>Workflow for GitHub GlassFish Team Members
+### <a name="tmwf"></a>Workflow for GitHub GlassFish Team Members
 1. To trigger the pipeline CI run (to run all GlassFish gating tests), add a comment in the Pull Request that says **\"@glassfishrobot Run CI tests please\"** (case insensitive). You can add it as an original comment text \(with only this text\)  or a separate comment with only this text. Including this text as part of a longer comment is not supported. This step is mandatory. When you add such a comment, our infrastructure would know that you want to run all CI tests for your Pull Request.
 2. Within minutes you will see a comment from **glassfishrobot**\(GlassFish CI bot\) that says **\"Starting CI tests run\"**. This indicates that all the gating tests (all GlassFish dev tests and unit tests that needs to be successful for each commit) have been triggered on your Pull Request in GlassFish CI infrastructure.
 3. On completion of all the tests, glassfishrobot will add a comment in your Pull Request that says **\"All CI tests successful\"** if all the tests passed or **\"One or more CI tests failed\"** if there are test failures.
@@ -69,7 +69,7 @@ $ git commit -m "my commit message"
 7. If CI tests pass and code review has been approved, changes will be merged by the administrator.
 
 
-##### Workflow for Non-GlassFish Team Contributors
+### Workflow for Non-GlassFish Team Contributors
 1. If an external contributor (a contributor who is not a member of the 'GlassFish' team in GitHub ) raises a Pull Request, glassfishrobot will update the Pull Request with the following two comments  
 **\"Review needed from GlassFish team members\"**   
 **\"Please sign Oracle Contributor Agreement(OCA) to contribute in GlassFish project if you have not done that already.\"**  
