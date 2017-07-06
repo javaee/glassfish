@@ -45,51 +45,48 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 ]>
 
-<project name="deployment-ejb31-jndivalidation-resourceref-CorrectURLCustomResource-App" default="all" basedir=".">
+<project name="deployment-ejb31-jndivalidation-resourceref-CorrectEnvProps-App" default="all" basedir=".">
 
     &commonBuild;
 
-    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectURLCustomResource"/>
+    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectEnvProps"/>
     <property name="archivedir" value="${build}/archives"/>
     <property name="contextroot" value="${testName}"/>
 
     <target name="prepare" depends="init">
         <mkdir dir="${build}"/>
         <mkdir dir="${archivedir}"/>
-        <property name="all.war" value="${archivedir}/${testName}-web.war"/>
+        <property name="web.war" value="${archivedir}/${testName}-web.war"/>
+        <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
+        <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="src" destdir="${build}" debug="on" failonerror="true">
+        <javac srcdir="ejbModule" destdir="${build}" debug="on" failonerror="true">
+         <classpath refid="gfv3.classpath"/>
+         </javac>
+        <javac srcdir="webModule" destdir="${build}" debug="on" failonerror="true">
          <classpath refid="gfv3.classpath"/>
          </javac>
     </target>
 
     <target name="assemble" depends="compile">
-        <war destfile="${all.war}" needxmlfile="false">
-            <classes dir="${build}" excludes="**/*.war"/>
-            <fileset dir="WebContent">
-            </fileset>
+        <war destfile="${web.war}" webxml="descriptor/web.xml">
+            <classes dir="${build}" excludes="**/*.jar,**/*Invoker.class"/>
         </war>
-    </target>
 
-    <target name="deploy.custom.resource">
-        <antcall target="common.create.customresource">
-            <param name="resource.type" value="java.net.URL" />
-            <param name="resource.factory.class" value="org.glassfish.resources.custom.factory.URLFactory" />
-            <param name="resource.value" value="http\://www.oracle.com" />
-            <param name="resource.name" value="resource/myURL" />
-        </antcall>
-    </target>
+        <jar destfile="${ejb.jar}">
+            <fileset dir="${build}" excludes="**/*.war,**/*Servlet.class"/>
+        </jar>
 
-    <target name="undeploy.custom.resource">
-        <antcall target="common.delete.customresource">
-            <param name="resource.name" value="resource/myURL" />
-        </antcall>
+        <ear destfile="${all.ear}" basedir="${archivedir}"
+            appxml="descriptor/application.xml" includes="*.jar, *.war">
+            <metainf dir="descriptor"/>
+        </ear>
     </target>
 
     <target name="deploy.asadmin" depends="assemble">
-        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-web --contextroot ${testName} ${all.war}"/>
+        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-app ${all.ear}"/>
         <echo message="${ASADMIN} ${arg.list}"/>
         <exec executable="${ASADMIN}" resultproperty="return.code" failonerror="false">
            <arg line="${arg.list}"/>
@@ -109,19 +106,17 @@
 
     <target name="undeploy.asadmin" depends="prepare">
         <antcall target="common.undeploy.asadmin">
-            <param name="arg.list" value="${testName}-web"/>
-            <param name="testName" value="${testName}-web"/>
+            <param name="arg.list" value="${testName}-app"/>
+            <param name="testName" value="${testName}-app"/>
         </antcall>
     </target>
 
     <target name="private-all">
         <antcall target="declare-test">
-            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectURLCustomResource Test asadmin deploy"/>
+            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectEnvProps Test asadmin deploy"/>
         </antcall>
-        <antcall target="deploy.custom.resource"/>
         <antcall target="deploy.asadmin"/>
         <antcall target="undeploy.asadmin"/>
-        <antcall target="undeploy.custom.resource"/>
     </target>
 
 </project>

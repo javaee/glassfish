@@ -44,6 +44,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 public class TestServlet {
+    // Lookup an unconfigured resource
     @Resource(mappedName="jdbc/UnconfinguredResource")
     DataSource dataSource;
 }

@@ -50,20 +50,20 @@
     &commonBuild;
 
     <target name="private-all">
-        <ant dir="IncorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/IncorrectJDBCResource"/>
+        <ant dir="IncorrectJDBCRes" target="private-all">
+            <property name="build" value="${build}/IncorrectJDBCRes"/>
         </ant>
-        <ant dir="CorrectJDBCResource" target="private-all">
-            <property name="build" value="${build}/CorrectJDBCResource"/>
+        <ant dir="CorrectJDBCRes" target="private-all">
+            <property name="build" value="${build}/CorrectJDBCRes"/>
         </ant>
-        <ant dir="CorrectURLCustomResource" target="private-all">
-            <property name="build" value="${build}/CorrectURLCustomResource"/>
+        <ant dir="CorrectURLRes" target="private-all">
+            <property name="build" value="${build}/CorrectURLRes"/>
         </ant>
-        <ant dir="CorrectMessageDestResource" target="private-all">
-            <property name="build" value="${build}/CorrectMessageDestResource"/>
+        <ant dir="CorrectQueueRes" target="private-all">
+            <property name="build" value="${build}/CorrectQueueRes"/>
         </ant>
-        <ant dir="CorrectEnvironmentProperties" target="private-all">
-            <property name="build" value="${build}/CorrectEnvironmentProperties"/>
+        <ant dir="CorrectEnvProps" target="private-all">
+            <property name="build" value="${build}/CorrectEnvProps"/>
         </ant>
         <ant dir="CorrectManagedBean" target="private-all">
             <property name="build" value="${build}/CorrectManagedBean"/>

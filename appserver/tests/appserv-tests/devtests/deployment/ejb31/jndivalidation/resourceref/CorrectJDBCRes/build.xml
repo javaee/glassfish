@@ -45,18 +45,18 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 ]>
 
-<project name="deployment-ejb31-jndivalidation-resourceref-CorrectMessageDestResource-App" default="all" basedir=".">
+<project name="deployment-ejb31-jndivalidation-resourceref-CorrectJDBCRes-App" default="all" basedir=".">
 
     &commonBuild;
 
-    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectMessageDestResource"/>
+    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectJDBCRes"/>
     <property name="archivedir" value="${build}/archives"/>
     <property name="contextroot" value="${testName}"/>
 
     <target name="prepare" depends="init">
         <mkdir dir="${build}"/>
         <mkdir dir="${archivedir}"/>
-        <property name="all.jar" value="${archivedir}/${testName}-ejb.jar"/>
+        <property name="all.war" value="${archivedir}/${testName}-web.war"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -66,31 +66,13 @@
     </target>
 
     <target name="assemble" depends="compile">
-        <jar destfile="${all.jar}">
-            <metainf dir="META-INF" />
-            <fileset dir="${build}"/>
-        </jar>
-    </target>
-
-    <target name="deploy.jms.queue" depends="prepare">
-        <antcall target="common.create.jms.resource">
-            <param name="dest.type" value="queue"/>
-            <param name="dest.name" value="deployment_jndivalidation_queue"/>
-            <param name="res.type" value="javax.jms.Queue"/>
-            <param name="jms.resource.name" value="jms/deployment_jndivalidation_queue"/>
-        </antcall>
-    </target>
-
-    <target name="undeploy.jms.queue" depends="prepare">
-        <antcall target="common.delete.jms.resource">
-            <param name="jms.resource.name" value="jms/deployment_jndivalidation_queue"/>
-            <param name="dest.type" value="queue"/>
-            <param name="dest.name" value="deployment_jndivalidation_queue"/>
-        </antcall>
+        <war destfile="${all.war}" webxml="WEB-INF/web.xml">
+            <classes dir="${build}" excludes="**/*.war"/>
+        </war>
     </target>
 
     <target name="deploy.asadmin" depends="assemble">
-        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-ejb --contextroot ${testName} ${all.jar}"/>
+        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-web --contextroot ${testName} ${all.war}"/>
         <echo message="${ASADMIN} ${arg.list}"/>
         <exec executable="${ASADMIN}" resultproperty="return.code" failonerror="false">
            <arg line="${arg.list}"/>
@@ -110,19 +92,17 @@
 
     <target name="undeploy.asadmin" depends="prepare">
         <antcall target="common.undeploy.asadmin">
-            <param name="arg.list" value="${testName}-ejb"/>
-            <param name="testName" value="${testName}-ejb"/>
+            <param name="arg.list" value="${testName}-web"/>
+            <param name="testName" value="${testName}-web"/>
         </antcall>
     </target>
 
     <target name="private-all">
         <antcall target="declare-test">
-            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectMessageDestResource Test asadmin deploy"/>
+            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectJDBCRes Test asadmin deploy"/>
         </antcall>
-        <antcall target="deploy.jms.queue"/>
         <antcall target="deploy.asadmin"/>
         <antcall target="undeploy.asadmin"/>
-        <antcall target="undeploy.jms.queue"/>
     </target>
 
 </project>

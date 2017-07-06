@@ -44,9 +44,11 @@ import javax.annotation.Resource;
 import java.net.URL;
 
 public class TestServlet {
+    // A http URL
     @Resource(mappedName="http://www.oracle.com")
     URL url1;
 
+    // Custom resource
     @Resource(mappedName="resource/myURL")
     URL url2;
 }
