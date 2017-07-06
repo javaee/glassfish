@@ -320,7 +320,7 @@ run_test_id(){
 
 
 list_test_ids(){
-	echo ejb_all ejb_timer_cluster_all ejb_web_all ejb_group_1 ejb_group_2 ejb_group_3
+	echo ejb_all ejb_timer_cluster_all ejb_web_all ejb_group_1 ejb_group_2 ejb_group_3 ejb_group_4
 }
 
 OPT=$1
