@@ -114,7 +114,7 @@ public final class Assert {
             assertTrue(
                     "Authenticated user should have role \"" + role + "\", but did not \n Response: \n" +
                             response,
-                    response.contains(userType + " user has role \"" + role + "\": true"));
+                    response.contains(userType + " has role \"" + role + "\": true"));
         }
     }
 
@@ -124,7 +124,7 @@ public final class Assert {
             assertFalse(
                     "Authenticated user should not have role \"" + role + "\", but did \n Response: \n" +
                             response,
-                    response.contains(userType + " user has role \"" + role + "\": true"));
+                    response.contains(userType + " has role \"" + role + "\": true"));
         }
     }
     public static void assertNotAuthenticatedUnprotected(String userType, String name, String response, List<String> roles) {
@@ -143,16 +143,16 @@ public final class Assert {
 
     public static void assertHasAccessToResource(String userType, String name, String resource, String response) {
         assertTrue(
-                "user " + name + "should have access to resource "+ resource +" but was not \n Response: \n" +
+                "user " + name + " should have access to resource "+ resource +" but was not \n Response: \n" +
                         response,
-                response.contains(userType + "user has access to " + resource + ": true"));
+                response.contains(userType + " user has access to " + resource + ": true"));
     }
 
     public static void assertNotHasAccessToResource(String userType, String name, String resource, String response) {
         assertFalse(
-                "user " + name + "should have access to resource "+ resource +" but was not \n Response: \n" +
+                "user " + name + " should have access to resource "+ resource +" but was not \n Response: \n" +
                         response,
-                response.contains(userType + "user has access to " + resource + ": true"));
+                response.contains(userType + " user has access to " + resource + ": true"));
     }
 
 }

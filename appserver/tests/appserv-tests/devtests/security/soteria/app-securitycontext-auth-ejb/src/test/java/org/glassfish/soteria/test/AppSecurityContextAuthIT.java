@@ -104,14 +104,9 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
                 .contains("Authenticated with status: SEND_FAILURE"));
     }
 
-    /**
-     * Flip Context tests test as part of #21844.
-     */
-
     @Test
     public void testAuthenticated() {
-//        Assert.assertAuthenticated(
-        Assert.assertNotAuthenticated(
+        Assert.assertAuthenticated(
                 "ejb",
                 "reza",
                 readFromServer("/servlet?name=reza"));
@@ -119,17 +114,20 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
 
     @Test
     public void testContextAuthenticated() {
-//        Assert.assertAuthenticated(
-        Assert.assertNotAuthenticated(
+        Assert.assertAuthenticated(
             "context",
             "reza",
             readFromServer("/servlet?name=reza"));
     }
 
+    /**
+     * Flip testContextIsCallerInRole and testContextAllCallers tests test as part of soteria#89.
+     */
+
     @Test
     public void testContextIsCallerInRole(){
+        Assert.assertNotAuthenticatedRoles(
 //        Assert.assertAuthenticated(
-        Assert.assertNotAuthenticated(
                 "context",
                 "reza",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
@@ -137,18 +135,19 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
 
     @Test
     public void testContextAllCallers(){
+        Assert.assertNotAuthenticatedRoles(
 //        Assert.assertAuthenticatedRoles(
-        Assert.assertNotAuthenticated(
                 "all roles",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
     }
 
     @Test
     public void testContextHasAccessToResource(){
-//        Assert.assertHasAccessToResource(
-        Assert.assertNotHasAccessToResource(
+        Assert.assertHasAccessToResource(
                 "web",
-                readFromServer("/servlet?name=reza"), "foo", "bar");
+                "reza",
+                "/protectedServlet",
+                readFromServer("/servlet?name=reza"));
     }
     
     @Test

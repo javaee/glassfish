@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!-- configuration -->
+<property environment="env"/>
+<property file="${env.APS_HOME}/config.properties"/>
+<property file="${env.APS_HOME}/../bootstrap/bootstrap.properties"/>
+<property name="inst" value="${env.S1AS_HOME}"/>
+<property name="java.home" value="${env.JAVA_HOME}"/>
+<property name="s1as.home" value="${env.S1AS_HOME}"/>
+<property name="testsRoot" value="${env.APS_HOME}/devtests/jms"/>
+<property name="passwordFile" value="${testsRoot}/password.txt"/>
+<property name="mqPasswordFile" value="${testsRoot}/mqpassword.txt"/>
+<property name="testDomain" value="jmstest-domain"/>
+<property name="testServer" value="jmstest-server"/>
+<property name="testCluster" value="jmstest-cluster"/>
+<property name="testClusterServer1" value="jmstest-cluster-server1"/>
+<property name="testClusterServer2" value="jmstest-cluster-server2"/>
+
+<property name="deploy.clusterinstance1.httpport" value="2001"/>
+<property name="deploy.clusterinstance2.httpport" value="2002"/>
+<property name="deploy.serverinstance.httpport" value="2000"/>
+<property name="deploy.clusterinstance1.orbport" value="2201"/>
+<property name="deploy.clusterinstance2.orbport" value="2202"/>
+<property name="deploy.serverinstance.orbport" value="2200"/>
+
+<property name="testDomain.dir" value="${s1as.home}/domains/${testDomain}"/>
+<property name="node.dir" value="localhost-${testDomain}"/>
+<property name="testServer.dir" value="${s1as.home}/nodes/${node.dir}/${testServer}"/>
+<property name="testClusterServer1.dir" value="${s1as.home}/nodes/${node.dir}/${testClusterServer1}"/>
+
+<property name="start.process.delay.mins" value="1"/>
+
+<target name="setOSProps" depends="setUnixProps, setWindowsProps"/>
+
+<target name="detectOS">
+    <condition property="isWindows">
+      <os family="windows" />
+    </condition>
+</target>
+
+<target name="setUnixProps" if="isWindows" depends="detectOS">
+    <property name="IMQCMD" value="${env.S1AS_HOME}/../mq/bin/imqcmd.exe"/>
+</target>
+
+<target name="setWindowsProps" unless="isWindows" depends="detectOS">
+    <property name="IMQCMD" value="${env.S1AS_HOME}/../mq/bin/imqcmd"/>
+</target>
+
+<target name="setupCluster" depends="init-common">
+    <echo message="Running... asadmin create-cluster"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} create-cluster ${testCluster}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} create-local-instance --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2101:IIOP_LISTENER_PORT=${deploy.clusterinstance1.orbport}:IIOP_SSL_LISTENER_PORT=2301:IIOP_SSL_MUTUALAUTH_PORT=2401:JMX_SYSTEM_CONNECTOR_PORT=2501:JMS_PROVIDER_PORT=2601:ASADMIN_LISTENER_PORT=2701 ${testClusterServer1}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} set configs.config.${testCluster}-config.jms-service.type=${jmsServiceType}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} set configs.config.${testCluster}-config.jms-service.start-args=&quot;-vmargs -Xmx256m&quot;"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} create-local-instance --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance2.httpport}:HTTP_SSL_LISTENER_PORT=2102:IIOP_LISTENER_PORT=${deploy.clusterinstance2.orbport}:IIOP_SSL_LISTENER_PORT=2302:IIOP_SSL_MUTUALAUTH_PORT=2402:JMX_SYSTEM_CONNECTOR_PORT=2502:JMS_PROVIDER_PORT=2602:ASADMIN_LISTENER_PORT=2702 ${testClusterServer2}"/>
+    </exec>
+    <echo message="Running... asadmin start-cluster"/>
+    <antcall target="startCluster"/>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} list-instances"/>
+    </exec>
+    <echo message="Wait 3 minutes for jms service ready"/>
+    <sleep seconds="180"/>
+    <!--<antcall target="pingClusterJMS"/>-->
+</target>
+
+<target name="pingClusterJMS">
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} jms-ping --target ${testCluster}"/>
+    </exec>
+</target>
+
+<target name="startCluster">
+    <echo message="Running... asadmin start-cluster"/>
+    <antcall target="start-process">
+        <param name="line" value="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} start-instance ${testClusterServer1}"/>
+    </antcall>
+    <waitfor timeoutproperty="unableToStart">
+      <http url="http://localhost:${deploy.clusterinstance1.httpport}"/>
+    </waitfor>
+    <antcall target="start-process">
+        <param name="line" value="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} start-instance ${testClusterServer2}"/>
+    </antcall>
+    <waitfor timeoutproperty="unableToStart">
+      <http url="http://localhost:${deploy.clusterinstance2.httpport}"/>
+    </waitfor>
+</target>
+
+<target name="stopCluster">
+    <echo message="Running... asadmin stop-cluster"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} stop-cluster ${testCluster}"/>
+    </exec>
+</target>
+
+<target name="deleteCluster">
+    <!-- stop-cluster does not work so use stop-instance to make sure 
+         instance is stopped before deleting it -->
+    <echo message="Running... asadmin stop-instance"/>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} stop-local-instance ${testClusterServer2}"/>
+    </exec>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} stop-local-instance ${testClusterServer1}"/>
+    </exec>
+    <echo message="Running... asadmin delete-instance"/>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} delete-local-instance ${testClusterServer2}"/>
+    </exec>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} delete-local-instance ${testClusterServer1}"/>
+    </exec>
+    <echo message="Running... asadmin delete-cluster"/>
+    <exec executable="${ASADMIN}">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} delete-cluster ${testCluster}"/>
+    </exec>
+</target>
+
+<target name="deploy-common-cluster" depends="init-common">
+    <echo message="Deploying to Cluster..."/>
+    <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} deploy --force --target ${testCluster} ${deployed.app}"/>
+    </exec>
+    <echo message="Deployment on target cluster ${testCluster} successful"/>
+</target>
+
+<target name="undeploy-common-cluster" depends="init-common">
+    <echo message="Undeploying from Cluster..."/>
+  <property name="deployedapp.name" value="${appname}App"/>
+  <property name="extra-params" value=""/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="--port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} undeploy --target ${testCluster} ${deployedapp.name}"/>
+    </exec>
+</target>
+
+<!--
+  On Windows, ant hangs when it runs an asadmin command that starts a process.
+  To work around that, this task distinguishes between Windows and non-Windows
+  systems and uses a custom ant task for Windows. 
+  
+  Any test that needs to start a process should NOT use ${ASADMIN} directly
+  but should call this start-process target instead.  Pass the command line
+  to be run as <param name="line" value="..."/>.
+-->
+
+<target name="start-process" depends="init-common">
+  <!--
+    Set a property to the target to invoke, depending on the platform type.
+  -->
+  <condition property="start-target" value="start-process-windows">
+    <isset property="isWindows"/>
+  </condition>
+  <condition property="start-target" value="start-process-non-windows">
+    <not>
+      <isset property="start-target"/>
+    </not>
+  </condition>
+  
+  <!--
+    Invoke the target just chosen.
+  -->
+  <antcall target="${start-target}"/>
+</target>
+
+
+<!--
+  The following task works around the Windows/Ant problem that causes
+  the ant script to hang when it runs an asadmin command that starts
+  a new process.
+-->
+<target name="start-process-windows" depends="init-common">
+      <taskdef name="spawn"
+        classname="SpawnTask"
+        classpath="${env.APS_HOME}/lib"/>
+      <echo>Executing asadmin command: ${line}</echo>
+      <spawn executable="${ASADMIN}" failifexecutionfails="false">
+        <arg line="${line}"/>
+      </spawn>
+      <echo message=" ...Waiting for process(es) to be up ...(sleeping for ${start.process.delay.mins} minutes) " />
+      <sleep minutes="${start.process.delay.mins}"/>
+      <echo message=" Process(es) now assumed to be started."/>
+</target>
+
+<!--
+  For non-Windows systems, ant works fine when invoking asadmin to start a 
+  process, so do it that way for those systems.
+-->
+<target name="start-process-non-windows" depends="init-common">
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="${line}"/>
+    </exec>
+</target>
