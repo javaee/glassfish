@@ -85,6 +85,11 @@ public class SimpleBMPBean
                 result = true;
             }
 
+            System.out.println("Inserting null entry into null_entry_table");
+            stmt.executeUpdate("INSERT INTO null_entry_table VALUES(null)");
+
+
+
         }catch(SQLException sqe){}finally{
             try{
                 if(stmt != null){
@@ -100,34 +105,58 @@ public class SimpleBMPBean
         }
         return result;
    }
-    public boolean preparedStatementTest(){
+
+    public boolean preparedStatementTest() {
         boolean result = false;
         Connection conFromDS = null;
         Connection conFromStatement = null;
         PreparedStatement stmt = null;
-        try{
+        PreparedStatement stmt2 = null;
+        try {
             conFromDS = ds.getConnection();
-            stmt = conFromDS.prepareStatement("select * from customer_stmt_wrapper");
+            stmt = conFromDS.prepareStatement(
+                "select * from customer_stmt_wrapper");
             conFromStatement = stmt.getConnection();
 
-		System.out.println("Prepared statement Test : conFromDS : " + conFromDS);
-		System.out.println("Prepared statement Test : conFromStatement : " + conFromStatement);
-            if( conFromDS==conFromStatement || conFromDS.equals(conFromStatement) ){
+            System.out
+                .println("Prepared statement Test : conFromDS : " + conFromDS);
+            System.out.println("Prepared statement Test : conFromStatement : " +
+                conFromStatement);
+            if (conFromDS == conFromStatement ||
+                conFromDS.equals(conFromStatement)) {
                 result = true;
             }
 
-        }catch(SQLException sqe){}finally{
-            try{
-                if(stmt != null){
+            // Test to ensure that inserting null values does not result in tracing implementations to fail.
+            System.out.println("Inserting null entry into null_entry_table");
+
+            stmt2 = conFromDS
+                .prepareStatement("INSERT INTO null_entry_table VALUES(?)");
+            stmt2.setString(1, null);
+            stmt2.executeUpdate();
+
+        } catch (SQLException sqe) {
+        } finally {
+            try {
+                if (stmt != null) {
                     stmt.close();
                 }
-            }catch(SQLException sqe){}
+            } catch (SQLException sqe) {
+            }
 
-            try{
-                if(conFromDS != null){
+            try {
+                if (stmt2 != null) {
+                    stmt2.close();
+                }
+            } catch (SQLException sqe) {
+            }
+
+            try {
+                if (conFromDS != null) {
                     conFromDS.close();
                 }
-            }catch(SQLException sqe){}
+            } catch (SQLException sqe) {
+            }
         }
         return result;
     }
@@ -243,6 +272,7 @@ public class SimpleBMPBean
             rs = stmt.executeQuery("select * from expected_sql_trace");
 	    rs1 = stmt1.executeQuery("select * from sql_trace");
 
+            System.out.println("@@@@ ------------------------------------------");
 	    for(int i=0; i<5; i++) {
 
 	        String className ="";
@@ -268,6 +298,7 @@ public class SimpleBMPBean
 		System.out.println("@@@@@ expectedMethod = " + expectedMethodName + "---");
 		System.out.println("@@@@@ expectedArgs = " + expectedArgs + "---");
 		}
+          System.out.println("@@@@ ------------------------------------------");
 		
 	    	if(className.equals(expectedClassName) && methodName.equals(expectedMethodName) && args.equals(expectedArgs)) {
 		        result = true;
