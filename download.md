@@ -15,7 +15,7 @@ As an open source project, GlassFish is being developed in an open manner. Devel
 
 # GlassFish Docker Images
 
-See [here](https://hub.docker.com/r/oracle/glassfish/) for details on the GlassFish 4.1.2 and GlassFish 5 Docker Images
+See [here](https://blogs.oracle.com/theaquarium/glassfish-docker-images-–-update) for details on the GlassFish 4.1.2 and GlassFish 5 Docker Images
 
 # Java EE 7 RI #
 
