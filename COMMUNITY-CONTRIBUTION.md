@@ -1,4 +1,4 @@
-## How to contribute to GlassFish
+## How to Contribute to GlassFish
 
 #### Participate in the GlassFish Community
 
@@ -20,11 +20,11 @@ This [wiki page](wiki-archive/FullBuildInstructions.html) should have all the de
 
 **Test GlassFish**
 
-There are several different tests that are currently available in GlassFish. QuickLook tests run in a short time and cover a broad set of features in the app server. Developer tests are also available for the different modules. Each module has more information about running those tests.
+There are several different tests that are currently available in GlassFish. QuickLook tests run in a short time and cover a broad set of features in the application server. Developer tests are also available for the different modules. Each module has more information about running those tests.
 
 **Contribute Code**
 
-Contributing to project GlassFish can be done in various ways: bug fixes, enhancements, new features, or even whole modules. If you want to raise a Pull Request with your changes, please refer [GlassFish Fork Pull Request Based Workflow on GitHub](glassfish-pullrequest.md)
+Contributing to project GlassFish can be done in various ways: bug fixes, enhancements, new features, or even whole modules. If you want to raise a Pull Request with your changes, please refer to [GlassFish Fork Pull Request Based Workflow on GitHub](glassfish-pullrequest.md)
 
 
 #### Contribute Samples
