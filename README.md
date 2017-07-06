@@ -1,8 +1,8 @@
 # Latest News
 
-## July 4, 2017, Docker Images Update
+## July 4, 2017 - GlassFish Docker Images Update
 
-Additional details on [how to use GlassFish 4.1.2 and GlassFish 5 nightly Docker images](https://blogs.oracle.com/theaquarium/glassfish-docker-images-–-update).
+Additional details on [how to use GF 4.1.2 and GF 5 nightly Docker images](https://blogs.oracle.com/theaquarium/glassfish-docker-images-–-update).
 
 ## June 28, 2017 - GF 5 Promoted Build 10 ##
 
