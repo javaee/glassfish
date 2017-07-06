@@ -95,7 +95,7 @@
                             *; artifactId=hibernate-validator; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                            javax.validation.*; version="${javax.validation.osgi.version}",
+                            javax.validation.*; version=${javax.validation.osgi.version},
                             org.hibernate.validator.*; version=${hibernate-validator.version},
                             org.glassfish.validation; version=${hibernate-validator.version}
                         </Export-Package>
