@@ -42,7 +42,7 @@ $ git push origin master #push local master to github fork.
 $ git checkout -b Iss_21702
 ```
 * Do the development in your branch.
-* Build and test your changes. Optionally run quicklook and the developer tests.
+* [Build](wiki-archive/FullBuildInstructions.html) and test your changes. Optionally run quicklook and the developer tests.
 * Commit all the changes.  
 ```
 $ git add main/appserver/pom.xml
@@ -59,9 +59,9 @@ $ git commit -m "my commit message"
 
 ### Triggering GlassFish CI tests on your Pull Request
 
-#### <a name="tmwf"></a>Workflow for GitHub GlassFish Team Members
+##### <a name="tmwf"></a>Workflow for GitHub GlassFish Team Members
 1. To trigger the pipeline CI run (to run all GlassFish gating tests), add a comment in the Pull Request that says **\"@glassfishrobot Run CI tests please\"** (case insensitive). You can add it as an original comment text \(with only this text\)  or a separate comment with only this text. Including this text as part of a longer comment is not supported. This step is mandatory. When you add such a comment, our infrastructure would know that you want to run all CI tests for your Pull Request.
-2. Within minutes you will see a comment from **glassfishrobot**\(GlassFish CI bot\) that says **\"Starting CI tests run\"**. This indicates that all the gating tests have been triggered on your Pull Request in GlassFish CI infrastructure.
+2. Within minutes you will see a comment from **glassfishrobot**\(GlassFish CI bot\) that says **\"Starting CI tests run\"**. This indicates that all the gating tests (all GlassFish dev tests and unit tests that needs to be successful for each commit) have been triggered on your Pull Request in GlassFish CI infrastructure.
 3. On completion of all the tests, glassfishrobot will add a comment in your Pull Request that says **\"All CI tests successful\"** if all the tests passed or **\"One or more CI tests failed\"** if there are test failures.
 4. You can view the test results (junit report) for different test suites that run on your Pull Request under **http://download.oracle.com/glassfish/prs/\<your-PullRequest-number\>/test-results\-\-\<date-time\>/index.html**
 5. In case of test failure(s), re-work or fix your code and request for retry on the same PR repeating steps 1-4.
@@ -69,7 +69,7 @@ $ git commit -m "my commit message"
 7. If CI tests pass and code review has been approved, changes will be merged by the administrator.
 
 
-#### Workflow for Non-GlassFish Team Contributors
+##### Workflow for Non-GlassFish Team Contributors
 1. If an external contributor (a contributor who is not a member of the 'GlassFish' team in GitHub ) raises a Pull Request, glassfishrobot will update the Pull Request with the following two comments  
 **\"Review needed from GlassFish team members\"**   
 **\"Please sign Oracle Contributor Agreement(OCA) to contribute in GlassFish project if you have not done that already.\"**  
@@ -82,3 +82,5 @@ Please note that the GlassFish administrator will not merge your Pull Request wi
 
 * There are CI test failures.
 * The code reviewer does not approve your changes.
+
+In case you find any issues, please drop an email to [GlassFish Mailing List](mailto:glassfish@javaee.groups.io)
