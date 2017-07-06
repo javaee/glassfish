@@ -117,13 +117,22 @@
 
         <record name="transaction.ee.output" action="start" />
         <ant dir="timer_with_autorecovery" target="test"/>
-        <ant dir="dblogs" target="test"/>
 
         <antcall target="stop"/>
 
         <record name="transaction.ee.output" action="stop" />
         <antcall target="dev-report"/>
 
+    </target>
+
+    <target name="transaction-ee-4">
+        <antcall target="clean-results"/>
+        <antcall target="start"/>
+        <record name="transaction.ee.output" action="start" />
+        <ant dir="dblogs" target="test"/>
+        <antcall target="stop"/>
+        <record name="transaction.ee.output" action="stop" />
+        <antcall target="dev-report"/>
     </target>
 
 
