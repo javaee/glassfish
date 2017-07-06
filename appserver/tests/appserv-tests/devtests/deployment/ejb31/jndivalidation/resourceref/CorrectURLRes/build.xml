@@ -45,11 +45,11 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 ]>
 
-<project name="deployment-ejb31-jndivalidation-resourceref-CorrectJDBCResource-App" default="all" basedir=".">
+<project name="deployment-ejb31-jndivalidation-resourceref-CorrectURLRes-App" default="all" basedir=".">
 
     &commonBuild;
 
-    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectJDBCResource"/>
+    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectURLRes"/>
     <property name="archivedir" value="${build}/archives"/>
     <property name="contextroot" value="${testName}"/>
 
@@ -68,9 +68,22 @@
     <target name="assemble" depends="compile">
         <war destfile="${all.war}" needxmlfile="false">
             <classes dir="${build}" excludes="**/*.war"/>
-            <fileset dir="WebContent">
-            </fileset>
         </war>
+    </target>
+
+    <target name="deploy.custom.resource">
+        <antcall target="common.create.customresource">
+            <param name="resource.type" value="java.net.URL" />
+            <param name="resource.factory.class" value="org.glassfish.resources.custom.factory.URLFactory" />
+            <param name="resource.value" value="http\://www.oracle.com" />
+            <param name="resource.name" value="resource/myURL" />
+        </antcall>
+    </target>
+
+    <target name="undeploy.custom.resource">
+        <antcall target="common.delete.customresource">
+            <param name="resource.name" value="resource/myURL" />
+        </antcall>
     </target>
 
     <target name="deploy.asadmin" depends="assemble">
@@ -101,10 +114,12 @@
 
     <target name="private-all">
         <antcall target="declare-test">
-            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectJDBCResource Test asadmin deploy"/>
+            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectURLRes Test asadmin deploy"/>
         </antcall>
+        <antcall target="deploy.custom.resource"/>
         <antcall target="deploy.asadmin"/>
         <antcall target="undeploy.asadmin"/>
+        <antcall target="undeploy.custom.resource"/>
     </target>
 
 </project>

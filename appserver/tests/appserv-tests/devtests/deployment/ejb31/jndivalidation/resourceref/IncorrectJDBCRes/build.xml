@@ -45,59 +45,42 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 ]>
 
-<project name="deployment-ejb31-jndivalidation-resourceref-CorrectEnvironmentProperties-App" default="all" basedir=".">
+<project name="deployment-ejb31-jndivalidation-resourceref-IncorrectJDBCRes-App" default="all" basedir=".">
 
     &commonBuild;
 
-    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-CorrectEnvironmentProperties"/>
+    <property name="testName" value="deployment-ejb31-jndivalidation-resourceref-IncorrectJDBCRes"/>
     <property name="archivedir" value="${build}/archives"/>
     <property name="contextroot" value="${testName}"/>
 
     <target name="prepare" depends="init">
         <mkdir dir="${build}"/>
         <mkdir dir="${archivedir}"/>
-        <property name="web.war" value="${archivedir}/${testName}-web.war"/>
-        <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
-        <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
+        <property name="all.war" value="${archivedir}/${testName}-web.war"/>
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="ejbModule" destdir="${build}" debug="on" failonerror="true">
-         <classpath refid="gfv3.classpath"/>
-         </javac>
-        <javac srcdir="webModule" destdir="${build}" debug="on" failonerror="true">
+        <javac srcdir="src" destdir="${build}" debug="on" failonerror="true">
          <classpath refid="gfv3.classpath"/>
          </javac>
     </target>
 
     <target name="assemble" depends="compile">
-        <war destfile="${web.war}" needxmlfile="false">
-            <classes dir="${build}" excludes="**/*.jar,**/*Invoker.class"/>
-            <fileset dir="webModule/WebContent">
-            </fileset>
+        <war destfile="${all.war}" needxmlfile="false">
+            <classes dir="${build}" excludes="**/*.war"/>
         </war>
-
-        <jar destfile="${ejb.jar}">
-            <metainf dir="ejbModule/META-INF"/>
-            <fileset dir="${build}" excludes="**/*.war,**/*Servlet.class"/>
-        </jar>
-
-        <ear destfile="${all.ear}" basedir="${archivedir}"
-            appxml="descriptor/application.xml" includes="*.jar, *.war">
-            <metainf dir="descriptor"/>
-        </ear>
     </target>
 
     <target name="deploy.asadmin" depends="assemble">
-        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-app ${all.ear}"/>
+        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-web --contextroot ${testName} ${all.war}"/>
         <echo message="${ASADMIN} ${arg.list}"/>
         <exec executable="${ASADMIN}" resultproperty="return.code" failonerror="false">
            <arg line="${arg.list}"/>
         </exec>
-        <condition property="deploy.failed" value="0">
+        <condition property="deploy.failed" value="1">
             <equals arg1="0" arg2="${return.code}" />
         </condition>
-        <condition property="deploy.failed" value="1">
+        <condition property="deploy.failed" value="0">
             <not>
                 <equals arg1="0" arg2="${return.code}" />
             </not>
@@ -109,14 +92,14 @@
 
     <target name="undeploy.asadmin" depends="prepare">
         <antcall target="common.undeploy.asadmin">
-            <param name="arg.list" value="${testName}-app"/>
-            <param name="testName" value="${testName}-app"/>
+            <param name="arg.list" value="${testName}-web"/>
+            <param name="testName" value="${testName}-web"/>
         </antcall>
     </target>
 
     <target name="private-all">
         <antcall target="declare-test">
-            <param name="description" value="ejb31/jndivalidation/resourceref/CorrectEnvironmentProperties Test asadmin deploy"/>
+            <param name="description" value="ejb31/jndivalidation/resourceref/IncorrectJDBCRes Test asadmin deploy"/>
         </antcall>
         <antcall target="deploy.asadmin"/>
         <antcall target="undeploy.asadmin"/>
