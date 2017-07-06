@@ -73,8 +73,7 @@
      <delete file="${assemble.dir}/generic-embeddedApp.ear"/>
      <mkdir dir="${assemble.dir}"/>
      <mkdir dir="${build.classes.dir}/META-INF"/>
-     <ear earfile="${assemble.dir}/generic-embeddedApp.ear"
-       appxml="META-INF/application.xml">
+     <ear earfile="${assemble.dir}/generic-embeddedApp.ear" appxml="META-INF/application.xml">
        <fileset dir="${assemble.dir}">
             <include name="*.jar"/>
             <include name="*.war"/>

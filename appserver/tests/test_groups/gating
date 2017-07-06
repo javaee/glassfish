@@ -20,3 +20,5 @@ findbugs_all
 embedded_publisher_all
 copyright
 connector_all
+jdbc_all
+jmx_all
