@@ -1769,6 +1769,11 @@ public class StandardContext
      */
     @Override
     public void setSessionTimeout(int timeout) {
+        if (isContextInitializedCalled) {
+            String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_CONTEXT_ALREADY_INIT_EXCEPTION),
+                    new Object[] {"setSessionTimeout", getName()});
+            throw new IllegalStateException(msg);
+        }
 
         int oldSessionTimeout = this.sessionTimeout;
 

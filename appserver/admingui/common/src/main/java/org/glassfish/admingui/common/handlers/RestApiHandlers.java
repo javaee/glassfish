@@ -329,7 +329,7 @@ public class RestApiHandlers {
 
             for ( Map oneRow : selectedRows) {
                 try{
-                    String endpoint = prefix + "/" + oneRow.get(id);
+                    String endpoint = prefix + "/" + URLEncoder.encode((String) oneRow.get(id), "UTF-8");
                     RestUtil.restRequest(endpoint, payload, "DELETE",null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe(

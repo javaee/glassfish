@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.deployment;
 
+import javax.enterprise.inject.spi.Interceptor;
+
 /**
  * Contains information about 1 ejb interceptor.
  */ 
@@ -49,7 +51,7 @@ public class EjbInterceptor extends InterceptorDescriptor
 
     private EjbBundleDescriptor ejbBundleDescriptor;
     private boolean cdiInterceptor = false;
-  
+    private Interceptor interceptor;
 
     public EjbBundleDescriptor getEjbBundleDescriptor() {
 	    return ejbBundleDescriptor;
@@ -70,5 +72,16 @@ public class EjbInterceptor extends InterceptorDescriptor
 
     public boolean isCDIInterceptor() {
         return cdiInterceptor;
+    }
+
+    /**
+     * @return The interceptor.  May be null when CDI is not enabled.
+     */
+    public Interceptor getInterceptor() {
+        return interceptor;
+    }
+
+    public void setInterceptor( Interceptor interceptor ) {
+        this.interceptor = interceptor;
     }
 }
