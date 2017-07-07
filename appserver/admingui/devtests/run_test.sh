@@ -53,7 +53,7 @@ merge_junit_xmls(){
 }
 
 test_run(){
-  export PWD=$(date | md5sum)
+  export PWD=$(date | md5sum | cut -d' ' -f 1)
   touch $APS_HOME/password.txt 
   chmod 600 $APS_HOME/password.txt
   echo "AS_ADMIN_PASSWORD=" > $APS_HOME/password.txt
