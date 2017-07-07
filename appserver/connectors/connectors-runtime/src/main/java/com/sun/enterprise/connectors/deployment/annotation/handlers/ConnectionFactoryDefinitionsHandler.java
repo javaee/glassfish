@@ -87,7 +87,7 @@ public class ConnectionFactoryDefinitionsHandler extends AbstractResourceHandler
                     // where is the local-string file?
                     String localString = localStrings.getLocalString(
                             "enterprise.deployment.annotation.handlers.connectionfactorydefinitionsduplicates",
-                            "@ConnectionFactoryDefinitions cannot have multiple definitions with same name : '{0}'",
+                            "@ConnectionFactoryDefinitions cannot have multiple definitions with same name : ''{0}''",
                             defnName);
                     throw new IllegalStateException(localString);
                     /*

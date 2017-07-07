@@ -1221,7 +1221,7 @@ public class BaseSeleniumTestClass {
                     value = operation();
                     success = true;
                 } catch (Exception e) {
-                    logger.log(Level.FINE, "Exception caught ('{0}'). Sleeping...", e.getMessage());
+                    logger.log(Level.FINE, "Exception caught (''{0}''). Sleeping...", e.getMessage());
                     count++;
                 }
             }

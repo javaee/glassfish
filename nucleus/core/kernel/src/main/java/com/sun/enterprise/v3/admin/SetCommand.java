@@ -536,7 +536,9 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                     // collection parameter that parameterized with the right type
                     Class argClasses[] = m.getParameterTypes();
                     Type argTypes[] = m.getGenericParameterTypes();
-                    if (!bean.model.toProperty(m).xmlName().equals(elementName) ||
+                    ConfigModel.Property prop = bean.model.toProperty(m);
+                    if (prop == null ||
+                            !prop.xmlName().equals(elementName) ||
                             argClasses.length != 1 ||
                             !Collection.class.isAssignableFrom(argClasses[0]) ||
                             argTypes.length != 1 ||
