@@ -183,7 +183,7 @@
         <ant dir="allowedmethods" target="all"/>
     </target>
 
-    <target name="test-group-4>
+    <target name="test-group-4">
         <ant dir="jms" target="all"/>
         <ant dir="ejb32" target="all"/>
         <ant dir="ejb31" target="all"/>
