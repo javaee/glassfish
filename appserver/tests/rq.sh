@@ -39,145 +39,13 @@
 # holder.
 #
 
-#
-# Map style.
-# Returns the value for the supplied key
-#
-# Args: key array_of_key=val
-#
-get_value_from_key_val_array(){
-  local _array=${2}
-  local array=(${_array[*]})
-  local i=0
-  while [ ${i} -lt ${#array[*]} ]
-  do
-    entry=(`key_val_as_list ${array[${i}]}`)
-    if [ "${entry[0]}" = "${1}" ] ; then
-      echo "${entry[1]}"
-      return 0
-    fi
-    i=$((i+1))
-  done
-}
-
-#
-# Converts a key=value string into a list
-#
-# Args: key=value
-#
-key_val_as_list(){
-    local param_key=`echo ${1} | cut -d '=' -f1`
-    local param_value=`echo ${1} | cut -d '=' -f2`
-    echo "${param_key} ${param_value}"
-}
-
-#
-# Returns the build parameters of a given test job run
-# As space separated string of PARAM_NAME=PARAM_VALUE
-#
-# Args: BUILD_NUMBER
-#
-get_test_job_params(){
-  local url="${GLASSFISH_REMOTE_QUEUE_URL}/${1}/api/xml?xpath=//parameter&wrapper=list"
-  curl "${url}" | sed \
-      -e s@'<list><parameter>'@@g -e s@'</list>'@@g \
-      -e s@'<parameter>'@@g -e s@'</parameter>'@@g \
-      -e s@'<name>'@@g -e s@'</name>'@@g \
-      -e s@'<value>'@'='@g -e s@'</value>'@' '@g -e s@'<value/>'@' '@g 
-
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    # exit with curl status code
-    return ${PIPESTATUS[0]}
-  fi
-}
-
-#
-# Returns true if the test job was triggered by the current PARENT_ID and given TEST_ID
-#
-# Args: params array to match the job
-#
-is_test_job_match(){
-  local array=${2}
-  local match_params=(${array[*]})
-  set +e
-  local job_param=(`get_test_job_params ${1}`)
-  local error_code=${?}
-  set -e
-
-  if [ ${error_code} -ne 0 ] ; then
-    # no match
-    echo false
-    return 0
-  fi
-  # match provided params with job params
-  local i=0
-  while [ ${i} -lt ${#match_params[*]} ]
-  do
-    local match_entry=(`key_val_as_list  ${match_params[${i}]}`)
-    job_value=`get_value_from_key_val_array ${match_entry[0]} "${job_param[*]}"`
-    if [ "${job_value}" != "${match_entry[1]}" ] ; then
-      echo false
-      return 0
-    fi
-    i=$((i+1))
-  done
-  # match
-  echo true
-}
-
-#
-# Gets the last build number of the test job.
-# This will include the currently on-going runs.
-#
-get_test_job_last_build_number(){
-  local url="${GLASSFISH_REMOTE_QUEUE_URL}/api/xml?xpath=//lastBuild/number/text()"
-  curl "${url}"
-  local error_code=${?}
-  if [ ${error_code} -ne 0 ] ; then
-    exit 1
-  fi
-}
-
-#
-# Find a test job for TEST_ID
-#
-# Args: TEST_ID PREVIOUS_LAST_BUILD
-#
-find_test_job(){
-    local previous_last_build=${1}
-    local last_build=`get_test_job_last_build_number`
-
-    # nothing running and nothing new completed
-    if [ "${previous_last_build}" = "${last_build}" ] ; then
-      return 1
-    fi
-
-    # look into the newly completed run
-    local i=$((previous_last_build+1))
-    while [ ${i} -le ${last_build} ]
-    do
-      local params
-      params[0]="BRANCH=${branch}"
-      params[1]="TEST_IDS=${test_ids_triggerd}"
-      params[2]="PR_NUMBER"
-      params[3]="FORK_ORIGIN=${fork_origin}"
-      if `is_test_job_match ${i} "${params[*]}"` ; then
-        # the triggered run is already completed
-        echo ${i}
-        return 0
-      fi
-      i=$((i+1))
-    done
-
-    # not found
-    return 1
-}
-
 USAGE="Usage:\n\n 1. rq.sh -l ---> List all available test identifiers without running them\n\
-	   2. rq.sh -b <branch> -a ---> For running all tests\n\
+	   2. rq.sh -b <branch> -a ---> For running all tests in remote branch\n\
 	   3. rq.sh -b <branch> -g <test_group_name> ---> For running a test group\n\
-	   4. rq.sh -b <branch> -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests"
+	   4. rq.sh -b <branch> -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests\n\
+	   5. rq.sh -u <glassfish binary url>  -a|-u|-t ---> For running all tests with GlassFish binary provided in the http url.-u option works with -a, -g and -t options as well\n\
+	   6. rq.sh -b <branch> -a|-u|-t -e <email-id> ---> For getting the test results in the email id.This works with -a -t and -g options"
+	   
 
 list_test_ids(){
 	for runtest in `find . -name run_test\.sh`; do
@@ -206,15 +74,17 @@ then
     echo -e $USAGE
     exit 0
 fi    
-while getopts ":b:t:g:al" opt; do
+while getopts ":b:t:g:e:u:al" opt; do
     case "$opt" in
     b)	branch=$OPTARG;;
     t)  test_ids=($OPTARG);;
     a)  test_ids=(`list_test_ids`);;
-	  g)  test_ids=(`list_group_test_ids $OPTARG`);;
-	  l)	test_ids=(`list_test_ids`)
+	g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	l)	test_ids=(`list_test_ids`)
 		echo ${test_ids[@]} | tr " " "\n"
 		exit 0;;
+	e)  GLASSFISH_REMOTE_QUEUE_EMAIL=$OPTARG;;
+	u)  url=$OPTARG;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
 		exit 1 ;;         
@@ -223,8 +93,8 @@ done
 
 shift $((OPTIND-1))
 
-if [[ -z $branch ]]; then
-	echo "branch is missing"
+if [[ -z $branch && -z $url ]]; then
+	echo "Please provide a remote branch or a glassfish binary url to trigger glassfish remote queue"
 	echo -e $USAGE
 	exit 1
 fi
@@ -233,24 +103,21 @@ if [[ -z $test_ids ]]; then
 	echo -e $USAGE
 	exit 1
 fi
+if [[ -z $GLASSFISH_REMOTE_QUEUE_EMAIL && ! -z $branch ]]; then
+	echo "EMAIL_ID is missing"
+	echo -e $USAGE
+	exit 1
+fi
 fork_origin=`git config --get remote.origin.url`
 test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`
-params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}"
-last_build=`get_test_job_last_build_number`
-curl -X POST "${GLASSFISH_REMOTE_QUEUE_URL}/buildWithParameters?${params}&delay=0sec" 2> /dev/null
-test_ids_triggerd=`echo ${test_ids[@]}`
-export branch fork_origin test_ids_triggerd
-job_build_number=`find_test_job ${last_build}`
-printf "###################################################################\n"
-printf "###################################################################\n"
-if [[ ! -z ${job_build_number} ]]; then
-	printf "RQ triggered successfully. Please find the RQ link below\n"
-	printf ${GLASSFISH_REMOTE_QUEUE_URL}/${job_build_number}
-	printf "\n"
-	printf "###################################################################\n"
-	printf "###################################################################\n"
+params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&URL=${url}&EMAIL_ID=${GLASSFISH_REMOTE_QUEUE_EMAIL}"
+status=`curl -s -o /dev/null -w "%{http_code}" -X POST "${GLASSFISH_REMOTE_QUEUE_URL}/buildWithParameters?${params}&delay=0sec"`
+echo $status
+echo "----------------------------------------------------------------------------"
+if [[ ${status} -eq 201 ]]; then
+	printf "RQ triggered successfully. You will get the job link via email shortly\n"
+	echo "----------------------------------------------------------------------------"
 else
-	printf "Issue in RQ client.Please check your git settings\n"
-	printf "###################################################################\n"
-	printf "###################################################################\n"
+	printf "Issue in RQ client.Please check your settings\n"
+    echo "----------------------------------------------------------------------------"
 fi

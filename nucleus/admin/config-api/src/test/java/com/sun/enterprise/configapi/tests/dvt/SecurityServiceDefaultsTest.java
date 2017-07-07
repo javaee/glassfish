@@ -80,7 +80,7 @@ public class SecurityServiceDefaultsTest extends ConfigApiTest {
     @Test
     public void testFewDefaults() {
         assertEquals("file", ss.getDefaultRealm());
-        assertEquals("false", ss.getActivateDefaultPrincipalToRoleMapping());
+        assertEquals("true", ss.getActivateDefaultPrincipalToRoleMapping());
         assertEquals("AttributeDeprecated", ss.getAnonymousRole());
         assertEquals("false", ss.getAuditEnabled());
         assertEquals("default", ss.getAuditModules());

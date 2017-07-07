@@ -47,12 +47,14 @@ import org.openqa.selenium.*;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.devtests.util.ElementFinder;
 import org.glassfish.admingui.devtests.util.SeleniumHelper;
@@ -130,7 +132,8 @@ public class BaseSeleniumTestClass {
             helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
+                String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+                URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -408,8 +411,22 @@ public class BaseSeleniumTestClass {
     public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
         open(url);
         if (IS_SECURE_ADMIN_ENABLED) {
-           waitForLoginPageLoad(timeout);
-           handleLogin("admin", "admin", triggerText);
+            try {
+                waitForLoginPageLoad(timeout);
+                String passwordFile = SeleniumHelper.getParameter("passwordfile", "");
+                String password = FileUtils.readFileToString(new File(passwordFile));
+                if(password.isEmpty() || !(password.startsWith("AS_ADMIN_PASSWORD=")) || password.length() <= 18) {
+                  throw new Exception("Password is not set correctly.");
+                } else {
+                    int index = password.indexOf("=");
+                    password = password.substring(index + 1, password.length() - 1);
+                }
+                handleLogin("admin", password, triggerText);
+            } catch (IOException ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
           waitForPageLoad(triggerText, timeout);
        }
@@ -624,7 +641,7 @@ public class BaseSeleniumTestClass {
         final ExceptionSwallowingLoop<String> loop = new ExceptionSwallowingLoop<String>() {
             @Override
             public String operation() {
-                WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                WebElement link = elementFinder.findElement(By.id(baseId).linkText(value), TIMEOUT);
                 return (link == null) ? null : (String) link.getAttribute("id");
             }
         };
@@ -806,16 +823,9 @@ public class BaseSeleniumTestClass {
     protected void assertTableRowCount(String tableId, int count) {
         Assert.assertEquals(count, getTableRowCount(tableId));
     }
- 
+
     protected void waitForTableRowCount(String tableID, int count) {
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(presenceOfElementLocated(By.id(tableID)));
-        try {
-            int tableCount = getTableRowCount(tableID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        sleep(500);
+        waitForLoad(TIMEOUT, new TableRowCountCallBack(tableID, count));
     }
 
     // Look at all those params. Maybe this isn't such a hot idea.
@@ -1157,6 +1167,26 @@ public class BaseSeleniumTestClass {
             }
         }
     };
+
+    class TableRowCountCallBack implements WaitForLoadCallBack {
+        private String tableId;
+        private int expectedCount;
+
+        public TableRowCountCallBack(String tableId, int expectedCount) {
+            this.tableId = tableId;
+            this.expectedCount = expectedCount;
+        }
+
+        @Override
+        public boolean executeTest() {
+            try {
+                int count = getTableRowCount(tableId);
+                return (count == expectedCount);
+            } catch (SeleniumException se) {
+                return false;
+            }
+        }
+    }
 
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;
