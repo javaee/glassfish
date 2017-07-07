@@ -62,7 +62,7 @@ test_run(){
 #Contract 2. does the clean up, downloads the tests/build sources and eventually runs tests
 run_test_id(){
   #a common util script located at main/appserver/tests/common_test.sh
-  source `dirname $0`/../../../../common_test.sh
+  source `dirname $0`/../../../common_test.sh
   kill_process
   delete_gf
   download_test_resources glassfish.zip version-info.txt
