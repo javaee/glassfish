@@ -40,3 +40,7 @@
 
 -exportcontents: \
 			com.sun.enterprise.connectors.jms.config
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+

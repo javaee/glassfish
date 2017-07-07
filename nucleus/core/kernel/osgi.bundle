@@ -59,4 +59,8 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
 # Only in non-OSGi embedded mode, kernel depends on logging package, so
 # optionally depend on that pkg. This way, when GF is embedded in 
 # OSGi environment, logging bundle need not be installed.
-Import-Package: com.sun.enterprise.server.logging.*; resolution:=optional, *
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    com.sun.enterprise.server.logging.*; resolution:=optional, \
+    *
+
