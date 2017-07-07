@@ -53,20 +53,21 @@ merge_junit_xmls(){
 }
 
 test_run(){
-  touch /tmp/password.txt
-  chmod 600 /tmp/password.txt
-  echo "AS_ADMIN_PASSWORD=" > /tmp/password.txt
-  echo "AS_ADMIN_NEWPASSWORD=admin" >> /tmp/password.txt
-  $S1AS_HOME/bin/asadmin --user admin --passwordfile /tmp/password.txt change-admin-password
+  export PWD=$(date | md5sum)
+  touch $APS_HOME/password.txt 
+  chmod 600 $APS_HOME/password.txt
+  echo "AS_ADMIN_PASSWORD=" > $APS_HOME/password.txt
+  echo "AS_ADMIN_NEWPASSWORD=$PWD" >> $APS_HOME/password.txt
+  $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
-  echo "AS_ADMIN_PASSWORD=admin" > /tmp/password.txt
-  $S1AS_HOME/bin/asadmin --passwordfile /tmp/password.txt enable-secure-admin
+  echo "AS_ADMIN_PASSWORD=$PWD" > $APS_HOME/password.txt
+  $S1AS_HOME/bin/asadmin --passwordfile $APS_HOME/password.txt enable-secure-admin
   $S1AS_HOME/bin/asadmin restart-domain
   cd $APS_HOME/../../admingui/devtests/
   export DISPLAY=127.0.0.1:1	
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true test | tee $TEST_RUN_LOG
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true -Dpasswordfile=$APS_HOME/password.txt test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
-  rm -rf /tmp/password.txt	
+  rm -rf $APS_HOME/password.txt	
   cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
   cp $TEST_RUN_LOG $WORKSPACE/results/
   cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true  
@@ -77,12 +78,12 @@ run_test_id(){
   source `dirname $0`/../../tests/common_test.sh
   kill_process
   delete_gf
-  export M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
+  #export M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
   export MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=384m"
-  export MAVEN_REPO=$WORKSPACE/repository
-  export MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
-  export PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH
-  mvn -version
+  #export MAVEN_REPO=$WORKSPACE/repository
+  #export MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
+  #export PATH=$JAVA_HOME/bin:$PATH
+  #mvn -version
   download_test_resources glassfish.zip tests-maven-repo.zip version-info.txt
   unzip_test_resources $WORKSPACE/bundles/glassfish.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
   cd `dirname $0`
