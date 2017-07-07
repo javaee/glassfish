@@ -73,8 +73,7 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
-    //TODO IDCINTER-41 and GLASSFISH-21710
-    //@Test
+    @Test
     public void testWebContainerAvailability() {
         if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
             clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
@@ -92,8 +91,7 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
-    //TODO IDCINTER-41 and GLASSFISH-21710
-    //@Test
+    @Test
     public void testEjbContainerAvailability() {
         if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
             clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);

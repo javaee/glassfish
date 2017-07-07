@@ -227,7 +227,7 @@ public interface SecurityService extends ConfigBeanProxy, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     public String getActivateDefaultPrincipalToRoleMapping();
 
     /**

@@ -44,6 +44,10 @@ import com.sun.gjc.monitoring.JdbcRAConstants;
 import com.sun.gjc.monitoring.SQLTraceProbeProvider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.logging.LogDomains;
 import org.glassfish.api.jdbc.SQLTraceListener;
 import org.glassfish.api.jdbc.SQLTraceRecord;
 
@@ -56,7 +60,14 @@ import org.glassfish.api.jdbc.SQLTraceRecord;
  */
 //@Singleton
 public class SQLTraceDelegator implements SQLTraceListener {
-    
+
+    private static Logger _logger;
+
+    static {
+        _logger = LogDomains
+            .getLogger(MethodExecutor.class, LogDomains.RSR_LOGGER);
+    }
+
     //List of listeners 
     protected List<SQLTraceListener> sqlTraceListenersList;
     private String poolName;
@@ -91,7 +102,15 @@ public class SQLTraceDelegator implements SQLTraceListener {
    public void sqlTrace(SQLTraceRecord record) {
        if (sqlTraceListenersList != null) {
            for (SQLTraceListener listener : sqlTraceListenersList) {
-               listener.sqlTrace(record);
+               try {
+                   listener.sqlTrace(record);
+               }catch(Exception e){
+                   //it is possible that any of the implementations may fail processing a trace record.
+                   //do not propagate such failures. Log them as FINEST.
+                   if(_logger.isLoggable(Level.FINEST)){
+                       _logger.log(Level.FINEST, "exception from one of the SQL trace listeners ["+listener.getClass().getName()+"]", e);
+                   }
+               }
            }
        }
 
