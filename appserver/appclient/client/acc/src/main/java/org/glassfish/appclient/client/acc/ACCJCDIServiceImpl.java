@@ -46,6 +46,7 @@ import com.sun.enterprise.container.common.spi.JavaEEInterceptorBuilder;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -59,6 +60,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:phil.zampino@oracle.com">Phil Zampino</a>
@@ -188,8 +190,10 @@ public class ACCJCDIServiceImpl implements JCDIService {
 
 
     @Override
-    public <T> T createInterceptorInstance(Class<T> interceptorClass, BundleDescriptor bundle) {
-
+    public <T> T createInterceptorInstance(Class<T> interceptorClass,
+                                    BundleDescriptor bundle,
+                                    JCDIService.JCDIInjectionContext ejbContext,
+                                           Set<EjbInterceptor> ejbInterceptors ) {
         T interceptorInstance = null;
 
         WeldContainer wc = getWeldContainer();
@@ -270,6 +274,20 @@ public class ACCJCDIServiceImpl implements JCDIService {
 
             it.dispose(instance);
             cc.release();
+        }
+
+        @Override
+        public InjectionTarget getInjectionTarget() {
+            return it;
+        }
+
+        @Override
+        public CreationalContext getCreationalContext() {
+            return cc;
+        }
+
+        public void addDependentContext( JCDIInjectionContext dependentContext ) {
+            // nothing for now
         }
     }
 

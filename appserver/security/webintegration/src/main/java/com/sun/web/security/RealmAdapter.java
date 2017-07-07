@@ -1699,6 +1699,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 !principalSetContainsOnlyAnonymousPrincipal(principalSet)) {
 
                 SecurityContext ctx = new SecurityContext(subject);
+                SecurityContext.setCurrent(ctx);
                 //XXX assuming no null principal here
                 Principal p = ctx.getCallerPrincipal();
                 WebPrincipal wp = new WebPrincipal(p, ctx);

@@ -90,14 +90,14 @@ public class LogFacade {
     private static final String prefix = "AS-WEB-UTIL-";
 
     @LogMessageInfo(
-            message = "Resource '{0}' is missing",
+            message = "Resource ''{0}'' is missing",
             level = "SEVERE",
             cause = "A naming exception is encountered",
             action = "Check the list of resources")
     public static final String MISSING_RESOURCE = prefix + "00001";
 
     @LogMessageInfo(
-            message = "Failed tracking modifications of '{0} : {1}",
+            message = "Failed tracking modifications of ''{0}'' : {1}",
             level = "SEVERE",
             cause = "A ClassCastException is encountered",
             action = "Check if the object is an instance of the class")

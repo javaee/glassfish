@@ -55,6 +55,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.devtests.util.ElementFinder;
 import org.glassfish.admingui.devtests.util.SeleniumHelper;
@@ -132,12 +133,7 @@ public class BaseSeleniumTestClass {
             helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                String hostName = null;
-                try {
-                    hostName = InetAddress.getLocalHost().getCanonicalHostName();
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                String hostName = InetAddress.getLocalHost().getCanonicalHostName();
                 URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
@@ -416,8 +412,22 @@ public class BaseSeleniumTestClass {
     public void openAndWaitForHomePage(String url, String triggerText, int timeout) {
         open(url);
         if (IS_SECURE_ADMIN_ENABLED) {
-           waitForLoginPageLoad(timeout);
-           handleLogin("admin", "admin", triggerText);
+            try {
+                waitForLoginPageLoad(timeout);
+                String passwordFile = SeleniumHelper.getParameter("passwordfile", "");
+                String password = FileUtils.readFileToString(new File(passwordFile));
+                if(password.isEmpty() || !(password.startsWith("AS_ADMIN_PASSWORD=")) || password.length() <= 18) {
+                  throw new Exception("Password is not set correctly.");
+                } else {
+                    int index = password.indexOf("=");
+                    password = password.substring(index + 1, password.length() - 1);
+                }
+                handleLogin("admin", password, triggerText);
+            } catch (IOException ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
           waitForPageLoad(triggerText, timeout);
        }
@@ -569,14 +579,23 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForButtonEnabled(String buttonId) {
-//        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", BUTTON_TIMEOUT);
         waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, false));
     }
 
+    protected void waitForButtonEnabledMessage(String buttonId) {
+        String enabledMessage = "i18n.msg.enableResourceSuccessful";
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, false));
+        waitForPageLoad(enabledMessage, TIMEOUT);
+    }
+
     protected void waitForButtonDisabled(String buttonId) {
-        String value = selenium.getEval(CURRENT_WINDOW + ".document.getElementById('" + buttonId + "').disabled");
-//        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", BUTTON_TIMEOUT);
         waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, true));
+    }
+
+    protected void waitForButtonDisabledMessage(String buttonId) {
+        String disabledMessage = "i18n.msg.disableResourceSuccessful";
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, true));
+        waitForPageLoad(disabledMessage, TIMEOUT);
     }
 
     protected void waitForCondition(String js, int timeOutInMillis) {
@@ -623,7 +642,7 @@ public class BaseSeleniumTestClass {
         final ExceptionSwallowingLoop<String> loop = new ExceptionSwallowingLoop<String>() {
             @Override
             public String operation() {
-                WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                WebElement link = elementFinder.findElement(By.id(baseId).linkText(value), TIMEOUT);
                 return (link == null) ? null : (String) link.getAttribute("id");
             }
         };
@@ -805,16 +824,9 @@ public class BaseSeleniumTestClass {
     protected void assertTableRowCount(String tableId, int count) {
         Assert.assertEquals(count, getTableRowCount(tableId));
     }
- 
+
     protected void waitForTableRowCount(String tableID, int count) {
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(presenceOfElementLocated(By.id(tableID)));
-        try {
-            int tableCount = getTableRowCount(tableID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        sleep(500);
+        waitForLoad(TIMEOUT, new TableRowCountCallBack(tableID, count));
     }
 
     // Look at all those params. Maybe this isn't such a hot idea.
@@ -884,11 +896,13 @@ public class BaseSeleniumTestClass {
             String statusId,
             String generalTriggerText,
             String targetTriggerText,
-            String state) {
+            String state,
+            String enableResourceOnTargetsStatus) {
         pressButton(tableSelectMutlipleId);
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
+        waitForPageLoad(enableResourceOnTargetsStatus, TIMEOUT);
 
         clickAndWait(generalTabId, generalTriggerText);
         Assert.assertEquals(state, getText(statusId));
@@ -911,6 +925,8 @@ public class BaseSeleniumTestClass {
         final String enableStatus = "Enabled on 2 of 2 Target(s)";
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
         final String TRIGGER_MANAGE_TARGETS = "Manage Resource Targets";
+        final String enableResourceOnTargetsStatus = "i18n.msg.enableResourceOnTargetsSuccessful";
+        final String disableResourceOnTargetsStatus = "i18n.msg.disableResourceOnTargetsSuccessful";
         final String DEFAULT_SERVER = "server";
 
         reset();
@@ -929,7 +945,8 @@ public class BaseSeleniumTestClass {
                 enableOrDisableTextFieldId,
                 resEditTriggerText,
                 TRIGGER_EDIT_RESOURCE_TARGETS,
-                disableStatus);
+                disableStatus,
+                disableResourceOnTargetsStatus);
 
         //Enable all targets
         testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
@@ -939,7 +956,8 @@ public class BaseSeleniumTestClass {
                 enableOrDisableTextFieldId,
                 resEditTriggerText,
                 TRIGGER_EDIT_RESOURCE_TARGETS,
-                enableStatus);
+                enableStatus,
+                enableResourceOnTargetsStatus);
 
         //Test the manage targets : Remove the server from targets.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
@@ -1151,6 +1169,26 @@ public class BaseSeleniumTestClass {
         }
     };
 
+    class TableRowCountCallBack implements WaitForLoadCallBack {
+        private String tableId;
+        private int expectedCount;
+
+        public TableRowCountCallBack(String tableId, int expectedCount) {
+            this.tableId = tableId;
+            this.expectedCount = expectedCount;
+        }
+
+        @Override
+        public boolean executeTest() {
+            try {
+                int count = getTableRowCount(tableId);
+                return (count == expectedCount);
+            } catch (SeleniumException se) {
+                return false;
+            }
+        }
+    }
+
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;
         private boolean desiredState;
@@ -1184,7 +1222,7 @@ public class BaseSeleniumTestClass {
                     value = operation();
                     success = true;
                 } catch (Exception e) {
-                    logger.log(Level.FINE, "Exception caught ('{0}'). Sleeping...", e.getMessage());
+                    logger.log(Level.FINE, "Exception caught (''{0}''). Sleeping...", e.getMessage());
                     count++;
                 }
             }
