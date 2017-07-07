@@ -493,7 +493,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      * @param jndiName to be validated.
      */
     private void validateJNDIRefs(String jndiName, JndiNameEnvironment env, JNDINamespace namespace) {
-        if (jndiName == null) {
+        if (jndiName == null || "".equals(jndiName)) {
             deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                     new Object[] {null});
             throw new DeploymentException("Null JNDI resource");
