@@ -82,7 +82,7 @@ public class JMSConnectionFactoryDefinitionsHandler extends AbstractResourceHand
                 if (duplicates.contains(defnName)) {
                     String localString = localStrings.getLocalString(
                             "enterprise.deployment.annotation.handlers.jmsconnectionfactorydefinitionsduplicates",
-                            "@JMSConnectionFactoryDefinition cannot have multiple definitions with same name : '{0}'",
+                            "@JMSConnectionFactoryDefinition cannot have multiple definitions with same name : ''{0}''",
                             defnName);
                     throw new IllegalStateException(localString);
                 } else {
