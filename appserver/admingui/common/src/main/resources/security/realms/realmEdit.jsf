@@ -59,14 +59,14 @@
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}/security-service/auth-realm/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
         getRealmAttrForEdit(endpoint="#{parentUrl}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{pageSession.tableList}" );
         createMap(result="#{pageSession.valueMap}");
         mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         mapPut(map="#{pageSession.attrMap}" key="target" value="#{pageSession.valueMap['target']}");
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.Name}/supports-user-management.json?target=#{pageSession.configName}", method="get", result="#{requestScope.result}");
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}/security-service/auth-realm/#{pageSession.encodedName}/supports-user-management.json?target=#{pageSession.encodedConfigName}", method="get", result="#{requestScope.result}");
         setPageSessionAttribute(key="showUserButton" value="#{false}");
         if ("#{requestScope.result.data['message']}=true") {
             setPageSessionAttribute(key="showUserButton" value="#{true}");

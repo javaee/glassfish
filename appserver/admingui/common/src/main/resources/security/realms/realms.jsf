@@ -52,18 +52,18 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName});
-        urlencode(value="#{pageSession.name}" encoding="UTF-8" result=>$page{encodedConfigName});
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="childType" value="auth-realm");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}/security-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         createMap(result="#{pageSession.valueMap}");
         mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteRealms}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/realms/realmNew.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/realms/realmNew.jsf?configName=#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.realm.TableTitle}");
     />
     </event>
