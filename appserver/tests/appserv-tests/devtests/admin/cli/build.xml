@@ -156,7 +156,7 @@
                         restart-domain, config-modularity, teardown"/>
 
 
-     <target name="cli-group-1-master" depends="clean,init">
+     <target name="admin-cli-group-1" depends="clean,init">
         <record name="admin.output" action="start" />
         <antcall target="prerun"/>
         <antcall target="cli-group-1"/>
@@ -166,7 +166,7 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-    <target name="cli-group-2-master" depends="clean,init">
+    <target name="admin-cli-group-2" depends="clean,init">
         <record name="admin.output" action="start" />
         <antcall target="prerun"/>
         <antcall target="cli-group-2"/>
@@ -176,7 +176,7 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-   <target name="cli-group-3-master" depends="clean,init">
+   <target name="admin-cli-group-3" depends="clean,init">
         <record name="admin.output" action="start" />
         <antcall target="prerun"/>
         <antcall target="cli-group-3"/>
@@ -186,7 +186,7 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
-  <target name="cli-group-4-master" depends="clean,init">
+  <target name="admin-cli-group-4" depends="clean,init">
         <record name="admin.output" action="start" />
         <antcall target="prerun"/>
         <antcall target="cli-group-4"/>
@@ -196,7 +196,7 @@
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
 
- <target name="cli-group-5-master" depends="clean,init">
+ <target name="admin-cli-group-5" depends="clean,init">
         <record name="admin.output" action="start" />
         <antcall target="prerun"/>
         <antcall target="cli-group-5"/>

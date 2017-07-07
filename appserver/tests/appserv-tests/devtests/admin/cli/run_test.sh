@@ -86,12 +86,7 @@ get_test_target(){
 }
 
 list_test_ids(){
-	echo admin_cli_all
-        echo cli-group-1-master
-        echo cli-group-2-master
-        echo cli-group-3-master
-        echo cli-group-4-master
-        echo cli-group-5-master
+	echo admin_cli_all admin-cli-group-1 admin-cli-group-2 admin-cli-group-3 admin- cli-group-4 admin-cli-group-5
 }
 
 OPT=$1
