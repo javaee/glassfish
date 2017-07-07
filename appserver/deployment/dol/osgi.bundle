@@ -68,4 +68,5 @@
                         com.sun.enterprise.repository; version=${project.osgi.version}
 
 Import-Package: \
+                        javax.rmi.CORBA, \
                         *
