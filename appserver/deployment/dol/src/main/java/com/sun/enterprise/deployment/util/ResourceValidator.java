@@ -332,12 +332,23 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         // TODO: MDB
         if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
             EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
-            boolean validationRequired = descriptor.getMessageListenerType().equals("javax.jms.MessageListener");
+
+            // Validate only in case the resource adapter is the default one - JMSRA
+            boolean validationRequired = true;
+            String resourceAdapterMid = descriptor.getResourceAdapterMid();
+            if (resourceAdapterMid == null) {
+                resourceAdapterMid = System.getProperty("com.sun.enterprise.connectors.inbound.ramid");
+            }
+            if (resourceAdapterMid == null || resourceAdapterMid.equals("jmsra")) {
+                validationRequired = false;
+            }
+
             // Do not validate in case the MQ destination is specified directly
             String destination = descriptor.getActivationConfigValue("destination");
             if (destination != null && destination.length() > 0)
                 validationRequired = false;
 
+            // Activation Config props are given higher precedence in jmsra
             String jndiName = descriptor.getActivationConfigValue("destinationLookup");
             if (jndiName == null || "".equals(jndiName)) {
                 jndiName = descriptor.getJndiName();
