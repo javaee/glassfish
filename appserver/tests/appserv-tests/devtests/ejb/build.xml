@@ -94,18 +94,6 @@
         <antcall target="report"/>
     </target>
 
-      <target name="ejb_group_4">
-        <antcall target="setup"/>
-        <antcall target="test-group-4"/>
-        <antcall target="unsetup"/>
-        <antcall target="report"/>
-    </target>
-
-
-
-     
-
-
     <target name="lite">
 
 	<antcall target="setup"/>
@@ -181,9 +169,6 @@
         <ant dir="cmp" target="all"/>
         <ant dir="sfsb" target="all"/>
         <ant dir="allowedmethods" target="all"/>
-    </target>
-
-    <target name="test-group-4">
         <ant dir="jms" target="all"/>
         <ant dir="ejb32" target="all"/>
         <ant dir="ejb31" target="all"/>
