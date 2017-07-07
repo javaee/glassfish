@@ -78,12 +78,7 @@ run_test_id(){
   source `dirname $0`/../../tests/common_test.sh
   kill_process
   delete_gf
-  #export M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
   export MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=384m"
-  #export MAVEN_REPO=$WORKSPACE/repository
-  #export MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
-  #export PATH=$JAVA_HOME/bin:$PATH
-  #mvn -version
   download_test_resources glassfish.zip tests-maven-repo.zip version-info.txt
   unzip_test_resources $WORKSPACE/bundles/glassfish.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
   cd `dirname $0`
@@ -94,7 +89,6 @@ run_test_id(){
   change_junit_report_class_names
   upload_test_results
   delete_bundle
-  cd -
 }
 
 OPT=$1
