@@ -49,7 +49,6 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
