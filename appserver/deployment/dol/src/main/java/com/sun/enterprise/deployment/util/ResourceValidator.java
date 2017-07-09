@@ -522,17 +522,22 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if(ejbRef.getEjbDescriptor() != null)
             return;
 
-        String jndiName = ejbRef.getLookupName();
-        if (!ejbRef.hasLookupName()) {
-            jndiName = ejbRef.getMappedName();
+        String jndiName = "";
+        boolean validationRequired = false;
+        if (ejbRef.isLocal() && ejbRef.hasLookupName()) {
+            jndiName = ejbRef.getLookupName();
+            validationRequired = true;
         }
+
+        if (!validationRequired)
+            return;
 
         String newName = convertModuleOrAppJNDIName(jndiName, env);
         // JNDI names starting with java:app and java:module are taken care of
-//        if (!myNamespace.find(newName, env)) {
-//            // fall through
-//            validateJNDIRefs(jndiName, env);
-//        }
+        if (!myNamespace.find(newName, env)) {
+            // fall through
+            validateJNDIRefs(jndiName, env);
+        }
     }
 
     /**
