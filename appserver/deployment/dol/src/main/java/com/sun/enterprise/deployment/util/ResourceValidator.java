@@ -329,38 +329,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private void accept(EjbDescriptor ejb) {
-        // TODO: MDB
-        if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
-            EjbMessageBeanDescriptor descriptor = (EjbMessageBeanDescriptor) ejb;
-
-            // Validate only in case the resource adapter is the default one - JMSRA
-            boolean validationRequired = true;
-            String resourceAdapterMid = descriptor.getResourceAdapterMid();
-            if (resourceAdapterMid == null) {
-                resourceAdapterMid = System.getProperty("com.sun.enterprise.connectors.inbound.ramid");
-            }
-            if (resourceAdapterMid == null || resourceAdapterMid.equals("jmsra")) {
-                validationRequired = false;
-            }
-
-            // Do not validate in case the MQ destination is specified directly
-            String destination = descriptor.getActivationConfigValue("destination");
-            if (destination != null && destination.length() > 0)
-                validationRequired = false;
-
-            // Activation Config props are given higher precedence in jmsra
-            String jndiName = descriptor.getActivationConfigValue("destinationLookup");
-            if (jndiName == null || "".equals(jndiName)) {
-                jndiName = descriptor.getJndiName();
-            }
-            if (jndiName == null || "".equals(jndiName)) {
-                MessageDestinationDescriptor destDescriptor = descriptor.getMessageDestination();
-                if (destDescriptor != null)
-                    jndiName = destDescriptor.getJndiName();
-            }
-            if (validationRequired)
-                validateJNDIRefs(jndiName, ejb);
-        }
         for (Object next : ejb.getResourceReferenceDescriptors()) {
             accept((ResourceReferenceDescriptor) next, ejb);
         }
@@ -627,6 +595,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (!myNamespace.find(convertedJndiName, env)) {
                 // Do a context lookup only if we are on the correct instance
                 try {
+                    // TODO: Propagate error to DAS in case of cluster lookup failure
                     if(loadOnCurrentInstance()) {
                         InitialContext ctx = new InitialContext();
                         ctx.lookup(jndiName);
