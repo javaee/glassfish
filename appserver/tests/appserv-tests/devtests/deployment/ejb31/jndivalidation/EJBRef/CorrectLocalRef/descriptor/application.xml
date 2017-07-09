@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE project [
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,40 +41,15 @@
 
 -->
 
-<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
-]>
-
-<project name="jndivalidation" default="all" basedir=".">
-
-    &commonBuild;
-
-    <target name="private-all">
-        <ant dir="IncorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/IncorrectEnvEntry"/>
-        </ant>
-        <ant dir="CorrectEnvEntry" target="private-all">
-            <property name="build" value="${build}/CorrectEnvEntry"/>
-        </ant>
-        <ant dir="ConflictedEJBRef" target="private-all">
-            <property name="build" value="${build}/ConflictedEJBRef"/>
-        </ant>
-        <ant dir="ConflictedEnvEntry" target="private-all">
-            <property name="build" value="${build}/ConflictedEnvEntry"/>
-        </ant>
-        <ant dir="ConflitedResourceEnvRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceEnvRef"/>
-        </ant>
-        <ant dir="ConflitedResourceRef" target="private-all">
-            <property name="build" value="${build}/ConflitedResourceRef"/>
-        </ant>
-        <ant dir="resourceref" target="private-all">
-            <property name="build" value="${build}/resourceref"/>
-        </ant>
-        <ant dir="AppScopedResources" target="private-all">
-            <property name="build" value="${build}/AppScopedResources"/>
-        </ant>
-        <ant dir="EJBRef" target="private-all">
-            <property name="build" value="${build}/EJBRef"/>
-        </ant>
-    </target>
-</project>
+<application version="7" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
+    <description>Application description</description>
+    <module>
+        <web>
+            <web-uri>deployment-ejb31-jndivalidation-EJBRef-CorrectLocalRef-web.war</web-uri>
+            <context-root>/deployment-ejb31-jndivalidation-EJBRef-CorrectLocalRef-war</context-root>
+        </web>
+    </module>
+    <module>
+        <ejb>deployment-ejb31-jndivalidation-EJBRef-CorrectLocalRef-ejb.jar</ejb>
+    </module>
+</application>
