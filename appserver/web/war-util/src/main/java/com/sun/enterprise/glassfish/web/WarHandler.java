@@ -294,7 +294,7 @@ public class WarHandler extends AbstractArchiveHandler {
             int baseFileLen = base.getPath().length();
             final boolean ignoreHiddenJarFiles = webXmlParser.isIgnoreHiddenJarFiles();
 
-            for (File file : libDir.listFiles(
+            File[] files = libDir.listFiles(
                     new FileFilter() {
                         @Override
                         public boolean accept(File pathname) {
@@ -304,8 +304,11 @@ public class WarHandler extends AbstractArchiveHandler {
                                     (!ignoreHiddenJarFiles ||
                                     !fileName.startsWith(".")));
                         }
-                    }))
-            {
+                    });
+            if (files == null) {
+                return;
+            }
+            for (File file : files) {
                 try {
                     if (file.isDirectory()) {
                         // support exploded jar file

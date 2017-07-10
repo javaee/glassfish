@@ -292,7 +292,9 @@ public class EjbRuntimeEndpointInfo {
                     if(adapterList == null) {
                         adapterList = new ServletAdapterList();
                     }
-                    adapter = adapterList.createAdapter(endpoint.getName(), urlPattern, wsep);
+                    Object obj = adapterList.createAdapter(endpoint.getName(), urlPattern, wsep);
+                    if (obj instanceof ServletAdapter)
+                        adapter = ServletAdapter.class.cast(obj);
                     handlersConfigured=true;
                 } catch (Throwable t) {
                         LogHelper.log(logger, Level.SEVERE,
