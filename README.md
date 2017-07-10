@@ -1,5 +1,9 @@
 # Latest News
 
+## July 10, 2017 - Java EE 8 June recap
+
+See [here](https://blogs.oracle.com/theaquarium/java-ee-8-june-recap).
+
 ## July 4, 2017 - GlassFish Docker Images Update
 
 Additional details on [how to use GF 4.1.2 and GF 5 nightly Docker images](https://blogs.oracle.com/theaquarium/glassfish-docker-images-–-update).
