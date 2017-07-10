@@ -457,6 +457,9 @@ public class ApplicationArchivist extends Archivist<Application> {
             File directory, Vector<File> files, FilenameFilter filter) {
 
         File[] list = directory.listFiles(filter);
+        if (list == null) {
+            return;
+        }
         for (int i = 0; i < list.length; i++) {
             if (!list[i].isDirectory()) {
                 files.add(list[i]);

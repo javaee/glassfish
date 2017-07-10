@@ -362,9 +362,9 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
 	    } else if (Integer.class.equals(type)) {
 		return Integer.valueOf(string);
 	    } else if (Double.class.equals(type)) {
-		return new Double(string);
+                return Double.valueOf(string);
 	    } else if (Float.class.equals(type)) {
-		return new Float(string);
+		return Float.valueOf(string);
 	    } else if (Short.class.equals(type)) {
 		return Short.valueOf(string);
 	    } else if (Byte.class.equals(type)) {
@@ -405,9 +405,9 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
         } else if (this.type.equals(boolean.class.getName())) {
             return Boolean.valueOf(string);
         } else if (this.type.equals(float.class.getName())) {
-            return new Float(string);
+            return Float.valueOf(string);
         } else if (this.type.equals(double.class.getName())) {
-            return new Double(string);
+            return Double.valueOf(string);
         } else if (this.type.equals(byte.class.getName())) {
             return Byte.valueOf(string);
         } else if (this.type.equals(char.class.getName())) {

@@ -78,13 +78,16 @@ public class EjbContainerPreHandler extends GenericHandler {
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            inv = EJBInvocation.class.cast(invManager.getCurrentInvocation());
-            Method method = wsUtil.getInvMethod(
-                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
-            inv.setWebServiceMethod(method);
-            if ( !inv.authorizeWebService(method)  ) {
-                throw new Exception(format(logger.getResourceBundle().getString(LogUtils.CLIENT_UNAUTHORIZED),
-                        method.toString()));
+            Object obj = invManager.getCurrentInvocation();
+            if (obj instanceof EJBInvocation) {
+                inv = EJBInvocation.class.cast(obj);
+                Method method = wsUtil.getInvMethod(
+                        (com.sun.xml.rpc.spi.runtime.Tie) inv.getWebServiceTie(), context);
+                inv.setWebServiceMethod(method);
+                if (!inv.authorizeWebService(method)) {
+                    throw new Exception(format(logger.getResourceBundle().getString(LogUtils.CLIENT_UNAUTHORIZED),
+                            method.toString()));
+                }
             }
         } catch(Exception e) {
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
