@@ -65,7 +65,8 @@ import javax.servlet.http.HttpServletResponse;
 @EmbeddedIdentityStoreDefinition({ 
     @Credentials(callerName = "reza", password = "secret1", groups = { "foo", "bar" }),
     @Credentials(callerName = "alex", password = "secret2", groups = { "foo", "kaz" }),
-    @Credentials(callerName = "arjan", password = "secret3", groups = { "foo" }) }
+    @Credentials(callerName = "arjan", password = "secret3", groups = { "foo" }) ,
+    @Credentials(callerName = "sameer", password = "pandit", groups = { "bar" })}
 )
 
 @WebServlet("/servlet")

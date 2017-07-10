@@ -82,7 +82,7 @@ public class JMSDestinationDefinitionsHandler extends AbstractResourceHandler {
                 if (duplicates.contains(defnName)) {
                     String localString = localStrings.getLocalString(
                             "enterprise.deployment.annotation.handlers.jmsdestinationdefinitionsduplicates",
-                            "@JMSDestinationDefinition cannot have multiple definitions with same name : '{0}'",
+                            "@JMSDestinationDefinition cannot have multiple definitions with same name : ''{0}''",
                             defnName);
                     throw new IllegalStateException(localString);
                 } else {
