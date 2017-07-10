@@ -147,8 +147,31 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         myNamespace.storeAppScopedResources(resourcesList, appName);
     }
 
+    /**
+     * Code logic from BaseContainer.java
+     * @param ejb
+     */
     private void parseEJB(EjbDescriptor ejb) {
         String javaGlobalName = getJavaGlobalJndiNamePrefix(ejb);
+
+        boolean disableNonPortableJndiName = false;
+        // TODO: Look at system property also?
+        Boolean disableInDD = ejb.getEjbBundleDescriptor().getDisableNonportableJndiNames();
+        if(disableInDD != null) {  // explicitly set in glassfish-ejb-jar.xml
+            disableNonPortableJndiName = disableInDD;
+        }
+
+        String glassfishSpecificJndiName = null;
+        if (!disableNonPortableJndiName) {
+            glassfishSpecificJndiName = ejb.getJndiName();
+        }
+        if ((glassfishSpecificJndiName != null)
+                && (glassfishSpecificJndiName.equals("")
+                || glassfishSpecificJndiName.equals(javaGlobalName))) {
+            glassfishSpecificJndiName = null;
+        }
+
+        // TODO: always?
         myNamespace.store(javaGlobalName, ejb);
 
         // interfaces now
@@ -156,12 +179,28 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             String intf = ejb.getHomeClassName();
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
             myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            // non-portable
+            if(glassfishSpecificJndiName != null) {
+                myNamespace.store(glassfishSpecificJndiName, ejb);
+            }
         }
 
         if (ejb.isRemoteBusinessInterfacesSupported()) {
+            int count = 0;
             for (String intf : ejb.getRemoteBusinessClassNames()) {
+                count++;
                 String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
                 myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+                // non-portable - interface specific
+                if(glassfishSpecificJndiName != null) {
+                    String remoteJndiName = getRemoteEjbJndiName(true, intf, glassfishSpecificJndiName);
+                    myNamespace.store(remoteJndiName, ejb);
+                }
+            }
+            // non-portable - if only one remote business interface exists and no remote home interfaces exist,
+            // then by default this can be used to lookup the remote interface.
+            if(glassfishSpecificJndiName != null && !ejb.isRemoteInterfacesSupported() && count == 1) {
+                myNamespace.store(glassfishSpecificJndiName, ejb);
             }
         }
 
@@ -214,6 +253,46 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
 
         return javaGlobalPrefix.toString();
+    }
+
+    public static String getRemoteEjbJndiName(EjbReferenceDescriptor refDesc) {
+
+        String intf = refDesc.isEJB30ClientView() ?
+                refDesc.getEjbInterface() : refDesc.getHomeClassName();
+
+        return getRemoteEjbJndiName(refDesc.isEJB30ClientView(), intf, refDesc.getJndiName());
+    }
+
+    public static String getRemoteEjbJndiName(boolean businessView, String interfaceName, String jndiName) {
+        String returnValue = jndiName;
+
+        String portableFullyQualifiedPortion = "!" + interfaceName;
+        String glassfishFullyQualifiedPortion = "#" + interfaceName;
+
+        if(businessView) {
+            if(!jndiName.startsWith("corbaname:") ) {
+                if(jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
+                    returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+                } else {
+                    returnValue = checkFullyQualifiedJndiName(jndiName, glassfishFullyQualifiedPortion);
+                }
+            }
+        } else {
+            // Only in the portable global case, convert to a fully-qualified name
+            if( jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
+                returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+            }
+        }
+
+        return returnValue;
+    }
+
+    private static String checkFullyQualifiedJndiName(String origJndiName, String fullyQualifiedPortion) {
+        String returnValue = origJndiName;
+        if( !origJndiName.endsWith(fullyQualifiedPortion) ) {
+            returnValue = origJndiName + fullyQualifiedPortion;
+        }
+        return returnValue;
     }
 
     private void parseManagedBeans() {
@@ -532,9 +611,26 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         String jndiName = "";
         boolean validationRequired = false;
-        if (ejbRef.isLocal() && ejbRef.hasLookupName()) {
-            jndiName = ejbRef.getLookupName();
-            validationRequired = true;
+        // local
+        if (ejbRef.isLocal()) {
+            if (ejbRef.hasLookupName()) {
+                jndiName = ejbRef.getLookupName();
+                validationRequired = true;
+            }
+        }
+        // remote
+        else {
+            if (!ejbRef.hasJndiName() && ejbRef.hasLookupName()) {
+                jndiName = ejbRef.getLookupName();
+                validationRequired = true;
+            }
+            else {
+                String remoteJndiName = getRemoteEjbJndiName(ejbRef);
+                if (!remoteJndiName.startsWith("corbaname:")) {
+                    validationRequired = true;
+                    jndiName = remoteJndiName;
+                }
+            }
         }
 
         if (!validationRequired)
@@ -684,11 +780,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         private List<String> globalNameSpace;
 
+        private List<String> nonPortableJndiNames;
+
         private JNDINamespace() {
             componentNamespaces = new HashMap<String,List<String>>();
             moduleNamespaces = new HashMap<String,List<String>>();
             appNamespace = new ArrayList<>();
             globalNameSpace = new ArrayList<>();
+            nonPortableJndiNames = new ArrayList<>();
         }
 
         /**
@@ -751,6 +850,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             else if (jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
                 globalNameSpace.add(jndiName);
             }
+            else {
+                nonPortableJndiNames.add(jndiName);
+            }
         }
 
         /**
@@ -775,7 +877,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 return appNamespace.contains(jndiName);
             else if (jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX))
                 return globalNameSpace.contains(jndiName);
-            return false;
+            else
+                return nonPortableJndiNames.contains(jndiName);
         }
     }
 
