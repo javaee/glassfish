@@ -178,7 +178,7 @@
         <junit.version>4.12</junit.version>
         <asm.version>6.0_ALPHA</asm.version>
         <tiger-types.version>1.4</tiger-types.version>
-        <woodstox.version>3.2.7</woodstox.version>
+        <woodstox.version>4.1.2</woodstox.version>
         <stax-api.version>1.0-2</stax-api.version>
         <aopalliance.version>1.0</aopalliance.version>
         <testng.version>6.9.10</testng.version>
