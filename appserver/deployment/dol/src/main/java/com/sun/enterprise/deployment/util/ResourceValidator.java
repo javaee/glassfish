@@ -348,6 +348,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         for (Object next : ejb.getEjbReferenceDescriptors()) {
             accept((EjbReferenceDescriptor) next, ejb);
         }
+
+        for (Object next : ejb.getServiceReferenceDescriptors()) {
+            accept((ServiceReferenceDescriptor) next, ejb);
+        }
     }
 
     private void accept(BundleDescriptor bd) {
@@ -385,6 +389,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
             for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
                 accept(mbd, nameEnvironment);
+            }
+
+            for (Object next : nameEnvironment.getServiceReferenceDescriptors()) {
+                accept((ServiceReferenceDescriptor) next, nameEnvironment);
             }
         }
     }
@@ -572,6 +580,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         for (Object next : managedBean.getMessageDestinationReferenceDescriptors()) {
             accept((MessageDestinationReferenceDescriptor) next, env);
         }
+    }
+
+    private void accept(ServiceReferenceDescriptor serviceRef, JndiNameEnvironment env) {
+        if (serviceRef.hasLookupName())
+            validateJNDIRefs(serviceRef.getLookupName(), env);
     }
 
     private void accept(MessageDestinationDescriptor msgDest, JndiNameEnvironment env) {
