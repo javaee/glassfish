@@ -174,27 +174,27 @@ public class MethodExecutor implements java.io.Serializable {
             }
 
             if (typeName.equals("int") || typeName.equals("java.lang.Integer")) {
-                return new Integer(parameter);
+                return Integer.valueOf(parameter);
             }
 
             if (typeName.equals("short") || typeName.equals("java.lang.Short")) {
-                return new Short(parameter);
+                return Short.valueOf(parameter);
             }
 
             if (typeName.equals("byte") || typeName.equals("java.lang.Byte")) {
-                return new Byte(parameter);
+                return Byte.valueOf(parameter);
             }
 
             if (typeName.equals("long") || typeName.equals("java.lang.Long")) {
-                return new Long(parameter);
+                return Long.valueOf(parameter);
             }
 
             if (typeName.equals("float") || typeName.equals("java.lang.Float")) {
-                return new Float(parameter);
+                return Float.valueOf(parameter);
             }
 
             if (typeName.equals("double") || typeName.equals("java.lang.Double")) {
-                return new Double(parameter);
+                return Double.valueOf(parameter);
             }
 
             if (typeName.equals("java.math.BigDecimal")) {

@@ -78,9 +78,7 @@ public class JarScanner extends JavaEEScanner implements Scanner<Object> {
                 }
             }        
         } finally {
-            if (jf != null) {
-                jf.close();
-            }
+            jf.close();
         }
         initTypes(jarFile);
     }    
