@@ -283,7 +283,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     List<org.glassfish.resources.api.Resource> nonConnectorResources =
                             ResourcesXMLParser.getNonConnectorResourcesList(list, false, true);
                     resourcesList.put(NON_CONNECTOR_RESOURCES, nonConnectorResources);
-                    // TODO: Some resources store their JNDI names in other attributes
                     for (org.glassfish.resources.api.Resource resource : nonConnectorResources) {
                         String jndiName = extractJNDIName(resource);
                         if (jndiName != null) {
@@ -327,14 +326,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
      */
     private String extractJNDIName(org.glassfish.resources.api.Resource resource) {
         HashMap attrs = resource.getAttributes();
-        String jndiName = (String) attrs.get(JNDI_NAME);
-        if (jndiName != null)
-            return jndiName;
-        // Connection Pool
-        jndiName = (String) attrs.get(CONNECTION_POOL_NAME);
-        if (jndiName != null)
-            return jndiName;
-        return null;
+        return (String) attrs.get(JNDI_NAME);
     }
 
     private static void validateResourcesXML(File file, ResourcesXMLParser parser) throws ResourceConflictException {

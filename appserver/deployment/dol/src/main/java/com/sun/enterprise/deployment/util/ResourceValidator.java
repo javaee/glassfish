@@ -50,6 +50,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
@@ -163,11 +164,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             storeResource(((EnvironmentProperty) next).getName(), env, namespace);
         }
 
-        /**
-         * TODO: App client doesn't support some resource descriptors. Might need to fail deployment in such cases.
-         */
         for (Object next : env.getAllResourcesDescriptors()) {
-            storeResource(((ResourceDescriptor) next).getName(), env, namespace);
+            parseResources((ResourceDescriptor) next, env, namespace);
         }
 
         for (Object next : env.getEntityManagerReferenceDescriptors()) {
@@ -195,6 +193,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private void parseResources(ResourceEnvReferenceDescriptor resEnvRef, JndiNameEnvironment env, JNDINamespace namespace) {
         resEnvRef.checkType();
         storeResource(resEnvRef.getName(), env, namespace);
+    }
+
+    private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env, JNDINamespace namespace) {
+        if (env instanceof ApplicationClientDescriptor)
+            if (resourceDescriptor.getResourceType().equals(JavaEEResourceType.CFD) || resourceDescriptor.getResourceType().equals(JavaEEResourceType.AODD))
+                return;
+        storeResource(resourceDescriptor.getName(), env, namespace);
     }
 
     private void storeResource(String name, JndiNameEnvironment env, JNDINamespace namespace) {
@@ -288,9 +293,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     private void accept(EjbDescriptor ejb, JNDINamespace namespace) {
-        // TODO: MDB
-        if (ejb.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
-        }
         for (Object next : ejb.getResourceReferenceDescriptors()) {
             accept((ResourceReferenceDescriptor) next, ejb, namespace);
         }
