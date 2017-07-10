@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,10 +153,14 @@ public class LRUCacheImpl implements Cache {
     }
 
     public void purge() {
-        Iterator keyIterator = list.keySet().iterator();
-        while(keyIterator.hasNext()){
-            CacheObjectKey key = (CacheObjectKey)keyIterator.next();
-            CacheEntry entry = list.get(key);
+        Set<Map.Entry<CacheObjectKey, CacheEntry>> entrySet = list.entrySet();
+        Iterator entrySetIterator = entrySet.iterator();
+//        Iterator keyIterator = list.keySet().iterator();
+        while(entrySetIterator.hasNext()){
+//            CacheObjectKey key = (CacheObjectKey) entrySetIterator.next();
+            Map.Entry<CacheObjectKey, CacheEntry> entryTuple = 
+                    (Map.Entry<CacheObjectKey, CacheEntry>) entrySetIterator.next();
+            CacheEntry entry = entryTuple.getValue();
             try{
                 //TODO Move to a more generic Contract and invoke close()
                 //PreparedStatementWrapper could implement the contract instead
@@ -165,7 +170,7 @@ public class LRUCacheImpl implements Cache {
             }catch(SQLException e){
                 //ignore
             }
-            keyIterator.remove();
+            entrySetIterator.remove();
             break;
         }
     }
@@ -173,10 +178,15 @@ public class LRUCacheImpl implements Cache {
     // Used only for purging the bad statements.
     public void purge(Object obj) {
         PreparedStatementWrapper tmpPS = (PreparedStatementWrapper) obj;
-        Iterator keyIterator = list.keySet().iterator();
-        while(keyIterator.hasNext()){
-            CacheObjectKey key = (CacheObjectKey)keyIterator.next();
-            CacheEntry entry = list.get(key);
+        Set<Map.Entry<CacheObjectKey, CacheEntry>> entrySet = list.entrySet();
+        Iterator entrySetIterator = entrySet.iterator();
+//        Iterator keyIterator = list.keySet().iterator();
+        while(entrySetIterator.hasNext()){
+//            CacheObjectKey key = (CacheObjectKey)keyIterator.next();
+//            CacheEntry entry = list.get(key);
+            Map.Entry<CacheObjectKey, CacheEntry> entryTuple = 
+                    (Map.Entry<CacheObjectKey, CacheEntry>) entrySetIterator.next();
+            CacheEntry entry = entryTuple.getValue();
             try{
                 //TODO Move to a more generic Contract and invoke close()
                 //PreparedStatementWrapper could implement the contract instead
@@ -192,7 +202,7 @@ public class LRUCacheImpl implements Cache {
             }catch(SQLException e){
                 //ignore
             }
-            keyIterator.remove();
+            entrySetIterator.remove();
             break;
         }        
     }
