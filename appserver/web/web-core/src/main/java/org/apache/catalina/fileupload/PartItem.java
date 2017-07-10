@@ -808,7 +808,7 @@ class PartItem
     }
 
     private void deleteFile(File file) {
-        if (file != null && !file.delete() && log.isLoggable(Level.FINE)) {
+        if (!file.delete() && log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Cannot delete file: " + file);
         }
     }
