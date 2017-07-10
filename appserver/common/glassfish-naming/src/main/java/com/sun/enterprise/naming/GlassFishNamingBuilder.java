@@ -182,7 +182,10 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Pos
                 }
                 catch (PrivilegedActionException e)
                 {
-                    throw (NamingException) e.getCause();
+                    Object obj = e.getCause();
+                    if (obj instanceof NamingException) {
+                        throw (NamingException) obj;
+                    }
                 }
             }
             else

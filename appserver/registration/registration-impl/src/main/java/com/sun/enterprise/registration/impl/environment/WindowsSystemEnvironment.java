@@ -54,6 +54,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.io.*;
 import java.util.Locale;
+import java.util.logging.Level;
 /**
  * Windows implementation of the SystemEnvironment class.
  */
@@ -97,10 +98,14 @@ class WindowsSystemEnvironment extends SystemEnvironment {
             if (f.exists()) {
                 boolean b = f.delete();
                 if (!b)
-                    logger.finest("Could not delete" + f.getAbsolutePath());
+                    if (logger.isLoggable(Level.FINEST)) {
+                        logger.finest("Could not delete" + f.getAbsolutePath());
+                    }
             }
         } catch (Exception e) {
-            logger.finest(e.getMessage());
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(e.getMessage());
+            }
             // ignore the exception
         }
     }
