@@ -95,9 +95,9 @@ public class SimpleBVServletTestNG {
 		"(?s)(?m).*Obtained ValidatorFactory: org.hibernate.validator.(internal.)*engine.ValidatorFactoryImpl.*",
                 "(?s)(?m).*case1: No ConstraintViolations found.*",
                 "(?s)(?m).*case2: caught IllegalArgumentException.*",
-                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: listOfString.*",
-                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: lastName.*",
-                "(?s)(?m).*case3: ConstraintViolation: message: may not be null propertyPath: firstName.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: listOfString.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: lastName.*",
+                "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: firstName.*",
                 "(?s)(?m).*case4: No ConstraintViolations found.*"
             };
             final int len = regexesToFind.length;
@@ -118,6 +118,8 @@ public class SimpleBVServletTestNG {
                     }
                 }
             }
+ 
+           System.out.println("Response: " + rspContent.toString());
             
             boolean foundMissingRegexMatch = false;
             String errorMessage = null;
