@@ -131,13 +131,13 @@
         <grizzly.version>2.4.0-beta8</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
         <saaj-api.version>1.3.4</saaj-api.version>
-        <hk2.version>2.5.0-b38</hk2.version>
-        <hk2.plugin.version>2.5.0-b38</hk2.plugin.version>
+        <hk2.version>2.5.0-b42</hk2.version>
+        <hk2.plugin.version>2.5.0-b42</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <fasterxml.classmate.version>1.1.0</fasterxml.classmate.version>
-        <javassist.version>3.20.0-GA</javassist.version>
+        <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
+        <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b03</javax.el.version>
         <javax.el-api.version>3.0.1-b03</javax.el-api.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
