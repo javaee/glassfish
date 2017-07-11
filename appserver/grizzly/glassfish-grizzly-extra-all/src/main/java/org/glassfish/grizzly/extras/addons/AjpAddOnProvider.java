@@ -106,7 +106,7 @@ public class AjpAddOnProvider extends AjpAddOn implements ConfigAwareElement<Htt
             if (!propertiesFile.exists()) {
                 if (_logger.isLoggable(Level.FINEST)) {
                     _logger.log(Level.FINEST,
-                            "jk properties configuration file '{0}' doesn't exist",
+                            "jk properties configuration file ''{0}'' doesn't exist",
                             propertiesFile.getAbsoluteFile());
                 }
                 return;

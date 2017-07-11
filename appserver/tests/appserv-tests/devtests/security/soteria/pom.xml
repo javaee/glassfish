@@ -69,14 +69,14 @@
 	<module>app-custom-session</module>
         <module>app-custom-rememberme</module> 
         <module>app-securitycontext-auth</module>
+        <module>app-securitycontext-auth-ejb</module>
         <module>app-double-ham</module>
         <module>app-ham-ordering</module>
         <module>app-db</module>
         <module>app-custom-identity-store-handler</module>
         <module>app-multiple-store</module>
         <module>app-multiple-store-backup</module>
-        <!-- default role-mapping test is disable till the feature is available
-        <module>app-no-role-mapping</module>-->
+        <module>app-no-role-mapping</module>
         
     </modules>
     
@@ -134,11 +134,6 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${APS_HOME}/lib/reporter.jar</systemPath>
-        </dependency>
-        <dependency>
-        <groupId>com.unboundid</groupId>
-            <artifactId>unboundid-ldapsdk</artifactId>
-            <version>4.0.0</version>
         </dependency>
     </dependencies>
     

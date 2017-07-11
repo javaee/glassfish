@@ -147,6 +147,10 @@ public class ApplicationValidator extends ComponentValidator
                 accept(injectable);
             }
 
+            for(BundleDescriptor bundle : application.getBundleDescriptors())
+                for(ManagedBeanDescriptor next : bundle.getManagedBeans())
+                    next.validate();
+
             super.accept(descriptor);
         } else {
             super.accept(descriptor);
@@ -327,8 +331,8 @@ public class ApplicationValidator extends ComponentValidator
     final String APPCLIENT_LEVEL = "ACLevel:";
     final String WEBBUNDLE_LEVEL = "WBDLevel:";
 
-    Set<EnvironmentProperty> environmentProperties = application
-        .getEnvironmentProperties();
+    Set<EnvironmentProperty> environmentProperties = application != null ? application
+        .getEnvironmentProperties() : null;
 
     for (EnvironmentProperty environmentProperty : environmentProperties) {
       String jndiName = environmentProperty.getName();
@@ -345,7 +349,8 @@ public class ApplicationValidator extends ComponentValidator
     }
 
     // Reads resource definition descriptor at application level
-    CommonResourceBundleDescriptor commonResourceBundleDescriptor = (CommonResourceBundleDescriptor) application;
+    CommonResourceBundleDescriptor commonResourceBundleDescriptor = application != null ? 
+            (CommonResourceBundleDescriptor) application : null;
     Vector appLevel = new Vector();
     if (commonResourceBundleDescriptor != null) {
       Set<ResourceDescriptor> resourceDescriptors = commonResourceBundleDescriptor
@@ -460,7 +465,7 @@ public class ApplicationValidator extends ComponentValidator
           // the resource adapter name do not contains # symbol, it is a
           // standalone resource adapter
 
-        } else if (poundIndex > 0) {
+        } else {
           // the resource adapter name is of the format "xx#xxx", this is an
           // invalid name
           deplLogger.log(

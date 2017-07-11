@@ -60,8 +60,7 @@
     <target name="all" depends="clean">
       <echo message="FIXME: Known failure."/>
     </target>
-    
-
+     
     <target name="run-test" 
     depends="clean, build, deploy, run, undeploy"/>
 

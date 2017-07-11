@@ -39,6 +39,20 @@
 # holder.
 #
 
+archive_cts(){
+	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
+	cp $TS_HOME/bin/xml/config_vi.log $WORKSPACE/results
+	cp $TS_HOME/bin/xml/smoke.log $WORKSPACE/results
+	cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results
+	cp $TS_HOME/bin/ts.jte $WORKSPACE/results
+	echo $BUILD_ID > $WORKSPACE/results/count.txt
+	${GREP} "Number of Tests Passed" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
+	${GREP} "Number of Tests Failed" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
+	${GREP} "Number of Tests with Errors" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
+	cat count.txt | ${SED} -e 's/\[javatest.batch\] Number/Number/g' > $WORKSPACE/results/CTS-GP-count.txt
+	rm $WORKSPACE/results/count.txt
+}
+
 test_run_cts_smoke(){
 	TS_HOME=$WORKSPACE/javaee-smoke
 	CTS_SMOKE=http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/promoted/
@@ -109,17 +123,14 @@ test_run_cts_smoke(){
 	kill_process
 
 	#ARCHIVING
+	archive_cts
+}
+
+archive_servlet_tck(){
 	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
-	cp $TS_HOME/bin/xml/config_vi.log $WORKSPACE/results
-	cp $TS_HOME/bin/xml/smoke.log $WORKSPACE/results
 	cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results
-	cp $TS_HOME/bin/ts.jte $WORKSPACE/results
-	echo $BUILD_ID > $WORKSPACE/results/count.txt
-	${GREP} "Number of Tests Passed" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
-	${GREP} "Number of Tests Failed" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
-	${GREP} "Number of Tests with Errors" $WORKSPACE/results/smoke.log >> $WORKSPACE/results/count.txt
-	cat count.txt | ${SED} -e 's/\[javatest.batch\] Number/Number/g' > $WORKSPACE/results/CTS-GP-count.txt
-	rm $WORKSPACE/results/count.txt
+	cp $WORKSPACE/tests.log $WORKSPACE/results
+	cp -r $TS_HOME/report/ $WORKSPACE/results
 }
 
 test_run_servlet_tck(){
@@ -173,10 +184,7 @@ test_run_servlet_tck(){
 	kill_process
 
 	#ARCHIVING
-	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
-	cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results
-	cp $WORKSPACE/tests.log $WORKSPACE/results
-	cp -r $TS_HOME/report/ $WORKSPACE/results
+	archive_servlet_tck
 }
 
 run_test_id(){
@@ -197,6 +205,17 @@ run_test_id(){
 		exit 1
 	fi
     cts_to_junit $result $WORKSPACE/results/junitreports/test_results_junit.xml $1
+}
+
+post_test_run(){
+    if [[ $? -ne 0 ]]; then
+    	if [[ $TEST_ID = "cts_smoke_all" ]]; then
+	  		archive_cts || true
+	  	fi
+	  	if [[ $TEST_ID = "servlet_tck_all" ]]; then
+	  		archive_servlet_tck || true
+	  	fi
+	fi
     upload_test_results
     delete_bundle
     cd -
@@ -252,5 +271,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+		trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac

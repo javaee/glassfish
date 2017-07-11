@@ -228,7 +228,9 @@ public class SQLTraceRecord implements Serializable {
         if(params != null && params.length > 0) {
             int index = 0;
             for(Object param : params) {
-                sb.append("arg[" + index++ + "]=" + param.toString() + " | ");
+                sb.append("arg[" + index++ + "]=" +
+                    (param != null ? param.toString() : "null" ) +
+                    " | ");
             }
         }
         //TODO add poolNames and other fields of this record.

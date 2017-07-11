@@ -67,7 +67,7 @@ class AsyncContextImpl implements AsyncContext {
     // Note...this constant is also defined in org.glassfish.weld.WeldDeployer.  If it changes here it must
     // change there as well.  The reason it is duplicated is so that a dependency from web-core to gf-weld-connector
     // is not necessary.
-    private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
+    private static final String WELD_LISTENER = "org.jboss.weld.module.web.servlet.WeldListener";
 
 
     /*
@@ -108,6 +108,8 @@ class AsyncContextImpl implements AsyncContext {
             return Boolean.FALSE;
         }
     };
+
+    private volatile boolean hasDispatch = false;
 
     private AtomicBoolean isOkToConfigure = new AtomicBoolean(true);
 
@@ -210,6 +212,7 @@ class AsyncContextImpl implements AsyncContext {
             ServletContext context, String path) {
 
         isDispatchInScope.set(true);
+        hasDispatch = true;
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
                 if (delayAsyncDispatchAndComplete) {
@@ -286,7 +289,11 @@ class AsyncContextImpl implements AsyncContext {
     }
     
     void processAsyncOperations() {
-        if (isDispatchInScope()) {
+        processAsyncOperations(false);
+    }
+
+    private void processAsyncOperations(boolean exit) {
+        if (isDispatchInScope() || (exit && hasDispatch)) {
             invokeDelayDispatch();
         } else if (isAsyncComplete()) {
             doComplete();
@@ -302,7 +309,7 @@ class AsyncContextImpl implements AsyncContext {
      */
     void onExitService() {
         delayAsyncDispatchAndComplete = false;
-        processAsyncOperations();
+        processAsyncOperations(true);
     }
     
     @Override

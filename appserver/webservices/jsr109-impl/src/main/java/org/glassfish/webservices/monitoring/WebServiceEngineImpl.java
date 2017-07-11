@@ -113,7 +113,8 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
         WebServiceEndpoint endpointDesc)  {
 
         EndpointImpl newEndpoint = createHandler(endpointDesc);
-        JAXRPCEndpointImpl.class.cast(newEndpoint).setParent(parent);
+        if (newEndpoint instanceof JAXRPCEndpointImpl)
+            JAXRPCEndpointImpl.class.cast(newEndpoint).setParent(parent);
         return newEndpoint;
     }
 
