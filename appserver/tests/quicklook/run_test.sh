@@ -90,6 +90,19 @@ run_test_id(){
 		exit 1
 	fi
     change_junit_report_class_names
+}
+
+post_test_run(){
+    if [[ $? -ne 0 ]]; then
+    	if [[ $TEST_ID = "ql_gf_full_profile_all" || $TEST_ID = "ql_gf_web_profile_all" || $TEST_ID = "ql_gf_embedded_profile_all" ]]; then
+	  		copy_ql_results || true
+	  	fi
+	  	if [[ $TEST_ID = "ql_gf_nucleus_all" || $TEST_ID = "nucleus_admin_all" ]]; then
+	  		cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/ || true
+	  		cp $WORKSPACE/nucleus/domains/domain1/logs/server.log* $WORKSPACE/results || true
+		    cp $TEST_RUN_LOG $WORKSPACE/results/ || true
+	  	fi
+	fi
     upload_test_results
     delete_bundle
     cd -
@@ -116,5 +129,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+        trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac

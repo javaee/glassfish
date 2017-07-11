@@ -144,4 +144,20 @@ public class AppMemBasicIT extends ArquillianBase {
             response.getContentAsString());
     }
 
+    @Test
+    public void testNotAuthenticatedNotAllowedRole() {
+
+        DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
+        credentialsProvider.addCredentials("sameer", "pandit");
+
+        getWebClient().setCredentialsProvider(credentialsProvider);
+
+        WebResponse response = responseFromServer("/servlet");
+
+        assertEquals(403, response.getStatusCode());
+
+        assertDefaultNotAuthenticated(
+                response.getContentAsString());
+    }
+
 }

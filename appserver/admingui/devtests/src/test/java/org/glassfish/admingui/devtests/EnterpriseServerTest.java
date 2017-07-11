@@ -116,8 +116,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         assertTableRowCount("propertyForm:sysPropsTable", count);
     }
 
-    //TODO IDCINTER-41 Intermittent failures
-    //@Test
+    @Test
     public void testServerResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();
         final String description = "devtest test for server->resources page- " + jndiName;
@@ -126,8 +125,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
         
-        gotoDasPage();
-        clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
+        gotoServerResourcesPage();
         assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
@@ -136,13 +134,20 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
 
+        gotoServerResourcesPage();
+
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
 
+        gotoServerResourcesPage();
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
-        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
-        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonEnabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
+
+        gotoServerResourcesPage();
+        selectTableRowByValue("propertyForm:resourcesTable", jndiName);
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:button2");
+        waitForButtonDisabledMessage("propertyForm:resourcesTable:topActionsGroup1:button1");
 
         /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
@@ -153,5 +158,11 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
     public void gotoDasPage() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+    }
+
+    private void gotoServerResourcesPage() {
+        reset();
+        gotoDasPage();
+        clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
     }
 }

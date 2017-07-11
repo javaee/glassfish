@@ -56,6 +56,7 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_APPLICATIONS = "Applications can be enterprise or web applications, or various kinds of modules.";
     private static final String TRIGGER_EDIT_APPLICATION = "Modify an existing application or module.";
     private static final String TRIGGER_RESOURCES_APPLICATION = "View application scoped resources for the application.";
+    private static final String TRIGGER_TARGETS_APPLICATION = "List application targets.";
 
     private static final String ELEMENT_APP_NAME = "form:war:psection:nameProp:appName";
     private static final String ELEMENT_UNDEPLOY_BUTTON = "propertyForm:deployTable:topActionsGroup1:button1";
@@ -65,6 +66,7 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
     private static final String ELEMENT_DEPLOY_BUTTON = "propertyForm:deployTable:topActionsGroup1:deployButton";
     private static final String ELEMENT_APPLICATIONS = "treeForm:tree:applications:applications_link";
     private static final String ELEMENT_APPLICATION_RESOURCES_TAB = "propertyForm:appGeneralTabs:resourcesTab";
+    private static final String ELEMENT_APPLICATION_TARGETS_TAB = "propertyForm:appGeneralTabs:targetTab";
     private static final String ELEMENT_APP_RESOURCES_TABLE = "propertyForm:appScopedResources";
     
     @Test
@@ -179,12 +181,51 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
         }
     }
     
-    public void deployApp(String applicationName) {
+    @Test
+    public void deployAppWithTargets() {
+        final String applicationName = "app" + generateRandomString();
+        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
+        final String enableMessage = "i18n.msg.enableOnTargetsSuccessful";
+        final String disableMessage = "i18n.msg.disableOnTargetsSuccessful";
+        final String tableSelectMutlipleId = "propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image";
+        final String dropdownId = "propertyForm:targetTable:topActionsGroup1:dropdown1";
+
+        String instanceName = "in" + generateRandomString() ;
+        clearTargets();
+        StandaloneTest instance = new StandaloneTest();
+        instance.createStandAloneInstance(instanceName);
+
+        deploy(applicationName);
+
+        goToApplicationTargetsTab(applicationName);
+        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addAllButton");
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+
+        pressButton(tableSelectMutlipleId);
+        selectDropdownOption(dropdownId, "Enable");
+        waitForPageLoad(enableMessage, TIMEOUT);
+        pressButton(tableSelectMutlipleId);
+        selectDropdownOption(dropdownId, "Disable");
+        waitForPageLoad(disableMessage, TIMEOUT);
         
+        undeployApp(applicationName);
+        clearTargets();
+    }
+
+    private void clearTargets() {
         StandaloneTest standaloneTest = new StandaloneTest();
         ClusterTest clusterTest = new ClusterTest();
         standaloneTest.deleteAllStandaloneInstances();
         clusterTest.deleteAllClusters();
+    }
+
+    public void deployApp(String applicationName) {
+        clearTargets();
+        deploy(applicationName);
+    }
+
+    private void deploy(String applicationName) {
         
         clickAndWait("treeForm:tree:applications:applications_link", TRIGGER_APPLICATIONS);
         int preCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
@@ -234,6 +275,13 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
         waitForPageLoad(appName, 60000);
         clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, appName), TRIGGER_EDIT_APPLICATION);
         clickAndWait(ELEMENT_APPLICATION_RESOURCES_TAB, TRIGGER_RESOURCES_APPLICATION);
+    }
+
+    private void goToApplicationTargetsTab(String appName) {
+        clickAndWait(ELEMENT_APPLICATIONS, TRIGGER_APPLICATIONS);
+        waitForPageLoad(appName, 60000);
+        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, appName), TRIGGER_EDIT_APPLICATION);
+        clickAndWait(ELEMENT_APPLICATION_TARGETS_TAB, TRIGGER_TARGETS_APPLICATION);
     }
 
     public String getResName(String resName, String appScope) {

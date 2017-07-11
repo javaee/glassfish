@@ -116,7 +116,7 @@ public class WeldUtils {
     // particular application deployment.
     public static final String IMPLICIT_CDI_ENABLED_PROP = "implicitCdiEnabled";
 
-    protected static final List<String> cdiScopeAnnotations;
+    private static final List<String> cdiScopeAnnotations;
     static {
         cdiScopeAnnotations = new ArrayList<String>();
         cdiScopeAnnotations.add(Scope.class.getName());
@@ -128,7 +128,7 @@ public class WeldUtils {
         cdiScopeAnnotations.add(Singleton.class.getName());
     }
 
-    protected static final List<String> cdiEnablingAnnotations;
+    private static final List<String> cdiEnablingAnnotations;
     static {
         cdiEnablingAnnotations = new ArrayList<String>();
 
@@ -147,7 +147,7 @@ public class WeldUtils {
         cdiEnablingAnnotations.add(javax.ejb.Singleton.class.getName());
     }
 
-    protected static final List<String> excludedAnnotationTypes = new ArrayList<String>();
+    private static final List<String> excludedAnnotationTypes = new ArrayList<String>();
     static {
         // These are excluded because they are not scope annotations, and they cause the recursive
         // analysis of parent annotations to continue infinitely because they reference each other,

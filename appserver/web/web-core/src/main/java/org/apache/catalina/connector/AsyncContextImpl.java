@@ -109,6 +109,8 @@ class AsyncContextImpl implements AsyncContext {
         }
     };
 
+    private volatile boolean hasDispatch = false;
+
     private AtomicBoolean isOkToConfigure = new AtomicBoolean(true);
 
     private long asyncTimeoutMillis = DEFAULT_ASYNC_TIMEOUT_MILLIS;
@@ -210,6 +212,7 @@ class AsyncContextImpl implements AsyncContext {
             ServletContext context, String path) {
 
         isDispatchInScope.set(true);
+        hasDispatch = true;
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
                 if (delayAsyncDispatchAndComplete) {
@@ -286,7 +289,11 @@ class AsyncContextImpl implements AsyncContext {
     }
     
     void processAsyncOperations() {
-        if (isDispatchInScope()) {
+        processAsyncOperations(false);
+    }
+
+    private void processAsyncOperations(boolean exit) {
+        if (isDispatchInScope() || (exit && hasDispatch)) {
             invokeDelayDispatch();
         } else if (isAsyncComplete()) {
             doComplete();
@@ -302,7 +309,7 @@ class AsyncContextImpl implements AsyncContext {
      */
     void onExitService() {
         delayAsyncDispatchAndComplete = false;
-        processAsyncOperations();
+        processAsyncOperations(true);
     }
     
     @Override

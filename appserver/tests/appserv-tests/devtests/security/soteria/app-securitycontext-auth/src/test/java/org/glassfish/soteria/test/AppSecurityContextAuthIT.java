@@ -111,13 +111,9 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
                 .contains("Authenticated with status: SEND_FAILURE"));
     }
 
-    /**
-     * Flip Context tests test as part of #21844.
-     */
     @Test
     public void testContextAuthenticated() {
-//        Assert.assertAuthenticated(
-        Assert.assertNotAuthenticated(
+        Assert.assertAuthenticated(
             "context",
             "reza",
             readFromServer("/servlet?name=reza"));
@@ -125,8 +121,7 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
 
     @Test
     public void testContextIsCallerInRole(){
-//        Assert.assertAuthenticated(
-        Assert.assertNotAuthenticated(
+        Assert.assertAuthenticated(
                 "context",
                 "reza",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
@@ -134,18 +129,18 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
 
     @Test
     public void testContextAllCallers(){
-//        Assert.assertAuthenticatedRoles(
-        Assert.assertNotAuthenticated(
+        Assert.assertAuthenticatedRoles(
                 "all roles",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
     }
 
     @Test
     public void testContextHasAccessToResource(){
-//        Assert.assertHasAccessToResource(
-        Assert.assertNotHasAccessToResource(
+        Assert.assertHasAccessToResource(
                 "web",
-                readFromServer("/servlet?name=reza"), "foo", "bar");
+                "reza",
+                "/protectedServlet",
+                readFromServer("/servlet?name=reza"));
     }
     
     @Test
