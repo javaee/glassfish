@@ -105,7 +105,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             application = dc.getModuleMetaData(Application.class);
             DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
             target = commandParams.target;
-            if (application == null)
+            if (application == null || Boolean.getBoolean("deployment.switchoff.resource.validation"))
                 return;
             JNDINamespace myNamespace = new JNDINamespace();
             parseResources(myNamespace);
