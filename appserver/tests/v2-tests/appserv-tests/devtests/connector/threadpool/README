@@ -1,8 +1,0 @@
-
-How to run the test
-------------------
-
-1. Take a clean installation.
-2. Start the application server
-3. run "ant all" on this directory
-4. Be patient !
