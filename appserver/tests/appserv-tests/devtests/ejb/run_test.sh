@@ -276,8 +276,6 @@ get_test_target(){
 			TARGET=all ;;
 		ejb_web_all)
 			TARGET=lite ;;
-                 * )
-                       TARGET=$1 ;;
 	esac
 	export TARGET
 
@@ -299,7 +297,7 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
 	get_test_target $1
-	if [[ $1 = "ejb_all" || $1 = "ejb_group"* ]]; then
+	if [[ $1 = "ejb_all" ]]; then
 		test_run_ejb
 	elif [[ $1 = "ejb_timer_cluster_all" ]]; then
 		test_run_ejb_timer_cluster
@@ -323,7 +321,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo ejb_all ejb_timer_cluster_all ejb_web_all ejb_group_1 ejb_group_2 ejb_group_3
+	echo ejb_all ejb_timer_cluster_all ejb_web_all
 }
 
 OPT=$1
