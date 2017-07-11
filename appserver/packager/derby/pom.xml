@@ -48,10 +48,10 @@
         <artifactId>packages</artifactId>
         <version>5.0-SNAPSHOT</version>
     </parent>
-    <artifactId>javadb</artifactId>
-    <name>Java DB Package</name>
+    <artifactId>derby</artifactId>
+    <name>Derby Package</name>
     <packaging>distribution-fragment</packaging>
-    <description>This pom describes how to assemble the Java DB package</description>
+    <description>This pom describes how to assemble the Apache Derby package</description>
 
     <properties>
         <temp.dir>${project.build.directory}/dependency</temp.dir>       
@@ -59,6 +59,29 @@
 
         <build>
         <plugins>
+            <!--plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>glassfishbuild-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-zip</id>
+                        <phase>package</phase>
+                            <configuration>
+                                <duplicate>preserve</duplicate>
+                                <filesets>
+                                    <fileset>
+                                        <dir>${stage.dir}/..</dir>
+                                        <excludes>derby-distribution-${derby.version}-bin/demo/**</excludes>
+                                        <excludes>derby-distribution-${derby.version}-bin/docs/**</excludes>
+                                        <excludes>derby-distribution-${derby.version}-bin/javadoc/**</excludes>
+                                        <excludes>derby-distribution-${derby.version}-bin/test/**</excludes>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -68,6 +91,23 @@
                     </execution>
                     <execution>
                         <id>process-step2</id>
+                            <goals>
+                                <goal>unpack-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${temp.dir}</outputDirectory>
+                                <includeTypes>zip</includeTypes>
+                                <excludes>${zip.excludes},
+                                          derby-distribution-${derby.version}-bin/demo/**,
+                                          derby-distribution-${derby.version}-bin/docs/**,
+                                          derby-distribution-${derby.version}-bin/javadoc/**,
+					  derby-distribution-${derby.version}-bin/test/**
+                                </excludes>
+                                <overWriteReleases>false</overWriteReleases>
+                                <overWriteSnapshots>true</overWriteSnapshots>
+                                <excludeTransitive>true</excludeTransitive>
+                                <silent>false</silent>
+                            </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -85,9 +125,9 @@
         
     <dependencies>
         <dependency>
-      	    <groupId>org.glassfish.main.external</groupId>
-            <artifactId>javadb</artifactId>
-            <version>${project.version}</version>
+      	    <groupId>org.glassfish.external</groupId>
+            <artifactId>derby-distribution</artifactId>
+            <version>${derby.version}</version>
             <type>zip</type>    
        </dependency>
     </dependencies>
