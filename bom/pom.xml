@@ -375,7 +375,23 @@
         </dependencies>
     </dependencyManagement>
 
-  <scm>
-    <tag>2.5.0-b42-SNAPSHOT</tag>
-  </scm>
+    <scm>
+        <tag>2.5.0-b42-SNAPSHOT</tag>
+    </scm>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>1.42</version>
+                    <configuration>
+                        <scm>git</scm>
+                        <scmOnly>true</scmOnly>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
