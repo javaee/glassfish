@@ -148,7 +148,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * Code logic from BaseContainer.java
+     * Code logic from BaseContainer.java. Store portable and non-portable JNDI names in our namespace.
+     * Internal JNDI names not processed as they will not be called from an application.
+     *
      * @param ejb
      */
     private void parseEJB(EjbDescriptor ejb) {
@@ -171,7 +173,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             glassfishSpecificJndiName = null;
         }
 
-        // TODO: always?
         myNamespace.store(javaGlobalName, ejb);
 
         // interfaces now
@@ -602,17 +603,22 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * TODO: In Progress
+     * Logic from EjbNamingReferenceManagerImpl.java - Here EJB references get resolved
      */
+
     private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env) {
         // we only need to worry about those references which are not linked yet
         if(ejbRef.getEjbDescriptor() != null)
             return;
 
         String jndiName = "";
+        // TODO: Should we use an inverse approach i.e., skip validation only in special cases?
+        // Not sure if that is required as the below approach works fine while resolving EJB references
         boolean validationRequired = false;
+
         // local
         if (ejbRef.isLocal()) {
+            // mapped name has no meaning for local ejb-ref as non-portable JNDI names don't have any meaning in this case?
             if (ejbRef.hasLookupName()) {
                 jndiName = ejbRef.getLookupName();
                 validationRequired = true;
@@ -620,12 +626,30 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         }
         // remote
         else {
+            // mapped-name takes precedence over lookup name
             if (!ejbRef.hasJndiName() && ejbRef.hasLookupName()) {
                 jndiName = ejbRef.getLookupName();
                 validationRequired = true;
             }
+            // TODO: A case skipped from EjbNamingRefMan
+            // Q) Will we reach this class from an ACC? If so, might need to set some ClassLoaders
+            // TODO: Why does the below logic exist in the EjbNamingRefMan code?
+            // Intentionally or not, this resolves the java:app mapped names. java:global case is handled in the getRemoteEjbJndiName function call
+            else if (ejbRef.hasJndiName()
+                    && ejbRef.getJndiName().startsWith("java:app/")
+                    && !ejbRef.getJndiName().startsWith("java:app/env/")) {
+                String remoteJndiName = ejbRef.getJndiName();
+
+                String appName = DOLUtils.getApplicationName(application);;
+                String newPrefix = "java:global/" + appName + "/";
+
+                int javaAppLength = "java:app/".length();
+                jndiName = newPrefix + remoteJndiName.substring(javaAppLength);
+                validationRequired = true;
+            }
             else {
                 String remoteJndiName = getRemoteEjbJndiName(ejbRef);
+                // TODO: CORBA case
                 if (!remoteJndiName.startsWith("corbaname:")) {
                     validationRequired = true;
                     jndiName = remoteJndiName;

@@ -58,7 +58,7 @@
         <mkdir dir="${archivedir}"/>
         <property name="web.war" value="${archivedir}/${testName}-web.war"/>
         <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
-        <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
+        <property name="all.ear" value="${archivedir}/${testName}-app.ear"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -84,7 +84,7 @@
     </target>
 
     <target name="deploy.asadmin" depends="assemble">
-        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-app ${all.ear}"/>
+        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} ${all.ear}"/>
         <echo message="${ASADMIN} ${arg.list}"/>
         <exec executable="${ASADMIN}" resultproperty="return.code" failonerror="false">
            <arg line="${arg.list}"/>
