@@ -53,6 +53,12 @@ findbugs_run(){
 	# Run findbugs on open source ws.
 	echo "Running findbugs on ws"
 	cd $WORKSPACE/main
+  
+      if [ -n "$TARGET_DIR" ]; then
+        echo "Running findbugs in $TARGET_DIR"
+        cd $TARGET_DIR
+      fi
+
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -Pfindbugs clean install
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -Pfindbugs findbugs:findbugs
 
@@ -72,6 +78,10 @@ findbugs_low_priority_all_run(){
   # Run findbugs on open source ws.
   echo "Running findbugs on ws"
   cd $WORKSPACE/main
+  if [ -n "$TARGET_DIR" ]; then
+      echo "Running findbugs in $TARGET_DIR"
+      cd $TARGET_DIR
+  fi
   mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -Pfindbugs clean install
   mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$WORKSPACE/repository -B -Pfindbugs -Dfindbugs.threshold=Low findbugs:findbugs
 
@@ -83,7 +93,14 @@ generate_findbugs_result(){
 
 	# check findbbugs
 	set +e
-	cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./findbugscheck $WORKSPACE/main
+        if [ -n "$TARGET_DIR" ]; then
+           export RESULT_DIR=$WORKSPACE/main/$TARGET_DIR
+           echo "Generating findbugs result in $RESULT_DIR"
+        else
+           export RESULT_DIR=$WORKSPACE/main
+           echo "Generating findbugs result in $RESULT_DIR"
+        fi
+	cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./findbugscheck $RESULT_DIR
 	if [ $? -ne 0 ]
 	then
 	   echo "FAILED" > $WORKSPACE/results/findbugs_results/findbugscheck.log
@@ -92,7 +109,7 @@ generate_findbugs_result(){
 	fi
 	set -e
 	# archive the findbugs results
-	for i in `find $WORKSPACE/main -name findbugsXml.xml`
+	for i in `find $RESULT_DIR -name findbugsXml.xml`
 	do
 	   cp $i $WORKSPACE/results/findbugs_results/`echo $i | sed s@"$WORKSPACE"@@g | sed s@"/"@"_"@g`
 	done
@@ -133,6 +150,14 @@ run_test_id(){
     findbugs_low_priority_all)
       findbugs_low_priority_all_run
       generate_findbugs_low_priority_all_result;;
+    findbugs_appserver )
+      export TARGET_DIR=appserver
+       findbugs_run
+       generate_findbugs_result;;
+    findbugs_nucleus )
+      export TARGET_DIR=nucleus
+       findbugs_run
+       generate_findbugs_result;;
   esac
 }
 
@@ -151,8 +176,10 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo findbugs_all
-  echo findbugs_low_priority_all
+       echo findbugs_all
+       echo findbugs_low_priority_all
+       echo findbugs_appserver
+       echo findbugs_nucleus
 }
 
 OPT=$1
