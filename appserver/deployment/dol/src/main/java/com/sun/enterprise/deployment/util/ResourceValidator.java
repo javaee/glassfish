@@ -40,11 +40,9 @@
 
 package com.sun.enterprise.deployment.util;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.Application;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -157,7 +155,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         String javaGlobalName = getJavaGlobalJndiNamePrefix(ejb);
 
         boolean disableNonPortableJndiName = false;
-        // TODO: Look at system property also?
+        // TODO: Need to get the value of system-property server.ejb-container.property.disable-nonportable-jndi-names
         Boolean disableInDD = ejb.getEjbBundleDescriptor().getDisableNonportableJndiNames();
         if(disableInDD != null) {  // explicitly set in glassfish-ejb-jar.xml
             disableNonPortableJndiName = disableInDD;
@@ -173,13 +171,15 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             glassfishSpecificJndiName = null;
         }
 
-        myNamespace.store(javaGlobalName, ejb);
+        // used to decide whether the javaGlobalName needs to be stored
+        int countPortableJndiNames = 0;
 
         // interfaces now
         if (ejb.isRemoteInterfacesSupported()) {
             String intf = ejb.getHomeClassName();
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
             myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
             // non-portable
             if(glassfishSpecificJndiName != null) {
                 myNamespace.store(glassfishSpecificJndiName, ejb);
@@ -192,6 +192,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 count++;
                 String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
                 myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+                countPortableJndiNames++;
                 // non-portable - interface specific
                 if(glassfishSpecificJndiName != null) {
                     String remoteJndiName = getRemoteEjbJndiName(true, intf, glassfishSpecificJndiName);
@@ -209,12 +210,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             String intf = ejb.getLocalHomeClassName();
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
             myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
         }
 
         if (ejb.isLocalBusinessInterfacesSupported()) {
             for (String intf : ejb.getLocalBusinessClassNames()) {
                 String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
                 myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+                countPortableJndiNames++;
             }
         }
 
@@ -222,8 +225,12 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             String intf = ejb.getEjbClassName();
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
             myNamespace.store(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
         }
 
+        if (countPortableJndiNames == 1) {
+            myNamespace.store(javaGlobalName, ejb);
+        }
         parseResources(ejb);
     }
 
@@ -612,7 +619,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             return;
 
         String jndiName = "";
-        // TODO: Should we use an inverse approach i.e., skip validation only in special cases?
+        // Should we use an inverse approach i.e., skip validation only in special cases?
         // Not sure if that is required as the below approach works fine while resolving EJB references
         boolean validationRequired = false;
 
@@ -632,12 +639,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 validationRequired = true;
             }
             // TODO: A case skipped from EjbNamingRefMan
-            // Q) Will we reach this class from an ACC? If so, might need to set some ClassLoaders
-            // TODO: Why does the below logic exist in the EjbNamingRefMan code?
-            // Intentionally or not, this resolves the java:app mapped names. java:global case is handled in the getRemoteEjbJndiName function call
+            // Q) Will we reach the ResourceValidator class from an ACC? If so, might need to set some ClassLoaders
             else if (ejbRef.hasJndiName()
                     && ejbRef.getJndiName().startsWith("java:app/")
                     && !ejbRef.getJndiName().startsWith("java:app/env/")) {
+                // Why does the below logic exist in the EjbNamingRefMan code?
+                // Intentionally or not, this resolves the java:app mapped names
+                // While, java:global case is handled in the getRemoteEjbJndiName function call
                 String remoteJndiName = ejbRef.getJndiName();
 
                 String appName = DOLUtils.getApplicationName(application);;
@@ -660,12 +668,19 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (!validationRequired)
             return;
 
-        String newName = convertModuleOrAppJNDIName(jndiName, env);
-        // JNDI names starting with java:app and java:module are taken care of
-        if (!myNamespace.find(newName, env)) {
-            // fall through
-            validateJNDIRefs(jndiName, env);
+        // Portable JNDI name case with java:app or java:module prefix - Convert to corresponding java:global
+        if (jndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX) || jndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX)) {
+            String newName = convertModuleOrAppJNDIName(jndiName, env);
+            if (myNamespace.find(newName, env)) {
+                return;
+            }
         }
+        // Non-portable JNDI names
+        if (!jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))
+            if (myNamespace.find(jndiName, env))
+                return;
+        // fall through
+        validateJNDIRefs(jndiName, env);
     }
 
     /**
