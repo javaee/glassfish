@@ -51,7 +51,7 @@ test_run(){
   echo $ROOT
   cd $APS_HOME/../v2-tests/appserv-tests
   ant startDomain startDerby
-  antTarget="clean-all all report"
+  antTarget="clean-all clean all report"
   cd $ROOT
   time ant $antTarget | tee $TEST_RUN_LOG
   antStatus=$?

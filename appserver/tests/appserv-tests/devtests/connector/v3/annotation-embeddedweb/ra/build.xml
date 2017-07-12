@@ -37,10 +37,12 @@
         <!--<echo message="Connector api resides in ${connector-api.jar}"/>-->
         <javac srcdir="${src.dir}" 
                destdir="${component.classes.dir}"
-               failonerror="true">
-            <classpath>
-                <pathelement location="${env.S1AS_HOME}/lib/j2ee.jar"/>
-            </classpath>
+	       failonerror="true">
+	       <classpath>
+	          <fileset dir="${env.S1AS_HOME}/modules">
+	            <include name="**/*.jar" />
+	          </fileset>
+	       </classpath>
             <include name="com/sun/jdbcra/**"/>
             <include name="com/sun/appserv/**"/>
         </javac>

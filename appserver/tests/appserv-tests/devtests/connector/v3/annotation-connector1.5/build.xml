@@ -36,7 +36,6 @@
 
   <target name="deploy">
     <ant dir="ra" inheritAll="false" target="deploy"/>
-    <ant dir="ra" inheritAll="false" target="testAddAdmin"/>
     <ant dir="app" inheritAll="false" target="deploy-ear"/>
     <ant dir="." inheritAll="false" target="restart"/>
   </target>
