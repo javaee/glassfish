@@ -222,10 +222,15 @@ public class SimpleBVServlet extends HttpServlet {
         person.setFirstName("John");
         person.setLastName("Yaya");
         person.setAge(30);
+        person.setEmail("johy.yaya-abc.com");
         person.setListOfString(listOfString);
 
         violations = beanValidator.validate(person);
         printConstraintViolationsOfBV2(out, violations, "case4");
+
+        person.setEmail("johy.yaha@abc.com");
+        violations = beanValidator.validate(person);
+        printConstraintViolationsOfBV2(out, violations, "case5");
 
         out.print("</body></html>");
     }

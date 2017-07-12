@@ -1,5 +1,7 @@
 package simple_bv_servlet;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -18,6 +20,18 @@ public class Employee implements Serializable {
 
   public int getAge(){
     return age;
+  }
+
+  @NotNull
+  @Email
+  private String email;
+
+  public void setEmail(String email){
+    this.email = email;
+  }
+
+  public String getEmail(){
+    return email;
   }
 
   @NotNull
