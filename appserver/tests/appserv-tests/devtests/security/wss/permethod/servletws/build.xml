@@ -55,11 +55,8 @@
     &testproperties;
     &commonSecurity;
 
-    <!--<target name="all" 
-    depends="clean, build, setup, deploy, run, undeploy, unsetup"/>-->
-    <target name="all" depends="clean">
-      <echo message="FIXME: Known failure."/>
-    </target>
+    <target name="all" 
+    depends="clean, build, setup, deploy, run, undeploy, unsetup"/>
 
     <target name="run-test" 
     depends="clean, build, deploy, run, undeploy"/>
