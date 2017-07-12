@@ -58,18 +58,6 @@ import javax.validation.constraints.NotNull;
 public interface AccessLog extends ConfigBeanProxy, PropertyBag {
 
     /**
-     * Gets the value of the rotation-interval-in-minutes attribute.
-     * The time interval in minutes between two successive rotations of the
-     * access logs.
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="1440")
-    @Min(value=1)
-    @Max(value=Integer.MAX_VALUE)
-    String getRotationIntervalInMinutes();
-
-    /**
      * Gets the value of the format attribute, which specifies the format
      * of the access log.
      * 
@@ -107,6 +95,17 @@ public interface AccessLog extends ConfigBeanProxy, PropertyBag {
      */
     void setRotationPolicy(String value) throws PropertyVetoException;
 
+    /**
+     * Gets the value of the rotation-interval-in-minutes attribute.
+     * The time interval in minutes between two successive rotations of the
+     * access logs.
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="1440")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
+    String getRotationIntervalInMinutes();
 
     /**
      * Sets the value of the rotation-interval-in-minutes attribute.
