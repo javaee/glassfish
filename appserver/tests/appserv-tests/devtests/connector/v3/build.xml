@@ -202,6 +202,7 @@
     </target>
 
     <target name="connector-run-1">
+	    <echo message="************  Starting connector-run-1  ************"/>    
         <echo message="@@## connector1.5 ##@@"/>
         <ant dir="connector1.5" target="${connector-target}"/>
 
@@ -213,6 +214,7 @@
     </target>
 
     <target name="connector-run-2">
+	<echo message="************  Starting connector-run-2  ************"/>
         <echo message="@@## embeddedweb ##@@"/>
         <ant dir="embeddedweb" target="${connector-target}"/>
 
@@ -224,6 +226,7 @@
     </target>
 
     <target name="connector-run-3">
+	<echo message="************  Starting connector-run-3  ************"/>
         <echo message="@@## web2connector ##@@"/>
         <ant dir="../web2connector" target="${connector-target}" />
 
@@ -254,6 +257,7 @@
     </target>
 
     <target name="connector-run-4">
+	<echo message="************  Starting connector-run-4  ************"/>
         <!--FAILING SO COMMENTED-->
         <!--echo message="@@## defaultConnectorResource ##@@"/>
         <ant dir="defaultConnectorResource" target="${connector-target}"/-->
@@ -283,6 +287,7 @@
     </target>
 
     <target name="connector-run-5">
+	<echo message="************  Starting connector-run-5  ************"/>
         <echo message="@@## force-deploy-rar ##@@"/>
         <ant dir="force-deploy-rar" target="${connector-target}"/>
 
@@ -315,6 +320,7 @@
     </target>
 
     <target name="connector-run-6">
+	<echo message="************  Starting connector-run-6  ************"/>
         <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries" target="all-ext"/>
 
@@ -336,6 +342,7 @@
     </target>
 
     <target name="connector-run-7">
+	<echo message="************  Starting connector-run-7  ************"/>
         <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
 
