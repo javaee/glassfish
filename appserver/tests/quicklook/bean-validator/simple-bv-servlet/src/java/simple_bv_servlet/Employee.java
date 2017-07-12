@@ -42,9 +42,9 @@ public class Employee implements Serializable {
     this.lastName = lastName;
   }
 
+  @NotNull
   private List<String> listOfString;
 
-  @NotNull
   public List<String> getListOfString() {
     return listOfString;
   }
