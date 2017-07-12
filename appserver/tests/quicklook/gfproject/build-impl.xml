@@ -215,8 +215,8 @@
     <mkdir dir="web/jsp"/>
     <mkdir dir="src/java"/>
     <javac   debug="true"
-    source="1.5"
-    target="1.5"
+    source="8"
+    target="8"
     classpathref="class.path"
     srcdir="src/java"
     failonerror="false"
