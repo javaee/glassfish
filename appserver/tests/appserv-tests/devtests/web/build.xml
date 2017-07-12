@@ -61,6 +61,13 @@
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
+    <target name="web_jsp">
+    <antcall target="init"/>
+    <antcall target="jsp"/>
+    <antcall target="finish-report"/>
+    </target>
+
+
     <target name="jsp" depends="init-report">
         <ant dir="emptyServletPathJspInclude" target="all"/>
         <ant dir="jsp-security" target="all"/>
@@ -146,7 +153,14 @@
         <ant dir="welcomePageSecurityConstraintJspExtension" target="all"/>
     </target>
 
-    <target name="taglib" depends="init-report">
+    <target name="web_taglib">
+    <antcall target="init"/>
+    <antcall target="taglib"/>
+    <antcall target="finish-report"/>
+    </target>
+
+    
+   <target name="taglib" depends="init-report">
         <ant dir="jstlHtmlParamOutsideFmtMessage" target="all"/>
         <ant dir="jstlLocaleSupportAPI" target="all"/>
         <ant dir="tagPluginForEach" target="all"/>
@@ -154,6 +168,13 @@
         <ant dir="tagfileInclude" target="all"/>
         <ant dir="tagplugin" target="all"/>
     </target>
+
+    <target name="web_el">
+    <antcall target="init"/>
+    <antcall target="el"/>
+    <antcall target="finish-report"/>
+    </target>
+
 
     <target name="el" depends="init-report">
         <ant dir="bodyTag" target="all"/>
@@ -360,6 +381,321 @@
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
 
+     <target name="web_servlet-1">
+        <antcall target="init"/>
+        <antcall target="servlet-1"/>
+        <antcall target="finish-report"/>
+    </target>
+     
+     <target name="servlet-1" depends="init-report">
+        <ant dir="applicationDispatcher" target="all"/>
+        <ant dir="cacheControlResponseHeaders" target="all"/>
+        <ant dir="cacheFilterMappingDispatcher" target="all"/>
+        <ant dir="cacheHelperRef" target="all"/>
+        <ant dir="contentlength" target="all"/>
+        <ant dir="cookiePropertiesSunWebXml" target="all"/>
+        <ant dir="defaultCharset" target="all"/>
+        <ant dir="dirListing" target="all"/>
+        <ant dir="defaultServletWithSubdirectoryMapping" target="all"/>
+        <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
+        <ant dir="errorPageExceptionTypeWrapper" target="all"/>
+        <ant dir="errorPageHandlingForError" target="all"/>
+        <ant dir="servletInitBeforeGetServletConfig" target="all"/>
+        <ant dir="listenerFilterServletInit" target="all"/>
+        <ant dir="filterMultipleInit" target="all"/>
+    </target>
+
+    <target name="web_servlet-2">
+        <antcall target="init"/>
+        <antcall target="servlet-2"/>
+        <antcall target="finish-report"/>
+    </target>
+
+     
+    <target name="servlet-2" depends="init-report">
+    <ant dir="filterURIMapping" target="all"/>
+        <ant dir="forwardWithQueryString" target="all"/>
+        <ant dir="getAttributeAfterForward" target="all"/>
+        <ant dir="getAttributeAfterInclude" target="all"/>
+        <ant dir="getRequestURI" target="all"/>
+        <ant dir="getServerNameAndPort" target="all"/>
+        <ant dir="httpServletGetAllDeclaredMethods" target="all"/>
+        <ant dir="index" target="all"/>
+        <ant dir="javaxServletErrorRequestUriDynamicResource" target="all"/>
+        <ant dir="javaxServletErrorRequestUriStaticResource" target="all"/>
+        <ant dir="malformedQueryString" target="all"/>
+        <ant dir="mimeMappingInheritedFromDefaultWebXml" target="all"/>
+        <ant dir="multiByteGETQueryParamDefaultCharset" target="all"/>
+        <ant dir="multiByteGETQueryParamFormHintField" target="all"/>
+        <ant dir="multiByteGETQueryParamLocaleCharsetMap" target="all"/>
+    </target>
+
+    <target name="web_servlet-3">
+        <antcall target="init"/>
+        <antcall target="servlet-3"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="servlet-3" depends="init-report">
+    <ant dir="multiByteGETQueryParamSetCharEncoding" target="all"/>
+        <ant dir="multiBytePOSTFormHintField" target="all"/>
+        <ant dir="multibyteValue" target="all"/>
+        <ant dir="queryString" target="all"/>
+        <ant dir="requestDispatcherForwardCommitResponse" target="all"/>
+        <ant dir="requestDispatcherForwardHEADRequest" target="all"/>
+        <ant dir="requestDispatcherForwardNonHttp" target="all"/>
+        <ant dir="requestDispatcherForwardSendErrorCommitResponse" target="all"/>
+        <ant dir="requestDispatcherForwardSetStatusCommitResponse" target="all"/>
+        <ant dir="requestDispatcherIncludeNonHttp" target="all"/>
+        <ant dir="requestDispatcherIncludeTargetNotFound" target="all"/>
+        <ant dir="requestDispatcherMaxDepth" target="all"/>
+        <ant dir="requestDispatcherMultipleForward" target="all"/>
+        <ant dir="requestDispatcherPathWithParams" target="all"/>
+        <ant dir="responseErrorMessageEncoding" target="all"/>
+    </target>
+     
+    <target name="web_servlet-4">
+        <antcall target="init"/>
+        <antcall target="servlet-4"/>
+        <antcall target="finish-report"/>
+    </target>
+
+   <target name="servlet-4" depends="init-report">
+   <ant dir="responseExceptionMessageEncoding" target="all"/>
+        <ant dir="includeErrorPageAfterResponseCommit" target="all"/>
+        <ant dir="reuseSessionId" target="all"/>
+        <ant dir="securityConstraintWildcardMapping" target="all"/>
+        <ant dir="servlet-3.0/absoluteOrderingWebFragments" target="all"/>
+        <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
+        <ant dir="servlet-3.0/asyncContextCreateListener" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchCrossContext" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchToPath" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchZeroArg" target="all"/>
+        <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
+        <ant dir="servlet-3.0/asyncContextMultipleDispatch" target="all"/>
+        <ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchWithException" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
+    </target>
+
+      <target name="web_servlet-5">
+        <antcall target="init"/>
+        <antcall target="servlet-5"/>
+        <antcall target="finish-report"/>
+      </target>
+
+   <target name="servlet-5" depends="init-report">
+   <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+        <ant dir="servlet-3.0/asyncListenerOnTimeoutDispatch" target="all"/>
+        <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
+        <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
+        <ant dir="servlet-3.0/asyncDelayDispatchAndComplete" target="all"/>
+        <ant dir="servlet-3.0/dispatchForwardAsyncDispatch" target="all"/>
+        <ant dir="servlet-3.0/cookieHttpOnly" target="all"/>
+        <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
+        <ant dir="servlet-3.0/javaxServletContextOrderedLibs" target="all"/>
+        <ant dir="servlet-3.0/multiWebFragments" target="all"/>
+        <ant dir="servlet-3.0/multiWebFragmentsResources" target="all"/>
+    </target>
+
+    <target name="web_servlet-6">
+        <antcall target="init"/>
+        <antcall target="servlet-6"/>
+        <antcall target="finish-report"/>
+    </target>
+
+     <target name="servlet-6" depends="init-report">
+     <ant dir="servlet-3.0/multipart" target="all"/>
+        <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
+        <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/resourceURLFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/jsfManagedBeanAnnotation" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithEAR" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddListenerByClassName" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByInstance" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletOverrideDefaultAndJspServletMappings" target="all"/>
+        <ant dir="servlet-3.0/servletContextCompletePreliminaryFilterRegistration" target="all"/>
+    </target>
+
+     <target name="web_servlet-7">
+        <antcall target="init"/>
+        <antcall target="servlet-7"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="servlet-7" depends="init-report">
+    <ant dir="servlet-3.0/servletContextCompletePreliminaryServletRegistration" target="all"/>
+        <ant dir="servlet-3.0/servletContextCreateServletAndFilter" target="all"/>
+        <ant dir="servlet-3.0/servletContextCreateServletWithServletSecurity" target="all"/>
+        <ant dir="servlet-3.0/servletContextGetRealPathFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/servletContextGetResourceInLocalJar" target="all"/>
+        <ant dir="servlet-3.0/servletContextGetResourcePathsFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/servletContextSetInitParameter" target="all"/>
+        <ant dir="servlet-3.0/servletMappingEmptyString" target="all"/>
+        <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
+        <ant dir="servlet-3.0/servletRequestListenerInvocationOrder" target="all"/>
+        <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfig" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfigDeclarative" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfigProgrammatic" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieCustomNameProgrammatic" target="all"/>
+    </target>
+
+     <target name="web_servlet-8">
+        <antcall target="init"/>
+        <antcall target="servlet-8"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="servlet-8" depends="init-report">
+       <ant dir="servlet-3.0/sessionCookieCustomNameSunWebXml" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieCustomNameWebXmlSunWebXmlPrecedence" target="all"/>
+        <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
+        <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeCustomCookieName" target="all"/>
+        <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeDeclarative" target="all"/>
+        <ant dir="servlet-3.0/nonDuplicateSessionCookieWithCustomCookieName" target="all"/>
+        <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
+        <ant dir="servlet-3.0/webFragment" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithEjbLite" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithLoginConfig" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithLoginConfigOverrided" target="all"/>
+        <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
+        <ant dir="servlet-3.0/webServletAnnotation" target="all"/>
+        <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
+        <ant dir="servlet-3.0/xmlOverrideAnnotationWithWebFragment" target="all"/>
+    </target>
+
+    <target name="web_servlet-9">
+        <antcall target="init"/>
+        <antcall target="servlet-9"/>
+        <antcall target="finish-report"/>
+    </target>
+
+      <target name="servlet-9" depends="init-report">
+        <ant dir="servlet-3.0/xmlOverrideUrlPatternWithWebFragment" target="all"/>
+        <ant dir="servlet-3.0/filterWithEmptyUrl" target="all"/>
+        <ant dir="servletAnnotationPreDestroy" target="all"/>
+        <ant dir="servletChainedException" target="all"/>
+        <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
+        <ant dir="servletContextAttributeListenerAnnotationPreDestroy" target="all"/>
+        <ant dir="servletContextDestroyedEventAttributesAvailable" target="all"/>
+        <ant dir="servletContextGetContextPath" target="all"/>
+        <ant dir="servletContextGetEmptyContextPath" target="all"/>
+        <ant dir="servletContextListenerAnnotationPreDestroy" target="all"/>
+        <ant dir="servletContextNullPathArgument" target="all"/>
+        <ant dir="servletEmptyLoadOnStartup" target="all"/>
+        <ant dir="servletFilterDefaultInvocationOrder" target="all"/>
+        <ant dir="servletFilterMappingWithServletNameAndURLPattern" target="all"/>
+        <ant dir="servletGetServerPort" target="all"/>
+    </target>
+
+    <target name="web_servlet-10">
+        <antcall target="init"/>
+        <antcall target="servlet-10"/>
+        <antcall target="finish-report"/>
+    </target>
+
+     <target name="servlet-10" depends="init-report">
+        <ant dir="servletLoadOnStartupMultipleInit" target="all"/>
+        <ant dir="servletMappingWithMultipleURLPatterns" target="all"/>
+        <ant dir="servletRelativeContextURLsEquals" target="all"/>
+        <ant dir="servletRequestGetPathInfoCollapseContiguousSlashes" target="all"/>
+        <ant dir="servletRequestGetPathInfoGetPathTranslated" target="all"/>
+        <ant dir="servletRequestParamsPreserveOrder" target="all"/>
+        <ant dir="servletRequestSetCharEncodingIllegalStateException" target="all"/>
+        <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
+        <ant dir="servletResourceInjectionContextAttributeListener" target="all"/>
+        <ant dir="servletResourceInjectionContextListener" target="all"/>
+        <ant dir="servletResourceInjectionFilter" target="all"/>
+        <ant dir="servletResourceInjectionHttpSessionAttributeListener" target="all"/>
+        <ant dir="servletResourceInjectionHttpSessionListener" target="all"/>
+        <ant dir="servletResourceInjectionRequestAttributeListener" target="all"/>
+        <ant dir="servletResourceInjectionRequestListener" target="all"/>
+       <antcall target="finish-report"/>
+    </target>
+
+    <target name="web_servlet-11">
+        <antcall target="init"/>
+        <antcall target="servlet-11"/>
+        <antcall target="finish-report"/>
+    </target>
+    
+     <target name="servlet-11" depends="init-report">
+        <ant dir="servletResourceInjectionServletInstance" target="all"/>
+        <ant dir="servletResourceInjectionServletInstanceLoadOnStartup" target="all"/>
+        <ant dir="servletResponseQuotedContentTypeImbalance" target="all"/>
+        <ant dir="servletSSLRequestAttributes" target="all"/>
+        <ant dir="servletToJspFileMapping" target="all"/>
+        <ant dir="sessionDestroyed" target="all"/>
+        <ant dir="sessionExpired" target="all"/>
+        <ant dir="sessionDestroyedClassLoader" target="all"/>
+        <ant dir="sessionIdPresentInBothRewrittenUrlAndCookieByDefault" target="all"/>
+        <ant dir="sessionIdPresentOnlyInCookieIfUrlRewritingDisabled" target="all"/>
+        <ant dir="sessionIdUrlRewrite" target="all"/>
+        <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
+        <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
+        <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
+        <ant dir="setMultiValuedResponseHeader" target="all"/>
+    </target>
+
+    <target name="web_servlet-12">
+        <antcall target="init"/>
+        <antcall target="servlet-12"/>
+        <antcall target="finish-report"/>
+    </target>
+
+     <target name="servlet-12" depends="init-report">
+        <ant dir="standalonewar" target="all"/>
+        <ant dir="sessionWithoutCookie" target="all"/>
+        <ant dir="createSessionInServletRequestListener" target="all"/>
+        <ant dir="servlet-3.1/networkPathReference" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingOutput" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingInput" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingInputWithAsyncDispatch" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingInputOutput" target="all"/>
+        <ant dir="servlet-3.1/upgradeEcho" target="all"/>
+        <ant dir="servlet-3.1/upgradeWithCDI" target="all"/>
+        <ant dir="servlet-3.1/resetCharacterEncoding" target="all"/>
+        <ant dir="servlet-3.1/partSubmittedFileName" target="all"/>
+        <ant dir="servlet-3.1/servletContextGetVirtualServerName" target="all"/>
+        <ant dir="localeEncodingMapping" target="all"/>
+        <ant dir="servlet-4.0/setSessionTimeout" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="web_servlet-13">
+        <antcall target="init"/>
+        <antcall target="servlet-13"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="servlet-13" depends="init-report">
+        <ant dir="servlet-4.0/addJspFile" target="all"/>
+        <ant dir="servlet-4.0/defaultContextPath" target="all"/>
+        <ant dir="servlet-4.0/defaultContextPathEar" target="all"/>
+        <ant dir="servlet-4.0/contextCharEncoding" target="all"/>
+        <ant dir="servlet-4.0/reqResEncoding" target="all"/>
+        <ant dir="servlet-4.0/mappingDiscovery" target="all"/>
+        <ant dir="servlet-4.0/pushStatic" target="all"/>
+        <ant dir="servlet-4.0/pushCacheable" target="all"/>
+        <ant dir="servlet-4.0/pushAuthorization" target="all"/>
+        <ant dir="servlet-4.0/pushQueryString" target="all"/>
+        <ant dir="servlet-4.0/trailer" target="all"/>
+        <ant dir="servlet-4.0/compositeTrailerSupplier" target="all"/>
+        <ant dir="servlet-4.0/pushArbitraryMethod" target="all"/>
+        <ant dir="servlet-4.0/pushDynamic" target="all"/>
+        <antcall target="finish-report"/>
+    </target>
+
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
@@ -484,6 +820,206 @@
         <ant dir="contextRootDuplicate" target="all"/>
     </target>
 
+     <target name="web_web-container-1">
+        <antcall target="init"/>
+        <antcall target="web-container-1"/>
+        <antcall target="finish-report"/>
+    </target>
+
+      <target name="web-container-1" depends="init-report">
+        <ant dir="accessLoggingDynamicReconfig" target="all"/>
+        <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
+        <ant dir="accessLoggingBadRequests" target="all"/>
+        <ant dir="allowEncodedSlash" target="all"/>
+        <ant dir="asadminDeletes" target="all"/>
+        <ant dir="broken_webapp" target="all"/>
+        <ant dir="classPathManifestAttribute" target="all"/>
+        <ant dir="classPathManifestAttributePrecompile" target="all"/>
+        <ant dir="classloaderGetResourceJarFile" target="all"/>
+        <ant dir="classloaderGetResourcesDelegateFalse" target="all"/>
+        <ant dir="commonsDigesterClassNotFoundException" target="all"/>
+        <ant dir="commonsLogging" target="all"/>
+        <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
+        <ant dir="contextPathXmlConfig" target="all"/>
+        <ant dir="contextRoot" target="all"/>
+    </target>
+
+    <target name="web_web-container-2">
+        <antcall target="init"/>
+        <antcall target="web-container-2"/>
+        <antcall target="finish-report"/>
+    </target>
+
+     <target name="web-container-2" depends="init-report">
+     <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
+        <ant dir="contextXmlConfig" target="all"/>
+        <ant dir="contextXmlLifecycleListener" target="all"/>
+        <ant dir="contextXmlLifecycleListenerGlobal" target="all"/>
+        <ant dir="contextXmlRemoteHostValve" target="all"/>
+        <ant dir="cookieValueWithEquals" target="all"/>
+        <ant dir="cookieValueWithSpaces" target="all"/>
+        <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/>
+        <ant dir="delegate" target="all"/>
+        <ant dir="disableDefaultErrorPage" target="all"/>
+        <ant dir="emptyContextRoot" target="all"/>
+        <ant dir="errorPageExceptionTypeMapping" target="all"/>
+        <ant dir="explodedWar" target="all"/>
+        <ant dir="extraClassPathJarUrl" target="all"/>
+        <ant dir="extraClassPathRelative" target="all"/>
+    </target>
+
+     <target name="web_web-container-3">
+        <antcall target="init"/>
+        <antcall target="web-container-3"/>
+        <antcall target="finish-report"/>
+    </target>
+  
+    
+     <target name="web-container-3" depends="init-report">
+        <ant dir="formHintField" target="all"/>
+        <ant dir="formHintFieldPostWithQueryParam" target="all"/>
+        <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
+        <ant dir="formHintFieldPrecedence" target="all"/>
+        <ant dir="httpListenerDynamicConfig" target="all"/>
+        <ant dir="instanceHttpPortDynamicReconfig" target="all"/>
+        <ant dir="invokerServletDisabled" target="all"/>
+        <ant dir="jmxUndeployEvent" target="all"/>
+        <ant dir="jrouteIdInCookieOrURL" target="all"/>
+        <ant dir="jsfWithBundledOneDotOneJarFiles" target="all"/>
+        <ant dir="largeCookieError" target="all"/>
+        <ant dir="loadClassesFromZipFile" target="all"/>
+        <ant dir="log4jLocallyBundled" target="all"/>
+        <ant dir="log4jXmlInEarFile" target="all"/>
+        <ant dir="mimeMappingCaseInsensitiveMatch" target="all"/>
+    </target>
+      
+    <target name="web_web-container-4">
+        <antcall target="init"/>
+        <antcall target="web-container-4"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="web-container-4" depends="init-report">
+        <ant dir="monitorHttpService" target="all"/>
+        <ant dir="monitorServletInstance" target="all"/>
+        <ant dir="monitorWebRequest" target="all"/>
+        <ant dir="multiByteContextRoot" target="all"/>
+        <ant dir="multiByteContextRootWithCookie" target="all"/>
+        <ant dir="osgiServlet" target="all"/>
+        <ant dir="overrideImplicitMapping" target="all"/>
+        <ant dir="pipelineQueueFull" target="all"/>
+        <ant dir="portUnification" target="all"/>
+        <ant dir="reconfigDefaultWebModule" target="all"/>
+        <ant dir="relativeRedirectAllowed" target="all"/>
+        <ant dir="replaceRootContext" target="all"/>
+        <ant dir="serverRedirectWithQueryString" target="all"/>
+        <ant dir="servletRequestLongUri" target="all"/>
+        <ant dir="sessionIdCustomGenerator" target="all"/>
+    </target>
+
+    <target name="web_web-container-5">
+        <antcall target="init"/>
+        <antcall target="web-container-5"/>
+        <antcall target="finish-report"/>
+    </target>
+
+      <target name="web-container-5" depends="init-report">
+        <ant dir="sessionInvalidateNoCookieInResponse" target="all"/>
+        <ant dir="sessionJvmRoute" target="all"/>
+        <ant dir="sessionMemoryPersist" target="all"/>
+        <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
+        <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
+        <ant dir="sessionPreserveAcrossRedeployDeclarative" target="all"/>
+        <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
+        <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
+        <ant dir="sessionWithCookiePersistenceType" target="all"/>
+        <ant dir="singleSignOnCookieSecure" target="all"/>
+        <ant dir="singleSignOnCookieHttpOnly" target="all"/>
+        <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
+        <ant dir="ssiEscapeCharacter" target="all"/>
+        <ant dir="ssiHtmlEntity" target="all"/>
+        <ant dir="threadPoolIdleTimeout" target="all"/>
+    </target>
+
+    <target name="web_web-container-6">
+        <antcall target="init"/>
+        <antcall target="web-container-6"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="web-container-6" depends="init-report">
+        <ant dir="useBundledJsf" target="all"/>
+        <ant dir="useBundledJsfWithTagCompilation" target="all"/>
+        <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
+        <ant dir="valveTomcatStyle" target="all"/>
+        <ant dir="valveWithParams" target="all"/>
+        <ant dir="virtualServerAlternateDocroot" target="all"/>
+        <ant dir="virtualServerAlternateDocrootDynamicReconfig" target="all"/>
+        <ant dir="virtualServerAlternateDocrootRestart" target="all"/>
+        <ant dir="virtualServerAlternateDocrootWelcomePageRedirect" target="all"/>
+        <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
+        <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
+        <ant dir="virtualServerDefaultWebModule" target="all"/>
+        <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
+        <ant dir="virtualServerDefaultWebModuleReconfig" target="all"/>
+        <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
+    </target>
+
+     <target name="web_web-container-7">
+        <antcall target="init"/>
+        <antcall target="web-container-7"/>
+        <antcall target="finish-report"/>
+    </target>
+
+   <target name="web-container-7" depends="init-report">
+       <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
+        <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
+        <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
+        <ant dir="virtualServerLogFile" target="all"/>
+        <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
+        <ant dir="virtualServerRedirectPropertyNoSubstringMatch" target="all"/>
+        <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
+        <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
+        <ant dir="virtualServerSendErrorProperty" target="all"/>
+        <ant dir="virtualServerStateDynamicReconfig" target="all"/>
+        <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
+        <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
+        <ant dir="virtualServerWithCustomValves" target="all"/>
+        <ant dir="virtualServerWithCustomErrorReportValve" target="all"/>
+        <ant dir="webappAlternateDocroot" target="all"/>
+    </target>
+
+     <target name="web_web-container-8">
+        <antcall target="init"/>
+        <antcall target="web-container-8"/>
+        <antcall target="finish-report"/>
+    </target>
+
+    <target name="web-container-8" depends="init-report">
+        <ant dir="webappAlternateDocrootTagFile" target="all"/>
+        <ant dir="webappDeployDashDashLibraries" target="all"/>
+        <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
+        <ant dir="webappLoaderEmptyJar" target="all"/>
+        <ant dir="webappLoaderGetResourceDot" target="all"/>
+        <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
+        <ant dir="webdavCopyDelete" target="all"/>
+        <ant dir="welcomePageExtensionMatch" target="all"/>
+        <ant dir="weldJsfLoginPage" target="all"/>
+        <ant dir="weldJsfServerAuthModuleRedirect" target="all"/>
+        <ant dir="weldJsfFormLoginHttpSessionListener" target="all"/>
+        <ant dir="oneSessionCookieHeader" target="all"/>
+        <ant dir="cacheHang" target="all"/>
+        <ant dir="jsessionIdParameter" target="all"/>
+        <ant dir="setWebContextParam" target="all"/>
+        <ant dir="contextRootDuplicate" target="all"/>
+    </target>
+
+     <target name="web_security">
+        <antcall target="init"/>
+        <antcall target="security"/>
+        <antcall target="finish-report"/>
+    </target>
+
     <target name="security" depends="init-report">
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
@@ -524,6 +1060,13 @@
         <ant dir="servlet-3.1/denyUncoveredHttpMethods" target="all"/>
         <ant dir="servlet-3.1/anyAuthenticatedUser" target="all"/>
     </target>
+
+     <target name="web_http-connector">
+        <antcall target="init"/>
+        <antcall target="http-connector"/>
+        <antcall target="finish-report"/>
+    </target>
+
 
     <target name="http-connector" depends="init-report">
         <ant dir="caseSensitiveHostMapping" target="all"/>
@@ -568,14 +1111,35 @@
         <ant dir="wrongTransport" target="all"/>
         <ant dir="trailerHeader" target="all"/>
     </target>
+      
+     <target name="web_comet">
+        <antcall target="init"/>
+        <antcall target="comet"/>
+        <antcall target="finish-report"/>
+    </target>
 
+       
     <target name="comet" depends="init-report">
         <ant dir="cometEcho" target="all"/>
     </target>
 
+    <target name="web_misc">
+        <antcall target="init"/>
+        <antcall target="misc"/>
+        <antcall target="finish-report"/>
+    </target>
+
+
     <target name="misc" depends="init-report">
         <ant dir="genDocSchema" target="all"/>
     </target>
+
+    <target name="web_weblogicDD">
+        <antcall target="init"/>
+        <antcall target="weblogicDD"/>
+        <antcall target="finish-report"/>
+    </target>
+
 
     <target name="weblogicDD" depends="init-report">
 <!--
@@ -592,11 +1156,24 @@
 -->
     </target>
 
+    <target name="web_clustering">
+        <antcall target="init"/>
+        <antcall target="clustering"/>
+        <antcall target="finish-report"/>
+    </target>
+
+
     <target name="clustering" depends="init-report">
         <ant dir="asadminDeletesTarget" target="all"/>
         <ant dir="networkListenerTarget" target="all"/>
         <ant dir="portUnificationTarget" target="all"/>
         <ant dir="wrongTransportTarget" target="all"/>
+    </target>
+
+    <target name="web_ha">
+        <antcall target="init"/>
+        <antcall target="ha"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="ha" depends="init-report">
