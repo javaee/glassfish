@@ -135,6 +135,7 @@
         <javax.validation.version>2.0.0.CR2</javax.validation.version>
         <javax.validation.version.lowerbound>1.1.0.Final</javax.validation.version.lowerbound>
         <hibernate-validator.version>6.0.0.CR2</hibernate-validator.version>
+        <hibernate-validator.version.lowerbound></hibernate-validator.version.lowerbound>
         <fasterxml.classmate.version>1.3.1</fasterxml.classmate.version>
         <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
@@ -728,12 +729,12 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate-validator.version}</version>
+                <version>${hibernate-validator.version.lowerbound}</version>
             </dependency>
            <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
-                <version>${hibernate-validator.version}</version>
+                <version>${hibernate-validator.version.lowerbound}</version>
             </dependency>
            <dependency>
                 <groupId>org.hibernate.validator</groupId>
