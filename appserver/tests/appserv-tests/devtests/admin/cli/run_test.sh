@@ -81,12 +81,15 @@ get_test_target(){
 		admin_cli_all )
 			TARGET=all
 			export TARGET;;
+                * )
+                       TARGET=$1
+                       export TARGET;;
 	esac
 
 }
 
 list_test_ids(){
-	echo admin_cli_all
+	echo admin_cli_all admin-cli-group-1 admin-cli-group-2 admin-cli-group-3 admin-cli-group-4 admin-cli-group-5
 }
 
 OPT=$1
