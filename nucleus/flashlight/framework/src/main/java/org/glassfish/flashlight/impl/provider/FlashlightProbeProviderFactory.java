@@ -372,13 +372,11 @@ public class FlashlightProbeProviderFactory
             ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
             FlashlightProbeProvider fProbeProvider =
                     ppRegistry.getProbeProvider(probeProvider.getClass());
-            if (fProbeProvider != null) {
-                ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
-                for (FlashlightProbe probe : fProbeProvider.getProbes()) {
-                    probeRegistry.unregisterProbe(probe);
-                }
-                ppRegistry.unregisterProbeProvider(probeProvider);
+            ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
+            for (FlashlightProbe probe : fProbeProvider.getProbes()) {
+                probeRegistry.unregisterProbe(probe);
             }
+            ppRegistry.unregisterProbeProvider(probeProvider);
         } catch (Throwable t) {
             if (logger.isLoggable(Level.WARNING))
                 logger.log(Level.WARNING, UNREGISTER_PROBE_PROVIDER_EXCEPTION, t);
