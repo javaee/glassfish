@@ -45,4 +45,8 @@
 -exportcontents: com.sun.enterprise.tools.verifier; \
                  include:="Verifier, VerifierFrameworkContext, ResultManager"; \
                  version=${project.osgi.version}
-Import-Package: !javax.help, *
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    !javax.help, \
+    *
+

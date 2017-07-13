@@ -54,3 +54,7 @@
                         com.sun.enterprise.admin.util.test; version=${project.osgi.version}
 DynamicImport-Package: \
                         com.sun.enterprise.security.ssl
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+
