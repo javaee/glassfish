@@ -4801,7 +4801,7 @@ public abstract class BaseContainer
 	String appName = null;
 	String modName = null;
 	String ejbName = null;
-    boolean isMonitorRegistryMediatorCreated = false;
+    	boolean isMonitorRegistryMediatorCreated = false;
 	try {
 	    appName = (ejbDescriptor.getApplication().isVirtual())
 		? null: ejbDescriptor.getApplication().getRegistrationName();
