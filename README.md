@@ -14,5 +14,5 @@ Additional details on [how to use GF 4.1.2 and GF 5 nightly Docker images](https
 
 ## May 11, 2017 - New Java EE Discussion Groups Platform ##
 
-All the Java EE and GlassFish related discussions are now hosted at [here](https://javaee.groups.io/g/javaee).
+All the Java EE and GlassFish related discussions are now hosted [here](https://javaee.groups.io/g/javaee).
 
