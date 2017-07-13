@@ -55,6 +55,7 @@ test_run(){
   cd $ROOT
   time ant $antTarget | tee $TEST_RUN_LOG
   antStatus=$?
+  cp connector.output tests-run.log
   cd $APS_HOME/../v2-tests/appserv-tests
   ant stopDomain stopDerby
   if [ $antStatus -ne 0 ]
@@ -80,6 +81,9 @@ run_test_id(){
   check_successful_run
   generate_junit_report $1
   change_junit_report_class_names
+  copy_test_artifects
+  upload_test_results
+
   delete_bundle
   cd -
 }
