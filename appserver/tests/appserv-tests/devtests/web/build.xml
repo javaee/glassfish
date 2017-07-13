@@ -360,10 +360,6 @@
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
 
-    <target name="edburns" depends="init-report">
-        <ant dir="servlet-4.0/mappingDiscovery" target="all"/>
-    </target>
-    
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
