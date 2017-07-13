@@ -174,7 +174,12 @@
     <antcall target="el"/>
     <antcall target="finish-report"/>
     </target>
-
+  
+    <target name="web_servlet">
+        <antcall target="init"/>
+        <antcall target="servlet"/>
+        <antcall target="finish-report"/>
+    </target>
 
     <target name="el" depends="init-report">
         <ant dir="bodyTag" target="all"/>
@@ -695,6 +700,13 @@
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
         <antcall target="finish-report"/>
     </target>
+
+    <target name="web_web-container">
+        <antcall target="init"/>
+        <antcall target="web-container"/>
+        <antcall target="finish-report"/>
+    </target>
+
 
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
