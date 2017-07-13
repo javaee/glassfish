@@ -221,6 +221,14 @@ public final class ApplicationDispatcher
         (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
          String pathInfo, String queryString, String name) {
 
+        this(wrapper, mappingForDispatch, requestURI, servletPath,
+             pathInfo, queryString, name, false);
+    }
+
+    public ApplicationDispatcher
+        (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
+         String pathInfo, String queryString, String name, boolean isNamedDispatch) {
+
         super();
 
         // Save all of our configuration parameters
@@ -232,35 +240,12 @@ public final class ApplicationDispatcher
         this.pathInfo = pathInfo;
         this.queryString = queryString;
         this.name = name;
-        this.isNamedDispatch = false;
-
-        if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
-                    + this.pathInfo + ", queryString= " + queryString + ", name= "
-                    + this.name + "");
-    }
-
-    public ApplicationDispatcher
-        (Wrapper wrapper, String requestURI, String servletPath,
-         String pathInfo, String queryString, String name, boolean isNamedDispatch) {
-
-        super();
-
-        // Save all of our configuration parameters
-        this.wrapper = wrapper;
-        this.mappingForDispatch = null;
-        this.context = (Context) wrapper.getParent();
-        this.requestURI = requestURI;
-        this.servletPath = servletPath;
-        this.pathInfo = pathInfo;
-        this.queryString = queryString;
-        this.name = name;
         this.isNamedDispatch = isNamedDispatch;
 
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
                     + this.pathInfo + ", queryString= " + queryString + ", name= "
-                    + this.name + "");
+                    + this.name + ", isNamedDispatch= " + isNamedDispatch + "");
     }
 
     // ----------------------------------------------------- Instance Variables
