@@ -62,9 +62,9 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
     <target name="web_jsp">
-    <antcall target="init"/>
-    <antcall target="jsp"/>
-    <antcall target="finish-report"/>
+       <antcall target="init"/>
+       <antcall target="jsp"/>
+       <antcall target="finish-report"/>
     </target>
 
 
@@ -154,9 +154,9 @@
     </target>
 
     <target name="web_taglib">
-    <antcall target="init"/>
-    <antcall target="taglib"/>
-    <antcall target="finish-report"/>
+       <antcall target="init"/>
+       <antcall target="taglib"/>
+       <antcall target="finish-report"/>
     </target>
 
     
@@ -170,9 +170,9 @@
     </target>
 
     <target name="web_el">
-    <antcall target="init"/>
-    <antcall target="el"/>
-    <antcall target="finish-report"/>
+        <antcall target="init"/>
+        <antcall target="el"/>
+        <antcall target="finish-report"/>
     </target>
   
     <target name="web_servlet">
