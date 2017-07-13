@@ -526,7 +526,9 @@ public final class StatefulSessionContainer
             sfsbStoreMonitor = new StatefulSessionStoreMonitor();
         }
         sessionBeanCache.setStatefulSessionStoreMonitor(sfsbStoreMonitor);
-        _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
+        }
     }
 
 
