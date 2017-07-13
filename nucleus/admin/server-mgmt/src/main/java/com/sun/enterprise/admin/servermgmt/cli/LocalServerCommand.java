@@ -62,6 +62,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.util.logging.Level;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * A class that's supposed to capture all the behavior common to operation
@@ -522,8 +523,13 @@ public abstract class LocalServerCommand extends CLICommand {
             return null;
 
         File mp = new File(new File(serverDirs.getServerDir(), "config"), "cacerts.jks");
-        if (!mp.canRead())
-            return null;
+        if (!mp.canRead()){
+            String javaHome= System.getProperty(SystemPropertyConstants.JAVA_ROOT_PROPERTY);
+            mp = new File(javaHome, "/jre/lib/security/cacerts");
+            if (!mp.canRead())
+                return null;
+            return mp;
+        }
         return mp;
     }
 
