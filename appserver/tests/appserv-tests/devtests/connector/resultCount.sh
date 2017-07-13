@@ -39,40 +39,44 @@
 # holder.
 #
 
-total=28
-pass=0
-fail=0
-OUTPUT_FILE=$ROOT/connector.output
-echo "------------------------"
-which grep
-echo "------------------------"
-which awk
-echo "------------------------"
-echo  ${OUTPUT_FILE}
-echo "------------------------"
-ps -p $$
-for each in `grep "Total PASS:" ${OUTPUT_FILE} | awk '{print $4}'`
-do
-     pass=$(( $pass + $each ))
-done
+FILE=$APS_HOME/test_resultsValid.xml
+echo "input file=$FILE"
 
-for each in `grep "Total FAIL:" ${OUTPUT_FILE} | awk '{print $4}'`
-do
-     fail=$(( $fail + $each ))
-done
+TOTAL=381
+TOTAL_LITE=381
 
-echo "------------------------"
-echo "TOTAL = ${total}"
-echo "------------------------"
-echo "PASSED = ${pass}"
-echo "FAILED = ${fail}"
-echo "------------------------"
-
-if [ $fail -gt 0 ]
-then
-   echo "One or More Test(s) Failed."
-   exit 1;
-else
-   echo "Tests Successful."
-   exit 0;
+if [ $# -eq 1 ] && [ $1 = "lite" ]
+then TOTAL=$TOTAL_LITE
+echo "connector Lite Test"
 fi
+
+PASSED=`grep "status value" $FILE | grep "pass" | wc -l`
+echo $PASSED
+FAILED=`grep "status value" $FILE | grep "fail" | wc -l`
+echo $FAILED
+TOTAL_RUN=`expr $PASSED + $FAILED `
+DNR=`expr $TOTAL - $TOTAL_RUN `
+
+echo ""
+echo "************************"
+echo "PASSED=   $PASSED"
+echo "------------  ========="
+echo "FAILED=   $FAILED"
+echo "------------  ========="
+echo "DID NOT RUN=   $DNR"
+echo "------------  ========="
+echo "Total Expected=$TOTAL"
+echo "************************"
+echo ""
+
+echo "************************">>$APS_HOME/devtests/connector/count.txt;
+date>>$APS_HOME/devtests/connector/count.txt;
+echo "-----------------------">>$APS_HOME/devtests/connector/count.txt;
+echo "PASSED=   $PASSED">>$APS_HOME/devtests/connector/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/connector/count.txt;
+echo "FAILED=   $FAILED">>$APS_HOME/devtests/connector/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/connector/count.txt;
+echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/connector/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/connector/count.txt;
+echo "Total Expected=$TOTAL">>$APS_HOME/devtests/connector/count.txt;
+echo "************************">>$APS_HOME/devtests/connector/count.txt;

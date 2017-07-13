@@ -57,8 +57,13 @@ test_run(){
   antStatus=$?
   cd $APS_HOME/../v2-tests/appserv-tests
   ant stopDomain stopDerby
+  if [ $antStatus -ne 0 ]
+  then
+      ps -ef
+      exit $antStatus
+  fi
 }
- 
+
 #Contract 2. does the clean up, downloads the tests/build sources and eventually runs tests
 run_test_id(){
   #a common util script located at main/appserver/tests/common_test.sh
@@ -72,6 +77,11 @@ run_test_id(){
 
   #run the actual test function
   test_run
+  check_successful_run
+  generate_junit_report $1
+  change_junit_report_class_names
+  copy_test_artifects
+  upload_test_results
 
   delete_bundle
   cd -
