@@ -45,12 +45,14 @@ import java.io.IOException;
 import javax.annotation.security.DeclareRoles;
 import javax.inject.Inject;
 import javax.security.enterprise.SecurityContext;
+import javax.security.enterprise.CallerPrincipal;
+import java.security.Principal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.security.enterprise.CallerPrincipal;
 import org.glassfish.soteria.SecurityContextImpl;
 
 /**
@@ -85,10 +87,17 @@ public class Servlet extends HttpServlet {
         response.getWriter().write("web user has role \"kaz\": " + request.isUserInRole("kaz") + "\n");
         
         String contextName = null;
+        Principal callerPrincipal=null;
         if (securityContext.getCallerPrincipal() != null) {
             contextName = securityContext.getCallerPrincipal().getName();
+            callerPrincipal = securityContext.getCallerPrincipal();
+            if(callerPrincipal instanceof CallerPrincipal){
+                response.getWriter().write("We have got CallerPrincipal"+ "\n");
+            }else if(callerPrincipal.getClass().getName().equals("com.sun.enterprise.security.web.integration.WebPrincipal") ){
+                response.getWriter().write("We have got WebPrincipal"+ "\n");
+            }
         }
-        
+
         response.getWriter().write("context username: " + contextName + "\n");
         
         response.getWriter().write("context user has role \"foo\": " + securityContext.isCallerInRole("foo") + "\n");
