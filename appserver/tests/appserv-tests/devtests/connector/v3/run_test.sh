@@ -80,9 +80,6 @@ run_test_id(){
   check_successful_run
   generate_junit_report $1
   change_junit_report_class_names
-  copy_test_artifects
-  upload_test_results
-
   delete_bundle
   cd -
 }
