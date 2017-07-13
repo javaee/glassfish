@@ -207,6 +207,7 @@ public final class ApplicationDispatcher
      *
      * @param wrapper The Wrapper associated with the resource that will
      *  be forwarded to or included (required)
+     * @param mappingForDispatch the mapping for this dispatch
      * @param requestURI The request URI to this resource (if any)
      * @param servletPath The revised servlet path to this resource (if any)
      * @param pathInfo The revised extra path information to this resource
@@ -231,6 +232,7 @@ public final class ApplicationDispatcher
         this.pathInfo = pathInfo;
         this.queryString = queryString;
         this.name = name;
+        this.isNamedDispatch = false;
 
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
@@ -238,6 +240,28 @@ public final class ApplicationDispatcher
                     + this.name + "");
     }
 
+    public ApplicationDispatcher
+        (Wrapper wrapper, boolean isNamedDispatch, String requestURI, String servletPath,
+         String pathInfo, String queryString, String name) {
+
+        super();
+
+        // Save all of our configuration parameters
+        this.wrapper = wrapper;
+        this.mappingForDispatch = null;
+        this.context = (Context) wrapper.getParent();
+        this.requestURI = requestURI;
+        this.servletPath = servletPath;
+        this.pathInfo = pathInfo;
+        this.queryString = queryString;
+        this.name = name;
+        this.isNamedDispatch = isNamedDispatch;
+
+        if (log.isLoggable(Level.FINE))
+            log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
+                    + this.pathInfo + ", queryString= " + queryString + ", name= "
+                    + this.name + "");
+    }
 
     // ----------------------------------------------------- Instance Variables
 
@@ -291,7 +315,8 @@ public final class ApplicationDispatcher
     private Wrapper wrapper = null;
     
     private HttpServletMapping mappingForDispatch;
-
+    
+    private final boolean isNamedDispatch;
 
     // ------------------------------------------------------------- Properties
 
@@ -1073,7 +1098,7 @@ public final class ApplicationDispatcher
             //END OF 6364900
             
             //START OF github/javaee/glassfish/issues/21846
-            if (mappingForDispatch == StandardContext.NAMED_DISPATCH_SERVLET_MAPPING) {
+            if (isNamedDispatch) {
                 this.mappingForDispatch = computeNamedDispatchHttpServletMapping(context, hcurrent);
             }
             //END OF github/javaee/glassfish/issues/21846

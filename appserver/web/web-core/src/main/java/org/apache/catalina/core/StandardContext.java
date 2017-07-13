@@ -150,11 +150,6 @@ public class StandardContext
     private static final RuntimePermission GET_CLASSLOADER_PERMISSION =
         new RuntimePermission("getClassLoader");
     
-    //START OF github/javaee/glassfish/issues/21846
-    public static final NamedDispatchHttpServletMappingImpl 
-            NAMED_DISPATCH_SERVLET_MAPPING = new NamedDispatchHttpServletMappingImpl();
-    //END OF github/javaee/glassfish/issues/21846
-
     /**
      * GMT timezone - all HTTP dates are on GMT
      */
@@ -7007,7 +7002,7 @@ public class StandardContext
         if (wrapper == null)
             return (null);
         //START OF github/javaee/glassfish/issues/21846
-        return new ApplicationDispatcher(wrapper, NAMED_DISPATCH_SERVLET_MAPPING, null, null, null, null, name);
+        return new ApplicationDispatcher(wrapper, true, null, null, null, null, name);
         //END OF github/javaee/glassfish/issues/21846
 
     }
