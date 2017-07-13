@@ -220,15 +220,6 @@ public final class ApplicationDispatcher
     public ApplicationDispatcher
         (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
          String pathInfo, String queryString, String name) {
-
-        this(wrapper, mappingForDispatch, requestURI, servletPath,
-             pathInfo, queryString, name, false);
-    }
-
-    public ApplicationDispatcher
-        (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
-         String pathInfo, String queryString, String name, boolean isNamedDispatch) {
-
         super();
 
         // Save all of our configuration parameters
@@ -240,12 +231,11 @@ public final class ApplicationDispatcher
         this.pathInfo = pathInfo;
         this.queryString = queryString;
         this.name = name;
-        this.isNamedDispatch = isNamedDispatch;
 
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
                     + this.pathInfo + ", queryString= " + queryString + ", name= "
-                    + this.name + ", isNamedDispatch= " + isNamedDispatch + "");
+                    + this.name + "");
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -301,8 +291,6 @@ public final class ApplicationDispatcher
     
     private HttpServletMapping mappingForDispatch;
     
-    private final boolean isNamedDispatch;
-
     // ------------------------------------------------------------- Properties
 
 
@@ -1083,7 +1071,7 @@ public final class ApplicationDispatcher
             //END OF 6364900
             
             //START OF github/javaee/glassfish/issues/21846
-            if (isNamedDispatch) {
+            if (this.name != null) {
                 this.mappingForDispatch = computeNamedDispatchHttpServletMapping(context, hcurrent);
             }
             //END OF github/javaee/glassfish/issues/21846

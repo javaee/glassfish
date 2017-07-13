@@ -7001,9 +7001,8 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) findChild(name);
         if (wrapper == null)
             return (null);
-        //START OF github/javaee/glassfish/issues/21846
-        return new ApplicationDispatcher(wrapper, null, null, null, null, null, name, true);
-        //END OF github/javaee/glassfish/issues/21846
+
+        return new ApplicationDispatcher(wrapper, null, null, null, null, null, name);
 
     }
 
