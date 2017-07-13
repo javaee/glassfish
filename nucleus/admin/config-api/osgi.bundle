@@ -41,6 +41,7 @@
 # work around bug in 'bnd' that doesn't import generics eg List<MonitoringItem>
 Import-Package: \
     org.glassfish.api.monitoring, \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
     *
 
 -exportcontents: \

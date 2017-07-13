@@ -93,6 +93,11 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version.lowerbound}</version>
+        </dependency>
 	<dependency>
             <groupId>org.glassfish.main.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
