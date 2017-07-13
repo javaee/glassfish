@@ -76,19 +76,33 @@ public class SJSASFactory extends Factory {
     private ServiceLocator locator;
 
     private Set<String> annotationClassNames = new HashSet<String>();
+    private Set<String> annotationClassNamesMetaDataComplete = new HashSet<String>();
 
+    // we have two system processors to process annotations:
+    // one to process all JavaEE annotations when metadata-complete is false,
+    // another to process a subset of JavaEE annotations when 
+    // metadata-complete is true
     private AnnotationProcessorImpl systemProcessor=null;
+    private AnnotationProcessorImpl systemProcessorMetaDataComplete=null;
 
-    public AnnotationProcessor getAnnotationProcessor() {
+    public AnnotationProcessor getAnnotationProcessor(boolean isMetaDataComplete) {
         AnnotationProcessorImpl processor =
             Factory.getDefaultAnnotationProcessor();
-        processor.setDelegate(systemProcessor);
+        if (!isMetaDataComplete) { 
+            processor.setDelegate(systemProcessor);
+        } else {
+            processor.setDelegate(systemProcessorMetaDataComplete);
+        }
         return processor;
     }
 
     @SuppressWarnings("unchecked")
-    public Set<String> getAnnotations() {
-        return (HashSet<String>)((HashSet<String>)annotationClassNames).clone();
+    public Set<String> getAnnotations(boolean isMetaDataComplete) {
+        if (!isMetaDataComplete) {
+            return (HashSet<String>)((HashSet<String>)annotationClassNames).clone();
+        } else {
+            return (HashSet<String>)((HashSet<String>)annotationClassNamesMetaDataComplete).clone();
+        }
     }
     
     private static String getAnnotationHandlerForStringValue(ActiveDescriptor<AnnotationHandler> onMe) {
@@ -102,24 +116,34 @@ public class SJSASFactory extends Factory {
     @SuppressWarnings({ "unused", "unchecked" })
     @PostConstruct
     private void postConstruct() {
-        if (systemProcessor != null) return;
+        if (systemProcessor != null && 
+            systemProcessorMetaDataComplete != null) return;
         
         // initialize our system annotation processor...            
         systemProcessor = new AnnotationProcessorImpl();
+        systemProcessorMetaDataComplete = new AnnotationProcessorImpl();
         for (ActiveDescriptor<?> i : locator.getDescriptors(BuilderHelper.createContractFilter(
                 AnnotationHandler.class.getName()))) {
             ActiveDescriptor<AnnotationHandler> descriptor = (ActiveDescriptor<AnnotationHandler>) i;
             
             String annotationTypeName = getAnnotationHandlerForStringValue(descriptor);
             if (annotationTypeName == null) continue;
-                
+          
             systemProcessor.pushAnnotationHandler(annotationTypeName, new LazyAnnotationHandler(descriptor)); 
             annotationClassNames.add("L" +
                     annotationTypeName.
+                    replace('.', '/') + ";");  
+
+            // FIXME just use the javax.annotation.ManagedMBean annotation 
+            // for the prototype, later we need to generate the list filtering 
+            // with the skip list in the spec
+            if (annotationTypeName.equals("javax.annotation.ManagedBean")) {
+                systemProcessorMetaDataComplete.pushAnnotationHandler(annotationTypeName, new LazyAnnotationHandler(descriptor));
+                annotationClassNamesMetaDataComplete.add("L" +
+                    annotationTypeName.
                     replace('.', '/') + ";");
+            }
         }
-        
-        
     }
     
     private class LazyAnnotationHandler implements AnnotationHandler {
