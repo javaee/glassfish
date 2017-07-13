@@ -160,7 +160,7 @@ public class ProviderSubClassImplGenerator {
         String id;
 
         ProbeProviderSubClassGenerator(ClassVisitor cv, String token, String id) {
-            super(Opcodes.ASM6);
+            super(Opcodes.ASM6, cv);
             this.id = id;
             this.token = token;
         }
