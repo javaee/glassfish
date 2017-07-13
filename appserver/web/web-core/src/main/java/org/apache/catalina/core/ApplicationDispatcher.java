@@ -241,8 +241,8 @@ public final class ApplicationDispatcher
     }
 
     public ApplicationDispatcher
-        (Wrapper wrapper, boolean isNamedDispatch, String requestURI, String servletPath,
-         String pathInfo, String queryString, String name) {
+        (Wrapper wrapper, String requestURI, String servletPath,
+         String pathInfo, String queryString, String name, boolean isNamedDispatch) {
 
         super();
 

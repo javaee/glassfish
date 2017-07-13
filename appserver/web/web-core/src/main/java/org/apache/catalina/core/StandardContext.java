@@ -7002,7 +7002,7 @@ public class StandardContext
         if (wrapper == null)
             return (null);
         //START OF github/javaee/glassfish/issues/21846
-        return new ApplicationDispatcher(wrapper, true, null, null, null, null, name);
+        return new ApplicationDispatcher(wrapper, null, null, null, null, name, true);
         //END OF github/javaee/glassfish/issues/21846
 
     }
