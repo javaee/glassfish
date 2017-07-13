@@ -235,7 +235,7 @@ public final class ApplicationDispatcher
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
                     + this.pathInfo + ", queryString= " + queryString + ", name= "
-                    + this.name + "");
+                    + this.name);
     }
 
     // ----------------------------------------------------- Instance Variables
