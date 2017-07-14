@@ -78,6 +78,52 @@
 
     </target>
 
+     <target name="transaction-ee-1">
+        <antcall target="clean-results"/>
+        <antcall target="start"/>
+        <record name="transaction.ee.output" action="start" />
+        <ant dir="selfrecovery" target="test"/>
+        <ant dir="autorecovery" target="test"/>
+        <ant dir="cli" target="test"/>
+        <antcall target="stop"/>
+        <record name="transaction.ee.output" action="stop" />
+        <antcall target="dev-report"/>
+    </target>
+
+    <target name="transaction-ee-2">
+        <antcall target="clean-results"/>
+        <antcall target="start"/>
+        <record name="transaction.ee.output" action="start" />
+        <ant dir="mdb" target="test"/>
+        <ant dir="resendautorecovery" target="test"/>
+        <antcall target="stop"/>
+        <record name="transaction.ee.output" action="stop" />
+        <antcall target="dev-report"/>
+    </target>
+
+       <target name="transaction-ee-3">
+        <antcall target="clean-results"/>
+        <antcall target="start"/>
+        <record name="transaction.ee.output" action="start" />
+        <ant dir="timer_with_autorecovery" target="test"/>
+        <antcall target="stop"/>
+        <record name="transaction.ee.output" action="stop" />
+        <antcall target="dev-report"/>
+    </target>
+
+    <target name="transaction-ee-4">
+        <antcall target="clean-results"/>
+        <antcall target="start"/>
+        <record name="transaction.ee.output" action="start" />
+        <ant dir="dblogs" target="test"/>
+        <antcall target="stop"/>
+        <record name="transaction.ee.output" action="stop" />
+        <antcall target="dev-report"/>
+    </target>
+
+
+
+
     <target name="start">
         <antcall target="start-derby"/>
         <antcall target="start-domain"/>

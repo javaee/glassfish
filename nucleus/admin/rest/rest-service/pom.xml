@@ -56,6 +56,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version.lowerbound}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
@@ -118,6 +123,10 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>
         </dependency>
+        <dependency>
+           <groupId>javax.validation</groupId>
+           <artifactId>validation-api</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -135,6 +144,11 @@
             <groupId>org.kohsuke.metainf-services</groupId>
             <artifactId>metainf-services</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.security</groupId>
