@@ -71,7 +71,4 @@ public class ClientStubsTests extends AdminBaseDevTest {
     public static void main(String[] args) {
         new ClientStubsTests().runTests();
     }
-
-
-
 }
