@@ -67,6 +67,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.utils.Charsets;
 // END GlassFish 1343
 
 /**
@@ -273,6 +274,28 @@ final class StandardContextValve
         }
     }
     */
+    
+    
+    /**
+     * Method to validate whether ".." and ":" characters are present in request path
+     * 
+     * @param reqPathDC The input String
+     * @return boolean True when the characters are present and false is not
+     */
+    private static boolean validate(DataChunk reqPathDC) {
+        if (reqPathDC == null) {
+            return true;
+        }
+        
+        String reqPathStr = reqPathDC.toString(Charsets.UTF8_CHARSET);
+        
+        if ((reqPathStr.contains("/../"))
+                || (reqPathStr.contains("/:/"))) {
+            return true;
+        }
+        
+        return false;
+    }
 
 
     private Wrapper preInvoke(Request request, Response response) {
@@ -283,7 +306,9 @@ final class StandardContextValve
         if (request.getCheckRestrictedResources()) {
         // END CR 6415120
             DataChunk requestPathDC = hreq.getRequestPathMB();
-            if ((requestPathDC.startsWithIgnoreCase("/META-INF/", 0))
+            // Validate if the request path contains ".." and ":"
+            if ((validate(requestPathDC))
+                    || (requestPathDC.startsWithIgnoreCase("/META-INF/", 0))
                     || (requestPathDC.equalsIgnoreCase("/META-INF"))
                     || (requestPathDC.startsWithIgnoreCase("/WEB-INF/", 0))
                     || (requestPathDC.equalsIgnoreCase("/WEB-INF"))) {
