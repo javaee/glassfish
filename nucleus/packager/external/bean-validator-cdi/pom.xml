@@ -207,9 +207,9 @@
     </dependencies>
 
     <!--
-    This module repackages various maven artifacts and artifacts like hibernate-validator does not
-    have java-docs published. Hence, we cannot repackage the java-docs. We skip java-doc
-    generation and use empty java-doc plugin
+    This module repackages various maven artifacts and artifacts like hibernate-validator 
+    and hibernate-validator-cdi does not have java-docs published. Hence, we cannot 
+    repackage the java-docs. We skip java-doc generation and use empty java-doc plugin
     to make Nexus release job succeed.
     -->
     <profiles>
