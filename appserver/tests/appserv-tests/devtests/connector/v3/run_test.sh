@@ -75,7 +75,8 @@ run_test_id(){
   unzip_test_resources $WORKSPACE/bundles/glassfish.zip
   cd `dirname $0`
   test_init
-
+  export ROOT=`pwd`
+  export TEST_RUN_LOG=$ROOT/tests-run.log
   #run the actual test function
   test_run
   check_successful_run
