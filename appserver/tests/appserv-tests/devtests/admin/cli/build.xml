@@ -146,6 +146,9 @@
                         logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, config-modularity, teardown"/>
 
+    <target name="clientstubs" depends="init">
+        <runtest classname="admin.ClientStubs"/>
+    </target>
     <target name="cluster" depends="init">
         <runtest classname="admin.ClusterTest"/>
     </target>

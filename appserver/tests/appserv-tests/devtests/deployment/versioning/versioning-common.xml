@@ -558,27 +558,15 @@
 <target name="show-component-status.asadmin" depends="prepare.show-component-status.asadmin, asadmin.with.result"/>
 
 <!--
-  Performs  tests with  get-client-stubs command, available only in PE mode
+  Performs a test with a get-client-stubs command, available only in PE mode
   Test result is based on return code
   @param ${xmlVersionIdentifier} (optional)
 -->
 <target name="get-client-stubs.asadmin" if="PE">
   <antcall target="_get-client-stubs.asadmin"/>
-  <antcall target="_get-client-stubs-negative.asadmin"/>
 </target>
-
 <target name="_get-client-stubs.asadmin" depends="prepare.get-client-stubs.asadmin, asadmin.with.result"/>
- <!--
-    Performs a negative-test with  get-client-stubs command when appName doesn't exist.
-    Test result is based on return code
-     @param ${xmlVersionIdentifier} (optional)
- -->
-<target name="_get-client-stubs-negative.asadmin" depends="prepare.get-client-stubs-negative.asadmin, asadmin.with.result, run.negative"/>
 
-<target name="prepare.get-client-stubs-negative.asadmin" depends="process.appname,process.target">
-  <property name="arg.list" value="get-client-stubs --appname=foo ${stubsPath}"/>
-  <property name="desc" value="${description}"/>
-</target>
 <!--
   Performs a test with an asadmin command
   @param ${outputLog} (required)
