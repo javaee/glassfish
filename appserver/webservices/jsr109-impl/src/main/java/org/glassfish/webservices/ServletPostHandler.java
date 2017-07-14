@@ -40,6 +40,7 @@
 
 package org.glassfish.webservices;
 
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import java.lang.reflect.Method;
 
 import java.rmi.UnmarshalException;
@@ -84,19 +85,22 @@ public class ServletPostHandler extends GenericHandler {
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            inv = WebComponentInvocation.class.cast(invManager.getCurrentInvocation());
-            Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
-            if( webServiceMethodInPreHandler != null ) {
-                // Now that application handlers have run, do another method
-                // lookup and compare the results with the original one.  This
-                // ensures that the application handlers have not changed
-                // the message context in any way that would impact which
-                // method is invoked.
-                Method postHandlerMethod = wsUtil.getInvMethod(
-                        (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
-                if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
-                    throw new UnmarshalException("Original method " + webServiceMethodInPreHandler +
-                            " does not match post-handler method ");
+            Object obj = invManager.getCurrentInvocation();
+            if (obj instanceof WebComponentInvocation) {
+                inv = WebComponentInvocation.class.cast(obj);
+                Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
+                if (webServiceMethodInPreHandler != null) {
+                    // Now that application handlers have run, do another method
+                    // lookup and compare the results with the original one.  This
+                    // ensures that the application handlers have not changed
+                    // the message context in any way that would impact which
+                    // method is invoked.
+                    Method postHandlerMethod = wsUtil.getInvMethod(
+                            (com.sun.xml.rpc.spi.runtime.Tie) inv.getWebServiceTie(), context);
+                    if (!webServiceMethodInPreHandler.equals(postHandlerMethod)) {
+                        throw new UnmarshalException("Original method " + webServiceMethodInPreHandler
+                                + " does not match post-handler method ");
+                    }
                 }
             }
         } catch(Exception e) {

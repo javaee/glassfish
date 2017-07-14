@@ -79,16 +79,18 @@ public class ServletPreHandler extends GenericHandler {
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            inv = WebComponentInvocation.class.cast(invManager.getCurrentInvocation());
-            com.sun.xml.rpc.spi.runtime.Tie tie =
-                    (com.sun.xml.rpc.spi.runtime.Tie) inv.getWebServiceTie();
-            if (tie == null) {
-                Implementor implementor = (Implementor)
-                        context.getProperty(MessageContextProperties.IMPLEMENTOR);
-                tie = implementor.getTie();
-                inv.setWebServiceTie(tie);
+            Object obj = invManager.getCurrentInvocation();
+            if (obj instanceof WebComponentInvocation) {
+                inv = WebComponentInvocation.class.cast(obj);
+                com.sun.xml.rpc.spi.runtime.Tie tie
+                        = (com.sun.xml.rpc.spi.runtime.Tie) inv.getWebServiceTie();
+                if (tie == null) {
+                    Implementor implementor = (Implementor) context.getProperty(MessageContextProperties.IMPLEMENTOR);
+                    tie = implementor.getTie();
+                    inv.setWebServiceTie(tie);
+                }
+                inv.setWebServiceMethod(wsUtil.getInvMethod(tie, context));
             }
-            inv.setWebServiceMethod(wsUtil.getInvMethod(tie, context));
 
         } catch(Exception e) {
             logger.log(Level.WARNING, LogUtils.PRE_WEBHANDLER_ERROR, e.toString());

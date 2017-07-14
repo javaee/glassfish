@@ -882,7 +882,6 @@ public class WsUtil {
             QName nextPort = (QName) ports.next();
 
             List handlerChain = registry.getHandlerChain(nextPort);
-            Collection soapRoles = new HashSet(); 
 
             for(Iterator iter = serviceRef.getHandlers().iterator();
                 iter.hasNext();) {
@@ -890,7 +889,6 @@ public class WsUtil {
                 Collection portNames = nextHandler.getPortNames();
                 if( portNames.isEmpty() || 
                     portNames.contains(nextPort.getLocalPart()) ) {
-                    soapRoles.addAll(nextHandler.getSoapRoles());
                     HandlerInfo handlerInfo = 
                         createHandlerInfo(nextHandler, loader);
                     handlerChain.add(handlerInfo);

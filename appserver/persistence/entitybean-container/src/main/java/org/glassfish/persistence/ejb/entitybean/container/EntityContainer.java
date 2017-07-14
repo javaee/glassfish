@@ -68,6 +68,8 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
+import org.glassfish.flashlight.provider.ProbeProviderFactory; 
+
 import com.sun.appserv.util.cache.BaseCache;
 import com.sun.appserv.util.cache.Cache;
 import com.sun.appserv.util.cache.CacheListener;
@@ -114,6 +116,8 @@ import org.glassfish.ejb.deployment.descriptor.runtime.BeanCacheDescriptor;
 import org.glassfish.ejb.deployment.descriptor.runtime.IASEjbExtraDescriptors;
 import org.glassfish.persistence.ejb.entitybean.container.spi.ReadOnlyEJBHome;
 import org.glassfish.persistence.ejb.entitybean.container.spi.ReadOnlyEJBLocalHome;
+import com.sun.ejb.monitoring.probes.EjbCacheProbeProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringUtils;
 import org.glassfish.persistence.ejb.entitybean.container.stats.EntityBeanStatsProvider;
 
 /**
@@ -479,6 +483,22 @@ public class EntityContainer
 	    if (confMaxCacheSize <= 0) {
 		confMaxCacheSize = Integer.MAX_VALUE;
 	    }
+
+        try {
+            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+            String invokerId = EjbMonitoringUtils.getInvokerId(containerInfo.appName,
+                    containerInfo.modName, containerInfo.ejbName);
+            cacheProbeNotifier = probeFactory.getProbeProvider(EjbCacheProbeProvider.class, invokerId);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Got ProbeProvider: " + cacheProbeNotifier.getClass().getName());
+            }
+        } catch (Exception ex) {
+            cacheProbeNotifier = new EjbCacheProbeProvider();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error getting the EjbCacheProbeProvider");
+            }
+        }
+
 	    this.cacheStatsProvider = new EntityCacheStatsProvider(
 		    (BaseCache) readyStore, confMaxCacheSize);
 	    //registryMediator.registerProvider(cacheStatsProvider);

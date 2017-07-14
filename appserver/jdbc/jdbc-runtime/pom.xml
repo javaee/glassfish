@@ -83,6 +83,11 @@
             <artifactId>connectors-runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
+       <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <scope>test</scope>
+        </dependency>
 	<dependency>
             <groupId>org.glassfish.main.tests</groupId>
 	    <artifactId>utils</artifactId>

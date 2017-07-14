@@ -51,4 +51,5 @@
 # Making this import optional.
 Import-Package: \
                         org.jboss.weld.environment.se;resolution:=optional, \
+		        javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
                         *

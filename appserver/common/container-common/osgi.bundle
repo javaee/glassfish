@@ -53,3 +53,8 @@ DynamicImport-Package: \
                         com.sun.enterprise.security.auth.realm, \
                         com.sun.enterprise.security.auth.realm.file, \
                         com.sun.enterprise.security.ssl
+
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+
