@@ -204,7 +204,7 @@
         <antcall target="dev-report"/>
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
-
+  
     <target name="clientstubs" depends="init">
         <runtest classname="admin.ClientStubsTests"/>
     </target>

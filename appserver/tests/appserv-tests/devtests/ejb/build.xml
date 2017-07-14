@@ -80,6 +80,29 @@
         <antcall target="report-lite"/>
     </target>
 
+     <target name="ejb_group_1">
+
+        <antcall target="setup"/>
+        <antcall target="test-group-1"/>
+        <antcall target="unsetup"/>
+        <antcall target="report"/>
+    </target>
+
+      <target name="ejb_group_2">
+        <antcall target="setup"/>
+        <antcall target="test-group-2"/>
+        <antcall target="unsetup"/>
+        <antcall target="report"/>
+    </target>
+
+      <target name="ejb_group_3">
+        <antcall target="setup"/>
+        <antcall target="test-group-3"/>
+        <antcall target="unsetup"/>
+        <antcall target="report"/>
+    </target>
+
+
     <target name="setup">
 
 	<antcall target="start-database"/>
@@ -127,6 +150,33 @@
         <ant dir="ejb31" target="all"/>
 
     </target>
+
+    <target name="test-group-1">
+        <ant dir="stubs" target="all"/>
+        <ant dir="txprop" target="all"/>
+        <ant dir="ejbc" target="all"/>
+        <ant dir="ejb30" target="all"/>
+    </target>
+
+    <target name="test-group-2">
+        <ant dir="mdb" target="all"/>
+        <ant dir="cli" target="all"/>
+        <ant dir="timer" target="all"/>
+        <ant dir="bmp" target="all"/>
+    </target>
+
+      <target name="test-group-3">
+        <ant dir="cmp" target="all"/>
+        <ant dir="sfsb" target="all"/>
+        <ant dir="allowedmethods" target="all"/>
+        <ant dir="jms" target="all"/>
+        <ant dir="ejb32" target="all"/>
+        <ant dir="ejb31" target="all"/>
+    </target>
+
+
+
+
 
     <target name="unsetup">
         <echo message="Stopping app server instance"/>

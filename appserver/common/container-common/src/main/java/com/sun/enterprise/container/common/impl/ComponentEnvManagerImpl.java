@@ -158,11 +158,14 @@ public class ComponentEnvManagerImpl
     }
 
     public JndiNameEnvironment getJndiNameEnvironment(String componentId) {
-        RefCountJndiNameEnvironment rj = compId2Env.get(componentId);
-        if (componentId != null && _logger.isLoggable(Level.FINEST)) {
-            _logger.finest("ComponentEnvManagerImpl: " +
-                "getJndiNameEnvironment " + componentId + " is " +
-                (rj == null ? "NULL" : rj.env.getClass().toString()));
+        RefCountJndiNameEnvironment rj = null;
+        if (componentId != null) {
+            rj = compId2Env.get(componentId);
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("ComponentEnvManagerImpl: "
+                        + "getJndiNameEnvironment " + componentId + " is "
+                        + (rj == null ? "NULL" : rj.env.getClass().toString()));
+            }
         }
         return rj == null ? null : rj.env;
     }
@@ -340,7 +343,8 @@ public class ComponentEnvManagerImpl
             }
 
             if(descriptor.getResourceType().equals(DSD)) {
-                if (((DataSourceDefinitionDescriptor)descriptor).isDeployed()) {
+                if (descriptor instanceof DataSourceDefinitionDescriptor
+                        && ((DataSourceDefinitionDescriptor)descriptor).isDeployed()) {
                     continue;
                 }
             }

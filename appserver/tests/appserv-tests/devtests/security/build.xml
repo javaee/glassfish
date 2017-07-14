@@ -70,7 +70,8 @@
 <!--    <ant dir="simple-perf" target="all"/>-->                <!-- DISABLED: Not listed -->
         <ant dir="authConf" target="all"/>
         <ant dir="negativeRealmPerApp" target="all"/>
-        <ant dir="realmPerApp" target="all"/>  
+        <ant dir="realmPerApp" target="all"/>
+        <ant dir="soteria" target="all"/>
 <!--    <ant dir="weblogic-dd" target="all"/>-->                <!-- DISABLED: Failures -->
         <ant dir="sful" target="all"/>
         <ant dir="userWithAtSymbol" target="all"/>
@@ -108,6 +109,15 @@
         <ant dir="negativeRealmPerApp" target="all"/>
         <ant dir="realmPerApp" target="all"/>  
         <ant dir="sful" target="all"/>  
+    </target>
+    <target name="soteria">
+      <delete>
+         <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>
+      </delete>
+      <record name="soteria.output" action="start" />
+      <ant dir="soteria" target="all"/>
+      <record name="soteria.output" action="stop" />
+      <antcall target="report"/>
     </target>
                                                                                                                             
    <target name="usage">

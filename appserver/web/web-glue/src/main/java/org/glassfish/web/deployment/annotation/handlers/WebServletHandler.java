@@ -170,10 +170,10 @@ public class WebServletHandler extends AbstractWebHandler {
 
             if (webCompDesc.isServlet()) {
                 messageKey = "web.deployment.annotation.handlers.servletimpldontmatch";
-                defaultMessage = "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.";
+                defaultMessage = "The servlet ''{0}'' has implementation ''{1}'' in xml. It does not match with ''{2}'' from annotation @{3}.";
             } else {
                 messageKey = "web.deployment.annotation.handlers.servletimpljspdontmatch";
-                defaultMessage = "The servlet '{0}' is a jsp '{1}' in xml. It does not match with '{2}' from annotation @{3}.";
+                defaultMessage = "The servlet ''{0}'' is a jsp ''{1}'' in xml. It does not match with ''{2}'' from annotation @{3}.";
             }
             
             log(Level.SEVERE, ainfo,

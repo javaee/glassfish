@@ -48,7 +48,7 @@ delete_test_sources(){
 } 
 download_test_zip(){
 	mkdir bundles
-	scp ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/tests-workspace.zip bundles
+	scp -o "StrictHostKeyChecking no" ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/tests-workspace.zip bundles
 }
 	
 ###########################
@@ -70,8 +70,6 @@ run_test(){
 		done
 		if [[ "$found" = true ]]; then
 			$runtest run_test_id $TEST_ID
-			uname -nsp > /tmp/platform
-			scp -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
 			break
 		fi
 	done
@@ -80,6 +78,11 @@ run_test(){
 		exit 1
 	fi
 
+}
+
+generate_platform(){
+	uname -nsp > /tmp/platform
+	scp -o "StrictHostKeyChecking no" -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
 }
 
 list_test_ids(){
@@ -106,6 +109,7 @@ case $OPT in
 		fi;;
 		
 	run_test )
+		trap generate_platform EXIT
 		run_test $TEST_ID ;;
 esac
  

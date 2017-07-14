@@ -74,12 +74,14 @@ test_init(){
 	ANT_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/ant-1.7.1; export ANT_HOME
 	APS_HOME=$WORKSPACE/main/appserver/tests/appserv-tests; export APS_HOME
 	TEST_RUN_LOG=tests-run.log; export TEST_RUN_LOG
+  export M2_HOME=$MAVEN_3_0_3
         #workaround for OSGI timestamp issue
         find $S1AS_HOME -type f | xargs touch > /dev/null
 	echo S1AS_HOME is $S1AS_HOME
 	echo ANT_HOME is $ANT_HOME
+  echo M2_HOME is $M2_HOME
 	echo APS_HOME is $APS_HOME
-	PATH=$ANT_HOME/bin:$PATH; export PATH
+	PATH=$M2_HOME/bin:$ANT_HOME/bin:$PATH; export PATH
 	java -version
 	ant -version
 	rm -rf $WORKSPACE/results
@@ -101,7 +103,7 @@ download_test_resources(){
 	printf "\n%s \n\n" "===== DOWNLOAD TEST RESOURCES ====="
 	for i in "$@"; do
 		echo downloading $i
-		scp ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/$i bundles
+		scp -o "StrictHostKeyChecking no" ${PARENT_NODE}:${PARENT_WS_PATH}/bundles/$i bundles
 	done
 }
 
@@ -112,7 +114,7 @@ zip_test_results(){
 
 upload_test_results(){
 	printf "\n%s \n\n" "===== UPLOADING THE TESTS RESULTS ====="
-	scp -r $WORKSPACE/results/ ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID/
+	scp -o "StrictHostKeyChecking no" -r $WORKSPACE/results/ ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID/
 }
 
 unzip_test_resources(){
@@ -129,7 +131,7 @@ copy_test_artifects(){
 	cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
 	cp $TEST_RUN_LOG $WORKSPACE/results/
 	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
-	cp $APS_HOME/test_results*.* $WORKSPACE/results/
+	cp $APS_HOME/test_results*.* $WORKSPACE/results/ || true
 	cp `pwd`/*/*logs.zip $WORKSPACE/results/ || true
 	cp `pwd`/*/*/*logs.zip $WORKSPACE/results/ || true
 }

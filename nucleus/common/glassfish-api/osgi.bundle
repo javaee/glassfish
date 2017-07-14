@@ -63,4 +63,8 @@
                         org.glassfish.api.virtualization; \
                         org.glassfish.api.web; \
                         org.glassfish.api.branding; version=${project.osgi.version}
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+
 

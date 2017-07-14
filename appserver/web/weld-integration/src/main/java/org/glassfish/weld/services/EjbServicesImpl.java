@@ -357,6 +357,7 @@ public class EjbServicesImpl implements EjbServices {
         ejbInt.setBundleDescriptor(bundle);
         ejbInt.setInterceptorClassName(interceptor.getBeanClass().getName());
         ejbInt.setCDIInterceptor(true);
+        ejbInt.setInterceptor( interceptor );
 
         return ejbInt;
     }

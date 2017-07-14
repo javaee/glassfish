@@ -40,3 +40,7 @@
 
 -exportcontents: org.glassfish.resources.javamail; \
                  org.glassfish.resources.javamail.config; version=${project.osgi.version}
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+

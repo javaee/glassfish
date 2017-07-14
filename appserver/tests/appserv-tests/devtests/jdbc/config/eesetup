@@ -1,0 +1,259 @@
+#!/bin/sh
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# The contents of this file are subject to the terms of either the GNU
+# General Public License Version 2 only ("GPL") or the Common Development
+# and Distribution License("CDDL") (collectively, the "License").  You
+# may not use this file except in compliance with the License.  You can
+# obtain a copy of the License at
+# https://oss.oracle.com/licenses/CDDL+GPL-1.1
+# or LICENSE.txt.  See the License for the specific
+# language governing permissions and limitations under the License.
+#
+# When distributing the software, include this License Header Notice in each
+# file and include the License file at LICENSE.txt.
+#
+# GPL Classpath Exception:
+# Oracle designates this particular file as subject to the "Classpath"
+# exception as provided by Oracle in the GPL Version 2 section of the License
+# file that accompanied this code.
+#
+# Modifications:
+# If applicable, add the following below the License Header, with the fields
+# enclosed by brackets [] replaced by your own identifying information:
+# "Portions Copyright [year] [name of copyright owner]"
+#
+# Contributor(s):
+# If you wish your version of this file to be governed by only the CDDL or
+# only the GPL Version 2, indicate your decision by adding "[Contributor]
+# elects to include this software in this distribution under the [CDDL or GPL
+# Version 2] license."  If you don't indicate a single choice of license, a
+# recipient has the option to distribute your version of this file under
+# either the CDDL, the GPL Version 2 or to extend the choice of license to
+# its licensees as provided above.  However, if you add GPL Version 2 code
+# and therefore, elected the GPL Version 2 license, then the option applies
+# only if the new code is made subject to such option by the copyright
+# holder.
+#
+
+# This script creates and starts a domain called "sqe-domain"
+# with a single server instance named "sqe-server".
+
+#--- Extract environment properties --- "sed" doesn't work with iastools.zip used in windows
+
+for x in `cat $APS_HOME/devtests/jdbc/config/ee-config.properties`
+do
+    varval=`echo $x |cut -d'=' -f1`
+
+    if [ $varval = "admin.user" ];
+    then
+        AS_ADMIN_USER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.port" ];
+    then
+        AS_ADMIN_PORT=`echo $x |cut -d'=' -f2`
+    fi
+    
+    if [ $varval = "admin.host" ];
+    then
+        AS_ADMIN_HOST=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "orb.port" ];
+    then
+        ORB_LISTENER_1_PORT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "http.port" ];
+    then
+        HTTP_LISTENER_1_PORT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "https.port" ];
+    then
+        SSL_PORT=`echo $x |cut -d'=' -f2`
+    fi
+    
+    if [ $varval = "admin.password" ];
+    then
+        AS_ADMIN_PASSWORD=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "admin.domain" ];
+    then
+        AS_ADMIN_DOMAIN=`echo $x |cut -d'=' -f2`
+    fi
+    if [ $varval = "nodeagent.name" ];
+    then
+        AS_ADMIN_NODEAGENT=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "server.instance.name" ];
+    then
+        AS_ADMIN_SERVER=`echo $x |cut -d'=' -f2`
+    fi
+
+    if [ $varval = "cluster.name" ];
+    then
+        CLUSTER_NAME="sqe-cluster"
+    fi
+
+    if [ $varval = "clustered.instance.name" ];
+    then
+        CLUSTERED_INSTANCE_NAME="clustered_server"
+    fi
+
+    if [ $varval = "install.type" ];
+    then
+        INSTALL_TYPE=`echo $x |cut -d'=' -f2`
+    fi
+
+done
+
+ASADMIN=${ASADMIN}/bin/asadmin
+HTTP_LISTENER_2_PORT="1042"
+SSL_MUTUALAUTH_PORT="1058"
+JMX_SYSTEM_CONNECTOR_PORT="8687"
+
+export AS_ADMIN_USER
+export AS_ADMIN_PASSWORD
+export AS_ADMIN_PORT
+export AS_ADMIN_HOST
+export AS_ADMIN_DOMAIN
+export AS_ADMIN_NODEAGENT
+export AS_ADMIN_SERVER
+export CLUSTER_NAME
+export CLUSTERED_INSTANCE_NAME
+
+##----- End Variable Defintions --------------
+
+
+
+#Create domain: sqe-domain----
+echo "creating domain ${AS_ADMIN_DOMAIN}..."
+${S1AS_HOME}/bin/asadmin create-domain --adminport ${AS_ADMIN_PORT} --adminuser ${AS_ADMIN_USER} --adminpassword ${AS_ADMIN_PASSWORD} ${AS_ADMIN_DOMAIN}
+
+
+echo "Copying all database driver files to ${S1AS_HOME}/domains/${AS_ADMIN_DOMAIN}/lib/ext directory"
+
+# Start domain: sqe-domain----
+echo "starting domain ${AS_ADMIN_DOMAIN}..."
+${S1AS_HOME}/bin/asadmin start-domain --user ${AS_ADMIN_USER} --password ${AS_ADMIN_PASSWORD} ${AS_ADMIN_DOMAIN}
+
+# Create node agent (sqe-agent) referencing sqe-domain.----
+echo "creating node agent: ${AS_ADMIN_NODEAGENT}..."
+${S1AS_HOME}/bin/asadmin create-node-agent --host ${AS_ADMIN_HOST} --port ${AS_ADMIN_PORT} --user ${AS_ADMIN_USER} --password ${AS_ADMIN_PASSWORD} ${AS_ADMIN_NODEAGENT}
+
+#----Start the sqe-agent. ----
+echo "starting node agent: ${AS_ADMIN_NODEAGENT}..."
+${S1AS_HOME}/bin/asadmin start-node-agent --user ${AS_ADMIN_USER} --password ${AS_ADMIN_PASSWORD} ${AS_ADMIN_NODEAGENT}
+
+#sleep ----
+echo "sleeping for 15 seconds..."
+sleep 15
+
+echo "INSTALL TYPE is set to :${INSTALL_TYPE}"
+echo "install.type value in config.properties needs to be one of [standalone | cluster | all]"
+
+if [ ${INSTALL_TYPE} = "standalone" -o ${INSTALL_TYPE} = "all" ]; then
+#  ----------------
+    # Create server instance: sqe-server----
+    echo "creating sever instance:${AS_ADMIN_SERVER}..."
+    ${S1AS_HOME}/bin/asadmin create-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        --nodeagent ${AS_ADMIN_NODEAGENT} \
+        ${AS_ADMIN_SERVER}
+
+    ${S1AS_HOME}/bin/asadmin start-instance \
+        -u ${AS_ADMIN_USER} \
+        -w ${AS_ADMIN_PASSWORD} \
+        ${AS_ADMIN_SERVER}
+fi
+
+if [ ${INSTALL_TYPE} = "cluster" -o ${INSTALL_TYPE} = "all" ]; then
+#  ----------------
+    # Create cluster: sqe-cluster----
+    echo "creating cluster:${CLUSTER_NAME}..."
+    ${S1AS_HOME}/bin/asadmin create-cluster -u ${AS_ADMIN_USER} -w ${AS_ADMIN_PASSWORD} ${CLUSTER_NAME}
+
+    # Roll over ports ----------------
+    echo "using default ports in config.properties for first instance..."
+        HTTP_LISTENER_1_PORT=`expr ${HTTP_LISTENER_1_PORT} `
+        HTTP_LISTENER_2_PORT=`expr ${HTTP_LISTENER_2_PORT} `
+        ORB_LISTENER_1_PORT=`expr ${ORB_LISTENER_1_PORT} `
+        SSL_PORT=`expr ${SSL_PORT} `
+        SSL_MUTUALAUTH_PORT=`expr ${SSL_MUTUALAUTH_PORT} `
+        JMX_SYSTEM_CONNECTOR_PORT=`expr ${JMX_SYSTEM_CONNECTOR_PORT} `
+
+        echo "Rolled Over Ports by 4! New port values are:";
+        echo "HTTP_LISTENER_1_PORT=${HTTP_LISTENER_1_PORT}";
+        echo "HTTP_LISTENER_2_PORT=${HTTP_LISTENER_2_PORT}";
+        echo "ORB_LISTENER_1_PORT=${ORB_LISTENER_1_PORT}";
+        echo "SSL_PORT=${SSL_PORT}";
+
+    # Create clustered instance: clustered-server----
+    echo "creating server instance:${CLUSTERED_INSTANCE_NAME}_1..."
+    ${S1AS_HOME}/bin/asadmin create-instance \
+        --nodeagent ${AS_ADMIN_NODEAGENT} \
+        --cluster ${CLUSTER_NAME} \
+        --systemproperties http-listener-1-port=${HTTP_LISTENER_1_PORT}:http-listener-2-port=${HTTP_LISTENER_2_PORT}:orb-listener-1-port=${ORB_LISTENER_1_PORT}:SSL-port=${SSL_PORT}:SSL_MUTUALAUTH-port=${SSL_MUTUALAUTH_PORT}:JMX_SYSTEM_CONNECTOR-port=${JMX_SYSTEM_CONNECTOR_PORT} \
+        -u ${AS_ADMIN_USER} -w ${AS_ADMIN_PASSWORD} \
+    ${CLUSTERED_INSTANCE_NAME}_1
+
+    # Roll over ports ----------------
+    echo "Rolling over default port values by 4..."
+        HTTP_LISTENER_1_PORT=`expr ${HTTP_LISTENER_1_PORT} + 4`
+        HTTP_LISTENER_2_PORT=`expr ${HTTP_LISTENER_2_PORT} + 4`
+        ORB_LISTENER_1_PORT=`expr ${ORB_LISTENER_1_PORT} + 4`
+        SSL_PORT=`expr ${SSL_PORT} + 4`
+        SSL_MUTUALAUTH_PORT=`expr ${SSL_MUTUALAUTH_PORT} + 4`
+        JMX_SYSTEM_CONNECTOR_PORT=`expr ${JMX_SYSTEM_CONNECTOR_PORT} + 4`
+
+        echo "Rolled Over Ports by 4! New port values are:";
+        echo "HTTP_LISTENER_1_PORT=${HTTP_LISTENER_1_PORT}";
+        echo "HTTP_LISTENER_2_PORT=${HTTP_LISTENER_2_PORT}";
+        echo "ORB_LISTENER_1_PORT=${ORB_LISTENER_1_PORT}";
+        echo "SSL_PORT=${SSL_PORT}";
+
+    # Create clustered instance: clustered-server----
+    echo "creating server instance:${CLUSTERED_INSTANCE_NAME}_2..."
+    ${S1AS_HOME}/bin/asadmin create-instance \
+        --nodeagent ${AS_ADMIN_NODEAGENT} \
+        --cluster ${CLUSTER_NAME} \
+        --systemproperties http-listener-1-port=${HTTP_LISTENER_1_PORT}:http-listener-2-port=${HTTP_LISTENER_2_PORT}:orb-listener-1-port=${ORB_LISTENER_1_PORT}:SSL-port=${SSL_PORT}:SSL_MUTUALAUTH-port=${SSL_MUTUALAUTH_PORT}:JMX_SYSTEM_CONNECTOR-port=${JMX_SYSTEM_CONNECTOR_PORT} \
+        -u ${AS_ADMIN_USER} -w ${AS_ADMIN_PASSWORD} \
+    ${CLUSTERED_INSTANCE_NAME}_2
+    #-- END Cluster Setup--------------------------
+
+    # Start cluster: sqe-cluster----
+    echo "Starting cluster:${CLUSTER_NAME}..."
+    ${S1AS_HOME}/bin/asadmin start-cluster -u ${AS_ADMIN_USER} -w ${AS_ADMIN_PASSWORD} ${CLUSTER_NAME}
+
+fi
+
+
+echo "EE setup complete!"
+
+# ---------  Notes. ------------
+
+#NOTE: There is an unstated jmx port 8686 which is 
+# currently not configurable. This port will need to be specified 
+# when creating the node agent.
+
+#NOTE: The domain should be up an running when the node agent is started. 
+
+#NOTE: The stop-nodeagent command currently does
+# not function due to a bug so should you ever need to stop the node
+# agent you must kill its process. In reality you should never need 
+# to stop the node agent once it is started.
+
+#NOTE: The ports by default will not conflict with those of the DAS. 
+#The http-listener port will default to 8079. 
+
+#echo "#NOTE: There is an unstated jmx port 8686 which is  currently not configurable. This port will need to be specified  when creating the node agent."
+

@@ -77,4 +77,8 @@ Bundle-Activator: org.glassfish.common.util.CommonUtilsActivator
                         org.glassfish.security.common; \
                         com.sun.logging.enterprise.system.core; \
                         org.glassfish.server; version=${project.osgi.version}
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+
 

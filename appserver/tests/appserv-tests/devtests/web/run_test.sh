@@ -261,18 +261,20 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
 	get_test_target $1
-	test_run -s webtier-dev-tests-bg	
+	test_run -s webtier-dev-tests
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
-    copy_test_artifects
-    upload_test_results
-    delete_bundle
-    cd -
 }
 
 list_test_ids(){
     echo web_all
+}
+post_test_run(){
+    copy_test_artifects
+    upload_test_results
+    delete_bundle
+    cd -
 }
 
 OPT=$1
@@ -282,5 +284,6 @@ case $OPT in
     list_test_ids )
         list_test_ids;;
     run_test_id )
+        trap post_test_run EXIT
         run_test_id $TEST_ID ;;
 esac

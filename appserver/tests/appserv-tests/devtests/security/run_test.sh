@@ -60,10 +60,21 @@ test_run(){
 
 	$S1AS_HOME/bin/asadmin start-database
 	$S1AS_HOME/bin/asadmin start-domain
-	pushd $APS_HOME/devtests/security
-	unset http_proxy
+	pushd $APS_HOME/devtests/security	
 	rm count.txt || true
+  PROXY_HOST=`echo ${http_proxy} | cut -d':' -f2 | ${SED} 's/\/\///g'`
+  PROXY_PORT=`echo ${http_proxy} | cut -d':' -f3 | ${SED} 's/\///g'`
+  ANT_OPTS="${ANT_OPTS} \
+  -Dhttp.proxyHost=${PROXY_HOST} \
+  -Dhttp.proxyPort=${PROXY_PORT} \
+  -Dhttp.noProxyHosts='127.0.0.1|localhost|*.oracle.com' \
+  -Dhttps.proxyHost=${PROXY_HOST} \
+  -Dhttps.proxyPort=${PROXY_PORT} \
+  -Dhttps.noProxyHosts='127.0.0.1|localhost|*.oracle.com'"
+  export ANT_OPTS
+  echo "ANT_OPTS=${ANT_OPTS}"
 	ant $TARGET |tee $TEST_RUN_LOG
+  unset ANT_OPTS
 
 	$S1AS_HOME/bin/asadmin stop-domain
 	$S1AS_HOME/bin/asadmin stop-database
@@ -82,19 +93,27 @@ get_test_target(){
 
 }
 
+merge_result_files(){
+	cat $APS_HOME/test_resultsValid.xml $APS_HOME/security-gtest-results.xml > $APS_HOME/temp.xml
+	mv $APS_HOME/temp.xml $APS_HOME/test_resultsValid.xml 
+}
+
 run_test_id(){
 	source `dirname $0`/../../../common_test.sh
 	kill_process
 	delete_gf
-	download_test_resources glassfish.zip version-info.txt
-	unzip_test_resources $WORKSPACE/bundles/glassfish.zip
+	download_test_resources glassfish.zip tests-maven-repo.zip version-info.txt
+	unzip_test_resources $WORKSPACE/bundles/glassfish.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
 	cd `dirname $0`
 	test_init
 	get_test_target $1
 	test_run
+	merge_result_files
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
+}
+post_test_run(){
     copy_test_artifects
     upload_test_results
     delete_bundle
@@ -112,5 +131,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+		trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac

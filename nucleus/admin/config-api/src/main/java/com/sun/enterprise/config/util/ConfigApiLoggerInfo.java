@@ -877,7 +877,7 @@ public class ConfigApiLoggerInfo {
     public final static String glassFishDocumentXmlException = LOGMSG_PREFIX + "-00100";
 
     @LogMessageInfo(
-            message = "config.getHttpService() null for config '{0}'",
+            message = "config.getHttpService() null for config ''{0}''",
             cause = "unknown",
             action = "unknown",
             publish = true,

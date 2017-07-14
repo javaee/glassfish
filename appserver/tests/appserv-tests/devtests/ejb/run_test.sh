@@ -276,6 +276,8 @@ get_test_target(){
 			TARGET=all ;;
 		ejb_web_all)
 			TARGET=lite ;;
+                 * )
+                       TARGET=$1 ;;
 	esac
 	export TARGET
 
@@ -297,7 +299,7 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
 	get_test_target $1
-	if [[ $1 = "ejb_all" ]]; then
+	if [[ $1 = "ejb_all" || $1 = "ejb_group"* ]]; then
 		test_run_ejb
 	elif [[ $1 = "ejb_timer_cluster_all" ]]; then
 		test_run_ejb_timer_cluster
@@ -310,15 +312,18 @@ run_test_id(){
 	check_successful_run
     generate_junit_report $1    
     change_junit_report_class_names
+}
+
+post_test_run(){
     copy_test_artifects
     upload_test_results
     delete_bundle
-    cd $dname
+    cd ${dname}
 }
 
 
 list_test_ids(){
-	echo ejb_all ejb_timer_cluster_all ejb_web_all
+	echo ejb_all ejb_timer_cluster_all ejb_web_all ejb_group_1 ejb_group_2 ejb_group_3
 }
 
 OPT=$1
@@ -328,5 +333,6 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+		trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac

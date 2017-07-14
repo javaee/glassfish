@@ -98,7 +98,6 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     public TaggedComponent insert(IORInfo iorInfo, 
  				  List<ClusterInstanceInfo> clusterInstanceInfo)
     {
-	TaggedComponent result = null;
 	try {
 	    if (_logger.isLoggable(Level.FINE)) {
 		_logger.log(Level.FINE, "{0}.insert->:", baseMsg);
@@ -127,7 +126,7 @@ public class CSIv2SSLTaggedComponentHandlerImpl
 	} finally {
 	    if (_logger.isLoggable(Level.FINE)) {
 		_logger.log(Level.FINE, "{0}.insert<-: {1}",
-                    new Object[]{baseMsg, result});
+                    new Object[]{baseMsg, null});
 	    }
 	}
     }

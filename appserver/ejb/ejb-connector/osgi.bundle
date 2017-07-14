@@ -39,3 +39,7 @@
 #
 
 -exportcontents: org.glassfish.ejb.deployment.archive; org.glassfish.ejb.config; version=${project.osgi.version}
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+

@@ -2561,8 +2561,7 @@ public class Request
 
     @Override
     public boolean isTrailerFieldsReady() {
-        //TODO
-        return true;
+        return coyoteRequest.areTrailersAvailable();
     }
 
     /**
@@ -4355,7 +4354,9 @@ public class Request
                  * did not call AsyncContext#complete or any of the
                  * AsyncContext#dispatch methods, call AsyncContext#complete
                  */
-                ac.tryComplete(false);
+                if (!ac.isAsyncComplete()) {
+                    ac.complete();
+                }
             }
         }
     }

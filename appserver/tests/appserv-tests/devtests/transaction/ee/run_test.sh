@@ -114,7 +114,7 @@ test_run(){
 }
 
 list_test_ids(){
-    echo transaction_ee_all
+    echo transaction_ee_all echo transaction-ee-1 transaction-ee-2 transaction-ee-3 transaction-ee-4
 }
 
 get_test_target(){
@@ -122,6 +122,9 @@ get_test_target(){
 		transaction_ee_all )
 			TARGET=all
 			export TARGET;;
+                * )
+                        TARGET=$1
+                        export TARGET;;
 	esac
 
 }
@@ -139,6 +142,9 @@ run_test_id(){
 	check_successful_run
     generate_junit_report $1
     change_junit_report_class_names
+}
+
+post_test_run(){
     copy_test_artifects
     upload_test_results
     delete_bundle
@@ -152,6 +158,7 @@ case $OPT in
 	list_test_ids )
 		list_test_ids;;
 	run_test_id )
+		trap post_test_run EXIT
 		run_test_id $TEST_ID ;;
 esac
  

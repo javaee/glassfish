@@ -197,7 +197,7 @@ public class WeldSniffer extends GenericSniffer {
     } catch (IOException e) {
       return false;
     }
-  } 
+  }
 
   public String[] getContainersNames() {
     return containers;
