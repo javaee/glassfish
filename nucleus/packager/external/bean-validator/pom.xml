@@ -267,5 +267,50 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <!--
+        This module repackages various maven artifacts and artifacts like hibernate-validator does not
+        have java-docs published. Hence, we cannot repackage the java-docs. We skip java-doc
+        generation and use empty java-doc plugin
+        to make Nexus release job succeed.
+    -->
+    <profiles>
+        <profile>
+            <!-- generate empty javadoc jar -->
+            <id>release-phase2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-empty-javadoc-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classesDirectory>
+                                        ${project.build.directory}/javadoc
+                                    </classesDirectory>
+                                    <classifier>javadoc</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 

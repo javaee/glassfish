@@ -80,6 +80,8 @@
         <javax.enterprise.deploy-api.version>1.6</javax.enterprise.deploy-api.version>
         <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
+        <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
+        <javax.validation-api.version>2.0.0.CR3</javax.validation-api.version>
         <javax.security.enterprise-api.version>1.0-b06</javax.security.enterprise-api.version>
         <javax.security.enterprise.version>1.0-b07</javax.security.enterprise.version>
 
