@@ -80,6 +80,11 @@ import javax.servlet.http.HttpServletMapping;
 
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
+import org.apache.catalina.connector.MappingImpl;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Standard implementation of <code>RequestDispatcher</code> that allows a
@@ -202,6 +207,7 @@ public final class ApplicationDispatcher
      *
      * @param wrapper The Wrapper associated with the resource that will
      *  be forwarded to or included (required)
+     * @param mappingForDispatch the mapping for this dispatch
      * @param requestURI The request URI to this resource (if any)
      * @param servletPath The revised servlet path to this resource (if any)
      * @param pathInfo The revised extra path information to this resource
@@ -214,7 +220,6 @@ public final class ApplicationDispatcher
     public ApplicationDispatcher
         (Wrapper wrapper, HttpServletMapping mappingForDispatch, String requestURI, String servletPath,
          String pathInfo, String queryString, String name) {
-
         super();
 
         // Save all of our configuration parameters
@@ -230,9 +235,8 @@ public final class ApplicationDispatcher
         if (log.isLoggable(Level.FINE))
             log.log(Level.FINE, "servletPath= " + this.servletPath + ", pathInfo= "
                     + this.pathInfo + ", queryString= " + queryString + ", name= "
-                    + this.name + "");
+                    + this.name);
     }
-
 
     // ----------------------------------------------------- Instance Variables
 
@@ -286,8 +290,7 @@ public final class ApplicationDispatcher
     private Wrapper wrapper = null;
     
     private HttpServletMapping mappingForDispatch;
-
-
+    
     // ------------------------------------------------------------- Properties
 
 
@@ -1066,6 +1069,13 @@ public final class ApplicationDispatcher
             //START OF 6364900
             crossContextFlag = Boolean.valueOf(crossContext);
             //END OF 6364900
+            
+            //START OF github/javaee/glassfish/issues/21846
+            if (this.name != null) {
+                this.mappingForDispatch = computeNamedDispatchHttpServletMapping(context, hcurrent);
+            }
+            //END OF github/javaee/glassfish/issues/21846
+            
             wrapper = new ApplicationHttpRequest
                 (hcurrent, context, crossContext, mappingForDispatch, state.dispatcherType);
         } else {
@@ -1082,7 +1092,31 @@ public final class ApplicationDispatcher
 
         return wrapper;
     }
+    
+    private HttpServletMapping computeNamedDispatchHttpServletMapping(Context context, HttpServletRequest hcurrent) {
+        HttpServletMapping result = null;
+        Mapper mapper = context.getMapper();
+        if (null == mapper) {
+            return null;
+        }
+  
+        MessageBytes uriMB = MessageBytes.newInstance();
+        CharChunk cc = uriMB.getCharChunk();
+        MappingData mappingData = new MappingData();
+        String requestURI = hcurrent.getRequestURI();
+        if (null == requestURI) {
+            return null;
+        }
+        try {
+            cc.append(requestURI, 0, requestURI.length());
+            mapper.map(uriMB, mappingData);
+        } catch (Exception ex) {
+            return null;
+        }
+        result = new MappingImpl(mappingData);
 
+        return result;
+    }
 
     /**
      * Create and return a response wrapper that has been inserted in the

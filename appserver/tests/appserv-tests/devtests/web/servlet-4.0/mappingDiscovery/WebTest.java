@@ -87,25 +87,32 @@ public class WebTest {
                     extensionMatch &&
                     pathMatch)? stat.PASS : stat.FAIL));
             
-            boolean asyncMatch = webTest.run("GET", 200, false, "/AAsyncDispatchToC", ".*ServletC.MappingImpl\\{matchValue=ServletC.*pattern=/ServletC.*servletName=.*,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING:.*MappingImpl\\{matchValue=AAsyncDispatchToC.*pattern=/AAsyncDispatchToC.*servletName=AAsyncDispatchToC.*mappingMatch=EXACT}.*");
+            boolean asyncMatch = webTest.run("GET", 200, false, "/AAsyncDispatchToC", ".*ServletC.MappingImpl\\{matchValue=ServletC.*pattern=/ServletC.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING:.*MappingImpl\\{matchValue=AAsyncDispatchToC.*pattern=/AAsyncDispatchToC.*servletName=AAsyncDispatchToC.*mappingMatch=EXACT}.*");
 
             stat.addStatus(TEST_NAME + "-async",
                            asyncMatch ? stat.PASS : stat.FAIL);
             
-            boolean forwardMatch1 = webTest.run("GET", 200, false, "/AForwardToB", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=.*,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=AForwardToB,.pattern=/AForwardToB,.servletName=AForwardToB,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");
-            boolean forwardMatch2 = webTest.run("GET", 200, false, "/BForwardToC", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=.*,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=BForwardToC,.pattern=/BForwardToC,.servletName=BForwardToC,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");
+            boolean forwardMatch1 = webTest.run("GET", 200, false, "/AForwardToB", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=AForwardToB,.pattern=/AForwardToB,.servletName=AForwardToB,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");
+            boolean forwardMatch2 = webTest.run("GET", 200, false, "/BForwardToC", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=BForwardToC,.pattern=/BForwardToC,.servletName=BForwardToC,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");
 
             stat.addStatus(TEST_NAME + "-forward", ((forwardMatch1 &&
                     forwardMatch2)? stat.PASS : stat.FAIL));
             
-            boolean includeMatch1 = webTest.run("GET", 200, false, "/AIncludesB", ".*AIncludesB.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.null.*In.BIncludesC.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=.*,.mappingMatch=EXACT\\}.*In.ServletC.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.MappingImpl\\{matchValue=ServletC,.pattern=/ServletC,.servletName=.*,.mappingMatch=EXACT\\}.*ASYNC_MAPPING:.null.*");
-            boolean includeMatch2 = webTest.run("GET", 200, false, "/BIncludesC", ".*In.BIncludesC.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=BIncludesC,.mappingMatch=EXACT\\}.*.FORWARD_MAPPING:.null.*.INCLUDE_MAPPING:.null.*In.ServletC.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=BIncludesC,.mappingMatch=EXACT\\}.*.FORWARD_MAPPING:.null.*.INCLUDE_MAPPING:.MappingImpl\\{matchValue=ServletC,.pattern=/ServletC,.servletName=.*,.mappingMatch=EXACT\\}.*.ASYNC_MAPPING:.null.*");
+            boolean includeMatch1 = webTest.run("GET", 200, false, "/AIncludesB", ".*AIncludesB.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.null.*In.BIncludesC.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=BIncludesC,.mappingMatch=EXACT\\}.*In.ServletC.MappingImpl\\{matchValue=AIncludesB,.pattern=/AIncludesB,.servletName=AIncludesB,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.MappingImpl\\{matchValue=ServletC,.pattern=/ServletC,.servletName=ServletC,.mappingMatch=EXACT\\}.*ASYNC_MAPPING:.null.*");
+            boolean includeMatch2 = webTest.run("GET", 200, false, "/BIncludesC", ".*In.BIncludesC.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=BIncludesC,.mappingMatch=EXACT\\}.*.FORWARD_MAPPING:.null.*.INCLUDE_MAPPING:.null.*In.ServletC.MappingImpl\\{matchValue=BIncludesC,.pattern=/BIncludesC,.servletName=BIncludesC,.mappingMatch=EXACT\\}.*.FORWARD_MAPPING:.null.*.INCLUDE_MAPPING:.MappingImpl\\{matchValue=ServletC,.pattern=/ServletC,.servletName=ServletC,.mappingMatch=EXACT\\}.*.ASYNC_MAPPING:.null.*");
             stat.addStatus(TEST_NAME + "-include", ((includeMatch1 &&
                     includeMatch2)? stat.PASS : stat.FAIL));
             
             boolean boundsMatch1 = webTest.run("GET", 200, false, "/a/foo", ".*");
             boolean boundsMatch2 = webTest.run("GET", 200, false, "/f", ".*");
             stat.addStatus(TEST_NAME + "-bounds", ((boundsMatch1 && boundsMatch2)? stat.PASS : stat.FAIL));
+
+
+            boolean namedDispatchMatch1 = webTest.run("GET", 200, false, "/BForwardToCNamedDispatcher", "..*In.ServletC.MappingImpl\\{matchValue=BForwardToCNamedDispatcher,.pattern=/BForwardToCNamedDispatcher,.servletName=BForwardToCNamedDispatcher,.mappingMatch=EXACT\\}</p><p>.FORWARD_MAPPING:.null</p><p>.INCLUDE_MAPPING:.null</p><p>.ASYNC_MAPPING:.null.*");
+            boolean namedDispatchMatch2 = webTest.run("GET", 200, false, "/BIncludeCNamedDispatcher", ".*In.ServletC.MappingImpl\\{matchValue=BIncludeCNamedDispatcher,.pattern=/BIncludeCNamedDispatcher,.servletName=BIncludeCNamedDispatcher,.mappingMatch=EXACT\\}</p><p>.FORWARD_MAPPING:.null</p><p>.INCLUDE_MAPPING:.null</p><p>.ASYNC_MAPPING:.null.*");
+
+            stat.addStatus(TEST_NAME + "-namedDispatch", ((namedDispatchMatch1 && namedDispatchMatch2)? stat.PASS : stat.FAIL));
+            
             
         } catch( Exception ex) {
             ex.printStackTrace();
