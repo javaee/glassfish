@@ -42,7 +42,6 @@ implements ResourceAdapter, java.io.Serializable {
     private BootstrapContext ctx;
     private WorkManager wm;
     
-    @NotEmpty 
     private String testName;
 
     private boolean debug = true;
