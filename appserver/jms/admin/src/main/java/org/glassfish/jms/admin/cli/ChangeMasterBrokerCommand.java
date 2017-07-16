@@ -197,7 +197,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
        String oldMasterBroker = oldMasterBrokerHost + ":" + oldMasterBrokerPort;
        String newMasterBroker = newMasterBrokerHost + ":" + newMasterBrokerPort;
       // System.out.println("1: IN deleteinstanceCheck supplimental oldMasterBroker = " + oldMasterBroker + " newmasterBroker " + newMasterBroker);
-       try {
+       try{
            CompositeData result = updateMasterBroker(oldMBServer.getName(), oldMasterBroker, newMasterBroker);
            boolean success = ((Boolean) result.get("Success")).booleanValue();
            if (!success) {
@@ -218,13 +218,12 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                return;
             }
-       } catch(Exception e) {
-           report.setMessage(
-                localStrings.getLocalString("change.master.broker.CannotChangeMB",
-                    "Unable to change master broker. {0}", e.getMessage()));
-           report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-           return;
-       }
+       }catch(Exception e){
+                      report.setMessage(localStrings.getLocalString("change.master.broker.CannotChangeMB",
+                                    "Unable to change master broker because {0}", e.getMessage()));
+                            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        return;
+                 }
 
         try {
             /*String setCommandStr = cluster.getConfigRef() + "." + "jms-service" + "." +"master-Broker";
@@ -260,65 +259,87 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private JmsHost getDefaultJmsHost(JmsService jmsService) {
+   private JmsHost getDefaultJmsHost(JmsService jmsService){
 
-        JmsHost jmsHost = null;
-        String defaultJmsHostName = jmsService.getDefaultJmsHost();
-        List jmsHostsList = jmsService.getJmsHost();
+	    JmsHost jmsHost = null;
+            String defaultJmsHostName = jmsService.getDefaultJmsHost();
+            List jmsHostsList = jmsService.getJmsHost();
 
-        for (int i=0; i < jmsHostsList.size(); i ++) {
-            JmsHost tmpJmsHost = (JmsHost) jmsHostsList.get(i);
-            if (tmpJmsHost != null && tmpJmsHost.getName().equals(defaultJmsHostName)) {
-                jmsHost = tmpJmsHost;
+            for (int i=0; i < jmsHostsList.size(); i ++)
+            {
+               JmsHost tmpJmsHost = (JmsHost) jmsHostsList.get(i);
+               if (tmpJmsHost != null && tmpJmsHost.getName().equals(defaultJmsHostName))
+                     jmsHost = tmpJmsHost;
             }
-        }
-        return jmsHost;
-    }
+	    return jmsHost;
+      }
 
-    private CompositeData updateMasterBroker(
-        String serverName, String oldMasterBroker, String newMasterBroker)
-        throws Exception {
+     private CompositeData updateMasterBroker(String serverName, String oldMasterBroker, String newMasterBroker) throws Exception {
+        MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(serverName, config,serverContext, domain, connectorRuntime);
 
-        MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(
-                                         serverName, config, serverContext,
-                                         domain, connectorRuntime);
+         //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
+         CompositeData result = null;
+         try {
+             MBeanServerConnection mbsc = null;
+             try {
+                 mbsc = mqInfo.getMQMBeanServerConnection();
+             } catch (Exception e) {
+                 String[] param = new String[] { mqInfo.getASInstanceName() };
+                 String emsg = localStrings.getLocalString(
+                     "change.master.broker.cannotConnectOldMasterBroker", 
+                     "Unable to connect to the current master broker {0}. Likely reasons: the cluster might not be running, the server instance {0} associated with the current master broker or the current master broker might not be running.  Please check server logs.", param);
+                 logger.log(java.util.logging.Level.WARNING, emsg);
+                 logAndHandleException(e, emsg);
+             }
+             ObjectName on = new ObjectName(
+                     CLUSTER_CONFIG_MBEAN_NAME);
+             Object [] params = null;
 
-        //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
-        MBeanServerConnection mbsc = null;
-        CompositeData result = null;
-        try {
-            try {
-                mbsc = mqInfo.getMQMBeanServerConnection();
-            } catch (Exception e) {
-                String[] params = new String[] {
-                    mqInfo.getBrokerInstanceName(), mqInfo.getASInstanceName()};
-                String emsg = localStrings.getLocalString(
-                    "change.master.broker.cannotConnectOldMasterBroker", 
-                    "Unable to connect to the current master broker {0}.  Most likely reasons: the cluster might not be running, or the server instance {1} associated with the broker {0} might not be running or the broker {0} might not be running.  Please check server logs.", params);
-                logger.log(java.util.logging.Level.WARNING, emsg);
-                logAndHandleException(e, emsg);
-            }
-            ObjectName on = new ObjectName(CLUSTER_CONFIG_MBEAN_NAME);
-            Object [] params = null;
+             String []  signature = new String [] {
+                      "java.lang.String",
+                      "java.lang.String"};
+                      params = new Object [] {oldMasterBroker, newMasterBroker};
 
-            String [] signature = new String [] {
-                          "java.lang.String",
-                          "java.lang.String" };
-            params = new Object [] {oldMasterBroker, newMasterBroker};
+             result = (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature);
+         } catch (Exception e) {
+                     logAndHandleException(e, e.getMessage()); 
+         } finally {
+                     try {
+                         if(mqInfo != null) {
+                             mqInfo.closeMQMBeanServerConnection();
+                         }
+                     } catch (Exception e) {
+                       handleException(e);
+                     }
+                 }
+         return result;
+     }
 
-            result = (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature);
-        } catch (Exception e) {
-            logAndHandleException(e, e.getMessage());
-        } finally {
-            try {
-                if (mqInfo != null) {
-                    mqInfo.closeMQMBeanServerConnection();
-                }
-            } catch (Exception e) {
-                handleException(e);
-            }
-        }
-        return result;
-    }
+     /**
+      * This is a copy from the super method except that
+      * it avoids a NPE in using e.getCause() and ensure 
+      * the exception message is errorMsg not "" - these
+      * eventually should be incoporated to the super method
+      * post 5.0 release.
+      */
+     @Override
+     protected void logAndHandleException(Exception e, String errorMsg)
+     throws JMSAdminException {
+         //log JMX Exception trace as WARNING
+         java.io.StringWriter s = new java.io.StringWriter();
+         e.printStackTrace(new java.io.PrintWriter(s));
+         String emsg = localStrings.getLocalString(errorMsg, errorMsg);
+         JMSAdminException je = new JMSAdminException(emsg);
+         /* Cause will be InvocationTargetException, cause of that
+          * will be  MBeanException and cause of that will be the
+          * real exception we need
+          */
+         if ((e.getCause() != null) &&
+             (e.getCause().getCause() != null)) {
+             je.initCause(e.getCause().getCause().getCause());
+         }
+         handleException(je);
+     }
+
 }
 

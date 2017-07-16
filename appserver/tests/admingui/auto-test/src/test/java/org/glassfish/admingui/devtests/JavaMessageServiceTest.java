@@ -49,7 +49,6 @@ import org.openqa.selenium.support.ui.Select;
 public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 
     public static final String DEFAULT_JMS_HOST = "default_JMS_host";
-    public static final String ID_CLUSTERS_TABLE = "propertyForm:clustersTable";
 
     @Test
     public void testJmsService() {
@@ -220,25 +219,23 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 //        deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
 //    }
 
+    //This test needs to be updated: the test procedure should be:
+    // . create a cluster
+    // . create 2 instances in the cluster
+    // . start the cluster
+    // . change master broker to instance2
+    // besides the above test update, this test needs issues GLASSFISH-22403, GLASSFISH-22050 addressed
     @Test
     public void testMasterBroker() {
         ClusterTest ct = new ClusterTest();
-        String instance1 = null;
-        String instance2 = null;
         try {
             final String FIELD_MASTER_BROKER = "propertyForm:propertyContentPage:propertySheet:propertSectionTextField:maseterBrokerProp:MasterBroker";
 
             String clusterName = "clusterName" + generateRandomString();
             ct.deleteAllCluster();
-            instance1 = clusterName + generateRandomString();
-            instance2 = clusterName + generateRandomString();
+            final String instance1 = clusterName + generateRandomString();
+            final String instance2 = clusterName + generateRandomString();
             ct.createCluster(clusterName, instance1, instance2);
-
-            String clickId = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1")+"col1:link";
-            clickByIdAction(clickId);
-            ct.startClusterInstance(instance1);
-            ct.startClusterInstance(instance2);
-
             final String ELEMENT_JMS_LINK = "treeForm:tree:configurations:" + clusterName + "-config:jmsConfiguration:jmsConfiguration_link";
 
             clickAndWait(ELEMENT_JMS_LINK);
@@ -250,16 +247,6 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 
             assertEquals(instance2, getValue(FIELD_MASTER_BROKER, "value"));
         } finally {
-            if (instance1 != null) {
-                try {
-                ct.stopClusterInstance(instance1);
-                } catch (Exception e) {}
-            }
-            if (instance2 != null) {
-                try {
-                ct.stopClusterInstance(instance2);
-                } catch (Exception e) {}
-            }
             ct.deleteAllCluster();
         }
     }

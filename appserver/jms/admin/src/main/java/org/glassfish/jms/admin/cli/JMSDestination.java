@@ -531,10 +531,9 @@ public abstract class JMSDestination {
                                             throws JMSAdminException {
             //log JMX Exception trace as WARNING
             StringWriter s = new StringWriter();
-            e.printStackTrace(new PrintWriter(s));
+            e.getCause().printStackTrace(new PrintWriter(s));
             logger.log(Level.WARNING, s.toString());
-            String emsg = localStrings.getLocalString(errorMsg, errorMsg);
-            JMSAdminException je = new JMSAdminException(emsg);
+            JMSAdminException je = new JMSAdminException(localStrings.getLocalString(errorMsg, ""));
         /* Cause will be InvocationTargetException, cause of that
            * wil be  MBeanException and cause of that will be the
           * real exception we need
