@@ -60,6 +60,7 @@ import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 import org.glassfish.internal.api.ServerContext;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.annotations.Service;
 
@@ -288,7 +289,9 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                  String emsg = localStrings.getLocalString(
                      "change.master.broker.cannotConnectOldMasterBroker", 
                      "Unable to connect to the current master broker {0}. Likely reasons: the cluster might not be running, the server instance {0} associated with the current master broker or the current master broker might not be running.  Please check server logs.", param);
-                 logger.log(java.util.logging.Level.WARNING, emsg);
+                 if (logger.isLoggable(Level.WARNING)) {
+                     logger.log(Level.WARNING, emsg);
+                 }
                  logAndHandleException(e, emsg);
              }
              ObjectName on = new ObjectName(
