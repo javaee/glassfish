@@ -61,7 +61,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-//import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.Selenium;
 /**
  * 
  * @author Jeremy Lv
@@ -73,7 +73,7 @@ public class BaseSeleniumTestClass {
     public String baseUrl = "http://localhost:4848/";
     public StringBuffer verificationErrors = new StringBuffer();
     public boolean acceptNextAlert = true;
-    //protected static Selenium selenium;
+    protected static Selenium selenium;
     protected static final int TIMEOUT = 90;
     public static final int TIMEOUT_CALLBACK_LOOP = 1000;
     
@@ -82,7 +82,6 @@ public class BaseSeleniumTestClass {
     
     @Before
     public void setUp() throws Exception {
-        //System.setProperty("webdriver.gecko.driver","/pathto/geckodriver");
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
     }

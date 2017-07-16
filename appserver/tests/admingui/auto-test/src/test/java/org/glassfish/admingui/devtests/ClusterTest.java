@@ -439,7 +439,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     /**
      * Instance related methods
      */
-    public void startClusterInstance(String instanceName) {
+    private void startClusterInstance(String instanceName) {
         clickByIdAction("propertyForm:clusterTabs:clusterInst");
         String clickId = getTableRowByValue(ID_INSTANCES_TABLE, instanceName, "col1")+"col0:select";
         clickByIdAction(clickId);
@@ -448,7 +448,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         waitForAlertProcess("modalBody");
     }
     
-    public void stopClusterInstance(String instanceName1) {
+    private void stopClusterInstance(String instanceName1) {
         clickByIdAction("propertyForm:clusterTabs:clusterInst");
         String clickId = getTableRowByValue(ID_INSTANCES_TABLE, instanceName1, "col1")+"col0:select";
         clickByIdAction(clickId);
