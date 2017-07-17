@@ -114,18 +114,6 @@ is_target(){
         "clustering" | \
         "ha" | \
         "embedded-all" | \
-        "web_jsp" | \
-        "web_taglib" | \
-        "web_el" | \ 
-        "web_security" | \
-        "web_http-connector" | \
-        "web_comet" | \
-        "web_misc" | \
-        "web_weblogicDD" | \
-        "web_clustering" | \
-        "web_ha" | \
-        "web_servlet" | \
-        "web_web-container" | \
         "all") echo 1;;
         *) echo 0;;
     esac
@@ -136,9 +124,6 @@ get_test_target(){
 		web_all )
 			TARGET=all
 			export TARGET;;
-                * )
-                        TARGET=$1
-                        export TARGET;;
 	esac
 
 }
@@ -283,8 +268,7 @@ run_test_id(){
 }
 
 list_test_ids(){
-    echo web_all jsp web_jsp web_taglib web_el web_security web_http-connector web_comet web_misc web_weblogicDD web_clustering web_ha web_servlet web_web-container
-
+    echo web_all jsp
 }
 post_test_run(){
     copy_test_artifects
