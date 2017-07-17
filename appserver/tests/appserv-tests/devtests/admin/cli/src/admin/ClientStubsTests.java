@@ -40,17 +40,14 @@
 
 package admin;
 /*
- * test client-stub-commands.
+ * Test get-client-stubs command.
  * @author Mukesh Kumawat
  */
 public class ClientStubsTests extends AdminBaseDevTest {
     private static final String DOMAIN_NAME = "clientstubtest";
 
     private void runTests() {
-        startDomain(DOMAIN_NAME);
         getClientStubsNegative();
-        stopDomain(DOMAIN_NAME);
-        stat.printSummary();
     }
 
     private void getClientStubsNegative() {
