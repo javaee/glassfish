@@ -124,7 +124,11 @@ get_test_target(){
 		web_all )
 			TARGET=all
 			export TARGET;;
-	esac
+
+               * )
+                        TARGET=$1
+                        export TARGET;;	
+       esac
 
 }
 
