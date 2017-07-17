@@ -168,11 +168,14 @@ public class SimpleBVServletTestNG {
                 "(?s)(?m).*Obtained ValidatorFactory: org.hibernate.validator.(internal.)*engine.ValidatorFactoryImpl.*",
                 "(?s)(?m).*case1: No ConstraintViolations found.*",
                 "(?s)(?m).*case2: caught IllegalArgumentException.*",
+                "(?s)(?m).*case0: ConstraintViolation: message: must not be null propertyPath: listOfString.*<list element>.*",
                 "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: listOfString.*",
                 "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: lastName.*",
                 "(?s)(?m).*case3: ConstraintViolation: message: must not be null propertyPath: firstName.*",
                 "(?s)(?m).*case4: ConstraintViolation: message: must be a well-formed email address propertyPath: email.*",
-                "(?s)(?m).*case5: No ConstraintViolations found.*"
+                "(?s)(?m).*case5: No ConstraintViolations found.*",
+                "(?s)(?m).*case6: ConstraintViolation: message: must be greater than or equal to 25 propertyPath: age.*",
+                "(?s)(?m).*case7: ConstraintViolation: message: must be less than or equal to 50 propertyPath: age.*"
             };
             final int len = regexesToFind.length;
             int i;

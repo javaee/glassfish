@@ -11,7 +11,9 @@ import java.util.List;
 public class Employee implements Serializable {
 
   @Max(60)
+  @Max(50) //So, effectively the max value is 50
   @Min(20)
+  @Min(25) //So, effective the min value is 25
   private int age;
 
   public void setAge(int age){
@@ -56,14 +58,16 @@ public class Employee implements Serializable {
     this.lastName = lastName;
   }
 
-  @NotNull
   private List<String> listOfString;
 
-  public List<String> getListOfString() {
+  @NotNull
+  public List<@NotNull String> getListOfString() {
     return listOfString;
   }
 
   public void setListOfString(List<String> listOfString) {
     this.listOfString = listOfString;
   }
+
+
 }
