@@ -142,7 +142,7 @@
     <target name="debug-windows" depends="instance, cluster"/>
 
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
-                        configs, sync, domain, backup, tokens, validation, node,
+                        configs, sync, domain, backup, tokens, validation, node, clientstubs,
                         logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, config-modularity, teardown"/>
 
