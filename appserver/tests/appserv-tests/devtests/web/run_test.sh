@@ -265,15 +265,17 @@ run_test_id(){
 	unzip_test_resources $WORKSPACE/bundles/glassfish.zip
 	cd `dirname $0`
 	test_init
-	get_test_target $1
+        TARGET_FROM_INPUT=(`echo $1 | sed 's/web_//'`)
+        echo $TARGET_FROM_INPUT 
+	get_test_target $TARGET_FROM_INPUT
 	test_run -s webtier-dev-tests
 	check_successful_run
-    generate_junit_report $1
+    generate_junit_report $TARGET_FROM_INPUT
     change_junit_report_class_names
 }
 
 list_test_ids(){
-    echo web_all jsp
+    echo web_all web_jsp web_taglib web_el web_servlet web_web-container web_security web_http-connector web_comet web_misc web_weblogicDD web_clustering web_ha
 }
 post_test_run(){
     copy_test_artifects
