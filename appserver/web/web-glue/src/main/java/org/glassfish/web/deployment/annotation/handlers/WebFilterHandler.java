@@ -136,7 +136,7 @@ public class WebFilterHandler extends AbstractWebHandler {
                 log(Level.SEVERE, ainfo,
                     localStrings.getLocalString(
                     "web.deployment.annotation.handlers.filternamedontmatch",
-                    "The filter '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
+                    "The filter ''{0}'' has implementation ''{1}'' in xml. It does not match with ''{2}'' from annotation @{3}.",
                     new Object[] { filterName, filterImpl, filterClass.getName(),
                     WebFilter.class.getName() }));
                 return getDefaultFailedResult();

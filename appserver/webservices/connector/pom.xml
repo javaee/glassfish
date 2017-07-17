@@ -82,6 +82,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version.lowerbound}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>

@@ -659,9 +659,10 @@ public class AppClientContainer {
                      * Despite retries, the credentials were not accepted.
                      * Throw a user error which the ACC will display nicely.
                      */
-                    if (injExc.getCause() != null &&
-                        injExc.getCause() instanceof NamingException) {
-                        final NamingException ne = (NamingException) injExc.getCause();
+                    Object obj = injExc.getCause();
+                    if (obj != null &&
+                        obj instanceof NamingException) {
+                        final NamingException ne = (NamingException) obj;
                         final String expl = ne.getExplanation();
                         final String msg = MessageFormat.format(
                                 logger.getResourceBundle().getString("appclient.RemoteAuthError"), expl);

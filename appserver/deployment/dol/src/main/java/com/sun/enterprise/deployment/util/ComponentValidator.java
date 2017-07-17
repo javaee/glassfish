@@ -187,7 +187,9 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
     @Override
     protected void accept(EjbReference ejbRef) {
 
-        DOLUtils.getDefaultLogger().fine("Visiting Ref" + ejbRef);
+        if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+            DOLUtils.getDefaultLogger().fine("Visiting Ref" + ejbRef);
+        }
     if (ejbRef.getEjbDescriptor()!=null) 
             return;
 
@@ -255,7 +257,9 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
             // the jndi name is not null, if this is a remote ref, proceed with resolution
             // if this is a local ref, proceed with resolution only if ejb-link is null            
             if (!ejbRef.isLocal() || (ejbRef.isLocal() && ejbRef.getLinkName()==null)) {
-                DOLUtils.getDefaultLogger().fine("Ref " + ejbRef.getName() + " is bound to Ejb with JNDI Name " + ejbRef.getJndiName());
+                if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+                    DOLUtils.getDefaultLogger().fine("Ref " + ejbRef.getName() + " is bound to Ejb with JNDI Name " + ejbRef.getJndiName());
+                }
                 if (getEjbDescriptors() != null) {
                     for (Iterator iter = getEjbDescriptors().iterator(); iter.hasNext(); ) {
                         EjbDescriptor ejb = (EjbDescriptor) iter.next();
@@ -380,7 +384,9 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
                         ejbRef.isEJB30ClientView() ?
                         ejbRef.getEjbInterface() : ejbRef.getEjbHomeInterface());
                     ejbRef.setJndiName(jndiName);
-                    DOLUtils.getDefaultLogger().fine("Applying default to ejb reference: " + ejbRef);
+                    if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+                        DOLUtils.getDefaultLogger().fine("Applying default to ejb reference: " + ejbRef);
+                    }
                 }
 
                 return;
@@ -474,7 +480,9 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
                 if(moduleType != null && moduleType.equals(DOLUtils.carType())) {
                     // Because no annotation processing is done within ACC runtime, this case typically
                     // arises for remote @EJB annotations, so don't log it as warning.
-                    DOLUtils.getDefaultLogger().fine("Unresolved <ejb-link>: "+linkName);
+                    if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+                        DOLUtils.getDefaultLogger().fine("Unresolved <ejb-link>: "+linkName);
+                    }
                 } else {
                     DOLUtils.getDefaultLogger().warning("Unresolved <ejb-link>: "+linkName);
                 }
@@ -813,9 +821,11 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
                     // are issues with finding .classes in .wars due to the
                     // structure of the returned client .jar and the way the
                     // classloader is formed.
-                    DOLUtils.getDefaultLogger().fine
-                            ("Injection class " + targetClassName + " not found for " +
-                            injectable);
+                    if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
+                        DOLUtils.getDefaultLogger().fine
+                                ("Injection class " + targetClassName + " not found for " +
+                                injectable);
+                    }
                     return;
                 }
 

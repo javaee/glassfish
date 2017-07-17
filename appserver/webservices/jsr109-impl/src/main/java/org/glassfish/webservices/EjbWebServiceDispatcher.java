@@ -62,6 +62,7 @@ import org.glassfish.webservices.monitoring.*;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.ejb.api.EJBInvocation;
 
@@ -182,7 +183,9 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                     aInfo = endpointInfo2.getHandlerImplementor();
 
                     // Set message context in invocation
-                    EJBInvocation.class.cast(aInfo.getInv()).setMessageContext(msgContext);
+                    ComponentInvocation inv = aInfo.getInv();
+                    if (inv instanceof EJBInvocation)
+                        EJBInvocation.class.cast(inv).setMessageContext(msgContext);
 
 
                     // Set http response object so one-way operations will

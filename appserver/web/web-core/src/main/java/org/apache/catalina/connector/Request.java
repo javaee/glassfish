@@ -2561,8 +2561,7 @@ public class Request
 
     @Override
     public boolean isTrailerFieldsReady() {
-        //TODO
-        return true;
+        return coyoteRequest.areTrailersAvailable();
     }
 
     /**

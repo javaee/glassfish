@@ -70,6 +70,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.webservices.monitoring.EndpointImpl;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 
 /**
@@ -138,7 +139,9 @@ public class ServletWebServiceDelegate extends ServletSecondDelegate {
                         rpcDelegate_.setSystemHandlerDelegate(securityHandlerDelegate);
 
                         // need to invoke the endpoint lifecylcle
-                        endpointImpl_ = JAXRPCEndpointImpl.class.cast(wsEngine_.createHandler(securityHandlerDelegate, endpoint_));
+                        EndpointImpl obj = wsEngine_.createHandler(securityHandlerDelegate, endpoint_);
+                        if (obj instanceof JAXRPCEndpointImpl)
+                            endpointImpl_ = JAXRPCEndpointImpl.class.cast(obj);
                         rpcDelegate_.setSystemHandlerDelegate(endpointImpl_);
                     }
                 }

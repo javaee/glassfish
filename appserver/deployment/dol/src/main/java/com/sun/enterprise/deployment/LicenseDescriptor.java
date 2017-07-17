@@ -66,7 +66,7 @@ public class LicenseDescriptor extends Descriptor {
     public void setLicenseRequired(boolean licenseRequired) {
         if(licenseRequired==true)
             this.licenseRequired =Boolean.TRUE;
-        else if(licenseRequired==false)
+        else
             this.licenseRequired =Boolean.FALSE;
     }
 
