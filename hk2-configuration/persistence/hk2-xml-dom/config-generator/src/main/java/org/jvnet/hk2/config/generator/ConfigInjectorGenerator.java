@@ -40,74 +40,29 @@
 
 package org.jvnet.hk2.config.generator;
 
-import com.sun.codemodel.CodeWriter;
-import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JClassAlreadyExistsException;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JForEach;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
-import com.sun.codemodel.JType;
-import com.sun.codemodel.JVar;
+import com.sun.codemodel.*;
 import com.sun.enterprise.tools.apt.ContractFinder;
-
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigInjector;
-import org.jvnet.hk2.config.ConfigMetadata;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.InjectionTarget;
-import org.jvnet.hk2.config.NoopConfigInjector;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.MirroredTypeException;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
+import java.util.*;
 
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.tools.StandardLocation.SOURCE_PATH;
@@ -156,8 +111,9 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
         cm = new JCodeModel();
 
         for (TypeElement annotation : annotations) {
-            for(javax.lang.model.element.Element d : roundEnv.getElementsAnnotatedWith(annotation))
+            for(javax.lang.model.element.Element d : roundEnv.getElementsAnnotatedWith(annotation)) {
                 d.accept(visitor, null);
+            }
 
             try {
                 cm.build(new FilerCodeWriter(processingEnv.getFiler()));
@@ -561,7 +517,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
             }
 
             private Packer createPacker(TypeMirror type, TypeMirror erasure) {
-                if(erasure instanceof ArrayType) {
+                if(erasure.getKind() == TypeKind.ARRAY) {
                     // T=X[]
                     return new ArrayPacker((ArrayType)erasure);
                 }
@@ -795,7 +751,15 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 }
 
                 void addMetadata(String key,TypeMirror itemType) {
-                    addToMetadata(metadata, key,makeCollectionIfNecessary(itemType.toString()));
+                   String typeName;
+                    if (itemType.getKind() == TypeKind.DECLARED) {
+                        typeName=((DeclaredType)itemType).asElement().toString();
+                   } else {
+                        typeName=itemType.toString();
+                   }
+
+
+                    addToMetadata(metadata, key,makeCollectionIfNecessary(typeName));
                 }
             }
 
@@ -970,7 +934,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
 
     private static String getCanonicalTypeFrom(MirroredTypeException me) {
         TypeMirror tm = me.getTypeMirror();
-        if (tm instanceof DeclaredType) {
+        if (tm.getKind() == TypeKind.DECLARED) {
             DeclaredType dec = (DeclaredType) tm;
             return ((TypeElement)dec.asElement()).getQualifiedName().toString();
         }
