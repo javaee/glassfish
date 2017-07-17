@@ -44,14 +44,6 @@
   <!ENTITY common SYSTEM "../../../../config/common.xml">
   <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
 ]>
-<!-- 
- /*
- * @(#)build.xml	1.0 02/07/22
- *
- * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
- -->
 
 <project name="JDBCConnector top level" default="build">
     <property name="pkg.dir" value="com/sun/jdbcra/spi"/>

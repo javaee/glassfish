@@ -44,7 +44,7 @@
 
         'http://java.sun.com/dtd/connector_1_0.dtd'>
 
-<!-- Copyright 2002 Sun Microsystems, Inc. All rights reserved. -->
+
 
 <connector>
     <display-name>CciBlackBoxLocalTx</display-name>

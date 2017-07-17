@@ -44,7 +44,7 @@
 
         'http://java.sun.com/dtd/application-client_1_3.dtd'>
 
-<!-- Copyright 2002 Sun Microsystems, Inc. All rights reserved. -->
+
 
 <application-client>
     <display-name>generic-embeddedClient</display-name>

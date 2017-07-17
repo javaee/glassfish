@@ -44,7 +44,7 @@
 
         'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
 
-<!-- Copyright 2002 Sun Microsystems, Inc. All rights reserved. -->
+
 
 <ejb-jar>
     <display-name>CoffeeJAR</display-name>
