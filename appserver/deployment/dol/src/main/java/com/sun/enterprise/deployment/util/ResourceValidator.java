@@ -74,7 +74,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     public static final Logger deplLogger = com.sun.enterprise.deployment.util.DOLUtils.deplLogger;
 
     @LogMessageInfo(
-            message = "JNDI lookup failed for the resource with jndi name: {0}",
+            message = "JNDI lookup failed for the resource, name: {0}, type: {1}, value: {2}",
             level = "SEVERE",
             cause = "JNDI lookup for the specified resource failed.",
             action = "Configure the required resources before deploying the application.",
@@ -107,104 +107,269 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             target = commandParams.target;
             if (application == null || Boolean.getBoolean("deployment.switchoff.resource.validation"))
                 return;
-            JNDINamespace myNamespace = new JNDINamespace();
-            parseResources(myNamespace);
-            processResources(myNamespace);
+            AppResources appResources = new AppResources();
+            parseResources(appResources);
+            validateResources(appResources);
         }
     }
 
     /**
-     * Parse all the resources and store them in a namespace before starting the validation.
+     * Store all the resources before starting the validation.
      */
-    private void parseResources(JNDINamespace namespace) {
-        parseResources(application, namespace);
+    private void parseResources(AppResources appResources) {
+        parseResources(application, appResources);
         for (BundleDescriptor bd : application.getBundleDescriptors()) {
             if (bd instanceof WebBundleDescriptor || bd instanceof ApplicationClientDescriptor)
-                parseResources((JndiNameEnvironment) bd, namespace);
+                parseResources(bd, appResources);
             if (bd instanceof EjbBundleDescriptor) {
-                parseResources((JndiNameEnvironment) bd, namespace);
+                parseResources(bd, appResources);
                 EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
                 for (EjbDescriptor ejb : ebd.getEjbs())
-                    parseResources(ejb, namespace);
+                    parseResources(ejb, appResources);
             }
         }
 
-        // Parse the Managed Beans
-        parseManagedBeans(namespace);
+        parseManagedBeans(appResources);
 
         // Parse AppScoped resources
         String appName = DOLUtils.getApplicationName(application);
         Map<String, List<String>> resourcesList =
                 (Map<String, List<String>>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
-        namespace.storeAppScopedResources(resourcesList, appName);
+        appResources.storeAppScopedResources(resourcesList, appName);
     }
 
-    private void parseManagedBeans(JNDINamespace namespace) {
+    private void parseManagedBeans(AppResources appResources) {
         for (BundleDescriptor bd : application.getBundleDescriptors()) {
             for (ManagedBeanDescriptor managedBean : bd.getManagedBeans()) {
-                namespace.store(managedBean.getGlobalJndiName(), (JndiNameEnvironment)bd);
+                appResources.storeInNamespace(managedBean.getGlobalJndiName(), (JndiNameEnvironment)bd);
             }
         }
     }
 
-    private void parseResources(JndiNameEnvironment env, JNDINamespace namespace) {
+    private void parseResources(BundleDescriptor bd, AppResources appResources) {
+        if (!(bd instanceof JndiNameEnvironment))
+            return;
+        JndiNameEnvironment env = (JndiNameEnvironment) bd;
         for (Object next : env.getResourceReferenceDescriptors()) {
-            parseResources((ResourceReferenceDescriptor) next, env, namespace);
+            parseResources((ResourceReferenceDescriptor) next, env, appResources);
         }
 
         for (Object next : env.getResourceEnvReferenceDescriptors()) {
-            parseResources((ResourceEnvReferenceDescriptor) next, env, namespace);
+            parseResources((ResourceEnvReferenceDescriptor) next, env, appResources);
         }
 
         for (Object next : env.getMessageDestinationReferenceDescriptors()) {
-            storeResource(((MessageDestinationReferenceDescriptor) next).getName(), env, namespace);
+            parseResources((MessageDestinationReferenceDescriptor) next, env, appResources);
         }
 
         for (Object next : env.getEnvironmentProperties()) {
-            storeResource(((EnvironmentProperty) next).getName(), env, namespace);
+            parseResources((EnvironmentProperty) next, env, appResources);
         }
 
         for (Object next : env.getAllResourcesDescriptors()) {
-            parseResources((ResourceDescriptor) next, env, namespace);
+            parseResources((ResourceDescriptor) next, env, appResources);
         }
 
         for (Object next : env.getEntityManagerReferenceDescriptors()) {
-            storeResource(((EntityManagerReferenceDescriptor) next).getName(), env, namespace);
+            storeInNamespace(((EntityManagerReferenceDescriptor) next).getName(), env, appResources);
         }
 
         for (Object next : env.getEntityManagerFactoryReferenceDescriptors()) {
-            storeResource(((EntityManagerFactoryReferenceDescriptor) next).getName(), env, namespace);
+            storeInNamespace(((EntityManagerFactoryReferenceDescriptor) next).getName(), env, appResources);
         }
 
         for (Object next : env.getEjbReferenceDescriptors()) {
-            storeResource(((EjbReferenceDescriptor) next).getName(), env, namespace);
+            parseResources((EjbReferenceDescriptor) next, env, appResources);
         }
 
         for (Object next : env.getServiceReferenceDescriptors()) {
-            storeResource(((ServiceReferenceDescriptor) next).getName(), env, namespace);
+            parseResources((ServiceReferenceDescriptor) next, env, appResources);
+        }
+
+        for (PersistenceUnitsDescriptor pus : bd.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
+            for (PersistenceUnitDescriptor pu : pus.getPersistenceUnitDescriptors()) {
+                parseResources(pu, env, appResources);
+            }
+        }
+
+        for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
+            parseResources(mbd, env, appResources);
         }
     }
 
-    private void parseResources(ResourceReferenceDescriptor resRef, JndiNameEnvironment env, JNDINamespace namespace) {
+    /**
+     * Store resources in ResourceRefDescriptor.
+     */
+    private void parseResources(ResourceReferenceDescriptor resRef, JndiNameEnvironment env, AppResources appResources) {
         resRef.checkType();
-        storeResource(resRef.getName(), env, namespace);
+        String name = getLogicalJNDIName(resRef.getName(), env);
+        String type = resRef.getType();
+        String jndiName = resRef.getJndiName();
+        AppResource resRefResource = new AppResource(name, jndiName, type, env, true);
+
+        if (resRef.isURLResource()) {
+            if (jndiName != null && !(jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))) {
+                try {
+                    // for jndi-name like "http://localhost:8080/index.html"
+                    new java.net.URL(jndiName);
+                    resRefResource.noValidation();
+                } catch (MalformedURLException e) {
+                    // If jndi-name is not an actual url, we might want to lookup the name
+                }
+            }
+        }
+        if (resRef.isWebServiceContext())
+            resRefResource.noValidation();
+
+        appResources.store(resRefResource);
     }
 
-    private void parseResources(ResourceEnvReferenceDescriptor resEnvRef, JndiNameEnvironment env, JNDINamespace namespace) {
+
+    /**
+     * Store resources in ResourceEnvRefDescriptor.
+     */
+    private void parseResources(ResourceEnvReferenceDescriptor resEnvRef, JndiNameEnvironment env, AppResources appResources) {
         resEnvRef.checkType();
-        storeResource(resEnvRef.getName(), env, namespace);
+        String name = getLogicalJNDIName(resEnvRef.getName(), env);
+        String type = resEnvRef.getType();
+        String jndiName = resEnvRef.getJndiName();
+        AppResource resEnvRefResource = new AppResource(name, jndiName, type, env, true);
+
+        if (resEnvRef.isEJBContext() || resEnvRef.isValidator() || resEnvRef.isValidatorFactory() || resEnvRef.isCDIBeanManager())
+            resEnvRefResource.noValidation();
+
+        appResources.store(resEnvRefResource);
     }
 
-    private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env, JNDINamespace namespace) {
+    /**
+     * If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
+     * We might be duplicating our validation efforts since we are already validating message destination separately.
+     */
+    private void parseResources(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env, AppResources appResources) {
+        String name = getLogicalJNDIName(msgDestRef.getName(), env);
+        String jndiName;
+        if (msgDestRef.isLinkedToMessageDestination()) {
+            jndiName = msgDestRef.getMessageDestination().getJndiName();
+        }
+        else {
+            jndiName = msgDestRef.getJndiName();
+        }
+        appResources.store(new AppResource(name, jndiName, msgDestRef.getType(), env, true));
+    }
+
+    /**
+     * Store references to environment entries.
+     * Also validate custom resources of primitive data types.
+     */
+    private void parseResources(EnvironmentProperty envProp, JndiNameEnvironment env, AppResources appResources) {
+        String name = getLogicalJNDIName(envProp.getName(), env);
+        String jndiName = "";
+        if (envProp.hasLookupName())
+            jndiName = envProp.getLookupName();
+        // error handling for mapped name null case done in getMappedName
+        else if (envProp.getMappedName().length() > 0)
+            jndiName = envProp.getMappedName();
+
+        AppResource envPropResource = new AppResource(name, jndiName, envProp.getType(), env, true);
+        // If lookup/mapped name is not present, then we do not need to validate.
+        if (jndiName.length() == 0)
+            envPropResource.noValidation();
+
+        appResources.store(envPropResource);
+
+        // Store EnvProps even if they do not have a valid lookup element
+        appResources.storeInNamespace(name, env);
+    }
+
+
+    /**
+     * TODO: @EJB
+     */
+    private void parseResources(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env, AppResources appResources) {
+
+    }
+
+    /**
+     * TODO: @WebServiceRef
+     */
+    private void parseResources(ServiceReferenceDescriptor serviceRef, JndiNameEnvironment env, AppResources appResources) {
+
+    }
+
+    /**
+     * Store the resource definitions in our namespace.
+     * CFD and AODD are not valid in an AppClient.
+     */
+    private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env, AppResources appResources) {
         if (env instanceof ApplicationClientDescriptor)
             if (resourceDescriptor.getResourceType().equals(JavaEEResourceType.CFD) || resourceDescriptor.getResourceType().equals(JavaEEResourceType.AODD))
                 return;
-        storeResource(resourceDescriptor.getName(), env, namespace);
+        storeInNamespace(resourceDescriptor.getName(), env, appResources);
     }
 
-    private void storeResource(String name, JndiNameEnvironment env, JNDINamespace namespace) {
+
+    /**
+     * Record the Data Source specified in PUD.
+     */
+    private void parseResources(PersistenceUnitDescriptor pu, JndiNameEnvironment env, AppResources appResources) {
+        String jtaDataSourceName = pu.getJtaDataSource();
+        String nonJtaDataSourceName = pu.getNonJtaDataSource();
+
+        if (jtaDataSourceName != null && jtaDataSourceName.length() > 0)
+            appResources.store(new AppResource(pu.getName(), jtaDataSourceName, "javax.sql.DataSource", env, true));
+        if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0)
+            appResources.store(new AppResource(pu.getName(), nonJtaDataSourceName, "javax.sql.DataSource", env, true));
+    }
+
+
+    private void parseResources(ManagedBeanDescriptor managedBean, JndiNameEnvironment env, AppResources appResources) {
+        for (Object next : managedBean.getResourceReferenceDescriptors()) {
+            parseResources((ResourceReferenceDescriptor) next, env, appResources);
+        }
+
+        for (Object next : managedBean.getResourceEnvReferenceDescriptors()) {
+            parseResources((ResourceEnvReferenceDescriptor) next, env, appResources);
+        }
+
+        for (Object next : managedBean.getMessageDestinationReferenceDescriptors()) {
+            parseResources((MessageDestinationReferenceDescriptor) next, env, appResources);
+        }
+
+        for (Object next : managedBean.getEjbReferenceDescriptors()) {
+            parseResources((EjbReferenceDescriptor) next, env, appResources);
+        }
+
+        for (Object next : managedBean.getEnvironmentProperties()) {
+            parseResources((EnvironmentProperty) next, env, appResources);
+        }
+    }
+
+
+    private void parseResources(EjbDescriptor ejb, AppResources appResources) {
+        for (Object next : ejb.getResourceReferenceDescriptors()) {
+            parseResources((ResourceReferenceDescriptor) next, ejb, appResources);
+        }
+
+        for (Object next : ejb.getResourceEnvReferenceDescriptors()) {
+            parseResources((ResourceEnvReferenceDescriptor) next, ejb, appResources);
+        }
+
+        for (Object next : ejb.getMessageDestinationReferenceDescriptors()) {
+            parseResources((MessageDestinationReferenceDescriptor) next, ejb, appResources);
+        }
+
+        for (Object next : ejb.getEnvironmentProperties()) {
+            parseResources((EnvironmentProperty) next, ejb, appResources);
+        }
+
+        for (Object next : ejb.getEjbReferenceDescriptors()) {
+            parseResources((EjbReferenceDescriptor) next, ejb, appResources);
+        }
+    }
+
+    private void storeInNamespace(String name, JndiNameEnvironment env, AppResources appResources) {
         String logicalJNDIName = getLogicalJNDIName(name, env);
-        namespace.store(logicalJNDIName, env);
+        appResources.storeInNamespace(logicalJNDIName, env);
     }
 
     /**
@@ -234,124 +399,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     private String rawNameToLogicalJndiName(String rawName) {
         return (rawName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX)) ?
                 rawName : ResourceConstants.JAVA_COMP_ENV_SCOPE_PREFIX + rawName;
-    }
-
-    /**
-     * Start of validation logic.
-     */
-    private void processResources(JNDINamespace namespace) {
-        for (BundleDescriptor bd : application.getBundleDescriptors()) {
-            if (bd instanceof WebBundleDescriptor || bd instanceof ApplicationClientDescriptor)
-                accept(bd, namespace);
-            if (bd instanceof EjbBundleDescriptor) {
-                accept(bd, namespace);
-                EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
-                for (EjbDescriptor ejb : ebd.getEjbs())
-                    accept(ejb, namespace);
-            }
-        }
-        accept(application, namespace);
-    }
-
-    private void accept(BundleDescriptor bd, JNDINamespace namespace) {
-        if (bd instanceof JndiNameEnvironment) {
-            JndiNameEnvironment nameEnvironment = (JndiNameEnvironment) bd;
-            for (Object next : nameEnvironment.getResourceReferenceDescriptors()) {
-                accept((ResourceReferenceDescriptor) next, nameEnvironment, namespace);
-            }
-
-            for (Object next : nameEnvironment.getResourceEnvReferenceDescriptors()) {
-                accept((ResourceEnvReferenceDescriptor) next, nameEnvironment, namespace);
-            }
-
-            for (Object next : nameEnvironment.getMessageDestinationReferenceDescriptors()) {
-                accept((MessageDestinationReferenceDescriptor) next, nameEnvironment, namespace);
-            }
-
-            for (Object next : bd.getMessageDestinations()) {
-                accept((MessageDestinationDescriptor) next, nameEnvironment, namespace);
-            }
-
-            for (Object next : nameEnvironment.getEnvironmentProperties()) {
-                accept((EnvironmentProperty) next, nameEnvironment, namespace);
-            }
-
-            for (Object next : nameEnvironment.getEjbReferenceDescriptors()) {
-                accept((EjbReferenceDescriptor) next, nameEnvironment, namespace);
-            }
-
-            for (PersistenceUnitsDescriptor pus : bd.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
-                for (PersistenceUnitDescriptor pu : pus.getPersistenceUnitDescriptors()) {
-                    accept(pu, nameEnvironment, namespace);
-                }
-            }
-
-            for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
-                accept(mbd, nameEnvironment, namespace);
-            }
-        }
-    }
-
-    private void accept(EjbDescriptor ejb, JNDINamespace namespace) {
-        for (Object next : ejb.getResourceReferenceDescriptors()) {
-            accept((ResourceReferenceDescriptor) next, ejb, namespace);
-        }
-
-        for (Object next : ejb.getResourceEnvReferenceDescriptors()) {
-            accept((ResourceEnvReferenceDescriptor) next, ejb, namespace);
-        }
-
-        for (Object next : ejb.getMessageDestinationReferenceDescriptors()) {
-            accept((MessageDestinationReferenceDescriptor) next, ejb, namespace);
-        }
-
-        for (Object next : ejb.getEnvironmentProperties()) {
-            accept((EnvironmentProperty) next, ejb, namespace);
-        }
-
-        for (Object next : ejb.getEjbReferenceDescriptors()) {
-            accept((EjbReferenceDescriptor) next, ejb, namespace);
-        }
-    }
-
-    /**
-     * Validate resources stored in ResourceRefDescriptor.
-     */
-    private void accept(ResourceReferenceDescriptor resRef, JndiNameEnvironment env, JNDINamespace namespace) {
-        String jndiName = resRef.getJndiName();
-
-        if (resRef.isWebServiceContext())
-            return;
-
-        if (resRef.isURLResource()) {
-            if (jndiName != null && !(jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))) {
-                try {
-                    // for jndi-name like "http://localhost:8080/index.html"
-                    new java.net.URL(jndiName);
-                    return;
-                } catch (MalformedURLException e) {
-                    // If jndi-name is not an actual url, we might want to lookup the name
-                }
-            }
-        }
-        validateJNDIRefs(resRef.getJndiName(), env, namespace);
-    }
-
-    /**
-     * Validate resources stored in ResourceEnvRefDescriptor.
-     * Managed Bean references are validated here.
-     */
-    private void accept(ResourceEnvReferenceDescriptor resourceEnvRef, JndiNameEnvironment env, JNDINamespace namespace) {
-        String jndiName = resourceEnvRef.getJndiName();
-        if (resourceEnvRef.isEJBContext() || resourceEnvRef.isValidator() || resourceEnvRef.isValidatorFactory() || resourceEnvRef.isCDIBeanManager())
-            return;
-
-        // Validate Managed Bean references now
-        String newName = convertModuleOrAppJNDIName(jndiName, env);
-        if (!namespace.find(newName, env)) {
-            // Every type of resource taken care of. Validate any custom resources now.
-            validateJNDIRefs(jndiName, env, namespace);
-        }
     }
 
     /**
@@ -409,79 +456,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     }
 
     /**
-     * If the message destination ref is linked to a message destination, fetch the linked destination and validate it.
-     * We might be duplicating our validation efforts since we are already validating message destination separately.
+     * Start of validation logic.
      */
-    private void accept(MessageDestinationReferenceDescriptor msgDestRef, JndiNameEnvironment env, JNDINamespace namespace) {
-        if (msgDestRef.isLinkedToMessageDestination()) {
-            validateJNDIRefs(msgDestRef.getMessageDestination().getJndiName(), env, namespace);
+    private void validateResources(AppResources appResources) {
+        for (AppResource resource : appResources.myResources) {
+            if (resource.validate)
+                validateJNDIRefs(resource, appResources.myNamespace);
         }
-        else {
-            validateJNDIRefs(msgDestRef.getJndiName(), env, namespace);
-        }
-    }
-
-    /**
-     * Validate references to environment entries.
-     * Also validate custom resources of primitive data types.
-     */
-    private void accept(EnvironmentProperty envProp, JndiNameEnvironment env, JNDINamespace namespace) {
-        String jndiName = "";
-        if (envProp.hasLookupName())
-            jndiName = envProp.getLookupName();
-        else if (envProp.getMappedName().length() > 0)
-            jndiName = envProp.getMappedName();
-
-        // If lookup/mapped name is not present, then we do not need to validate.
-        if (jndiName.length() == 0)
-            return;
-
-        validateJNDIRefs(jndiName, env, namespace);
-    }
-
-    /**
-     * TODO: @EJB
-     */
-    private void accept(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env, JNDINamespace namespace) {
-
-    }
-
-    /**
-     * Validate Data Source in a PUD.
-     */
-    private void accept(PersistenceUnitDescriptor pu, JndiNameEnvironment env, JNDINamespace namespace) {
-        String jtaDataSourceName = pu.getJtaDataSource();
-        String nonJtaDataSourceName = pu.getNonJtaDataSource();
-
-        if (jtaDataSourceName != null && jtaDataSourceName.length() > 0 && !jtaDataSourceName.equals("java:comp/DefaultDataSource"))
-            validateJNDIRefs(jtaDataSourceName, env, namespace);
-        if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0 && !nonJtaDataSourceName.equals("java:comp/DefaultDataSource"))
-            validateJNDIRefs(nonJtaDataSourceName, env, namespace);
-    }
-
-    /**
-     * Validate resources defined in a managed bean.
-     */
-    private void accept(ManagedBeanDescriptor managedBean, JndiNameEnvironment env, JNDINamespace namespace) {
-        for (Object next : managedBean.getEjbReferenceDescriptors()) {
-            accept((EjbReferenceDescriptor) next, env, namespace);
-        }
-
-        for (Object next : managedBean.getResourceReferenceDescriptors()) {
-            accept((ResourceReferenceDescriptor) next, env, namespace);
-        }
-
-        for (Object next : managedBean.getResourceEnvReferenceDescriptors()) {
-            accept((ResourceEnvReferenceDescriptor) next, env, namespace);
-        }
-
-        for (Object next : managedBean.getMessageDestinationReferenceDescriptors()) {
-            accept((MessageDestinationReferenceDescriptor) next, env, namespace);
-        }
-    }
-
-    private void accept(MessageDestinationDescriptor msgDest, JndiNameEnvironment env, JNDINamespace namespace) {
-        validateJNDIRefs(msgDest.getJndiName(), env, namespace);
     }
 
     /**
@@ -492,32 +473,46 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      *
      * In case a null jndi name is passed, we fail the deployment.
      *
-     * @param jndiName to be validated.
+     * @param resource to be validated.
      */
-    private void validateJNDIRefs(String jndiName, JndiNameEnvironment env, JNDINamespace namespace) {
-        if (jndiName == null || "".equals(jndiName)) {
+    private void validateJNDIRefs(AppResource resource, JNDINamespace namespace) {
+        // In case lookup is not present, check if another resource with the same name exists
+        if(!resource.hasLookup() && !namespace.find(resource.getName(), resource.getEnv())) {
             deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
-                    new Object[] {null});
+                    new Object[] {resource.getName(), null, resource.getType()});
             throw new DeploymentException("Null JNDI resource");
         }
-        if(!isResourceInDomainXML(jndiName) && !isDefaultResource(jndiName)) {
-            // convert comp to module if req
-            String convertedJndiName = getLogicalJNDIName(jndiName, env);
-            if (!namespace.find(convertedJndiName, env)) {
-                // Do a context lookup only if we are on the correct instance - Cluster case
-                try {
-                    if(loadOnCurrentInstance()) {
-                        InitialContext ctx = new InitialContext();
-                        ctx.lookup(jndiName);
-                    }
-                } catch (NamingException e) {
-                    deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
-                            new Object[] {jndiName});
-                    DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s", jndiName));
-                    de.initCause(e);
-                    throw de;
-                }
+
+        String jndiName = resource.getJndiName();
+        JndiNameEnvironment env = resource.getEnv();
+
+        if (isResourceInDomainXML(jndiName) || isDefaultResource(jndiName))
+            return;
+
+        // Managed Bean & EJB portable JNDI names
+        if (jndiName.startsWith(ResourceConstants.JAVA_MODULE_SCOPE_PREFIX) || jndiName.startsWith(ResourceConstants.JAVA_APP_SCOPE_PREFIX)) {
+            String newName = convertModuleOrAppJNDIName(jndiName, resource.getEnv());
+            if (namespace.find(newName, env))
+                return;
+        }
+
+        // convert comp to module if req
+        String convertedJndiName = getLogicalJNDIName(jndiName, env);
+        if (namespace.find(convertedJndiName, env))
+            return;
+
+        try {
+            if(loadOnCurrentInstance()) {
+                InitialContext ctx = new InitialContext();
+                ctx.lookup(jndiName);
             }
+        } catch (NamingException e) {
+            deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
+                    new Object[] {resource.getName(), jndiName, resource.getType()});
+            DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s, value: %s",
+                    resource.getName(), jndiName));
+            de.initCause(e);
+            throw de;
         }
     }
 
@@ -561,6 +556,82 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                         jndiName.equals("java:module/ModuleName") ||
                         jndiName.equals("java:app/AppName") ||
                         jndiName.equals("java:comp/InAppClientContainer")));
+    }
+
+    private static class AppResource {
+        private String name;
+
+        private String lookup;
+
+        private String type;
+
+        private JndiNameEnvironment env;
+
+        boolean validate;
+
+        private AppResource(String name, String lookup, String type, JndiNameEnvironment env, boolean validate) {
+            this.name = name;
+            this.lookup = lookup;
+            this.type = type;
+            this.env = env;
+            this.validate = validate;
+        }
+
+        private String getJndiName() {
+            return lookup;
+        }
+
+        private JndiNameEnvironment getEnv() {
+            return env;
+        }
+
+        private String getName() {
+            return name;
+        }
+
+        private String getType() {
+            return type;
+        }
+
+        private boolean hasLookup() {
+            return lookup != null && lookup.length() > 0;
+        }
+
+        private void noValidation() {
+            validate = false;
+        }
+    }
+
+    private static class AppResources {
+        List<AppResource> myResources;
+
+        JNDINamespace myNamespace;
+
+        private AppResources() {
+            myResources = new ArrayList<>();
+            myNamespace = new JNDINamespace();
+        }
+
+        /**
+         * Store in namespace only if it has a valid lookup value. This is because we do not want to store invalid
+         * resources in our namespace.
+         */
+        private void store(AppResource resource) {
+            myResources.add(resource);
+            if (resource.hasLookup())
+                myNamespace.store(resource.name, resource.env);
+        }
+
+        /**
+         * If we know that the name points to a valid resource, directly store in namespace.
+         */
+        private void storeInNamespace(String name, JndiNameEnvironment env) {
+            myNamespace.store(name, env);
+        }
+
+        private void storeAppScopedResources(Map<String, List<String>> resourcesList, String appName) {
+            myNamespace.storeAppScopedResources(resourcesList, appName);
+        }
     }
 
     /**
