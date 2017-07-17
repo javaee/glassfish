@@ -127,7 +127,6 @@ get_test_target(){
 
                * )
                         TARGET="$1 finish-report"
-                        echo $TARGET
                         export TARGET;;	
        esac
 
@@ -266,7 +265,6 @@ run_test_id(){
 	cd `dirname $0`
 	test_init
         TARGET_FROM_INPUT=(`echo $1 | sed 's/web_//'`)
-        echo $TARGET_FROM_INPUT 
 	get_test_target $TARGET_FROM_INPUT
 	test_run -s webtier-dev-tests
 	check_successful_run

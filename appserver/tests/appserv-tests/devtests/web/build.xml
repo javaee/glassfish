@@ -61,13 +61,6 @@
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
-    <target name="web_jsp">
-       <antcall target="init"/>
-       <antcall target="jsp"/>
-       <antcall target="finish-report"/>
-    </target>
-
-
     <target name="jsp" depends="init-report">
         <ant dir="emptyServletPathJspInclude" target="all"/>
         <ant dir="jsp-security" target="all"/>
@@ -153,13 +146,6 @@
         <ant dir="welcomePageSecurityConstraintJspExtension" target="all"/>
     </target>
 
-    <target name="web_taglib">
-       <antcall target="init"/>
-       <antcall target="taglib"/>
-       <antcall target="finish-report"/>
-    </target>
-
-    
    <target name="taglib" depends="init-report">
         <ant dir="jstlHtmlParamOutsideFmtMessage" target="all"/>
         <ant dir="jstlLocaleSupportAPI" target="all"/>
@@ -168,13 +154,6 @@
         <ant dir="tagfileInclude" target="all"/>
         <ant dir="tagplugin" target="all"/>
     </target>
-
-    <target name="web_el">
-        <antcall target="init"/>
-        <antcall target="el"/>
-        <antcall target="finish-report"/>
-    </target>
-  
     
     <target name="el" depends="init-report">
         <ant dir="bodyTag" target="all"/>
@@ -182,12 +161,6 @@
         <ant dir="elFunctionWithoutParams" target="all"/>
         <ant dir="elUninterpretedTag" target="all"/>
         <ant dir="elequals" target="all"/>
-    </target>
-    
-    <target name="web_servlet">
-        <antcall target="init"/>
-        <antcall target="servlet"/>
-        <antcall target="finish-report"/>
     </target>
  
     <target name="servlet" depends="init-report">
@@ -387,13 +360,6 @@
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
 
-    <target name="web_web-container">
-        <antcall target="init"/>
-        <antcall target="web-container"/>
-        <antcall target="finish-report"/>
-    </target>
-
-
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
@@ -518,12 +484,6 @@
         <ant dir="contextRootDuplicate" target="all"/>
     </target>
 
-    <target name="web_security">
-        <antcall target="init"/>
-        <antcall target="security"/>
-        <antcall target="finish-report"/>
-    </target>
-
     <target name="security" depends="init-report">
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
@@ -564,13 +524,6 @@
         <ant dir="servlet-3.1/denyUncoveredHttpMethods" target="all"/>
         <ant dir="servlet-3.1/anyAuthenticatedUser" target="all"/>
     </target>
-
-     <target name="web_http-connector">
-        <antcall target="init"/>
-        <antcall target="http-connector"/>
-        <antcall target="finish-report"/>
-    </target>
-
 
     <target name="http-connector" depends="init-report">
         <ant dir="caseSensitiveHostMapping" target="all"/>
@@ -615,33 +568,13 @@
         <ant dir="wrongTransport" target="all"/>
         <ant dir="trailerHeader" target="all"/>
     </target>
-      
-     <target name="web_comet">
-        <antcall target="init"/>
-        <antcall target="comet"/>
-        <antcall target="finish-report"/>
-    </target>
-
        
     <target name="comet" depends="init-report">
         <ant dir="cometEcho" target="all"/>
     </target>
 
-    <target name="web_misc">
-        <antcall target="init"/>
-        <antcall target="misc"/>
-        <antcall target="finish-report"/>
-    </target>
-
-
     <target name="misc" depends="init-report">
         <ant dir="genDocSchema" target="all"/>
-    </target>
-
-    <target name="web_weblogicDD">
-        <antcall target="init"/>
-        <antcall target="weblogicDD"/>
-        <antcall target="finish-report"/>
     </target>
 
 
@@ -660,24 +593,11 @@
 -->
     </target>
 
-    <target name="web_clustering">
-        <antcall target="init"/>
-        <antcall target="clustering"/>
-        <antcall target="finish-report"/>
-    </target>
-
-
     <target name="clustering" depends="init-report">
         <ant dir="asadminDeletesTarget" target="all"/>
         <ant dir="networkListenerTarget" target="all"/>
         <ant dir="portUnificationTarget" target="all"/>
         <ant dir="wrongTransportTarget" target="all"/>
-    </target>
-
-    <target name="web_ha">
-        <antcall target="init"/>
-        <antcall target="ha"/>
-        <antcall target="finish-report"/>
     </target>
 
     <target name="ha" depends="init-report">
