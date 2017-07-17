@@ -126,7 +126,7 @@ get_test_target(){
 			export TARGET;;
 
                * )
-                        TARGET=$1
+                        TARGET=$1 finish-report
                         export TARGET;;	
        esac
 
