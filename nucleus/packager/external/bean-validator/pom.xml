@@ -65,9 +65,28 @@
 
     <build>
         <plugins>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
+                        </manifest>
+                    </archive>
+                    <excludes>
+                        <exclude>**/.ade_path/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
                 <configuration>
                     <instructions>
                         <Embed-Dependency>
@@ -106,7 +125,11 @@
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
                             org.apache.log4j; resolution:=optional,
                             org.jboss.logmanager; resolution:=optional,
-                            javax.el;version="[2.2,3]",
+                            javax.el;version="[2.2,4]",
+                            com.sun.el,
+                            com.sun.el.*,
+                            com.sun.el.lang.*,
+                            com.sun.el.util.*,
                             javax.enterprise.inject.*; resolution:=optional,
                             javax.enterprise.context.*; resolution:=optional,
                             javax.enterprise.event.*; resolution:=optional,
@@ -114,6 +137,7 @@
                             javax.interceptor.*; resolution:=optional,
                             com.thoughtworks.paranamer.*; resolution:=optional,
                             javafx.beans.value.*; resolution:=optional,
+                            javafx.application; resolution:=optional,
                             org.apache.logging.log4j.*; resolution:=optional,
                             org.hibernate.validator.*; version=${hibernate-validator.version},
                             *
@@ -168,7 +192,7 @@
                             <stripVersion>true</stripVersion>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.hibernate</groupId>
+                                    <groupId>org.hibernate.validator</groupId>
                                     <artifactId>hibernate-validator</artifactId>
                                     <version>${hibernate-validator.version}</version>
                                     <classifier>sources</classifier>
@@ -201,7 +225,7 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <optional>true</optional>
         </dependency>
@@ -224,6 +248,69 @@
             <artifactId>jboss-logging</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- 
+            Remove this once HK2 config bean generation issue is fixed when using 2.0.0 based version of javax.validation APIs.
+            Maven bundle plugin while determining dependencies of hibernate-validator will find javax.validation.validation-api in its
+            dependencies list and pick the version value based on the javax.validation.validation-api dependency defined 
+            in parent project i.e., nuclues' pom.xml. 
+            Hence explicitly adding the required version as we use different version for compilation purposes.
+        -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-annotations</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
+
+    <!--
+        This module repackages various maven artifacts and artifacts like hibernate-validator does not
+        have java-docs published. Hence, we cannot repackage the java-docs. We skip java-doc
+        generation and use empty java-doc plugin
+        to make Nexus release job succeed.
+    -->
+    <profiles>
+        <profile>
+            <!-- generate empty javadoc jar -->
+            <id>release-phase2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-empty-javadoc-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classesDirectory>
+                                        ${project.build.directory}/javadoc
+                                    </classesDirectory>
+                                    <classifier>javadoc</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 

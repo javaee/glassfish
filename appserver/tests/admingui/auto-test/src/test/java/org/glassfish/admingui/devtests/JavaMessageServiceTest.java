@@ -219,6 +219,12 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 //        deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
 //    }
 
+    //This test needs to be updated: the test procedure should be:
+    // . create a cluster
+    // . create 2 instances in the cluster
+    // . start the cluster
+    // . change master broker to instance2
+    // besides the above test update, this test needs issues GLASSFISH-22403, GLASSFISH-22050 addressed
     @Test
     public void testMasterBroker() {
         ClusterTest ct = new ClusterTest();

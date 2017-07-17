@@ -40,10 +40,11 @@
 
 package simple_bv_servlet;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
-public class Person {
+public class Person implements Serializable {
 
     @NotNull
     private String firstName;

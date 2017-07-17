@@ -4801,6 +4801,7 @@ public abstract class BaseContainer
 	String appName = null;
 	String modName = null;
 	String ejbName = null;
+    	boolean isMonitorRegistryMediatorCreated = false;
 	try {
 	    appName = (ejbDescriptor.getApplication().isVirtual())
 		? null: ejbDescriptor.getApplication().getRegistrationName();
@@ -4815,6 +4816,8 @@ public abstract class BaseContainer
 	    ejbName = ejbDescriptor.getName();
             containerInfo = new ContainerInfo(appName, modName, ejbName);
 
+            isMonitorRegistryMediatorCreated = true;
+            registerEjbMonitoringProbeProvider(appName, modName, ejbName);
             ejbProbeListener = getMonitoringStatsProvider(appName, modName, ejbName);
             ejbProbeListener.addMethods(getContainerId(), appName, modName, ejbName, getMonitoringMethodsArray());
             ejbProbeListener.register();
@@ -4825,8 +4828,13 @@ public abstract class BaseContainer
             }
 	} catch (Exception ex) {
 	    _logger.log(Level.SEVERE, COULD_NOT_CREATE_MONITORREGISTRYMEDIATOR, new Object[]{EjbMonitoringUtils.getDetailedLoggingName(appName, modName, ejbName), ex});
+	    if (!isMonitorRegistryMediatorCreated) {
+	        registerEjbMonitoringProbeProvider(appName, modName, ejbName);
+	    }
+	}
 	}
 
+    private void registerEjbMonitoringProbeProvider(String appName, String modName, String ejbName) {
         // Always create to avoid NPE
         try {
             ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
