@@ -234,7 +234,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         parseResources(ejb);
     }
 
-    protected String getJavaGlobalJndiNamePrefix(EjbDescriptor ejbDescriptor) {
+    private String getJavaGlobalJndiNamePrefix(EjbDescriptor ejbDescriptor) {
 
         String appName = null;
 
@@ -248,7 +248,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         String ejbName = ejbDescriptor.getName();
 
-        StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
+        StringBuilder javaGlobalPrefix = new StringBuilder("java:global/");
 
         if (appName != null) {
             javaGlobalPrefix.append(appName);
@@ -263,7 +263,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         return javaGlobalPrefix.toString();
     }
 
-    public static String getRemoteEjbJndiName(EjbReferenceDescriptor refDesc) {
+    private String getRemoteEjbJndiName(EjbReferenceDescriptor refDesc) {
 
         String intf = refDesc.isEJB30ClientView() ?
                 refDesc.getEjbInterface() : refDesc.getHomeClassName();
@@ -271,7 +271,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         return getRemoteEjbJndiName(refDesc.isEJB30ClientView(), intf, refDesc.getJndiName());
     }
 
-    public static String getRemoteEjbJndiName(boolean businessView, String interfaceName, String jndiName) {
+    private String getRemoteEjbJndiName(boolean businessView, String interfaceName, String jndiName) {
         String returnValue = jndiName;
 
         String portableFullyQualifiedPortion = "!" + interfaceName;
@@ -638,14 +638,13 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 jndiName = ejbRef.getLookupName();
                 validationRequired = true;
             }
-            // TODO: A case skipped from EjbNamingRefMan
-            // Q) Will we reach the ResourceValidator class from an ACC? If so, might need to set some ClassLoaders
+            // TODO: A case skipped from EjbNamingRefManager
             else if (ejbRef.hasJndiName()
                     && ejbRef.getJndiName().startsWith("java:app/")
                     && !ejbRef.getJndiName().startsWith("java:app/env/")) {
                 // Why does the below logic exist in the EjbNamingRefMan code?
                 // Intentionally or not, this resolves the java:app mapped names
-                // While, java:global case is handled in the getRemoteEjbJndiName function call
+                // Seems suspicious as the corresponding java:global case is handled in the getRemoteEjbJndiName function call
                 String remoteJndiName = ejbRef.getJndiName();
 
                 String appName = DOLUtils.getApplicationName(application);;
