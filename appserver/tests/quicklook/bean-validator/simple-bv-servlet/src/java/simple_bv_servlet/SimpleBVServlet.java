@@ -190,6 +190,7 @@ public class SimpleBVServlet extends HttpServlet {
         printConstraintViolationsOfBV2(out, violations, "case0");
 
 
+        //Validation: Not null listOfString
         listOfString = new ArrayList<String>();
         listOfString.add("one");
         listOfString.add("two");
@@ -233,6 +234,7 @@ public class SimpleBVServlet extends HttpServlet {
         out.print("Validating valid person.");
         out.print("</h1>");
 
+        //validate the person. Invalid email format. (@Email)
         person.setFirstName("John");
         person.setLastName("Yaya");
         person.setAge(30);
@@ -242,14 +244,18 @@ public class SimpleBVServlet extends HttpServlet {
         violations = beanValidator.validate(person);
         printConstraintViolationsOfBV2(out, violations, "case4");
 
+        //validate email (@Email)
         person.setEmail("johy.yaha@abc.com");
         violations = beanValidator.validate(person);
         printConstraintViolationsOfBV2(out, violations, "case5");
 
+        ///validate that the age is greater than 25 (@Min 20, @Min 25)
         person.setAge(22);
         violations = beanValidator.validate(person);
         printConstraintViolationsOfBV2(out, violations, "case6");
 
+
+        //validate that the age is within 50. (@Max 50 and @Max 60)
         person.setAge(52);
         violations = beanValidator.validate(person);
         printConstraintViolationsOfBV2(out, violations, "case7");
