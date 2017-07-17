@@ -126,7 +126,8 @@ get_test_target(){
 			export TARGET;;
 
                * )
-                        TARGET=$1 finish-report
+                        TARGET="$1 finish-report"
+                        echo $TARGET
                         export TARGET;;	
        esac
 
