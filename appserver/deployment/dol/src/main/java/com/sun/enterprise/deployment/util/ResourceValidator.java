@@ -224,7 +224,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         appResources.store(resRefResource);
     }
 
-
     /**
      * Store resources in ResourceEnvRefDescriptor.
      */
@@ -281,7 +280,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         appResources.storeInNamespace(name, env);
     }
 
-
     /**
      * TODO: @EJB
      */
@@ -307,7 +305,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         storeInNamespace(resourceDescriptor.getName(), env, appResources);
     }
 
-
     /**
      * Record the Data Source specified in PUD.
      */
@@ -320,7 +317,6 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if (nonJtaDataSourceName != null && nonJtaDataSourceName.length() > 0)
             appResources.store(new AppResource(pu.getName(), nonJtaDataSourceName, "javax.sql.DataSource", env, true));
     }
-
 
     private void parseResources(ManagedBeanDescriptor managedBean, JndiNameEnvironment env, AppResources appResources) {
         for (Object next : managedBean.getResourceReferenceDescriptors()) {
@@ -342,8 +338,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         for (Object next : managedBean.getEnvironmentProperties()) {
             parseResources((EnvironmentProperty) next, env, appResources);
         }
-    }
 
+        for (Object next : env.getAllResourcesDescriptors()) {
+            parseResources((ResourceDescriptor) next, env, appResources);
+        }
+    }
 
     private void parseResources(EjbDescriptor ejb, AppResources appResources) {
         for (Object next : ejb.getResourceReferenceDescriptors()) {
@@ -364,6 +363,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         for (Object next : ejb.getEjbReferenceDescriptors()) {
             parseResources((EjbReferenceDescriptor) next, ejb, appResources);
+        }
+
+        for (Object next : ejb.getAllResourcesDescriptors()) {
+            parseResources((ResourceDescriptor) next, ejb, appResources);
         }
     }
 
