@@ -68,6 +68,9 @@ public class ValidationTest {
     
     private final static String E1 = "E1";
     
+    private final static String ALICE = "Alice";
+    private final static String BOB = "Bob";
+    
     /**
      * Tests that validation on a valid file works
      * @throws Exception
@@ -362,6 +365,53 @@ public class ValidationTest {
         }
         
         Assert.assertNull(root.getDirectChild());
+    }
+    
+    @Test
+    public void testBasicConstraint() {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<ConstraintRootBean> handle = xmlService.createEmptyHandle(ConstraintRootBean.class);
+        handle.startValidating();
+        
+        handle.addRoot();
+        
+        ConstraintRootBean crb = handle.getRoot();
+        
+        NamedBean namedBeanAlice = xmlService.createBean(NamedBean.class);
+        namedBeanAlice.setName(ALICE);
+        
+        namedBeanAlice = crb.addNamed(namedBeanAlice);
+        
+        NamedBean namedBeanBob = xmlService.createBean(NamedBean.class);
+        namedBeanBob.setName(BOB);
+        
+        namedBeanBob = crb.addNamed(namedBeanBob);
+        
+        BeanToValidate1Bean aliceBean = xmlService.createBean(BeanToValidate1Bean.class);
+        aliceBean.setNameReference(ALICE);
+        
+        crb.addValid1(aliceBean);
+        
+        HasChildWithNameValidator validator = HasChildWithNameValidator.getInstance();
+        Assert.assertNotNull(validator);
+        
+        Assert.assertEquals(ALICE, (String) validator.getLastValue());
+        Assert.assertNotNull(validator.getLastContext());
+        
+        BeanToValidate1Bean bobBean = xmlService.createBean(BeanToValidate1Bean.class);
+        bobBean.setNameReference(BOB);
+        
+        validator.clear();
+        
+        crb.addValid1(bobBean);
+        
+        Assert.assertEquals(BOB, (String) validator.getLastValue());
+        Assert.assertNotNull(validator.getLastContext());
+        
+        
     }
 
 }
