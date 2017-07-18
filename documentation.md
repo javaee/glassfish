@@ -28,7 +28,8 @@
 
 # How-to contribute to GlassFish
 
-* [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow) 
+* [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow)
+* [Licenses](https://javaee.github.io/glassfish/LICENSE) governing the GlassFish project.
 
 # Tutorials
 
