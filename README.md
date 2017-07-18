@@ -6,7 +6,7 @@ GlassFish is the Open Source Java EE Reference Implementation; as such, we weclo
 
 ## July 18, 2017 - GF 5 Promoted Build 12 ##
 
-GlassFish 5 [Promoted Builds 12] are now [available](http://download.oracle.com/glassfish/5.0/promoted/index.html).
+GlassFish 5 Promoted Builds 12 are now [available](http://download.oracle.com/glassfish/5.0/promoted/index.html).
 
 ## July 10, 2017 - Java EE 8 June recap
 
