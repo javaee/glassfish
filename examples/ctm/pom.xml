@@ -79,7 +79,6 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-inhabitant-generator</artifactId>
-                <version>${project.version}</version>
                 <executions>
                     <execution>
                         <id>generate-inhabitants</id>
@@ -109,7 +108,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
@@ -145,9 +144,9 @@
         </dependency>
         <!-- ctm tests use hibernate-validator which requires javax.el-api -->
         <dependency>
-          <groupId>javax.el</groupId>
-          <artifactId>javax.el-api</artifactId>
-          <scope>test</scope>
-       </dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

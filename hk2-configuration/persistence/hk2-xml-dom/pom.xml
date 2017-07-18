@@ -54,7 +54,6 @@
     <name>HK2 Dom Based XML Parser</name>
     
     <modules>
-        <module>config-generator</module>
         <module>hk2-config</module>
         <module>config-types</module>
         <module>hub-integration</module>

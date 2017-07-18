@@ -61,6 +61,5 @@
         <module>aopalliance</module>
         <module>asm-all</module>
         <module>jsr330</module>
-        <module>tiger-types</module>
     </modules>
 </project>

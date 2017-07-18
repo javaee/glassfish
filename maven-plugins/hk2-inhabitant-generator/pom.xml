@@ -45,56 +45,63 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-xml-dom</artifactId>
-        <version>2.5.0-b43-SNAPSHOT</version>
+        <artifactId>hk2-parent</artifactId>
+        <version>2.5.0-b42</version>
+        <relativePath/>
     </parent>
 
-    <artifactId>config-generator</artifactId>
-    <name>HK2 configuration reader generator module</name>
+    <groupId>org.glassfish.hk2</groupId>
+    <artifactId>hk2-inhabitant-generator</artifactId>
     <packaging>maven-plugin</packaging>
+    <name>Inhabitant Generator</name>
+    <description>${project.name}</description>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                	<compilerArgument>-proc:none</compilerArgument>
+                    <argLine>-Dbuild.dir=${project.build.directory} ${surefireArgLineExtra}</argLine>
                 </configuration>
-            </plugin>
+             </plugin>
         </plugins>
     </build>
- 
+
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-utils</artifactId>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-config</artifactId>
+            <artifactId>hk2-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.codemodel</groupId>
-            <artifactId>codemodel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

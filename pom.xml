@@ -64,7 +64,7 @@
         <url>http://www.oracle.com</url>
     </organization>
 
-    <url>https://github.com/hk2-project/hk2</url>
+    <url>https://javaee.github.io/hk2</url>
 
     <licenses>
         <license>
@@ -137,14 +137,6 @@
         </mailingList>
     </mailingLists>
 
-    <repositories>
-        <repository>
-            <id>spring-external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
-    </repositories>
-
     <pluginRepositories>
         <pluginRepository>
             <id>jvnet-nexus-snapshots</id>
@@ -206,18 +198,12 @@
     </properties>
 
     <modules>
-        <module>hk2-maven</module>
-        <module>osgiversion-maven-plugin</module>
-        <module>hk2-inhabitant-generator</module>
         <module>hk2-metadata-generator</module>
-        <module>consolidatedbundle-maven-plugin</module>
         <module>hk2-runlevel</module>
         <module>hk2-locator</module>
         <module>class-model</module>
         <module>hk2-core</module>
         <module>osgi</module>
-        <module>dependency-verifier</module>
-        <module>dependency-visualizer</module>
         <module>examples</module>
         <module>hk2-testing</module>
         <module>guice-bridge</module>
@@ -404,11 +390,6 @@
                 <plugin>
                     <groupId>org.glassfish.hk2</groupId>
                     <artifactId>hk2-inhabitant-generator</artifactId>
-                    <version>${hk2.mvn.plugins.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>hk2-metadata-generator</artifactId>
                     <version>${hk2.mvn.plugins.version}</version>
                 </plugin>
                 <plugin>
