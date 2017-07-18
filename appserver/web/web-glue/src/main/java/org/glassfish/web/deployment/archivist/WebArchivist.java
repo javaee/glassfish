@@ -330,6 +330,13 @@ public class WebArchivist extends Archivist<WebBundleDescriptorImpl> {
             Map<ExtensionsArchivist, RootDeploymentDescriptor> localExtensions =
                     new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
             for (WebFragmentDescriptor wfDesc : wfList) {
+                // if web.xml specifies metadata-complete=true,
+                // all web fragment metadata-complete
+                // should be overridden and be true also
+                if (descriptor.isFullAttribute()) {
+                  wfDesc.setFullAttribute(
+                      String.valueOf(descriptor.isFullAttribute()));
+                }
                 super.readAnnotations(archive, wfDesc, localExtensions);
             }
 
