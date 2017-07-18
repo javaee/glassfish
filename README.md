@@ -1,3 +1,7 @@
+# About
+
+GlassFish is the Open Source Java EE Reference Implementation; as such, we weclome external contributions. Make sure to read this [document](pr_workflow) to understand our Pull Request acceptance workflow.
+
 # Latest News
 
 ## July 12, 2017 - GF 5 Promoted Build 11 ##
