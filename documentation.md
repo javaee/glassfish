@@ -26,6 +26,10 @@
 * [Developer's Guide for C Clients](doc/4.0/mq-dev-guide-c.pdf)
 * [Administration Guide](doc/4.0/mq-admin-guide.pdf)
 
+# How-to contribute to GlassFish
+
+* [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow) 
+
 # Tutorials
 
 * [Java EE 7 Your First Cup](https://docs.oracle.com/javaee/7/firstcup/index.html)
