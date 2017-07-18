@@ -142,9 +142,72 @@
     <target name="debug-windows" depends="instance, cluster"/>
 
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
-                        configs, sync, domain, backup, tokens, validation, node,
+                        configs, sync, domain, backup, tokens, validation, node, clientstubs,
                         logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, config-modularity, teardown"/>
+
+
+     <target name="cli-group-1" depends="setup, monitoring, zombie, ports, instance,teardown"/>
+     <target name="cli-group-2" depends="setup,cluster,configs, sync, domain,teardown"/>
+     <target name="cli-group-3" depends="setup,backup, tokens, validation, node,teardown"/>
+     <target name="cli-group-4" depends="setup, clientstubs, logging-command,load-balancer, getset, misc-commands, teardown"/>
+     <target name="cli-group-5" depends="setup,all-jms, manual-sync, upgrade,
+                        restart-domain, config-modularity, teardown"/>
+
+
+     <target name="admin-cli-group-1" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-1"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+
+    <target name="admin-cli-group-2" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-2"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+
+   <target name="admin-cli-group-3" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-3"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+
+    <target name="admin-cli-group-4" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-4"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+
+   <target name="admin-cli-group-5" depends="clean,init">
+        <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
+        <antcall target="cli-group-5"/>
+        <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
+        <antcall target="dev-report"/>
+        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    </target>
+  
+    <target name="clientstubs" depends="init">
+        <runtest classname="admin.ClientStubsTests"/>
+    </target>
 
     <target name="cluster" depends="init">
         <runtest classname="admin.ClusterTest"/>

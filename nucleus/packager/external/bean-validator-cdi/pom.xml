@@ -56,8 +56,26 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
+                        </manifest>
+                    </archive>
+                    <excludes>
+                        <exclude>**/.ade_path/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
                 <configuration>
                     <instructions>
                         <Embed-Dependency>
@@ -146,7 +164,7 @@
                             <stripVersion>true</stripVersion>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.hibernate</groupId>
+                                    <groupId>org.hibernate.validator</groupId>
                                     <artifactId>hibernate-validator</artifactId>
                                     <version>${hibernate-validator.version}</version>
                                     <classifier>sources</classifier>
@@ -166,7 +184,7 @@
                             <stripVersion>true</stripVersion>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.hibernate</groupId>
+                                    <groupId>org.hibernate.validator</groupId>
                                     <artifactId>hibernate-validator-cdi</artifactId>
                                     <version>${hibernate-validator.version}</version>
                                     <classifier>javadoc</classifier>
@@ -177,22 +195,60 @@
                     </execution>-->
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     
     <dependencies>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-cdi</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <!--
+    This module repackages various maven artifacts and artifacts like hibernate-validator 
+    and hibernate-validator-cdi does not have java-docs published. Hence, we cannot 
+    repackage the java-docs. We skip java-doc generation and use empty java-doc plugin
+    to make Nexus release job succeed.
+    -->
+    <profiles>
+        <profile>
+            <!-- generate empty javadoc jar -->
+            <id>release-phase2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-empty-javadoc-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classesDirectory>
+                                        ${project.build.directory}/javadoc
+                                    </classesDirectory>
+                                    <classifier>javadoc</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 

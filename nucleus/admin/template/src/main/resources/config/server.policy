@@ -142,4 +142,5 @@ grant {
 
 grant  codeBase "file:${com.sun.aas.instanceRoot}/applications/-"{
     permission java.io.FilePermission       "<<ALL FILES>>", "read,write";
+    permission org.hibernate.validator.HibernateValidatorPermission "accessPrivateMembers";
 };
