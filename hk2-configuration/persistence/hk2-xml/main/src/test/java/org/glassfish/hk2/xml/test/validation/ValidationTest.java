@@ -367,13 +367,24 @@ public class ValidationTest {
         Assert.assertNull(root.getDirectChild());
     }
     
+    private static void isConstraintViolationException(MultiException me) {
+        for (Throwable th : me.getErrors()) {
+            if (th instanceof ConstraintViolationException) return;
+        }
+        
+        throw me;
+    }
+    
     @Test
     public void testBasicConstraint() {
-        ServiceLocator locator = Utilities.createDomLocator();
+        ServiceLocator locator = Utilities.createDomLocator(CaptureRootChangeListener.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
         
         XmlRootHandle<ConstraintRootBean> handle = xmlService.createEmptyHandle(ConstraintRootBean.class);
+        handle.addChangeListener(locator.getService(CaptureRootChangeListener.class));
+        HasChildWithNameValidator.setRootListener(locator.getService(CaptureRootChangeListener.class));
+        
         handle.startValidating();
         
         handle.addRoot();
@@ -385,33 +396,21 @@ public class ValidationTest {
         
         namedBeanAlice = crb.addNamed(namedBeanAlice);
         
-        NamedBean namedBeanBob = xmlService.createBean(NamedBean.class);
-        namedBeanBob.setName(BOB);
-        
-        namedBeanBob = crb.addNamed(namedBeanBob);
-        
         BeanToValidate1Bean aliceBean = xmlService.createBean(BeanToValidate1Bean.class);
         aliceBean.setNameReference(ALICE);
         
         crb.addValid1(aliceBean);
         
-        HasChildWithNameValidator validator = HasChildWithNameValidator.getInstance();
-        Assert.assertNotNull(validator);
-        
-        Assert.assertEquals(ALICE, (String) validator.getLastValue());
-        Assert.assertNotNull(validator.getLastContext());
-        
         BeanToValidate1Bean bobBean = xmlService.createBean(BeanToValidate1Bean.class);
         bobBean.setNameReference(BOB);
         
-        validator.clear();
-        
-        crb.addValid1(bobBean);
-        
-        Assert.assertEquals(BOB, (String) validator.getLastValue());
-        Assert.assertNotNull(validator.getLastContext());
-        
-        
+        try {
+            crb.addValid1(bobBean);
+            Assert.fail("Should have failed as there is no BOB bean");
+        }
+        catch (MultiException me) {
+            isConstraintViolationException(me);
+        }
     }
 
 }

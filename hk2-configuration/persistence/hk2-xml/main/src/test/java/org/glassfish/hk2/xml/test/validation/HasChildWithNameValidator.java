@@ -42,26 +42,22 @@ package org.glassfish.hk2.xml.test.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+
 /**
  * @author jwells
  *
  */
-public class HasChildWithNameValidator implements ConstraintValidator<HasChildWithName, Object> {
-    private static HasChildWithNameValidator INSTANCE;
+public class HasChildWithNameValidator implements ConstraintValidator<HasChildWithName, String> {
+    private static CaptureRootChangeListener ROOT_LISTENER;
     
     private HasChildWithName lastInitialization;
-    private Object lastValue;
-    private ConstraintValidatorContext lastContext;
 
     /* (non-Javadoc)
      * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
      */
     @Override
     public void initialize(HasChildWithName arg0) {
-        if (INSTANCE != null) throw new AssertionError("Already have instance " + INSTANCE);
-        
-        INSTANCE = this;
-        
         lastInitialization = arg0;
     }
 
@@ -69,36 +65,25 @@ public class HasChildWithNameValidator implements ConstraintValidator<HasChildWi
      * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValid(Object arg0, ConstraintValidatorContext arg1) {
+    public boolean isValid(String nameBeingSet, ConstraintValidatorContext arg1) {
+        if (nameBeingSet == null) return true;
+        if (ROOT_LISTENER == null) return true;
+        
+        XmlRootHandle<ConstraintRootBean> handle = ROOT_LISTENER.getRoot();
+        ConstraintRootBean root = handle.getRoot();
+        if (root == null) return false;
+        
         Class<?> type = lastInitialization.type();
         if (type.equals(NamedBean.class)) {
-            Object foo = arg1.unwrap(Object.class);
+            NamedBean foundBean = root.lookupNamed(nameBeingSet);
             
-            
-           return true;   
+            return (foundBean != null);
         }
         
         return false;
     }
     
-    public static HasChildWithNameValidator getInstance() {
-        return INSTANCE;
-    }
-    
-    public void clear() {
-        lastValue = null;
-        lastContext = null;
-    }
-    
-    public HasChildWithName getLastInitialization() {
-        return lastInitialization;
-    }
-    
-    public Object getLastValue() {
-        return lastValue;
-    }
-    
-    public ConstraintValidatorContext getLastContext() {
-        return lastContext;
+    public static void setRootListener(CaptureRootChangeListener listener) {
+        ROOT_LISTENER = listener;
     }
 }

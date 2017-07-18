@@ -39,27 +39,44 @@
  */
 package org.glassfish.hk2.xml.test.validation;
 
-import java.util.List;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement(name="constraint-root-bean")
-public interface ConstraintRootBean {
-    @XmlElement(name="named-bean")
-    @Valid
-    List<NamedBean> getNamed();
-    NamedBean addNamed(NamedBean named);
-    NamedBean lookupNamed(String name);
-    boolean removeNamed(NamedBean toRemove);
+@Singleton
+public class CaptureRootChangeListener implements VetoableChangeListener {
+    private XmlRootHandle<ConstraintRootBean> root;
+
+    /* (non-Javadoc)
+     * @see java.beans.VetoableChangeListener#vetoableChange(java.beans.PropertyChangeEvent)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void vetoableChange(PropertyChangeEvent evt)
+            throws PropertyVetoException {
+        Object source = evt.getSource();
+        if (source == null) return;
+        if (!(source instanceof XmlHk2ConfigurationBean)) return;
+        
+        XmlHk2ConfigurationBean configBean = (XmlHk2ConfigurationBean) source;
+        
+        XmlRootHandle<?> localRoot = configBean._getRoot();
+        if (localRoot !=null) {
+            root = (XmlRootHandle<ConstraintRootBean>) localRoot;
+        }
+    }
     
-    @XmlElement(name="valid-1")
-    @Valid
-    List<BeanToValidate1Bean> getValid1();
-    BeanToValidate1Bean addValid1(BeanToValidate1Bean valid1);
+    public XmlRootHandle<ConstraintRootBean> getRoot() {
+        return root;
+    }
+
 }
