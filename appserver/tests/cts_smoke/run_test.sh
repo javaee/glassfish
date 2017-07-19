@@ -118,11 +118,8 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
 
-<<<<<<< HEAD
-	$TS_HOME/tools/ant/bin/ant -DtestId=${TESTID} -f smoke.xml smoke
-=======
-	$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
->>>>>>> 04e840c9989fb095b4eeb2de59be7b6c467a7def
+	$TS_HOME/tools/ant/bin/ant -DtestId=${TESTID} -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
+
 
 	#POST CLEANUPS
 	kill_process
