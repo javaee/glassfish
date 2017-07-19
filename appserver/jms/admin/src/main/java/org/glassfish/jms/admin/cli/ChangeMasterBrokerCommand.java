@@ -303,7 +303,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                       "java.lang.String"};
                       params = new Object [] {oldMasterBroker, newMasterBroker};
 
-             result = (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature);
+             result = mbsc != null ? (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature) : null;
          } catch (Exception e) {
                      logAndHandleException(e, e.getMessage()); 
          } finally {
