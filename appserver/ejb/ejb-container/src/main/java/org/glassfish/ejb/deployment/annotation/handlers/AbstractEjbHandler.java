@@ -233,9 +233,9 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                                    ejbClass.getName() }));
                 return getDefaultFailedResult();
             }
-
-
-        } else {
+        }
+        // Create a new descriptor only if there are no entries in the ejb-jar with same class name. EJB 3.0 spec
+        else if(currentBundle.getEjbByClassName(ejbClass.getName()).length == 0) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Creating a new descriptor for "
                     + ejbClass.getName());
