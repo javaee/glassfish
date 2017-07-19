@@ -75,8 +75,6 @@ test_run_cts_smoke(){
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
 	unzip -q $CTS_SMOKE_BUNDLE
-        echo `dirname $0`
-        cp -p `dirname $0`/smoke.xml $TS_HOME/bin/xml
 	cd $TS_HOME/bin
 	#cp $CTS_SMOKE/$CTS_EXCLUDE_LIST .
 	cp ts.jte ts.jte.orig
@@ -118,7 +116,7 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
 
-	$TS_HOME/tools/ant/bin/ant -DtestId=${TESTID} -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
+	$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
 
 
 	#POST CLEANUPS
@@ -178,9 +176,6 @@ test_run_servlet_tck(){
 	ant deploy.all
 
 	cd $TS_HOME/src/com/sun/ts/tests
-       # if [ -n "${TARGETDIR}" ]; then
-           #cd $TARGETDIR
-        #fi
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
 
 	cd $S1AS_HOME
@@ -211,10 +206,6 @@ run_test_id(){
                 export INCLUDETESTS=$1
                 test_run_servlet_tck
                 result=$WORKSPACE/results/tests.log
-        elif [[ $1 = "cts_smoke_group_"* ]]; then
-                export TESTID=$1
-                test_run_cts_smoke
-                result=$WORKSPACE/results/smoke.log
 	else
 		echo "Invalid Test ID"
 		exit 1
@@ -233,10 +224,6 @@ post_test_run(){
                 if [[ $TEST_ID = "servlet_tck_grp_"* ]]; then
                         archive_servlet_tck || true
                 fi
-           if [[ $TEST_ID = "cts_smoke_group_"* ]]; then
-                        archive_cts || true
-                fi
-
 	fi
     upload_test_results
     delete_bundle
@@ -245,7 +232,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all cts_smoke_group_1 cts_smoke_group_2 cts_smoke_group_3 cts_smoke_group_4 cts_smoke_group_5 cts_smoke_group_6 servlet_tck_grp_1 servlet_tck_grp_2 servlet_tck_grp_3 servlet_tck_grp_4 servlet_tck_grp_5
+	echo cts_smoke_all servlet_tck_all servlet_tck_grp_1 servlet_tck_grp_2 servlet_tck_grp_3 servlet_tck_grp_4 servlet_tck_grp_5
 }
 
 cts_to_junit(){
@@ -290,7 +277,7 @@ exclude_testlist(){
   echo "Executing exclude_testlist"
   dirname=`dirname $0`/servlet_tck_grp_files
   i=(`ls $dirname`)
-  echo "Argument:$1" 
+  echo "Excluding tests apart from group : $1" 
   cd $dirname
         for filelist in ${i[@]}; do
                 if [ ! $filelist = $1 ]; then
@@ -299,13 +286,7 @@ exclude_testlist(){
                     done < $filelist
                 fi
         done;
-cd -
-l=(`cat ts.jtx | wc -l`)
-echo "Number of tests excluded"
-echo $l
-
-
-
+ cd -
 }
 
 OPT=$1
