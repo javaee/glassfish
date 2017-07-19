@@ -117,9 +117,9 @@ if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
    set -e
 fi
 
-ARGS=" ${*}"
-# everything supplied as argument will be provided to every maven command.
-# e.g to supply -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
+mvn -B -e release:prepare -Prelease
+mvn -B -e release:perform -Prelease
 
-mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
-mvn -B -e release:perform -Dgoals="'deploy' $ARGS" $ARGS -Prelease
+cd maven-plugins
+mvn -B -e release:prepare -Prelease
+mvn -B -e release:perform -Prelease

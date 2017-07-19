@@ -48,13 +48,13 @@
         <version>2.5.0-b42</version>
         <relativePath/>
     </parent>
-
     <artifactId>osgiversion-maven-plugin</artifactId>
+    <version>2.5.0-b42-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>OSGiVersion Maven Plugin</name>
     <description>Maven Plugin for computing OSGi versions from Maven versions</description>
-     
+
     <!--
          This plugin is used during build of all OSGi artifacts in HK2 like core,
          config, auto-depends, etc. If we make this part of hk2-maven-plugin,
