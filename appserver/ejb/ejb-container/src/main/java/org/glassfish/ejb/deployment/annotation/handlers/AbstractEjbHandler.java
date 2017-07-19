@@ -277,7 +277,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
         AnnotationContext annContext = null;
         if( ejbDescs.length == 1 ) {
-            annContext = new EjbContext(ejbDesc, ejbClass);
+            annContext = new EjbContext(ejbDescs[0], ejbClass);
         } else {
 
             annContext = new EjbsContext(ejbDescs, ejbClass);
