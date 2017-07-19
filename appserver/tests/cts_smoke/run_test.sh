@@ -288,7 +288,7 @@ delete_workspace(){
 
 exclude_testlist(){
   echo "Executing exclude_testlist"
-  dirname=servlet_tck_grp_files
+  dirname=`dirrname $0`/servlet_tck_grp_files
   i=(`ls $dirname`)
   echo "Argument:$1" 
   cd $dirname
