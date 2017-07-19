@@ -198,7 +198,6 @@ run_test_id(){
 	unzip_test_resources $WORKSPACE/bundles/glassfish.zip
 	test_init
 	if [[ $1 = "cts_smoke_all" ]]; then
-                export TESTID=test.areas
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
 	elif [[ $1 = "servlet_tck_all" ]]; then
