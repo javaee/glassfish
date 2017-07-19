@@ -287,7 +287,7 @@ public class WSServletContextListener implements ServletContextListener {
 
         // The whole web app should have a single adapter list
         // This is to enable JAXWS publish WSDLs with proper addresses
-        ServletAdapter adapter;
+        ServletAdapter adapter = null;
         synchronized (this) {
             ServletAdapterList list =
                     (ServletAdapterList) servletContext.getAttribute("ADAPTER_LIST");
@@ -295,9 +295,11 @@ public class WSServletContextListener implements ServletContextListener {
                 list = new ServletAdapterList();
                 servletContext.setAttribute("ADAPTER_LIST", list);
             }
-            adapter = ServletAdapter.class.cast(
-                    list.createAdapter(endpoint.getName(), urlPattern, wsep));
-            container.addEndpoint(adapter);
+            Object obj = list.createAdapter(endpoint.getName(), urlPattern, wsep);
+            if (obj instanceof ServletAdapter) {
+                adapter = ServletAdapter.class.cast(obj);
+                container.addEndpoint(adapter);
+            }
         }
 
         registerEndpointUrlPattern(urlPattern, adapter);

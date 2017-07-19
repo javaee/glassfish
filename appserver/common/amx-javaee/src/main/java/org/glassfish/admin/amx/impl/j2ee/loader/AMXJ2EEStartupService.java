@@ -73,6 +73,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.ObjectInstance;
 import org.glassfish.admin.amx.j2ee.AMXEELoggerInfo;
 
 
@@ -161,7 +162,7 @@ public final class AMXJ2EEStartupService
                         final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getJ2EEDomain(), meta);
                         ObjectName serverObjectName = new ObjectNameBuilder(mMBeanServer, getJ2EEDomain()).buildChildObjectName(J2EETypes.J2EE_SERVER, serverName);
                         try {
-                            mMBeanServer.registerMBean(impl, serverObjectName).getObjectName();
+                            ObjectName instance = mMBeanServer.registerMBean(impl, serverObjectName).getObjectName();
                         }
                         catch (JMException e) {
                             throw new Error(e);

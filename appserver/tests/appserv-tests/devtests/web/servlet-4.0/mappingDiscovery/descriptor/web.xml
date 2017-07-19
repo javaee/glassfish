@@ -92,6 +92,24 @@
         <url-pattern>/AAsyncDispatchToC</url-pattern>
     </servlet-mapping>
 
+    <!-- getNamedDispatcher cases -->
+    <servlet>
+      <servlet-name>BForwardToCNamedDispatcher</servlet-name>
+      <servlet-class>BForwardToCNamedDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BForwardToCNamedDispatcher</servlet-name>
+      <url-pattern>/BForwardToCNamedDispatcher</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>BIncludeCNamedDispatcher</servlet-name>
+      <servlet-class>BIncludeCNamedDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BIncludeCNamedDispatcher</servlet-name>
+      <url-pattern>/BIncludeCNamedDispatcher</url-pattern>
+    </servlet-mapping>
 
     <!-- The end of the line -->
 

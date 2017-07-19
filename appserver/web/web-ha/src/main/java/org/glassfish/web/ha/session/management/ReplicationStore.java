@@ -448,7 +448,7 @@ public class ReplicationStore extends HAStoreBase {
             _logger.fine("ReplicationStore>>updateLastAccessTime: replicator: " + backingStore);                       
         }         
         try {
-            backingStore.updateTimestamp(session.getIdInternal(), ""+session.getVersion(),
+            String time = backingStore.updateTimestamp(session.getIdInternal(), ""+session.getVersion(),
                     ((BaseHASession)session).getLastAccessedTimeInternal());
         } catch (BackingStoreException ex) {
             //FIXME

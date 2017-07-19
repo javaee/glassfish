@@ -575,6 +575,7 @@
 
     <target name="misc" depends="init-report">
         <ant dir="genDocSchema" target="all"/>
+        <ant dir="yasson" target="all"/>
     </target>
 
     <target name="weblogicDD" depends="init-report">

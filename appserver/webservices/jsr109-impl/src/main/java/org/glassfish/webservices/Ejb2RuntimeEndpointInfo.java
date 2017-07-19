@@ -100,7 +100,8 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
                 tieInstance.setTarget((Remote) webServiceEndpointServant);
             }
         }
-        EJBInvocation.class.cast(inv).setWebServiceTie(tieInstance);
+        if (inv instanceof EJBInvocation)
+            EJBInvocation.class.cast(inv).setWebServiceTie(tieInstance);
         aInfo.setHandler((Handler)tieInstance);
         return aInfo;
     }
