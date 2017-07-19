@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- * $Id: FindInterestClientNonHttpBC.java,v 1.1 2006/04/24 05:55:59 mu125243 Exp $ 
- */
-/*
- * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 
 package myclient;
 

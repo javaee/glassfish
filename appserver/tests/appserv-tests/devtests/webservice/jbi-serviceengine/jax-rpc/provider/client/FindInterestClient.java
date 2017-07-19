@@ -38,14 +38,6 @@
  * holder.
  */
 
-/*
- * $Id: FindInterestClient.java,v 1.2 2006/03/21 08:35:25 ss144236 Exp $ 
- */
-/*
- * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 package myclient;
 
 import javax.naming.*;
