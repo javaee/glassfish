@@ -163,6 +163,9 @@ public class RestManagementResourceProvider extends AbstractRestResourceProvider
         r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.GetResultListXmlProvider.class);
 
+        // override JSON-B when returning application/json as String
+        r.add(org.glassfish.admin.rest.provider.JsonStringReaderWriter.class);
+
         r.add(org.glassfish.admin.rest.provider.OptionsResultJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.OptionsResultXmlProvider.class);
 
