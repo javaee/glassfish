@@ -46,6 +46,17 @@ test_run(){
   $S1AS_HOME/bin/asadmin start-domain
   $S1AS_HOME/bin/asadmin start-database
   cd $APS_HOME/devtests/naming
+  PROXY_HOST=`echo ${http_proxy} | cut -d':' -f2 | ${SED} 's/\/\///g'`
+  PROXY_PORT=`echo ${http_proxy} | cut -d':' -f3 | ${SED} 's/\///g'`
+  ANT_OPTS="${ANT_OPTS} \
+  -Dhttp.proxyHost=${PROXY_HOST} \
+  -Dhttp.proxyPort=${PROXY_PORT} \
+  -Dhttp.noProxyHosts='127.0.0.1|localhost|*.oracle.com' \
+  -Dhttps.proxyHost=${PROXY_HOST} \
+  -Dhttps.proxyPort=${PROXY_PORT} \
+  -Dhttps.noProxyHosts='127.0.0.1|localhost|*.oracle.com'"
+  export ANT_OPTS
+  echo "ANT_OPTS=${ANT_OPTS}"
   ant $TARGET | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-database
   $S1AS_HOME/bin/asadmin stop-domain   
