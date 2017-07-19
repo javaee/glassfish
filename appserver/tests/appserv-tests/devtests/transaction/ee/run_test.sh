@@ -114,7 +114,7 @@ test_run(){
 }
 
 list_test_ids(){
-    echo transaction_ee_all echo transaction-ee-1 transaction-ee-2 transaction-ee-3 transaction-ee-4
+    echo transaction_ee_all transaction-ee-1 transaction-ee-2 transaction-ee-3 transaction-ee-4
 }
 
 get_test_target(){
