@@ -74,7 +74,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     public static final Logger deplLogger = com.sun.enterprise.deployment.util.DOLUtils.deplLogger;
 
     @LogMessageInfo(
-            message = "JNDI lookup failed for the resource, name: {0}, type: {1}, value: {2}",
+            message = "JNDI lookup failed for the resource: Name: {0}, Lookup: {1}, Type: {2}.",
             level = "SEVERE",
             cause = "JNDI lookup for the specified resource failed.",
             action = "Configure the required resources before deploying the application.",
