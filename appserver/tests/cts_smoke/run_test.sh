@@ -140,9 +140,11 @@ test_run_servlet_tck(){
 	wget http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/nightly/servlettck-4.0_Latest.zip -O servlettck.zip
 
 	unzip -q servlettck.zip
-        rm -rf $TS_HOME/bin/ts.jtx
-        exclude_testlist $INCLUDETESTS
-        cp -p `dirname $0`/ts.jtx $TS_HOME/bin/
+        if [ -n "$INCLUDETESTS" ]; then
+         rm -rf $TS_HOME/bin/ts.jtx
+         exclude_testlist $INCLUDETESTS
+         cp -p `dirname $0`/ts.jtx $TS_HOME/bin/
+        fi
 	cd $TS_HOME/bin
 	cp ts.jte ts.jte.orig
 
