@@ -42,6 +42,7 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.HK2LoaderImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -842,8 +843,8 @@ public final class ConfigModel {
 
         document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
-        this.classLoaderHolder = (injector.getLoader() == null) ?
-                new HK2LoaderImpl() : injector.getLoader() ;
+        this.classLoaderHolder = new SafeHk2Loader((injector.getLoader() == null) ?
+                new HK2LoaderImpl() : injector.getLoader() );
         
         this.locator = locator;
         String targetTypeName=null,indexTypeName=null;
@@ -981,5 +982,29 @@ public final class ConfigModel {
     }
     private static List<String> getMetadataFromDescription(Map<String, List<String>> map, String key) {
         return map.get(key) == null ? Collections.EMPTY_LIST : map.get(key);
+    }
+    
+    private static class SafeHk2Loader implements HK2Loader {
+        private final HK2Loader delegate;
+        
+        private SafeHk2Loader(HK2Loader delegate) {
+            this.delegate = delegate;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.HK2Loader#loadClass(java.lang.String)
+         */
+        @Override
+        public Class<?> loadClass(final String className) throws MultiException {
+            return AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+
+                @Override
+                public Class<?> run() {
+                    return delegate.loadClass(className);
+                }
+                
+            });
+        }
+        
     }
 }
