@@ -41,5 +41,9 @@
 -exportcontents: com.sun.appserv.connectors.internal.api; \
     		 org.glassfish.connectors.config; \
     		 org.glassfish.connectors.config.validators; \
-             org.glassfish.api.jdbc.validation; \
-             com.sun.appserv.connectors.internal.spi; version=${project.osgi.version}
+                 org.glassfish.api.jdbc.validation; \
+                 com.sun.appserv.connectors.internal.spi; version=${project.osgi.version}
+
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *

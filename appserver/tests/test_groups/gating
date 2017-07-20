@@ -17,6 +17,8 @@ nucleus_admin_all
 cts_smoke_all
 servlet_tck_all
 findbugs_all
+findbugs_low_priority_all
 embedded_publisher_all
 copyright
-connector_all
+jdbc_all
+jms_all

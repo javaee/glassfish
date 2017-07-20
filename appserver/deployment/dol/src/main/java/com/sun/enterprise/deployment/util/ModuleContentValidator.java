@@ -188,7 +188,7 @@ public class ModuleContentValidator extends ModuleContentLinker implements Compo
                 }
             } else {
                 // let's look in the wsdl directory
-                String fullFileUri = webService.getBundleDescriptor().getWsdlDir() + File.separator + wsdlFileUri;
+                String fullFileUri = webService.getBundleDescriptor().getWsdlDir() + "/" + wsdlFileUri;
                 wsdlFileInputStream = archive_.getEntry(fullFileUri);
 
                 if( wsdlFileInputStream != null ) {        

@@ -122,35 +122,40 @@
         <findbugs.version>3.0.3</findbugs.version>
         <findbugs.glassfish.logging.validLoggerPrefixes>javax.enterprise</findbugs.glassfish.logging.validLoggerPrefixes>
 
-        <glassfish-corba.version>4.0.1</glassfish-corba.version>
+        <glassfish-corba.version>4.1.0</glassfish-corba.version>
         <stax-api.version>1.0-2</stax-api.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
+        <javax.validation.osgi.version>2.0.0</javax.validation.osgi.version>
+        <javax.validation.osgi.version.lowerbound>1.1.0</javax.validation.osgi.version.lowerbound>
         <management-api.version>1.1-rev-1</management-api.version>
         <servlet-api.version>4.0.0-b07</servlet-api.version>
-        <grizzly.version>2.4.0-beta8</grizzly.version>
+        <grizzly.version>2.4.0-beta13</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
-        <saaj-api.version>1.3.4</saaj-api.version>
-        <hk2.version>2.5.0-b36</hk2.version>
-        <hk2.plugin.version>2.5.0-b33</hk2.plugin.version>
+        <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
+        <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
+        <javax.validation.version>2.0.0.CR3</javax.validation.version>
+        <javax.validation.version.lowerbound>1.1.0.Final</javax.validation.version.lowerbound>
+        <hibernate-validator.version>6.0.0.CR3</hibernate-validator.version>
+        <hibernate-validator.version.lowerbound>5.2.4.Final</hibernate-validator.version.lowerbound>
+        <fasterxml.classmate.version>1.3.1</fasterxml.classmate.version>
+        <javassist.version>3.22.0-CR2</javassist.version>
+        <javax.el.version>3.0.1-b08</javax.el.version>
+        <javax.el-api.version>3.0.1-b04</javax.el-api.version>
+        <saaj-api.version>1.4.0</saaj-api.version>
+        <hk2.version>2.5.0-b42</hk2.version>
+        <hk2.plugin.version>2.5.0-b42</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
-        <javax.validation.version>1.1.0.Final</javax.validation.version>
-        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <fasterxml.classmate.version>1.1.0</fasterxml.classmate.version>
-        <javassist.version>3.20.0-GA</javassist.version>
-        <javax.el.version>3.0.1-b03</javax.el.version>
-        <javax.el-api.version>3.0.1-b03</javax.el-api.version>
+        <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
-        <pfl.version>4.0.0-b004</pfl.version>
+        <pfl.version>4.0.1-b001</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
-        <woodstox.version>4.1.2</woodstox.version>
         <antlr.version>2.7.6</antlr.version>
-        <jersey.version>2.26-b07</jersey.version>
+        <jersey.version>2.26-b08</jersey.version>
         <jackson.version>2.8.4</jackson.version>
         <jettison.version>1.3.3</jettison.version>
         <jax-rs-api.spec.version>2.1</jax-rs-api.spec.version>
         <jax-rs-api.impl.version>2.1-m09</jax-rs-api.impl.version>
-        <mimepull.version>1.9.4</mimepull.version>
+        <mimepull.version>1.9.7</mimepull.version>
         <jbi.version>1.0</jbi.version>
         <glassfish-management-api.version>3.2.1-b002</glassfish-management-api.version>
         <btrace.version>1.0.5</btrace.version>
@@ -159,7 +164,7 @@
         <v3-docs-l10n.version>4.0-b07</v3-docs-l10n.version>
         <l10n.version>3.1-b41</l10n.version>
         <asm.version>6.0_ALPHA</asm.version>
-        <shoal.version>1.6.18</shoal.version>
+        <shoal.version>1.6.51</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
         <glassfishbuild.version>3.2.20</glassfishbuild.version>
         <source-annotation-processor.version>1.0</source-annotation-processor.version>
@@ -167,7 +172,7 @@
         <command-security-plugin.version>1.0.7</command-security-plugin.version>
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>
         <mail.version>1.6.0-rc2</mail.version>
-        <javax.annotation-api.version>1.3-b01</javax.annotation-api.version>
+        <javax.annotation-api.version>1.3</javax.annotation-api.version>
         <copyright-plugin.version>1.42</copyright-plugin.version>
         <jdk.version>1.7.0-09</jdk.version>
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
@@ -207,7 +212,6 @@
                 </excludes>
             </resource>
         </resources>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -243,7 +247,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.6.1</version>
                     <configuration>
                         <compilerArgument>-Djava.endorsed.dirs=${project.build.directory}/endorsed</compilerArgument>
                         <source>1.8</source>
@@ -259,7 +263,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>2.8</version>
                 </plugin>
                 <plugin>
                     <groupId>org.glassfish.build</groupId>
@@ -333,7 +337,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.0</version>
+                    <version>3.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -690,12 +694,22 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>org.hibernate</groupId>
+                <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version.lowerbound}</version>
+            </dependency>
            <dependency>
                 <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator-cdi</artifactId>
+                <version>${hibernate-validator.version.lowerbound}</version>
+            </dependency>
+           <dependency>
+                <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
@@ -703,6 +717,11 @@
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging</artifactId>
                 <version>${jboss.logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging-annotations</artifactId>
+                <version>${jboss.logging.annotation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml</groupId>
@@ -813,11 +832,6 @@
                 <version>${javax.el.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
@@ -833,8 +847,8 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
