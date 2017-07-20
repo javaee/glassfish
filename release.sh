@@ -97,10 +97,9 @@ else
 	SED_OPTS="-re"
 fi
 
-CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | $SED $SED_OPTS 's/.*<version>(.*)<\/version>/\1/'`
-echo $CURRENT_VERSION
-NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
-NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
+CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | ${SED} ${SED_OPTS} 's/.*<version>(.*)<\/version>/\1/'`}
+NEXT_RELEASE_VERSION=`echo ${CURRENT_VERSION} | sed s@"-SNAPSHOT"@@g`
+NEXT_RELEASE_TAG="hk2-parent-${NEXT_RELEASE_VERSION}"
 
 # remove local commits
 git reset --hard
@@ -108,14 +107,17 @@ git reset --hard
 # remove unversioned files
 git status | grep "\#" | awk '{print $2}' | xargs rm -rf
 
-# remove tag if exist
-if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
- then
-   set +e
-   git tag -d $NEXT_RELEASE_TAG
-   git push origin :refs/tags/$NEXT_RELEASE_TAG
-   set -e
-fi
+# remove tags if exist
+for tag in ${NEXT_RELEASE_TAG} maven-plugins-${NEXT_RELEASE_TAG}
+do
+    if [ `git tag | grep "^${tag}$" | wc -l` -eq 1 ]
+     then
+       set +e
+       git tag -d ${tag}
+       git push origin :refs/tags/${tag}
+       set -e
+    fi
+done
 
 mvn -B -e release:prepare -Prelease
 mvn -B -e release:perform -Prelease
