@@ -143,7 +143,7 @@
     <delete file="pid.out.file"/>
 </target>
 
-<target name="stopDomain" depends="init-common">
+<target name="stopDomain" depends="init-common, de-attach-jacoco-agent">
     <echo message="run.xml:stopping domain..."/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="stop-domain"/>
@@ -252,32 +252,31 @@
          <copy todir="${env.S1AS_HOME}/domains/domain1/lib/ext/" >
             <fileset dir="${org.jacoco:org.jacoco.ant:jar}/../" includes="**/*.jar"/>
          </copy>
-        <!-- check if jacoco agent is already added as jvm option in domain.xml -->
-        <loadfile property="already.attached" srcfile="${env.S1AS_HOME}/domains/domain1/config/domain.xml">
-            <filterchain>
-                <linecontainsregexp>
-                    <regexp pattern="${jacoco.ft.execution.data.file}"/>
-                </linecontainsregexp>
-            </filterchain>
-        </loadfile>
-        <!-- if jacoco jvm option is not added add it -->
-        <if>
-            <not>
-                <isset property="already.attached" />
-            </not>
-            <then>
-                <replaceregexp  file="${env.S1AS_HOME}/domains/domain1/config/domain.xml"
-                                match="&lt;java-config (.*)&gt;"
-                                replace="&lt;java-config \1&gt;${line.separator}
+         <copy file="${env.S1AS_HOME}/domains/domain1/config/domain.xml"
+              tofile="${env.S1AS_HOME}/domains/domain1/config/domain.bak"
+              overwrite="false"
+              verbose="true" />
+         <replaceregexp  file="${env.S1AS_HOME}/domains/domain1/config/domain.xml"
+                         match="&lt;java-config (.*)&gt;"
+                         replace="&lt;java-config \1&gt;${line.separator}
         &lt;jvm-options&gt;${jacocojvmarg}&lt;/jvm-options&gt;"
                                 byline="true"/>
-            </then>
-        </if>
     </then>
     <else>
         <property name="jacocojvmarg" value=" "/>
     </else>
 </if>
+</target>
+
+<target name="is-jacoco-enabled">
+    <condition property="jacoco.enabled">
+        <istrue value="${coverage.code}" />
+    </condition>
+</target>
+
+<target name="de-attach-jacoco-agent" if="jacoco.enabled" depends="is-jacoco-enabled">
+    <move file="${env.S1AS_HOME}/domains/domain1/config/domain.bak"
+          tofile="${env.S1AS_HOME}/domains/domain1/config/domain.xml" />
 </target>
 
 <macrodef name="run-test">
