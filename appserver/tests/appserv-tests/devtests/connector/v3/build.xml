@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+        <!ENTITY commonRun SYSTEM "./../../../config/run.xml">
+        <!ENTITY reporting   SYSTEM "./report.xml">
+        ]>
+
+<project name="connector" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &reporting;
+
+    <property name="connector-target" value="all"/>
+
+    <target name="pe-all">
+        <antcall target="backup-config-pe"/>
+        <echo message="NOTE: The file ${env.APS_HOME}/config.properties is being replaced with ${basedir}/config/pe-config.properties. The file will be reverted to its original state after the completion of these tests."/>
+        <copy file="${basedir}/config/pe-config.properties" tofile="${env.APS_HOME}/config.properties"
+              overwrite="true"/>
+        <antcall target="create-pe-passwordfile"/>
+        <antcall target="all"/>
+        <antcall target="restore-config-pe"/>
+    </target>
+
+    <target name="das-all">
+        <antcall target="backup-config-pe"/>
+        <echo message="NOTE: The file ${env.APS_HOME}/config.properties is being replaced with ${basedir}/config/das-config.properties. The file will be reverted to its original state after the completion of these tests."/>
+        <copy file="${basedir}/config/das-config.properties" tofile="${env.APS_HOME}/config.properties"
+              overwrite="true"/>
+        <antcall target="create-ee-passwordfile"/>
+        <antcall target="all"/>
+        <antcall target="restore-config-pe"/>
+    </target>
+
+    <target name="ee-all">
+        <antcall target="backup-config-pe"/>
+        <antcall target="backup-config-ee"/>
+        <echo message="NOTE: The file ${env.APS_HOME}/config.properties is being replaced with ${basedir}/config/das-config.properties. The file will be reverted to its original state after the completion of these tests."/>
+        <copy file="${basedir}/config/ee-config.properties" tofile="${env.APS_HOME}/config.properties"
+              overwrite="true"/>
+        <copy file="${basedir}/config/ee-config.properties" tofile="${env.APS_HOME}/eeconfig/ee-config.properties"
+              overwrite="true"/>
+        <antcall target="create-ee-passwordfile"/>
+        <antcall target="ee"/>
+        <antcall target="all"/>
+        <antcall target="restore-config-pe"/>
+        <antcall target="restore-config-ee"/>
+    </target>
+
+    <target name="backup-config-pe" depends="replace-password-with-passwordfile">
+        <copy file="${env.APS_HOME}/config.properties" tofile="${env.APS_HOME}/config.properties.bak" overwrite="true"/>
+    </target>
+
+    <target name="restore-config-pe" depends="undo-replace-password-with-passwordfile">
+        <copy file="${env.APS_HOME}/config.properties.bak" tofile="${env.APS_HOME}/config.properties" overwrite="true"/>
+    </target>
+
+    <target name="backup-config-ee">
+        <copy file="${env.APS_HOME}/eeconfig/ee-config.properties"
+              tofile="${env.APS_HOME}/eeconfig/ee-config.properties.bak" overwrite="true"/>
+    </target>
+
+    <target name="restore-config-ee">
+        <copy file="${env.APS_HOME}/eeconfig/ee-config.properties.bak"
+              tofile="${env.APS_HOME}/eeconfig/ee-config.properties" overwrite="true"/>
+    </target>
+
+    <target name="create-pe-passwordfile">
+        <property file="${env.APS_HOME}/config.properties"/>
+        <echo message="AS_ADMIN_PASSWORD=${admin.password}${line.separator}"
+              file="${env.APS_HOME}/devtests/connector/config/password.txt"/>
+    </target>
+
+    <target name="create-ee-passwordfile">
+        <property file="${env.APS_HOME}/config.properties"/>
+        <echo message="AS_ADMIN_PASSWORD=${admin.password}${line.separator}"
+              file="${env.APS_HOME}/devtests/connector/config/password.txt"/>
+        <echo message="AS_ADMIN_MASTERPASSWORD=${master.password}${line.separator}"
+              file="${env.APS_HOME}/devtests/connector/config/password.txt" append="true"/>
+    </target>
+
+    <target name="replace-password-with-passwordfile">
+        <replace dir="${env.APS_HOME}/config/">
+            <include name="**/*.xml"/>
+            <replacetoken>--password ${admin.password}</replacetoken>
+            <replacevalue>--passwordfile ${env.APS_HOME}/devtests/connector/config/password.txt</replacevalue>
+        </replace>
+    </target>
+
+    <target name="undo-replace-password-with-passwordfile">
+        <replace dir="${env.APS_HOME}/config/">
+            <include name="**/*.xml"/>
+            <replacetoken>--passwordfile ${env.APS_HOME}/devtests/connector/config/password.txt</replacetoken>
+            <replacevalue>--password ${admin.password}</replacevalue>
+        </replace>
+    </target>
+
+    <target name="run-test">
+        <antcall target="connector">
+            <param name="connector-target" value="run-test"/>
+        </antcall>
+    </target>
+
+    <target name="all">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+        <antcall target="connector">
+            <param name="connector-target" value="all"/>
+        </antcall>
+    </target>
+ 
+    <target name="all-with-security-manager">
+      <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+        <antcall target="connector-with-security-manager">
+            <param name="connector-target" value="all"/>
+        </antcall>
+    </target>
+
+    <target name="clean">
+        <antcall target="connector">
+            <param name="connector-target" value="clean"/>
+        </antcall>
+    </target>
+
+    <target name="build">
+        <antcall target="connector">
+            <param name="connector-target" value="build"/>
+        </antcall>
+    </target>
+
+    <target name="setup">
+        <antcall target="connector">
+            <param name="connector-target" value="setup"/>
+        </antcall>
+    </target>
+
+    <target name="deploy">
+        <antcall target="connector">
+            <param name="connector-target" value="deploy"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy">
+        <antcall target="connector">
+            <param name="connector-target" value="undeploy"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup">
+        <antcall target="connector">
+            <param name="connector-target" value="unsetup"/>
+        </antcall>
+    </target>
+
+    <target name="run">
+        <antcall target="connector">
+            <param name="connector-target" value="run"/>
+        </antcall>
+    </target>
+
+   <target name="enable-security-manager">
+       <echo message="enabling security manager"/>
+        <antcall target="create-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+
+        <antcall target="restart-server"/>
+   </target>
+
+   <target name="disable-security-manager">
+      <echo message="disabling security manager"/>
+        <antcall target="delete-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+        <antcall target="restart-server"/>
+   </target>
+
+    <target name="connector-with-security-manager">
+        <antcall target="enable-security-manager"/>
+         <antcall target="connector">
+            <param name="connector-target" value="all"/>
+        </antcall>
+        <antcall target="disable-security-manager"/>
+    </target>
+
+    <target name="clean-file">
+        <delete  file="connector.output" failonerror="false"/>
+        <delete  file="glassfish-resources-xml-tests.output" failonerror="false"/>
+    </target>
+
+    <target name="connector-run-1">
+	    <echo message="************  Starting connector-run-1  ************"/>    
+        <echo message="@@## connector1.5 ##@@"/>
+        <ant dir="connector1.5" target="${connector-target}"/>
+
+        <echo message="@@## embeddedConnector1.5 ##@@"/>
+        <ant dir="../embeddedConnector1.5" target="${connector-target}"/>
+
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/>
+    </target>
+
+    <target name="connector-run-2">
+	<echo message="************  Starting connector-run-2  ************"/>
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/>
+
+        <echo message="@@## mq ##@@"/>
+        <ant dir="../mq" target="${connector-target}"/>
+
+        <echo message="@@## nonacc ##@@"/>
+        <ant dir="../nonacc" target="${connector-target}"/>
+    </target>
+
+    <target name="connector-run-3">
+	<echo message="************  Starting connector-run-3  ************"/>
+        <echo message="@@## web2connector ##@@"/>
+        <ant dir="../web2connector" target="${connector-target}" />
+
+        <echo message="@@## web2connector (second time) ##@@"/>
+        <ant dir="../web2connector" target="${connector-target}" />
+
+        <echo message="@@## nonstringmcfproperties ##@@"/>
+        <ant dir="nonstringmcfproperties" target="${connector-target}"/>
+
+        <echo message="@@## nonstringraproperties ##@@"/>
+        <ant dir="../nonstringraproperties" target="${connector-target}" />
+
+        <echo message="@@## txlevelswitch ##@@"/>
+        <ant dir="../txlevelswitch" target="${connector-target}" />
+
+        <echo message="@@## threadpool ##@@"/>
+        <ant dir="../threadpool" target="${connector-target}" />
+
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## connector1.6 ##@@"/>
+        <ant dir="connector1.6" target="${connector-target}"/-->
+
+        <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
+        <ant dir="ejb32-mdb" target="${connector-target}"/>
+
+        <echo message="@@## SunRaXml ##@@"/>
+        <ant dir="SunRaXml" target="${connector-target}"/>
+    </target>
+
+    <target name="connector-run-4">
+	<echo message="************  Starting connector-run-4  ************"/>
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## defaultConnectorResource ##@@"/>
+        <ant dir="defaultConnectorResource" target="${connector-target}"/-->
+
+        <!--echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/-->
+
+        <echo message="@@## serializabletest ##@@"/>
+        <ant dir="serializabletest" target="${connector-target}"/>
+
+        <echo message="@@## config-property-accessor-test ##@@"/>
+        <ant dir="config-property-accessor-test" target="${connector-target}"/>
+
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## connector1.6 - with mappings ##@@"/>
+        <ant dir="connector1.6" target="all"/-->
+
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/-->
+
+        <echo message="@@## Annotated Connector - mixed mode (ra.xml as well annotations) ##@@"/>
+        <ant dir="annotation-connector-mixedmode" target="${connector-target}"/>
+
+        <echo message="@@## redeployRar ##@@"/>
+        <ant dir="redeployRar" target="${connector-target}"/>
+    </target>
+
+    <target name="connector-run-5">
+	<echo message="************  Starting connector-run-5  ************"/>
+        <echo message="@@## force-deploy-rar ##@@"/>
+        <ant dir="force-deploy-rar" target="${connector-target}"/>
+
+        <echo message="@@## annotation-embeddedweb ##@@"/>
+        <ant dir="annotation-embeddedweb" target="${connector-target}"/>
+
+        <echo message="@@## built-in-custom-resources ##@@"/>
+        <ant dir="built-in-custom-resources" target="${connector-target}"/>
+
+        <echo message="@@## datasource-definition##@@"/>
+        <ant dir="datasource-definition" target="${connector-target}"/>
+
+        <echo message="@@## connection-factory-definition##@@"/>
+        <ant dir="connection-factory-definition" target="${connector-target}"/>
+
+        <echo message="@@## connection-factory-definition-embedra##@@"/>
+        <ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
+
+        <echo message="@@## administered-object-definition-embedra##@@"/>
+        <ant dir="administered-object-definition-embedra" target="${connector-target}"/>
+
+        <echo message="@@## administered-object-definition##@@"/>
+        <ant dir="administered-object-definition" target="${connector-target}"/>
+
+        <echo message="@@## jms-connection-factory-definition##@@"/>
+        <ant dir="jms-connection-factory-definition" target="${connector-target}"/>
+
+        <echo message="@@## jms-destination-definition##@@"/>
+        <ant dir="jms-destination-definition" target="${connector-target}"/>
+    </target>
+
+    <target name="connector-run-6">
+	<echo message="************  Starting connector-run-6  ************"/>
+        <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries" target="all-ext"/>
+
+        <echo message="@@## installed libraries (--libraries) ##@@"/>
+        <ant dir="installed-libraries" target="all--libraries"/>
+
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/-->
+
+        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all-ext"/>
+
+        <!--FAILING SO COMMENTED-->
+        <!--echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="all"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="embedded-all"/-->
+    </target>
+
+    <target name="connector-run-7">
+	<echo message="************  Starting connector-run-7  ************"/>
+        <echo message="@@## security-map-web#@@"/>
+        <ant dir="securitymapweb" target="all"/>
+
+        <echo message="@@## rar-accessibility ##@@"/>
+        <ant dir="rar-accessibility" target="all"/>
+
+        <echo message="@@## glassfish-resources-xml tests ##@@"/>
+        <antcall target="glassfish-resources-xml-tests"/>
+
+        <echo message="@@## osgi-resources-test ##@@"/>
+        <ant dir="osgi-resources-test" target="all"/>
+    </target>
+
+    <target name="connector">
+        <antcall target="clean-file"/>
+        <record name="connector.output" action="start"/>
+        <antcall target="connector-run-1"/>
+        <antcall target="connector-run-2"/>
+        <antcall target="connector-run-3"/>
+        <antcall target="connector-run-4"/>
+        <antcall target="connector-run-5"/>
+        <antcall target="connector-run-6"/>
+        <antcall target="connector-run-7"/>
+        <antcall target="report"/>
+        <record name="connector.output" action="stop"/>
+    </target>
+
+    <target name="connector-clean">
+        <delete  file="connector.output" failonerror="false"/>
+        <record name="connector.output" action="start"/>
+        <echo message="@@## connector1.5 ##@@"/>
+        <ant dir="connector1.5" target="${connector-target}"/>
+
+        <echo message="@@## embeddedConnector1.5 ##@@"/>
+        <ant dir="../embeddedConnector1.5" target="${connector-target}"/>
+
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/>
+
+        <!-- executing again to make sure that "cascade=true" for embedded rars work fine -->
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/>
+
+        <echo message="@@## mq ##@@"/>
+        <ant dir="../mq" target="${connector-target}"/>
+
+        <echo message="@@## nonacc ##@@"/>
+        <ant dir="../nonacc" target="${connector-target}"/>
+
+        <echo message="@@## web2connector ##@@"/>
+        <ant dir="../web2connector" target="${connector-target}" />
+
+        <echo message="@@## web2connector (second time) ##@@"/>
+        <ant dir="../web2connector" target="${connector-target}" />
+
+        <echo message="@@## nonstringmcfproperties ##@@"/>
+        <ant dir="nonstringmcfproperties" target="${connector-target}"/>
+
+        <echo message="@@## nonstringraproperties ##@@"/>
+        <ant dir="../nonstringraproperties" target="${connector-target}" />
+
+        <echo message="@@## txlevelswitch ##@@"/>
+        <ant dir="../txlevelswitch" target="${connector-target}" />
+
+        <echo message="@@## threadpool ##@@"/>
+        <ant dir="../threadpool" target="${connector-target}" />
+
+        <echo message="@@## connector1.6 ##@@"/>
+        <ant dir="connector1.6" target="${connector-target}"/>
+
+        <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
+        <ant dir="ejb32-mdb" target="${connector-target}"/>
+
+        <echo message="@@## SunRaXml ##@@"/>
+        <ant dir="SunRaXml" target="${connector-target}"/>
+
+        <echo message="@@## defaultConnectorResource ##@@"/>
+        <ant dir="defaultConnectorResource" target="${connector-target}"/>
+
+        <echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/>
+
+        <echo message="@@## serializabletest ##@@"/>
+        <ant dir="serializabletest" target="${connector-target}"/>
+
+        <echo message="@@## config-property-accessor-test ##@@"/>
+        <ant dir="config-property-accessor-test" target="${connector-target}"/>
+
+        <echo message="@@## redeployRar ##@@"/>
+        <ant dir="redeployRar" target="${connector-target}"/>
+
+        <echo message="@@## connector1.6 - with mappings ##@@"/>
+        <ant dir="connector1.6" target="all-with-mappings"/>
+
+        <echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/>
+
+        <echo message="@@## Annotated Connector - mixed mode (ra.xml as well annotations) ##@@"/>
+        <ant dir="annotation-connector-mixedmode" target="${connector-target}"/>
+
+        <echo message="@@## force-deploy-rar ##@@"/>
+        <ant dir="force-deploy-rar" target="${connector-target}"/>
+
+        <echo message="@@## annotation-embeddedweb ##@@"/>
+        <ant dir="annotation-embeddedweb" target="${connector-target}"/>
+
+        <echo message="@@## built-in-custom-resources ##@@"/>
+        <ant dir="built-in-custom-resources" target="${connector-target}"/>
+
+        <echo message="@@## datasource-definition##@@"/>
+        <ant dir="datasource-definition" target="${connector-target}"/>
+
+        <echo message="@@## connection-factory-definition##@@"/>
+        <ant dir="connection-factory-definition" target="${connector-target}"/>
+
+        <echo message="@@## connection-factory-definition-embedra##@@"/>
+        <ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
+
+        <echo message="@@## administered-object-definition-embedra##@@"/>
+        <ant dir="administered-object-definition-embedra" target="${connector-target}"/>
+
+        <echo message="@@## administered-object-definition##@@"/>
+        <ant dir="administered-object-definition" target="${connector-target}"/>
+
+        <echo message="@@## jms-connection-factory-definition##@@"/>
+        <ant dir="jms-connection-factory-definition" target="${connector-target}"/>
+
+        <echo message="@@## jms-destination-definition##@@"/>
+        <ant dir="jms-destination-definition" target="${connector-target}"/>
+
+        <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries" target="all-ext"/>
+
+        <echo message="@@## installed libraries (--libraries) ##@@"/>
+        <ant dir="installed-libraries" target="all--libraries"/>
+
+        <echo message="@@## installed libraries embedded rar (--libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/>
+
+        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all-ext"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="all"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="embedded-all"/>
+
+        <echo message="@@## security-map-web#@@"/>
+        <ant dir="securitymapweb" target="all"/>
+
+        <echo message="@@## rar-accessibility ##@@"/>
+        <ant dir="rar-accessibility" target="all"/>
+
+        <echo message="@@## glassfish-resources-xml tests ##@@"/>
+        <antcall target="glassfish-resources-xml-tests"/>
+
+        <echo message="@@## osgi-resources-test ##@@"/>
+        <ant dir="osgi-resources-test" target="all"/>
+
+        <antcall target="report"/>
+        <record name="connector.output" action="stop"/>
+    </target>
+
+    <target name="glassfish-resources-xml-tests">
+
+        <delete  file="glassfish-resources-xml-tests.output" failonerror="false"/>
+        <record name="glassfish-resources-xml-tests.output" action="start"/>
+
+        <echo message="@@## connector1.5-resourcesxml ##@@"/>
+        <ant dir="../connector1.5-resourcesxml" target="all"/>
+        
+        <echo message="@@## embeddedConnector1.5-resourcesxml ##@@"/>
+        <ant dir="../embeddedConnector1.5-resourcesxml" target="all"/>
+
+        <echo message="@@## embeddedweb-resourcesxml-defaultconnpool ##@@"/>
+        <ant dir="../embeddedweb-resourcesxml-defaultconnpool" target="all"/>
+
+        <echo message="@@## beanvalidation-simple-resources-xml ##@@"/>
+        <ant dir="beanvalidation-simple-resources-xml" target="all"/>
+
+        <echo message="@@## embeddedweb-resources-xml ##@@"/>
+        <ant dir="embeddedweb-resources-xml" target="all"/>
+
+        <echo message="@@## installed-libraries-resources-xml ##@@"/>
+        <ant dir="installed-libraries-resources" target="all-ext"/>
+
+        <echo message="@@## installed-libraries-resources-xml ##@@"/>
+        <ant dir="installed-libraries-resources" target="all--libraries"/>
+        
+        <echo message="@@## connector1.6-resources-xml ##@@"/>
+        <ant dir="connector1.6-resources-xml" target="all-with-mappings"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml ##@@"/>
+        <ant dir="built-in-custom-resources-resources-xml" target="all"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml-module ##@@"/>
+        <ant dir="custom-resources-gf-resources-module-scoped" target="all"/>
+
+        <echo message="@@## multiple-resources.xml ##@@"/>
+        <ant dir="multiple-resources.xml" target="all-with-mappings"/>
+
+        <echo message="@@## multiple-resources.xml-1 ##@@"/>
+        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/>
+
+        <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
+        <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/>
+        
+        <echo message="jpa-tx_propagation-resources-xml##@@"/>
+        <ant dir="jpa-tx-propagation-gf-resources-xml" target="all"/>
+
+        <echo message="@@## ejb30mdb-resources-xml ##@@"/>
+        <ant dir="./../mq/ejb30mdb-resources-xml" target="all"/>
+
+        <echo message="@@## markconnectionasbad.xa.resources-xml ##@@"/>
+        <ant dir="./../markconnectionasbad.xa.resources-xml" target="all"/>
+
+        <record name="glassfish-resources-xml-tests.output" action="stop"/>
+
+    </target>
+
+    <target name="usage">
+        <echo>Usage:
+            ant connector1.5 (Executes the connector1.5 tests)
+            ant embdeddedWeb (Executes embeddedWeb tests)
+            ant mq (Executes the mq tests)
+            ant nonacc (Executes the nonacc test)
+            ant all (Executes all the connector tests)
+            ant clean (cleans all the connector tests)
+            ant build (builds all the connector tests)
+            ant setup (sets up all resources for connector tests)
+            ant deploy (deploys all the connector apps)
+            ant run (Executes all the connector tests)
+            ant undeploy (undeploys all the connector apps)
+            ant unsetup (unsets all resources for connector tests)
+        </echo>
+    </target>
+
+    <target name="oracle">
+        <property name="oracle" value="true"/>
+    </target>
+
+    <target name="report-local">
+        <exec executable="sh">
+            <arg value="./resultCount.sh"/>
+        </exec>
+    </target>
+
+    <target name="clean-all">
+        <delete  file="glassfish-resources-xml-tests.output" failonerror="false"/>
+        <delete  file="connector.output" failonerror="false"/>
+        <record name="connector.output" action="start"/>
+
+        <echo message="@@## connector1.5 ##@@"/>
+        <ant dir="connector1.5" target="clean"/>
+
+        <echo message="@@## embeddedConnector1.5 ##@@"/>
+        <ant dir="../embeddedConnector1.5" target="clean"/>
+
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="clean"/>
+
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="clean"/>
+
+        <echo message="@@## mq ##@@"/>
+        <ant dir="../mq" target="clean"/>
+
+        <echo message="@@## nonacc ##@@"/>
+        <ant dir="../nonacc" target="clean"/>
+
+        <echo message="@@## web2connector ##@@"/>
+        <ant dir="../web2connector" target="clean" />
+
+        <echo message="@@## web2connector (second time) ##@@"/>
+        <ant dir="../web2connector" target="clean" />
+
+        <echo message="@@## nonstringmcfproperties ##@@"/>
+        <ant dir="nonstringmcfproperties" target="clean"/>
+
+        <echo message="@@## nonstringraproperties ##@@"/>
+        <ant dir="../nonstringraproperties" target="clean" />
+
+        <echo message="@@## txlevelswitch ##@@"/>
+        <ant dir="../txlevelswitch" target="clean" />
+
+        <echo message="@@## threadpool ##@@"/>
+        <ant dir="../threadpool" target="clean" />
+
+        <echo message="@@## connector1.6 ##@@"/>
+        <ant dir="connector1.6" target="clean"/>
+
+        <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
+        <ant dir="ejb32-mdb" target="clean"/>
+
+        <echo message="@@## SunRaXml ##@@"/>
+        <ant dir="SunRaXml" target="clean"/>
+
+        <echo message="@@## defaultConnectorResource ##@@"/>
+        <ant dir="defaultConnectorResource" target="clean"/>
+
+        <echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="clean"/>
+
+        <echo message="@@## serializabletest ##@@"/>
+        <ant dir="serializabletest" target="clean"/>
+
+        <echo message="@@## config-property-accessor-test ##@@"/>
+        <ant dir="config-property-accessor-test" target="clean"/>
+
+        <echo message="@@## redeployRar ##@@"/>
+        <ant dir="redeployRar" target="clean"/>
+
+        <echo message="@@## connector1.6 - with mappings ##@@"/>
+        <ant dir="connector1.6" target="clean"/>
+
+        <echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="clean"/>
+
+        <echo message="@@## Annotated Connector - mixed mode (ra.xml as well annotations) ##@@"/>
+        <ant dir="annotation-connector-mixedmode" target="clean"/>
+
+        <echo message="@@## force-deploy-rar ##@@"/>
+        <ant dir="force-deploy-rar" target="clean"/>
+
+        <echo message="@@## annotation-embeddedweb ##@@"/>
+        <ant dir="annotation-embeddedweb" target="clean"/>
+
+        <echo message="@@## built-in-custom-resources ##@@"/>
+        <ant dir="built-in-custom-resources" target="clean"/>
+
+        <echo message="@@## datasource-definition##@@"/>
+        <ant dir="datasource-definition" target="clean"/>
+
+        <echo message="@@## connection-factory-definition##@@"/>
+        <ant dir="connection-factory-definition" target="clean"/>
+
+        <echo message="@@## connection-factory-definition-embedra##@@"/>
+        <ant dir="connection-factory-definition-embedra" target="clean"/>
+
+        <echo message="@@## administered-object-definition-embedra##@@"/>
+        <ant dir="administered-object-definition-embedra" target="clean"/>
+
+        <echo message="@@## administered-object-definition##@@"/>
+        <ant dir="administered-object-definition" target="clean"/>
+
+        <echo message="@@## jms-connection-factory-definition##@@"/>
+        <ant dir="jms-connection-factory-definition" target="clean"/>
+
+        <echo message="@@## jms-destination-definition##@@"/>
+        <ant dir="jms-destination-definition" target="clean"/>
+
+        <echo message="@@## installed libraries embedded rar (--libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="clean"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="clean"/>
+
+        <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries" target="clean"/>
+
+        <echo message="@@## installed libraries (--libraries) ##@@"/>
+        <ant dir="installed-libraries" target="clean"/>
+
+        <echo message="@@## installed libraries embedded rar (--libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="clean"/>
+
+        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+        <ant dir="installed-libraries-embedded" target="clean"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="clean"/>
+
+        <echo message="@@## security-map-web#@@"/>
+        <ant dir="securitymapweb" target="clean"/>
+
+        <echo message="@@## rar-accessibility ##@@"/>
+        <ant dir="rar-accessibility" target="clean"/>
+
+        <echo message="@@## osgi-resources-test ##@@"/>
+        <ant dir="osgi-resources-test" target="clean"/>
+
+        <echo message="@@## connector1.5-resourcesxml ##@@"/>
+        <ant dir="../connector1.5-resourcesxml" target="clean"/>
+
+        <echo message="@@## embeddedConnector1.5-resourcesxml ##@@"/>
+        <ant dir="../embeddedConnector1.5-resourcesxml" target="clean"/>
+
+        <echo message="@@## embeddedweb-resourcesxml-defaultconnpool ##@@"/>
+        <ant dir="../embeddedweb-resourcesxml-defaultconnpool" target="clean"/>
+
+        <echo message="@@## beanvalidation-simple-resources-xml ##@@"/>
+        <ant dir="beanvalidation-simple-resources-xml" target="clean"/>
+
+        <echo message="@@## embeddedweb-resources-xml ##@@"/>
+        <ant dir="embeddedweb-resources-xml" target="clean"/>
+
+        <echo message="@@## connector1.6-resources-xml ##@@"/>
+        <ant dir="connector1.6-resources-xml" target="clean"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml ##@@"/>
+        <ant dir="built-in-custom-resources-resources-xml" target="clean"/>
+
+        <echo message="@@## built-in-custom-resources-resources-xml-module ##@@"/>
+        <ant dir="custom-resources-gf-resources-module-scoped" target="clean"/>
+
+        <echo message="@@## multiple-resources.xml ##@@"/>
+        <ant dir="multiple-resources.xml" target="clean"/>
+
+        <echo message="@@## multiple-resources.xml-1 ##@@"/>
+        <ant dir="multiple-resources-app-module-scoped" target="clean"/>
+
+        <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
+        <ant dir="../connector1.5-resourcesxml-module-scope" target="clean"/>
+
+        <echo message="jpa-tx_propagation-resources-xml##@@"/>
+        <ant dir="jpa-tx-propagation-gf-resources-xml" target="clean"/>
+
+        <echo message="@@## ejb30mdb-resources-xml ##@@"/>
+        <ant dir="./../mq/ejb30mdb-resources-xml" target="clean"/>
+
+        <echo message="@@## markconnectionasbad.xa.resources-xml ##@@"/>
+        <ant dir="./../markconnectionasbad.xa.resources-xml" target="clean"/>
+
+        <record name="connector.output" action="start"/>
+    </target>
+</project>
