@@ -53,7 +53,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hk2.version>${project.parent.version}</hk2.version>
+        <hk2.version>2.5.0-b42</hk2.version>
     </properties>
 
     <modules>
