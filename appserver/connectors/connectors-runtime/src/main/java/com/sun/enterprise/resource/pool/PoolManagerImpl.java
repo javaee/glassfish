@@ -615,26 +615,40 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         ResourceHandle[] handles = new ResourceHandle[list.size()];
         handles = (ResourceHandle[]) list.toArray(handles);
         for (ResourceHandle h : handles) {
-            ResourceSpec spec = h.getResourceSpec();
-            if (spec.isLazyAssociatable()) {
-                //In this case we are assured that the managedConnection is
-                //of type DissociatableManagedConnection
-                javax.resource.spi.DissociatableManagedConnection mc =
-                        (javax.resource.spi.DissociatableManagedConnection) h.getResource();
-                if (h.isEnlisted()) {
-                    getResourceManager(spec).delistResource(
-                            h, XAResource.TMSUCCESS);
+
+            if(h==null) {
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.info("Skipping lazy connection disassociation due to Resource Handle: null");
                 }
-                try {
-                    mc.dissociateConnections();
-                } catch (ResourceException re) {
-                    InvocationException ie = new InvocationException(
-                            re.getMessage());
-                    ie.initCause(re);
-                    throw ie;
-                } finally {
-                    if (h.getResourceState().isBusy()) {
-                        putbackDirectToPool(h, spec.getPoolInfo());
+            }
+            else {
+                ResourceSpec spec = h.getResourceSpec();
+                if(spec == null) {
+                    if (_logger.isLoggable(Level.INFO)) {
+                        _logger.info("Skipping lazy connection disassociation due to Resource Spec: null");
+                    }
+                } else {
+                    if (spec.isLazyAssociatable()) {
+                        //In this case we are assured that the managedConnection is
+                        //of type DissociatableManagedConnection
+                        javax.resource.spi.DissociatableManagedConnection mc =
+                                (javax.resource.spi.DissociatableManagedConnection) h.getResource();
+                        if (h.isEnlisted()) {
+                            getResourceManager(spec).delistResource(
+                                    h, XAResource.TMSUCCESS);
+                        }
+                        try {
+                            mc.dissociateConnections();
+                        } catch (ResourceException re) {
+                            InvocationException ie = new InvocationException(
+                                    re.getMessage());
+                            ie.initCause(re);
+                            throw ie;
+                        } finally {
+                            if (h.getResourceState().isBusy()) {
+                                putbackDirectToPool(h, spec.getPoolInfo());
+                            }
+                        }
                     }
                 }
             }
