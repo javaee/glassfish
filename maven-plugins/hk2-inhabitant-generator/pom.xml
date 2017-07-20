@@ -45,12 +45,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-parent</artifactId>
-        <version>2.5.0-b42</version>
-        <relativePath />
+        <artifactId>maven-plugins</artifactId>
+        <version>2.5.0-b46-SNAPSHOT</version>
     </parent>
     <artifactId>hk2-inhabitant-generator</artifactId>
-    <version>2.5.0-b42</version>
     <packaging>maven-plugin</packaging>
 
     <name>Inhabitant Generator</name>
@@ -76,17 +74,17 @@
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

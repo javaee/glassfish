@@ -42,10 +42,19 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.hk2</groupId>
+    <parent>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2-parent</artifactId>
+        <version>2.5.0-b42</version>
+        <relativePath/>
+    </parent>
     <artifactId>maven-plugins</artifactId>
-    <version>2.5.0-b42</version>
+    <version>2.5.0-b46-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <properties>
+        <hk2.version>${project.parent.version}</hk2.version>
+    </properties>
 
     <modules>
         <module>config-generator</module>
@@ -58,7 +67,7 @@
         <connection>scm:git:https://github.com/hk2-project/hk2.git</connection>
         <developerConnection>scm:git:git@github.com:hk2-project/hk2.git</developerConnection>
         <url>https://hk2-project.github.io</url>
-        <tag>2.5.0-b42-SNAPSHOT</tag>
+        <tag>2.5.0-b46-SNAPSHOT</tag>
     </scm>
 
     <build>
