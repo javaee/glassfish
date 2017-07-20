@@ -131,6 +131,11 @@
                     <pattern>appserv-tests/devtests/security/web-mutual-ssl/certificate/testcert1.p12</pattern>
                     <pattern>appserv-tests/devtests/web/servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener/descriptor/services/javax.servlet.ServletContainerInitializer</pattern>
                     <pattern>appserv-tests/devtests/jdbc/JdbcCommon.properties</pattern> 
+		    <pattern>appserv-tests/devtests/connector/testdb</pattern>
+		    <pattern>appserv-tests/devtests/connector/connector1.5/ra/src/${admin.password.file}</pattern>
+		    <pattern>appserv-tests/devtests/connector/connector1.5/${admin.password.file}</pattern>
+		    <pattern>appserv-tests/devtests/connector/connector1.5/app/src/${admin.password.file}</pattern>
+		    <pattern>appserv-tests/devtests/connector/connector1.5/app/${admin.password.file}</pattern>
                 </exclude> 
             </configuration>
         </plugin>
