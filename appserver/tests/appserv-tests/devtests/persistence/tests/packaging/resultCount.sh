@@ -61,14 +61,14 @@ echo "Total Expected=$TOTAL"
 echo "************************"
 echo ""
 
-echo "************************">>$APS_HOME/devtests/cmp/count.txt;
-date>>$APS_HOME/devtests/cmp/count.txt;
-echo "-----------------------">>$APS_HOME/devtests/cmp/count.txt;
-echo "PASSED=   $PASSED">>$APS_HOME/devtests/cmp/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/cmp/count.txt;
-echo "FAILED=   $FAILED">>$APS_HOME/devtests/cmp/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/cmp/count.txt;
-echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/cmp/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/cmp/count.txt;
-echo "Total Expected=$TOTAL">>$APS_HOME/devtests/cmp/count.txt;
-echo "************************">>$APS_HOME/devtests/cmp/count.txt;
+echo "************************">>$APS_HOME/devtests/persistence/count.txt;
+date>>$APS_HOME/devtests/persistence/count.txt;
+echo "-----------------------">>$APS_HOME/devtests/persistence/count.txt;
+echo "PASSED=   $PASSED">>$APS_HOME/devtests/persistence/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/persistence/count.txt;
+echo "FAILED=   $FAILED">>$APS_HOME/devtests/persistence/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/persistence/count.txt;
+echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/persistence/count.txt;
+echo "------------  =========">>$APS_HOME/devtests/persistence/count.txt;
+echo "Total Expected=$TOTAL">>$APS_HOME/devtests/persistence/count.txt;
+echo "************************">>$APS_HOME/devtests/persistence/count.txt;
