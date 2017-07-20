@@ -60,6 +60,7 @@ import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 import org.glassfish.internal.api.ServerContext;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.annotations.Service;
 
@@ -220,7 +221,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
             }
        }catch(Exception e){
                       report.setMessage(localStrings.getLocalString("change.master.broker.CannotChangeMB",
-                                    "Unable to change master broker.{0}", ""));
+                                    "Unable to change master broker because {0}", e.getMessage()));
                             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         return;
                  }
@@ -280,7 +281,19 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
          //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
          CompositeData result = null;
          try {
-             MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
+             MBeanServerConnection mbsc = null;
+             try {
+                 mbsc = mqInfo.getMQMBeanServerConnection();
+             } catch (Exception e) {
+                 String[] param = new String[] { mqInfo.getASInstanceName() };
+                 String emsg = localStrings.getLocalString(
+                     "change.master.broker.cannotConnectOldMasterBroker", 
+                     "Unable to connect to the current master broker {0}. Likely reasons: the cluster might not be running, the server instance {0} associated with the current master broker or the current master broker might not be running.  Please check server logs.", param);
+                 if (logger.isLoggable(Level.WARNING)) {
+                     logger.log(Level.WARNING, emsg);
+                 }
+                 logAndHandleException(e, emsg);
+             }
              ObjectName on = new ObjectName(
                      CLUSTER_CONFIG_MBEAN_NAME);
              Object [] params = null;
@@ -288,11 +301,11 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
              String []  signature = new String [] {
                       "java.lang.String",
                       "java.lang.String"};
-                        params = new Object [] {oldMasterBroker, newMasterBroker};
+                      params = new Object [] {oldMasterBroker, newMasterBroker};
 
-             result = (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature);
+             result = mbsc != null ? (CompositeData) mbsc.invoke(on, "changeMasterBroker", params, signature) : null;
          } catch (Exception e) {
-                     logAndHandleException(e, "admin.mbeans.rmb.error_creating_jms_dest");
+                     logAndHandleException(e, e.getMessage()); 
          } finally {
                      try {
                          if(mqInfo != null) {
@@ -304,5 +317,32 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                  }
          return result;
      }
+
+     /**
+      * This is a copy from the super method except that
+      * it avoids a NPE in using e.getCause() and ensure 
+      * the exception message is errorMsg not "" - these
+      * eventually should be incoporated to the super method
+      * post 5.0 release.
+      */
+     @Override
+     protected void logAndHandleException(Exception e, String errorMsg)
+     throws JMSAdminException {
+         //log JMX Exception trace as WARNING
+         java.io.StringWriter s = new java.io.StringWriter();
+         e.printStackTrace(new java.io.PrintWriter(s));
+         String emsg = localStrings.getLocalString(errorMsg, errorMsg);
+         JMSAdminException je = new JMSAdminException(emsg);
+         /* Cause will be InvocationTargetException, cause of that
+          * will be  MBeanException and cause of that will be the
+          * real exception we need
+          */
+         if ((e.getCause() != null) &&
+             (e.getCause().getCause() != null)) {
+             je.initCause(e.getCause().getCause().getCause());
+         }
+         handleException(je);
+     }
+
 }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,78 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package simple_bv_servlet;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.List;
+package admin;
+/*
+ * Test get-client-stubs command.
+ * @author Mukesh Kumawat
+ */
+public class ClientStubsTests extends AdminBaseDevTest {
+    private static final String DOMAIN_NAME = "clientstubtest";
 
-public class Employee implements Serializable {
+    private void runTests() {
+        getClientStubsNegative();
+    }
 
-  //Repeatable Annotation Usage
-  @Max(60)
-  @Max(50) //So, effectively the max value is 50
-  @Min(20)
-  @Min(25) //So, effective the min value is 25
-  private int age;
+    private void getClientStubsNegative() {
+        final String st = "get-client-stub";
+        final String appName = "foo";
+        final String path = ".";
+        AsadminReturn ret = asadminWithOutput("get-client-stubs", "--appname", appName, path);
+        if (!ret.returnValue) {
+            writeFailure();
+        }
+    }
 
-  public void setAge(int age){
-    this.age = age;
-  }
+    @Override
+    protected String getTestDescription() {
+        return "Tests Client-Stub Commands";
+    }
 
-  public int getAge(){
-    return age;
-  }
-
-  @NotNull
-  @Email //BV 2.0 annotation
-  private String email;
-
-  public void setEmail(String email){
-    this.email = email;
-  }
-
-  public String getEmail(){
-    return email;
-  }
-
-  @NotNull
-  private String firstName;
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  @NotNull
-  private String lastName;
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  private List<String> listOfString;
-
-  @NotNull
-  /*Type_Use target support for all in-built constraint annotations: List<@NotNull String> */
-  public List<@NotNull String > getListOfString() {
-    return listOfString;
-  }
-
-  public void setListOfString(List<String> listOfString) {
-    this.listOfString = listOfString;
-  }
-
-
+    public static void main(String[] args) {
+        new ClientStubsTests().runTests();
+    }
 }
