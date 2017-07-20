@@ -459,6 +459,8 @@
                         <useReleaseProfile>false</useReleaseProfile>
                         <tagNameFormat>@{project.version}</tagNameFormat>
                         <arguments>${release.arguments}</arguments>
+                        <preparationGoals>install</preparationGoals>
+                        <goals>deploy</goals>
                     </configuration>
                     <dependencies>
                         <dependency>
