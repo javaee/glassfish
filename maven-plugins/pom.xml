@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>2.5.0-b42</version>
+        <version>2.5.0-b43</version>
         <relativePath/>
     </parent>
     <artifactId>maven-plugins</artifactId>
@@ -53,7 +53,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <hk2.version>2.5.0-b42</hk2.version>
+        <hk2.version>2.5.0-b43</hk2.version>
     </properties>
 
     <modules>
