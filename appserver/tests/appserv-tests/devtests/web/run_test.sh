@@ -114,6 +114,7 @@ is_target(){
         "clustering" | \
         "ha" | \
         "embedded-all" | \
+        "group-1" | \
         "all") echo 1;;
         *) echo 0;;
     esac
@@ -125,6 +126,9 @@ get_test_target(){
 			TARGET=all
 			export TARGET;;
 
+                web_group-1 )
+                        TARGET="taglib el security http-connector comet misc clustering ha finish-report"
+                        export TARGET;;
                * )
                         TARGET="$1 finish-report"
                         export TARGET;;	
@@ -273,7 +277,7 @@ run_test_id(){
 }
 
 list_test_ids(){
-    echo web_all web_jsp web_taglib web_el web_servlet web_web-container web_security web_http-connector web_comet web_misc web_weblogicDD web_clustering web_ha
+    echo web_all web_jsp web_servlet web_web-container  web_group-1
 }
 post_test_run(){
     copy_test_artifects
