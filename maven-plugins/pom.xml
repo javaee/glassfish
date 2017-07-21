@@ -77,9 +77,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
                     <configuration>
                         <tagNameFormat>maven-plugins-@{project.version}</tagNameFormat>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.scm</groupId>
+                            <artifactId>maven-scm-provider-gitexe</artifactId>
+                            <version>1.9.4</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                      <groupId>org.glassfish.copyright</groupId>
