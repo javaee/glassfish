@@ -134,9 +134,11 @@ public class SJSASFactory extends Factory {
                     annotationTypeName.
                     replace('.', '/') + ";");  
 
-            // FIXME just use the javax.annotation.ManagedMBean annotation 
-            // for the prototype, later we need to generate the list filtering 
-            // with the skip list in the spec
+            // In the current set of the annotations processed by the 
+            // deployment layer, the only annotation that should be
+            // processed even when metadata-complete atribute value is true
+            // is javax.annotation.ManagedBean. If there are more annotations
+            // falling in this category in the future, add them to this list
             if (annotationTypeName.equals("javax.annotation.ManagedBean")) {
                 systemProcessorMetaDataComplete.pushAnnotationHandler(annotationTypeName, new LazyAnnotationHandler(descriptor));
                 annotationClassNamesMetaDataComplete.add("L" +
