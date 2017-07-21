@@ -27,8 +27,15 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.ejte.ccl.reporter</groupId>
+            <artifactId>SimpleReporterAdapter</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${APS_HOME}/lib/reporter.jar</systemPath>
         </dependency>
     </dependencies>
     <build>

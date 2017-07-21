@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Binding;
@@ -20,11 +21,17 @@ import javax.sql.DataSource;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class ContextTest {
     private static final String NL = System.getProperty("line.separator");
     private static EJBContainer ejbContainer;
     private TestBean testBean;
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+
+    @Rule
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Naming::naming2::ContextTest");
     
     @Rule public TestName testName = new TestName();
     
@@ -35,6 +42,11 @@ public class ContextTest {
     @AfterClass public static void tearDownClass() {
         if(ejbContainer != null)
             ejbContainer.close();
+    }
+
+    @AfterClass
+    public static void printSummary(){
+        stat.printSummary();
     }
 
     @Before public void setUp() throws NamingException {
