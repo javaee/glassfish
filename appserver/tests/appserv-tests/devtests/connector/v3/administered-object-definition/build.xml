@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+        <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
+        ]>
+
+<project name="admin-object-definition-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="build,setup,deploy,run,unsetup,undeploy"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+        <ant dir="ra" target="clean"/>
+    </target>
+
+    <target name="info" depends="init-common">
+    	<echo message="build.classes.dir is ${build.classes.dir}"/>
+    	<echo message="s1astest.classpath is ${s1astest.classpath}"/>
+    </target>
+    
+    <target name="compile-ut" depends="init-common">
+      <mkdir dir="${build.classes.dir}"/>
+      <javac srcdir="ut" destdir="${build.classes.dir}"
+      	    classpath="${env.APS_HOME}/lib/junit.jar:${s1astest.classpath}"
+      	    debug="on"
+            includeantruntime="false"
+      	    failonerror="true"/>
+    </target>
+    <target name="build-ut" depends="init-common">
+      <!-- build a special ear which only includes deployment descriptors-->
+      <mkdir dir="${assemble.dir}"/>
+      <mkdir dir="${assemble.dir}/temp"/>
+      <mkdir dir="${build.classes.dir}/META-INF"/>   
+      <copy file="${basedir}/descriptor/ut-application.xml" tofile="${build.classes.dir}/META-INF/application.xml"  failonerror="false"/> 
+      <jar jarfile="${assemble.dir}/${appname}App-UT.ear"> 
+        <fileset dir="${assemble.dir}">
+           <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${build.classes.dir}">
+          <include name="META-INF/application.xml"/>
+        </fileset>
+      </jar>
+
+      <!-- unpack war, jar, ear files, otherwise annotations will not be processed. -->
+      <unjar src="${assemble.dir}/${appname}-ejb.jar" dest="${assemble.dir}/temp/${appname}-ejb"/>
+      <unjar src="${assemble.dir}/${appname}-web.war" dest="${assemble.dir}/temp/${appname}-web"/>
+      <unjar src="${assemble.dir}/${appname}-client.jar" dest="${assemble.dir}/temp/${appname}-client"/>
+      <unjar src="${assemble.dir}/${appname}App-UT.ear" dest="${assemble.dir}/temp/${appname}App-UT"/>
+
+    </target>
+    	
+    <target name="run-ut" depends="compile-ut">
+      <junit printsummary="yes" haltonerror="no" haltonfailure="no" fork="true">
+        <formatter type="plain" usefile="false"/>
+        <jvmarg value="-DtestClasspath=${build.classes.dir}"/>
+        <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=9099"/>-->
+        <jvmarg value="-DworkDir=${basedir}"/>
+        <jvmarg value="-DArchiveDir=${assemble.dir}/temp"/>
+        <classpath>
+          <pathelement path="${env.APS_HOME}/lib/junit.jar:${s1astest.classpath}"/>
+        </classpath>
+
+        <test name="com.sun.s1asdev.aod.ArchiveTest" todir="${basedir}/report"/>
+        <test name="com.sun.s1asdev.aod.DDTest" todir="${basedir}/report"/>
+      </junit>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+    	  <echo message="assemble.dir = ${assemble.dir}"/>
+        <!--build and package .war first so it doesn't contain ejb bean !-->
+        <!--classes that have @Stateless/@Stateul !-->
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="true"/>
+        </antcall>
+
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+
+        <antcall target="appclient-jar-common">
+            <param name="appclientjar.classes"
+                   value="**/*Client*.class"/>
+        </antcall>
+
+        <antcall target="ejb-jar-common">
+            <param name="ejbjar.classes"
+                   value="**/Hello**.class"/>
+        </antcall>
+        
+        <antcall target="ear-common"/>
+
+        <antcall target="build-ut"/>
+        
+        <ant dir="ra" target="all"/>
+    </target>
+
+    <target name="setup" depends="init-common">
+    </target>
+
+    <target name="unsetup" depends="init-common">
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <ant dir="ra" inheritAll="false" target="deploy"/>
+        <ant dir="ra" inheritAll="false" target="testAddAdmin"/>
+        <antcall target="deploy-common"/>
+
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="run-ut"/>
+        <antcall target="run-it"/>
+    </target>
+
+    <target name="run-it" depends="init-common">
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="${http.host} ${http.port}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+        <ant dir="ra" inheritAll="false" target="undeploy"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>
