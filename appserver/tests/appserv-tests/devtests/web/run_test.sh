@@ -126,7 +126,7 @@ get_test_target(){
 			TARGET=all
 			export TARGET;;
 
-                web_group-1 )
+                group-1 )
                         TARGET="taglib el security http-connector comet misc clustering ha finish-report"
                         export TARGET;;
                * )
