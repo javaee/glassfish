@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.*;
-import org.glassfish.api.admin.ServerEnvironment;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
@@ -57,7 +57,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.resourcebase.resources.api.ResourceConstants;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.net.MalformedURLException;
@@ -94,6 +93,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     @Inject
     private Domain domain;
 
+    private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceValidator.class);
+
     public void postConstruct() {
         events.register(this);
     }
@@ -105,7 +106,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             application = dc.getModuleMetaData(Application.class);
             DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
             target = commandParams.target;
-            if (application == null || Boolean.getBoolean("deployment.switchoff.resource.validation"))
+            if (application == null || System.getProperty("deployment.resource.validation", "true").equals("false"))
                 return;
             AppResources appResources = new AppResources();
             parseResources(appResources);
@@ -483,7 +484,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         if(!resource.hasLookup() && !namespace.find(resource.getName(), resource.getEnv())) {
             deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                     new Object[] {resource.getName(), null, resource.getType()});
-            throw new DeploymentException("Null JNDI resource");
+            throw new DeploymentException(localStrings.getLocalString("enterprise.deployment.util.resource.validation",
+                    "JNDI lookup failed for the resource: Name: {0}, Lookup: {1}, Type: {2}",
+                    resource.getName(), null, resource.getType()));
         }
 
         String jndiName = resource.getJndiName();
@@ -512,8 +515,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         } catch (NamingException e) {
             deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
                     new Object[] {resource.getName(), jndiName, resource.getType()});
-            DeploymentException de = new DeploymentException(String.format("JNDI resource not present: %s, value: %s",
-                    resource.getName(), jndiName));
+            DeploymentException de = new DeploymentException(localStrings.getLocalString(
+                    "enterprise.deployment.util.resource.validation",
+                    "JNDI lookup failed for the resource: Name: {0}, Lookup: {1}, Type: {2}",
+                    resource.getName(), jndiName, resource.getType()));
             de.initCause(e);
             throw de;
         }
