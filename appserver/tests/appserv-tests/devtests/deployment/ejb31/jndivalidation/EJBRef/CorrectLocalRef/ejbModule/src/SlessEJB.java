@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,50 +38,17 @@
  * holder.
  */
 
-package com.sun.s1asdev.ejb.ejb30.hello.session2;
+package test.ejb;
 
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.ejb.Remote;
-import javax.ejb.EJB;
-import javax.ejb.CreateException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import javax.transaction.UserTransaction;
 
 @Stateless
+public class SlessEJB implements Sless {
 
-@Remote({Sless.class})
-public class SlessEJB 
-{
-
-
-    public String hello() {
-        System.out.println("In SlessEJB:hello()");
-        return "hello from SlessEJB";
-    }
-
-    public String hello2() throws javax.ejb.CreateException {
-        throw new javax.ejb.CreateException();
-    }
-
-    public String getId() {
-        return "SlessEJB";
-    }
-
-    public Sless roundTrip(Sless s) {
-        System.out.println("In SlessEJB::roundTrip " + s);
-        System.out.println("input Sless.getId() = " + s.getId());
-        return s;
-    }
-
-    public Collection roundTrip2(Collection collectionOfSless) {
-        System.out.println("In SlessEJB::roundTrip2 " + 
-                           collectionOfSless);
-        if( collectionOfSless.size() > 0 ) {
-            Sless sless = (Sless) collectionOfSless.iterator().next();
-            System.out.println("input Sless.getId() = " + sless.getId());  
-        }
-        return collectionOfSless;
+    @Override
+    public void sayHello() {
+        System.out.println("Hello");
     }
 }
+

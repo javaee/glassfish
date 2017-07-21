@@ -40,16 +40,17 @@
 
 package com.sun.enterprise.deployment.util;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deployment.Application;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.logging.annotation.LogMessageInfo;
@@ -57,6 +58,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.resourcebase.resources.api.ResourceConstants;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.net.MalformedURLException;
@@ -95,6 +97,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ResourceValidator.class);
 
+    @Inject @Named( ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
     public void postConstruct() {
         events.register(this);
     }
@@ -126,7 +131,7 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 parseResources(bd, appResources);
                 EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
                 for (EjbDescriptor ejb : ebd.getEjbs())
-                    parseResources(ejb, appResources);
+                    parseEJB(ejb, appResources);
             }
         }
 
@@ -137,6 +142,164 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         Map<String, List<String>> resourcesList =
                 (Map<String, List<String>>) dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_JNDI_NAMES);
         appResources.storeAppScopedResources(resourcesList, appName);
+    }
+
+    /**
+     * Code logic from BaseContainer.java. Store portable and non-portable JNDI names in our namespace.
+     * Internal JNDI names not processed as they will not be called from an application.
+     *
+     * @param ejb
+     */
+    private void parseEJB(EjbDescriptor ejb, AppResources appResources) {
+        String javaGlobalName = getJavaGlobalJndiNamePrefix(ejb);
+
+        boolean disableNonPortableJndiName = false;
+        // TODO: Need to get the value of system-property server.ejb-container.property.disable-nonportable-jndi-names
+        Boolean disableInDD = ejb.getEjbBundleDescriptor().getDisableNonportableJndiNames();
+        if(disableInDD != null) {  // explicitly set in glassfish-ejb-jar.xml
+            disableNonPortableJndiName = disableInDD;
+        }
+
+        String glassfishSpecificJndiName = null;
+        if (!disableNonPortableJndiName) {
+            glassfishSpecificJndiName = ejb.getJndiName();
+        }
+        if ((glassfishSpecificJndiName != null)
+                && (glassfishSpecificJndiName.equals("")
+                || glassfishSpecificJndiName.equals(javaGlobalName))) {
+            glassfishSpecificJndiName = null;
+        }
+
+        // used to decide whether the javaGlobalName needs to be stored
+        int countPortableJndiNames = 0;
+
+        // interfaces now
+        if (ejb.isRemoteInterfacesSupported()) {
+            String intf = ejb.getHomeClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            appResources.storeInNamespace(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
+            // non-portable
+            if(glassfishSpecificJndiName != null) {
+                appResources.storeInNamespace(glassfishSpecificJndiName, ejb);
+            }
+        }
+
+        if (ejb.isRemoteBusinessInterfacesSupported()) {
+            int count = 0;
+            for (String intf : ejb.getRemoteBusinessClassNames()) {
+                count++;
+                String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+                appResources.storeInNamespace(fullyQualifiedJavaGlobalName, ejb);
+                countPortableJndiNames++;
+                // non-portable - interface specific
+                if(glassfishSpecificJndiName != null) {
+                    String remoteJndiName = getRemoteEjbJndiName(true, intf, glassfishSpecificJndiName);
+                    appResources.storeInNamespace(remoteJndiName, ejb);
+                }
+            }
+            // non-portable - if only one remote business interface exists and no remote home interfaces exist,
+            // then by default this can be used to lookup the remote interface.
+            if(glassfishSpecificJndiName != null && !ejb.isRemoteInterfacesSupported() && count == 1) {
+                appResources.storeInNamespace(glassfishSpecificJndiName, ejb);
+            }
+        }
+
+        if (ejb.isLocalInterfacesSupported()) {
+            String intf = ejb.getLocalHomeClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            appResources.storeInNamespace(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
+        }
+
+        if (ejb.isLocalBusinessInterfacesSupported()) {
+            for (String intf : ejb.getLocalBusinessClassNames()) {
+                String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+                appResources.storeInNamespace(fullyQualifiedJavaGlobalName, ejb);
+                countPortableJndiNames++;
+            }
+        }
+
+        if (ejb.isLocalBean()) {
+            String intf = ejb.getEjbClassName();
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            appResources.storeInNamespace(fullyQualifiedJavaGlobalName, ejb);
+            countPortableJndiNames++;
+        }
+
+        if (countPortableJndiNames == 1) {
+            appResources.storeInNamespace(javaGlobalName, ejb);
+        }
+        parseResources(ejb, appResources);
+    }
+
+    private String getJavaGlobalJndiNamePrefix(EjbDescriptor ejbDescriptor) {
+
+        String appName = null;
+
+        Application app = ejbDescriptor.getApplication();
+        if ( ! app.isVirtual() ) {
+            appName = ejbDescriptor.getApplication().getAppName();
+        }
+
+        EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
+        String modName = ejbBundle.getModuleDescriptor().getModuleName();
+
+        String ejbName = ejbDescriptor.getName();
+
+        StringBuilder javaGlobalPrefix = new StringBuilder("java:global/");
+
+        if (appName != null) {
+            javaGlobalPrefix.append(appName);
+            javaGlobalPrefix.append("/");
+        }
+
+        javaGlobalPrefix.append(modName);
+        javaGlobalPrefix.append("/");
+        javaGlobalPrefix.append(ejbName);
+
+
+        return javaGlobalPrefix.toString();
+    }
+
+    private String getRemoteEjbJndiName(EjbReferenceDescriptor refDesc) {
+
+        String intf = refDesc.isEJB30ClientView() ?
+                refDesc.getEjbInterface() : refDesc.getHomeClassName();
+
+        return getRemoteEjbJndiName(refDesc.isEJB30ClientView(), intf, refDesc.getJndiName());
+    }
+
+    private String getRemoteEjbJndiName(boolean businessView, String interfaceName, String jndiName) {
+        String returnValue = jndiName;
+
+        String portableFullyQualifiedPortion = "!" + interfaceName;
+        String glassfishFullyQualifiedPortion = "#" + interfaceName;
+
+        if(businessView) {
+            if(!jndiName.startsWith("corbaname:") ) {
+                if(jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
+                    returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+                } else {
+                    returnValue = checkFullyQualifiedJndiName(jndiName, glassfishFullyQualifiedPortion);
+                }
+            }
+        } else {
+            // Only in the portable global case, convert to a fully-qualified name
+            if( jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
+                returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+            }
+        }
+
+        return returnValue;
+    }
+
+    private static String checkFullyQualifiedJndiName(String origJndiName, String fullyQualifiedPortion) {
+        String returnValue = origJndiName;
+        if( !origJndiName.endsWith(fullyQualifiedPortion) ) {
+            returnValue = origJndiName + fullyQualifiedPortion;
+        }
+        return returnValue;
     }
 
     private void parseManagedBeans(AppResources appResources) {
@@ -281,18 +444,72 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         appResources.storeInNamespace(name, env);
     }
 
-    /**
-     * TODO: @EJB
+     /**
+     * Logic from EjbNamingReferenceManagerImpl.java - Here EJB references get resolved
      */
     private void parseResources(EjbReferenceDescriptor ejbRef, JndiNameEnvironment env, AppResources appResources) {
+        String name = getLogicalJNDIName(ejbRef.getName(), env);
+        // we only need to worry about those references which are not linked yet
+        if(ejbRef.getEjbDescriptor() != null) {
+            appResources.storeInNamespace(name, env);
+            return;
+        }
 
+        String jndiName = "";
+        // Should we use an inverse approach i.e., skip validation only in special cases?
+        // Not sure if that is required as the below approach works fine while resolving EJB references
+        boolean validationRequired = false;
+
+        // local
+        if (ejbRef.isLocal()) {
+            // mapped name has no meaning for local ejb-ref as non-portable JNDI names don't have any meaning in this case?
+            if (ejbRef.hasLookupName()) {
+                jndiName = ejbRef.getLookupName();
+                validationRequired = true;
+            }
+        }
+        // remote
+        else {
+            // mapped-name takes precedence over lookup name
+            if (!ejbRef.hasJndiName() && ejbRef.hasLookupName()) {
+                jndiName = ejbRef.getLookupName();
+                validationRequired = true;
+            }
+            // TODO: A case skipped from EjbNamingRefManager
+            else if (ejbRef.hasJndiName()
+                    && ejbRef.getJndiName().startsWith("java:app/")
+                    && !ejbRef.getJndiName().startsWith("java:app/env/")) {
+                // Why does the below logic exist in the EjbNamingRefMan code?
+                // Intentionally or not, this resolves the java:app mapped names
+                // Seems suspicious as the corresponding java:global case is handled in the getRemoteEjbJndiName function call
+                String remoteJndiName = ejbRef.getJndiName();
+
+                String appName = DOLUtils.getApplicationName(application);;
+                String newPrefix = "java:global/" + appName + "/";
+
+                int javaAppLength = "java:app/".length();
+                jndiName = newPrefix + remoteJndiName.substring(javaAppLength);
+                validationRequired = true;
+            }
+            else {
+                String remoteJndiName = getRemoteEjbJndiName(ejbRef);
+                // TODO: CORBA case
+                if (!remoteJndiName.startsWith("corbaname:")) {
+                    validationRequired = true;
+                    jndiName = remoteJndiName;
+                }
+            }
+        }
+
+        appResources.store(new AppResource(name, jndiName, ejbRef.getType(), env, validationRequired));
     }
 
-    /**
-     * TODO: @WebServiceRef
-     */
     private void parseResources(ServiceReferenceDescriptor serviceRef, JndiNameEnvironment env, AppResources appResources) {
-
+        String name = getLogicalJNDIName(serviceRef.getName(), env);
+        if (serviceRef.hasLookupName())
+            appResources.store(new AppResource(name, serviceRef.getLookupName(), serviceRef.getType(), env, true));
+        else
+            appResources.storeInNamespace(name, env);
     }
 
     /**
@@ -502,6 +719,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 return;
         }
 
+        // EJB Non-portable JNDI names
+        if (!jndiName.startsWith(ResourceConstants.JAVA_SCOPE_PREFIX))
+            if (namespace.find(jndiName, env))
+                return;
+
         // convert comp to module if req
         String convertedJndiName = getLogicalJNDIName(jndiName, env);
         if (namespace.find(convertedJndiName, env))
@@ -655,11 +877,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
         private List<String> globalNameSpace;
 
+        private List<String> nonPortableJndiNames;
+
         private JNDINamespace() {
             componentNamespaces = new HashMap<>();
             moduleNamespaces = new HashMap<>();
             appNamespace = new ArrayList<>();
             globalNameSpace = new ArrayList<>();
+            nonPortableJndiNames = new ArrayList<>();
         }
 
         /**
@@ -722,6 +947,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             else if (jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX)) {
                 globalNameSpace.add(jndiName);
             }
+            else {
+                nonPortableJndiNames.add(jndiName);
+            }
         }
 
         /**
@@ -746,15 +974,35 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
                 return appNamespace.contains(jndiName);
             else if (jndiName.startsWith(ResourceConstants.JAVA_GLOBAL_SCOPE_PREFIX))
                 return globalNameSpace.contains(jndiName);
-            return false;
+            else
+                return nonPortableJndiNames.contains(jndiName);
         }
     }
 
     /**
      * Copy from ApplicationLifeCycle.java
-     * TODO: Cluster case - Implement
      */
     private boolean loadOnCurrentInstance() {
-        return true;
+        final DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
+        final Properties appProps = dc.getAppProps();
+        if (commandParams.enabled) {
+            // if the current instance match with the target
+            if (domain.isCurrentInstanceMatchingTarget(commandParams.target, commandParams.name(), server.getName(),
+                    dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class))) {
+                return true;
+            }
+            if (server.isDas()) {
+                String objectType =
+                        appProps.getProperty(ServerTags.OBJECT_TYPE);
+                if (objectType != null) {
+                    // if it's a system application needs to be loaded on DAS
+                    if (objectType.equals(DeploymentProperties.SYSTEM_ADMIN) ||
+                            objectType.equals(DeploymentProperties.SYSTEM_ALL)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

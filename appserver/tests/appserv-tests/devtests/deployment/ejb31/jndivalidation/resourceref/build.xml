@@ -50,9 +50,9 @@
     &commonBuild;
 
     <target name="private-all">
-        <ant dir="IncorrectJDBCRes" target="private-all">
+        <!--ant dir="IncorrectJDBCRes" target="private-all">
             <property name="build" value="${build}/IncorrectJDBCRes"/>
-        </ant>
+        </ant-->
         <ant dir="CorrectJDBCRes" target="private-all">
             <property name="build" value="${build}/CorrectJDBCRes"/>
         </ant>
@@ -71,9 +71,9 @@
         <ant dir="DefaultResources" target="private-all">
             <property name="build" value="${build}/DefaultResources"/>
         </ant>
-        <!--[Cluster failure]ant dir="JDBCResInAnotherApp" target="private-all">
+        <ant dir="JDBCResInAnotherApp" target="private-all">
             <property name="build" value="${build}/JDBCResInAnotherApp"/>
-        </ant-->
+        </ant>
         <ant dir="ResInSameApp" target="private-all">
             <property name="build" value="${build}/ResinSameApp"/>
         </ant>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 EJB 2.1//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-0.dtd">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,23 +42,19 @@
 
 -->
 
-<sun-ejb-jar>
-    <enterprise-beans>
-    <ejb>
-      <ejb-name>SfulEJB</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sful</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB2</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless2</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB3</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless3</jndi-name>
-    </ejb>
-    </enterprise-beans>
-</sun-ejb-jar>
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="EJBRef" default="all" basedir=".">
+
+    &commonBuild;
+
+    <target name="private-all">
+        <ant dir="CorrectLocalRef" target="private-all">
+            <property name="build" value="${build}/CorrectLocalRef"/>
+        </ant>
+        <ant dir="RemoteRef1" target="private-all">
+            <property name="build" value="${build}/RemoteRef1"/>
+        </ant>
+    </target>
+</project>

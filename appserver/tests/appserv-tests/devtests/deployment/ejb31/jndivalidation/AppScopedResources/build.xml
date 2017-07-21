@@ -53,9 +53,9 @@
         <ant dir="CorrectJDBCResource" target="private-all">
             <property name="build" value="${build}/CorrectJDBCResource"/>
         </ant>
-        <ant dir="IncorrectJDBCResource" target="private-all">
+        <!--ant dir="IncorrectJDBCResource" target="private-all">
             <property name="build" value="${build}/IncorrectJDBCResource"/>
-        </ant>
+        </ant-->
         <ant dir="CorrectEnterpriseApplication" target="private-all">
             <property name="build" value="${build}/CorrectEnterpriseApplication"/>
         </ant>

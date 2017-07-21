@@ -74,5 +74,8 @@
         <ant dir="AppScopedResources" target="private-all">
             <property name="build" value="${build}/AppScopedResources"/>
         </ant>
+        <ant dir="EJBRef" target="private-all">
+            <property name="build" value="${build}/EJBRef"/>
+        </ant>
     </target>
 </project>

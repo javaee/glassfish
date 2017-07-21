@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 EJB 2.1//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-0.dtd">
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,23 +41,15 @@
 
 -->
 
-<sun-ejb-jar>
-    <enterprise-beans>
-    <ejb>
-      <ejb-name>SfulEJB</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sful</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB2</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless2</jndi-name>
-    </ejb>
-    <ejb>
-      <ejb-name>SlessEJB3</ejb-name>
-      <jndi-name>ejb_ejb30_hello_session2_Sless3</jndi-name>
-    </ejb>
-    </enterprise-beans>
-</sun-ejb-jar>
+<application version="7" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
+    <description>Application description</description>
+    <module>
+        <web>
+            <web-uri>deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-web.war</web-uri>
+            <context-root>/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-war</context-root>
+        </web>
+    </module>
+    <module>
+        <ejb>deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb.jar</ejb>
+    </module>
+</application>

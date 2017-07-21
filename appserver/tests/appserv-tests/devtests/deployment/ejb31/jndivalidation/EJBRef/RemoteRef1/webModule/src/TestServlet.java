@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,50 +38,49 @@
  * holder.
  */
 
-package com.sun.s1asdev.ejb.ejb30.hello.session2;
+package test.web;
 
-import javax.ejb.Stateless;
-import javax.ejb.Remote;
+import java.io.IOException;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.CreateException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import javax.transaction.UserTransaction;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@Stateless
+import test.ejb.Sless;
 
-@Remote({Sless.class})
-public class SlessEJB 
-{
+@WebServlet(name = "TestServlet", urlPatterns = {"/TestServlet"})
+public class TestServlet extends HttpServlet {
+    // Portable JNDI names
+    // Testing mapped name using java:global and java:app JNDI names
+    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB")
+    Sless ejb1;
 
+    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB")
+    Sless ejb2;
 
-    public String hello() {
-        System.out.println("In SlessEJB:hello()");
-        return "hello from SlessEJB";
-    }
+    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB!test.ejb.Sless")
+    Sless ejb3;
 
-    public String hello2() throws javax.ejb.CreateException {
-        throw new javax.ejb.CreateException();
-    }
+    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB!test.ejb.Sless")
+    Sless ejb4;
 
-    public String getId() {
-        return "SlessEJB";
-    }
+    // Non-portable jndi names
+    // This should work since we have only one remote business interface
+    @EJB(lookup="sless_ejb")
+    Sless ejb5;
 
-    public Sless roundTrip(Sless s) {
-        System.out.println("In SlessEJB::roundTrip " + s);
-        System.out.println("input Sless.getId() = " + s.getId());
-        return s;
-    }
+    @EJB(lookup="sless_ejb#test.ejb.Sless")
+    Sless ejb6;
 
-    public Collection roundTrip2(Collection collectionOfSless) {
-        System.out.println("In SlessEJB::roundTrip2 " + 
-                           collectionOfSless);
-        if( collectionOfSless.size() > 0 ) {
-            Sless sless = (Sless) collectionOfSless.iterator().next();
-            System.out.println("input Sless.getId() = " + sless.getId());  
-        }
-        return collectionOfSless;
+    // Auto-linking
+    @EJB
+    Sless ejb7;
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
     }
 }
