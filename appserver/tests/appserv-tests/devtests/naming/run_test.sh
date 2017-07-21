@@ -74,9 +74,11 @@ run_test_id(){
   get_test_target $1
   #run the actual test function
   test_run
-  #check_successful_run
   generate_junit_report $1
   change_junit_report_class_names
+}
+
+post_test_run(){
   copy_test_artifects
   upload_test_results
   delete_bundle
@@ -98,11 +100,6 @@ case $OPT in
   list_test_ids )
     list_test_ids;;
   run_test_id )
+    trap post_test_run EXIT
     run_test_id $TEST_ID ;;
 esac
-
-    Contact GitHub API Training Shop Blog About 
-
-    © 2017 GitHub, Inc. Terms Privacy Security Status Help 
-
-
