@@ -478,9 +478,8 @@ public abstract class Archivist<T extends BundleDescriptor> {
                                 // present, set the metadata-complete attribute 
                                 // value of the extension descriptor using the 
                                 // metadata-complete value of main descriptor
-                                if (descriptor instanceof BundleDescriptor && 
-                                    o instanceof BundleDescriptor) {
-                                    boolean isFullMain = ((BundleDescriptor)descriptor).isFullAttribute();
+                                if (o instanceof BundleDescriptor) {
+                                    boolean isFullMain = descriptor.isFullAttribute();
                                     ((BundleDescriptor)o).setFullAttribute(String.valueOf(isFullMain));
                                 }
                             }
