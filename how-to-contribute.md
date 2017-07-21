@@ -16,17 +16,17 @@ More information can be found on the [Adopt-a-JSR for Java EE](https://community
 If you are a developer interested in contributing to the GlassFish project, here are a few things you should probably know.  
 
 
-#### Build GlassFish
+#### - Build GlassFish
 
 Starting with GlassFish v3, the build infrastructure is entirely based on Maven.  
 
 
-#### Contribute Code
+#### - Contribute Code
 
 Contributing to GlassFish can be done in various ways: fixing bugs, enhancements, new features, or even whole modules. If you want to raise a Pull Request with your changes, please refer to [GlassFish Pull Request Acceptance Workflow](glassfish-pullrequest.md).
 
 
-#### Test GlassFish
+#### - Test GlassFish
 
 There are several different tests that are currently available in GlassFish. QuickLook tests run in a short time and cover a broad set of the application server features. Developer tests are also available for the different modules. Each module has more information about running those tests.  
 
