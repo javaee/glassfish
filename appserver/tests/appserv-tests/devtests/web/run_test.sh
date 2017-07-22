@@ -127,10 +127,10 @@ get_test_target(){
 			export TARGET;;
 
                 group-1 )
-                        TARGET="taglib el security http-connector comet misc clustering ha finish-report"
+                        TARGET="init taglib el security http-connector comet misc clustering ha finish-report"
                         export TARGET;;
                * )
-                        TARGET="$1 finish-report"
+                        TARGET="init $1 finish-report"
                         export TARGET;;	
        esac
 
@@ -277,7 +277,7 @@ run_test_id(){
 }
 
 list_test_ids(){
-    echo web_all web_jsp web_servlet web_web-container  web_group-1
+    echo web_all web_jsp web_servlet web_web-container web_group-1
 }
 post_test_run(){
     copy_test_artifects
