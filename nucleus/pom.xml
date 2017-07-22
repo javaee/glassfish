@@ -129,7 +129,7 @@
         <javax.validation.osgi.version.lowerbound>1.1.0</javax.validation.osgi.version.lowerbound>
         <management-api.version>1.1-rev-1</management-api.version>
         <servlet-api.version>4.0.0-b07</servlet-api.version>
-        <grizzly.version>2.4.0-beta13</grizzly.version>
+        <grizzly.version>2.4.0</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
         <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
@@ -142,8 +142,8 @@
         <javax.el.version>3.0.1-b08</javax.el.version>
         <javax.el-api.version>3.0.1-b04</javax.el-api.version>
         <saaj-api.version>1.4.0</saaj-api.version>
-        <hk2.version>2.5.0-b42</hk2.version>
-        <hk2.plugin.version>2.5.0-b42</hk2.plugin.version>
+        <hk2.version>2.5.0-b44</hk2.version>
+        <hk2.plugin.version>2.5.0-b44</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
@@ -171,7 +171,7 @@
         <logging-annotation-processor.version>1.7</logging-annotation-processor.version>
         <command-security-plugin.version>1.0.7</command-security-plugin.version>
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>
-        <mail.version>1.6.0-rc2</mail.version>
+        <mail.version>1.6.0</mail.version>
         <javax.annotation-api.version>1.3</javax.annotation-api.version>
         <copyright-plugin.version>1.42</copyright-plugin.version>
         <jdk.version>1.7.0-09</jdk.version>
