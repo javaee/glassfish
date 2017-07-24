@@ -48,9 +48,10 @@ import org.jvnet.hk2.annotations.Contract;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.Interceptor;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -75,25 +76,51 @@ public interface JCDIService {
     /**
      * Create an inteceptor instance for an ejb.
      * @param interceptorClass The interceptor class.
-     * @param bundle The ejb bundle.
+     * @param ejbDesc The ejb descriptor of the ejb for which the interceptor is created.
      * @param ejbContext The ejb context.
      * @param ejbInterceptors All of the ejb interceptors for the ejb.
      *
      * @return The interceptor instance.
      */
     <T> T createInterceptorInstance( Class<T> interceptorClass,
-                                     BundleDescriptor bundle,
+                                     EjbDescriptor ejbDesc,
                                      JCDIService.JCDIInjectionContext ejbContext,
                                      Set<EjbInterceptor> ejbInterceptors );
 
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc);
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, T instance);
+    /**
+     * Create an ejb via CDI.
+     *
+     * @param ejbDesc The ejb descriptor
+     * @param ejbInfo Information about the ejb.  Entries are the com.sun.ejb.containers.BaseContainer
+     *                and com.sun.ejb.containers.EJBContextImpl
+     * @return The created EJB.
+     */
+    <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, Map<Class, Object> ejbInfo);
+
+    //todo: This should be removed as it is not used.
+    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, T instance, Map<Class, Object> ejbInfo);
 
     public <T> void injectEJBInstance(JCDIInjectionContext<T> injectionCtx);
 
+    /**
+     * Create an empty JCDIInjectionContext.
+     * @return The empty JCDIInjectionContext.
+     */
+    JCDIInjectionContext createEmptyJCDIInjectionContext();
+
     public interface JCDIInjectionContext<T> {
-        public T getInstance();
-        public void cleanup(boolean callPreDestroy);
+        /**
+         * @return The instance associated with this context.
+         */
+        T getInstance();
+
+        /**
+         * Set the instance on this context
+         * @param instance The instance to set.
+         */
+        void setInstance( T instance );
+
+        void cleanup(boolean callPreDestroy);
 
         /**
          * @return The injection target.
@@ -101,9 +128,21 @@ public interface JCDIService {
         InjectionTarget<T> getInjectionTarget();
 
         /**
+         * Set the injection target.
+         * @param injectionTarget The injection target to set.
+         */
+        void setInjectionTarget( InjectionTarget<T> injectionTarget );
+
+        /**
          * @return The creational context.
          */
         CreationalContext<T> getCreationalContext();
+
+        /**
+         * Set the creational context.
+         * @param creationalContext The creational context.
+         */
+        void setCreationalContext( CreationalContext<T> creationalContext );
 
         /**
          * Add a dependent context to this context so that the dependent
@@ -112,6 +151,11 @@ public interface JCDIService {
          * @param dependentContext The dependenct context.
          */
         void addDependentContext( JCDIInjectionContext dependentContext );
+
+        /**
+         * @return The dependent contexts.
+         */
+        Collection<JCDIInjectionContext> getDependentContexts();
     }
 
 }
