@@ -41,12 +41,42 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name="EJB30_HELLO_SESSION3_PERSON")
 public class Person implements java.io.Serializable {
 
     @Id String name;
+
+
+   /* //@Valid
+    @ElementCollection
+    //@Embedded
+    private List<com.sun.s1asdev.ejb.ejb30.hello.session3.Email> emails = new ArrayList<com.sun.s1asdev.ejb.ejb30.hello.session3.Email>();*/
+
+    @ElementCollection
+    private List<@Valid @NotNull String> certifications = new ArrayList<String>();
+
+    public List<String> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(List<String> certifications) {
+        this.certifications = certifications;
+    }
+
+/*    public List<com.sun.s1asdev.ejb.ejb30.hello.session3.Email> getEmails(){
+        return emails;
+    }
+
+    public void setEmails(List<com.sun.s1asdev.ejb.ejb30.hello.session3.Email> emails){
+        this.emails = emails;
+    }*/
 
     public Person(){
     }

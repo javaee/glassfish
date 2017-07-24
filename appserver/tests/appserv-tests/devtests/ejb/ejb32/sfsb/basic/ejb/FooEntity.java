@@ -45,6 +45,11 @@
 package com.acme;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class FooEntity {
@@ -60,6 +65,17 @@ public class FooEntity {
     
     public FooEntity() {
     }
+    /*
+    @TableGenerator(name = "employee_gen", table = "id_gen", pkColumnName = "gen_name", valueColumnName = "gen_val", allocationSize = 1)
+	@Id
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "employee_gen")
+	private int idemployee;
+	private String name;
+
+	@ElementCollection
+	@CollectionTable(name = "employee_courses", joinColumns = @JoinColumn(name = "idemployee"))
+	private Set<Course> courses = new HashSet<Course>();
+     */
     
     public String getName() {
         return name;
@@ -67,4 +83,31 @@ public class FooEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+
+    public List<String> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(List<String> certifications) {
+        this.certifications = certifications;
+    }
+
+    @ElementCollection
+    //@Valid
+    private List</*@NotNull*/ String> certifications = new ArrayList<String>();
+
+    /*@ElementCollection
+    //@CollectionTable(name="fooentity_emails", joinColumns = @JoinColumn(name="name"))
+    private List<Email> emails = new ArrayList<Email>();
+
+
+    public List<Email> getEmails() {
+        return emails;
+    }
+
+    public void setEmails(List<Email> emails) {
+        this.emails = emails;
+    }*/
 }
+
