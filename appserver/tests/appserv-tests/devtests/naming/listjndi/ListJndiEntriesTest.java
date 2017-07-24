@@ -79,7 +79,7 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
     }
 
     public void runTests() {
-        asadmin("start-domain");
+     //   asadmin("start-domain");
         asadmin("create-cluster", CLUSTER_NAME);
 
         asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
@@ -102,7 +102,7 @@ public class ListJndiEntriesTest extends AdminBaseDevTest {
         testListJndiEntriesTargetStandaloneInstance();
 
         cleanup();
-        asadmin("stop-domain");
+      //  asadmin("stop-domain");
         stat.printSummary();
     }
 

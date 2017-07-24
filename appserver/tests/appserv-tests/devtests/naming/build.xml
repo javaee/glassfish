@@ -66,12 +66,12 @@
         <record name="naming.output" action="start" />
 	<ant dir="externalnameservicelookup" target="all"/>
 	<ant dir="injection" target="all"/>
+	<ant dir="listjndi" target="all"/>
 <!--	<ant dir="loadbalancing" target="all"/> -->
 	<ant dir="lookup" target="all"/>
 	<ant dir="naming2" target="all"/>  
 <!--	<ant dir="nonfailover" target="all"/> -->
 	<ant dir="orb_annotation" target="all"/>
-	<ant dir="listjndi" target="all"/>
 <!--	<ant dir="visibroker/lookup" target="all">
 	<ant dir="visibroker/rmiiiop" target="all"> -->
 	<record name="naming.output" action="stop" />
