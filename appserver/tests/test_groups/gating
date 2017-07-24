@@ -15,7 +15,6 @@ ql_gf_web_profile_all
 ql_gf_embedded_profile_all
 nucleus_admin_all
 cts_smoke_all
-servlet_tck_all
 findbugs_all
 findbugs_low_priority_all
 embedded_publisher_all
