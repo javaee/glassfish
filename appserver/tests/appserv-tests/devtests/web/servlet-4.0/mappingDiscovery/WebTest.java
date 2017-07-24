@@ -87,10 +87,13 @@ public class WebTest {
                     extensionMatch &&
                     pathMatch)? stat.PASS : stat.FAIL));
             
-            boolean asyncMatch = webTest.run("GET", 200, false, "/AAsyncDispatchToC", ".*ServletC.MappingImpl\\{matchValue=ServletC.*pattern=/ServletC.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING:.*MappingImpl\\{matchValue=AAsyncDispatchToC.*pattern=/AAsyncDispatchToC.*servletName=AAsyncDispatchToC.*mappingMatch=EXACT}.*");
+            boolean asyncMatch1 = webTest.run("GET", 200, false, "/AAsyncDispatchToC", ".*ServletC.MappingImpl\\{matchValue=AAsyncDispatchToC.*pattern=/AAsyncDispatchToC.*servletName=AAsyncDispatchToC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING: null.*INCLUDE_MAPPING: null.*ASYNC_MAPPING:.*MappingImpl\\{matchValue=AAsyncDispatchToC.*pattern=/AAsyncDispatchToC.*servletName=AAsyncDispatchToC.*mappingMatch=EXACT}.*");
+
+            boolean asyncMatch2 = webTest.run("GET", 200, false, "/BIncludeDispatchServletNamedDispatcher", ".*In.ServletC.MappingImpl\\{matchValue=BIncludeDispatchServletNamedDispatcher,.pattern=/BIncludeDispatchServletNamedDispatcher,.servletName=BIncludeDispatchServletNamedDispatcher,.mappingMatch=EXACT\\}.*FORWARD_MAPPING:.null.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.MappingImpl\\{matchValue=BIncludeDispatchServletNamedDispatcher,.pattern=/BIncludeDispatchServletNamedDispatcher,.servletName=BIncludeDispatchServletNamedDispatcher,.mappingMatch=EXACT\\}.*");
 
             stat.addStatus(TEST_NAME + "-async",
-                           asyncMatch ? stat.PASS : stat.FAIL);
+                           asyncMatch1 &&
+                           asyncMatch2 ? stat.PASS : stat.FAIL);
             
             boolean forwardMatch1 = webTest.run("GET", 200, false, "/AForwardToB", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=AForwardToB,.pattern=/AForwardToB,.servletName=AForwardToB,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");
             boolean forwardMatch2 = webTest.run("GET", 200, false, "/BForwardToC", ".*ServletC.MappingImpl\\{matchValue=ServletC,.*pattern=/ServletC,.*servletName=ServletC,.*mappingMatch=EXACT\\}.*FORWARD_MAPPING:.MappingImpl\\{matchValue=BForwardToC,.pattern=/BForwardToC,.servletName=BForwardToC,.mappingMatch=EXACT\\}.*INCLUDE_MAPPING:.null.*ASYNC_MAPPING:.null.*");

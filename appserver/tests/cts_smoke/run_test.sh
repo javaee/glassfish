@@ -173,6 +173,7 @@ test_run_servlet_tck(){
 	cd $TS_HOME/bin
 	ant config.security
 	ant deploy.all
+	export JAVA_OPTIONS="-Xbootclasspath/p:$TS_HOME/lib/flow.jar"
 
 	cd $TS_HOME/src/com/sun/ts/tests
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
