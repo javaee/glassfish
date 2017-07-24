@@ -471,10 +471,11 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                                                new Object[]{entry});
                                 }
 
-                                if (!bdMode.equals(BeanDiscoveryMode.ANNOTATED) || isImplicitBeanArchive(context, weblibJarArchive)) {
-                                    weblibJarsThatAreBeanArchives.add(weblibJarArchive);
-                                }
-                            }
+                              //  if (!bdMode.equals(BeanDiscoveryMode.ANNOTATED) || isImplicitBeanArchive(context, weblibJarArchive)) {
+                              //      weblibJarsThatAreBeanArchives.add(weblibJarArchive);
+                              //  }
+					  weblibJarsThatAreBeanArchives.add(weblibJarArchive);                            
+				}
                         } else {
                             // Check for classes annotated with qualified annotations
                             if (WeldUtils.isImplicitBeanArchive(context, weblibJarArchive)) {
