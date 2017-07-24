@@ -121,9 +121,8 @@ public abstract class AbstractListCommandProxy
                     logger.log(Level.INFO, "Got exception: " + ex.toString());
                 }
             }
-        } else if (target.equals("server")) {
-            subReport = executeInternalCommand(context, target);
         } else {
+            //target.equals("server") or anything else
             subReport = executeInternalCommand(context, target);
         }
 
@@ -177,7 +176,7 @@ public abstract class AbstractListCommandProxy
 
     protected boolean isLongNumber(String str) {
         try {
-            long val = Long.parseLong(str);
+            Long.parseLong(str);
         } catch (NumberFormatException nEx) {
             return false;
         }

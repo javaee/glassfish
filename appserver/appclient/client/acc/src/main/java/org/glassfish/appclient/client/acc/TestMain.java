@@ -57,7 +57,7 @@ public class TestMain {
         try {
             final AgentArguments agentArgs = AgentArguments.newInstance(
                     "mode=acscript" + ",client=jar=" + JAR_CLIENT_NAME + ",arg=-textauth" + ",arg=-user,arg=" + USER_VALUE);
-            CommandLaunchInfo.newInstance(agentArgs);
+            CommandLaunchInfo info = CommandLaunchInfo.newInstance(agentArgs);
         } catch (UserError ex) {
             System.err.println(ex.getLocalizedMessage());
             

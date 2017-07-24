@@ -194,7 +194,7 @@ public class BatchRuntimeHelper
                                 tagNamesRequiringCleanup.remove(tagName);
                             } else if (tagNamesRequiringCleanup.contains(tagName)) {
                                 //Force initialization of BatchRuntime
-                                JobOperator jobOperator = BatchRuntime.getJobOperator();
+                                //JobOperator jobOperator = BatchRuntime.getJobOperator();
 
                                 if (batchSPIManager.getBatchJobUtil() != null) {
                                     batchSPIManager.getBatchJobUtil().purgeOwnedRepositoryData(tagName);

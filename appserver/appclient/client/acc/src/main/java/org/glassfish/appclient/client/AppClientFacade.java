@@ -676,7 +676,7 @@ public class AppClientFacade {
         throw ue;
 
     }
-
+/*
     private static class JavaVersion {
         private String versionString = System.getProperty("java.version");
 
@@ -704,4 +704,5 @@ public class AppClientFacade {
             return versionString;
         }
     }
+    */
 }
