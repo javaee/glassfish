@@ -157,11 +157,6 @@
             <artifactId>admin-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
 
