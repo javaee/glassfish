@@ -127,10 +127,10 @@ get_test_target(){
 			export TARGET;;
 
                 group-1 )
-                        TARGET="init taglib el security http-connector comet misc clustering ha finish-report"
+                	TARGET="init taglib el security http-connector comet misc clustering ha finish-report"
                         export TARGET;;
                * )
-                        TARGET="init $1 finish-report"
+                	TARGET="init $1 finish-report"
                         export TARGET;;	
        esac
 

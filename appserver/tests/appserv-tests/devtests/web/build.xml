@@ -154,7 +154,6 @@
         <ant dir="tagfileInclude" target="all"/>
         <ant dir="tagplugin" target="all"/>
     </target>
-    
     <target name="el" depends="init-report">
         <ant dir="bodyTag" target="all"/>
         <ant dir="elBigDecimal" target="all"/>
@@ -162,7 +161,6 @@
         <ant dir="elUninterpretedTag" target="all"/>
         <ant dir="elequals" target="all"/>
     </target>
- 
     <target name="servlet" depends="init-report">
         <ant dir="applicationDispatcher" target="all"/>
         <ant dir="cacheControlResponseHeaders" target="all"/>
@@ -359,7 +357,6 @@
         <ant dir="servlet-4.0/pushArbitraryMethod" target="all"/>
         <ant dir="servlet-4.0/pushDynamic" target="all"/>
     </target>
-
     <target name="web-container" depends="init-report">
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
@@ -483,7 +480,6 @@
         <ant dir="setWebContextParam" target="all"/>
         <ant dir="contextRootDuplicate" target="all"/>
     </target>
-
     <target name="security" depends="init-report">
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
@@ -524,7 +520,6 @@
         <ant dir="servlet-3.1/denyUncoveredHttpMethods" target="all"/>
         <ant dir="servlet-3.1/anyAuthenticatedUser" target="all"/>
     </target>
-
     <target name="http-connector" depends="init-report">
         <ant dir="caseSensitiveHostMapping" target="all"/>
         <ant dir="chunkingDisabled" target="all"/>
@@ -568,16 +563,12 @@
         <ant dir="wrongTransport" target="all"/>
         <ant dir="trailerHeader" target="all"/>
     </target>
-       
     <target name="comet" depends="init-report">
         <ant dir="cometEcho" target="all"/>
     </target>
-
     <target name="misc" depends="init-report">
         <ant dir="genDocSchema" target="all"/>
     </target>
-
-
     <target name="weblogicDD" depends="init-report">
 <!--
         <ant dir="weblogicDD/contextRoot" target="all"/>
@@ -592,24 +583,20 @@
         <ant dir="weblogicDD/referenceDescriptor" target="all"/>
 -->
     </target>
-
     <target name="clustering" depends="init-report">
         <ant dir="asadminDeletesTarget" target="all"/>
         <ant dir="networkListenerTarget" target="all"/>
         <ant dir="portUnificationTarget" target="all"/>
         <ant dir="wrongTransportTarget" target="all"/>
     </target>
-
     <target name="ha" depends="init-report">
         <ant dir="ha/ssoFailover" target="all"/>
-    </target>
-
+    </target> 
     <target name="init-report" unless="report.inited">
         <property name="report.inited" value="true"/>
         <record name="web.output" action="start" />
         <antcall target="startDomain"/>
     </target>
-
     <target name="finish-report">
         <antcall target="stopDomain"/>
         <record name="web.output" action="stop" />
@@ -621,7 +608,6 @@
         <echo message="javaxServletErrorRequestUriDynamicResource and javaxServletErrorRequestUriStaticResource will fail on Linux if you don't change appserv-tests/config.properties localhost to localhost.localdomain"/>
         <echo message="#################################################"/>
     </target>
-
     <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,ha,misc,finish-report"/>
     <target name="embedded-all" depends="embedded-setup,all"/>
 
