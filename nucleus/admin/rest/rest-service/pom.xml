@@ -79,10 +79,10 @@
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
-            <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>javax.el-api</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.main.core</groupId>
             <artifactId>kernel</artifactId>
@@ -118,7 +118,10 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>
         </dependency>
-
+        <dependency>
+           <groupId>javax.validation</groupId>
+           <artifactId>validation-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
