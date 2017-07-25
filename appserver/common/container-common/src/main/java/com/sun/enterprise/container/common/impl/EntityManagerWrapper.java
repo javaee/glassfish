@@ -340,7 +340,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             }
             EntityManager delegate = _getDelegate();
             returnValue = delegate.find(entityClass, primaryKey);
-            clearPersistenceContextPerhaps(delegate);
+            clearDetachedPersistenceContext(delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -358,8 +358,8 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND);
             }
             EntityManager delegate = _getDelegate();
-            returnValue = _getDelegate().find(entityClass, primaryKey, properties);
-            clearPersistenceContextPerhaps(delegate);
+            returnValue = delegate.find(entityClass, primaryKey, properties);
+            clearDetachedPersistenceContext(delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -378,8 +378,8 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND_CLASS_OBJECT_LOCKMODETYPE);
             }
             EntityManager delegate = _getDelegate();
-            returnValue = _getDelegate().find(entityClass, primaryKey, lockMode);
-            clearPersistenceContextPerhaps(delegate);
+            returnValue = delegate.find(entityClass, primaryKey, lockMode);
+            clearDetachedPersistenceContext(delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -397,8 +397,8 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND_CLASS_OBJECT_LOCKMODETYPE_PROPERTIES);
             }
             EntityManager delegate = _getDelegate();
-            returnValue = _getDelegate().find(entityClass, primaryKey, lockMode, properties);
-            clearPersistenceContextPerhaps(delegate);
+            returnValue = delegate.find(entityClass, primaryKey, lockMode, properties);
+            clearDetachedPersistenceContext(delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -455,9 +455,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createQuery(ejbqlString);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = QueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -477,9 +475,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createQuery(ejbqlString, resultClass);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = TypedQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -499,9 +495,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createQuery(criteriaQuery);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = TypedQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -521,9 +515,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createNamedQuery(name);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = QueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -544,9 +536,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createNamedQuery(name, resultClass);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = TypedQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -567,9 +557,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createNativeQuery(sqlString);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = QueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -589,9 +577,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createNativeQuery(sqlString, resultClass);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = QueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -612,9 +598,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             returnValue = delegate.createNativeQuery
                 (sqlString, resultSetMapping);
 
-            if( getCurrentTransaction() == null) {
-                returnValue = QueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         }finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -1013,9 +997,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createNamedStoredProcedureQuery(name);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = StoreProcedureQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -1035,9 +1017,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createStoredProcedureQuery(procedureName);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = StoreProcedureQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -1057,9 +1037,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createStoredProcedureQuery(procedureName, resultClasses);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = StoreProcedureQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -1079,9 +1057,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             EntityManager delegate = _getDelegate();
             returnValue = delegate.createStoredProcedureQuery(procedureName, resultSetMappings);
 
-            if( getCurrentTransaction() == null ) {
-                returnValue = StoreProcedureQueryWrapper.createQueryWrapper(returnValue, delegate);
-            }
+            returnValue = wrapQueryIfDetached(returnValue, delegate);
         } finally {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
@@ -1201,8 +1177,24 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         callFlowAgent = defaultServiceLocator.getService(CallFlowAgent.class);
     }
 
-    private void clearPersistenceContextPerhaps(EntityManager em) {
-        if(getCurrentTransaction() == null && contextType != PersistenceContextType.EXTENDED) {
+    private boolean isDetached() {
+        return getCurrentTransaction() == null && contextType != PersistenceContextType.EXTENDED;
+    }
+
+    private StoredProcedureQuery wrapQueryIfDetached(StoredProcedureQuery query, EntityManager delegate) {
+        return isDetached() ? StoreProcedureQueryWrapper.createQueryWrapper(query, delegate) : query;
+    }
+
+    private <T> TypedQuery<T> wrapQueryIfDetached(TypedQuery<T> query, EntityManager delegate) {
+        return isDetached() ? TypedQueryWrapper.createQueryWrapper(query, delegate) : query;
+    }
+
+    private Query wrapQueryIfDetached(Query query, EntityManager delegate) {
+        return isDetached() ? QueryWrapper.createQueryWrapper(query, delegate) : query;
+    }
+
+    private void clearDetachedPersistenceContext(EntityManager em) {
+        if (isDetached()) {
             em.clear();
         }
     }
