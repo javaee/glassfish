@@ -172,15 +172,11 @@ public class WebTest {
             os.write("\n".getBytes());
             is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                if (line.contains("200")) {
-                    stat.addStatus(TEST_NAME2, stat.FAIL);
-                    break;
-                } else {
-                    stat.addStatus(TEST_NAME2, stat.PASS);
-                    break;
-                }
+            String line = bis.readLine();
+            if (line != null && line.contains("200")) {
+                stat.addStatus(TEST_NAME2, stat.FAIL);
+            } else {
+                stat.addStatus(TEST_NAME2, stat.PASS);
             }
         }
         finally {
@@ -216,15 +212,11 @@ public class WebTest {
             os.write("\n".getBytes());
             is = sock.getInputStream();
             bis = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                if (line.contains("200")) {
-                    stat.addStatus(TEST_NAME3, stat.FAIL);
-                    break;
-                } else {
-                    stat.addStatus(TEST_NAME3, stat.PASS);
-                    break;
-                }
+            String line = bis.readLine();
+            if (line != null && line.contains("200")) {
+                stat.addStatus(TEST_NAME3, stat.FAIL);
+            } else {
+                stat.addStatus(TEST_NAME3, stat.PASS);
             }
         }
         finally {
