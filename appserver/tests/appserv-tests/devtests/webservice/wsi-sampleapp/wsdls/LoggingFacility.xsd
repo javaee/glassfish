@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"  
+	xmlns:log="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/LoggingFacility.xsd"  
+	targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/LoggingFacility.xsd">
+
+	<xs:element name="logEventRequestElement" type="log:logEventRequestType"/>
+	<xs:complexType name="logEventRequestType">
+		<xs:sequence>
+			<xs:element name="DemoUserID" type="xs:string"/>
+			<xs:element name="ServiceID" type="xs:string"/>
+			<xs:element name="EventID" type="xs:string"/>
+			<xs:element name="EventDescription" type="xs:string"/>
+			<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsRequestElement" type="log:getEventsRequestType"/>
+	<xs:complexType name="getEventsRequestType">
+		<xs:sequence>
+			<xs:element name="DemoUserID" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsResponseElement" type="log:getEventsResponseType"/>
+	<xs:complexType name="getEventsResponseType">
+		<xs:sequence>
+			<xs:element name="LogEntry" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Timestamp" type="xs:dateTime"/>
+						<xs:element name="ServiceID" type="xs:string"/>
+						<xs:element name="EventID" type="xs:string"/>
+						<xs:element name="EventDescription" type="xs:string"/>
+						<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsFaultElement" type="log:getEventsFaultType"/>
+	<xs:complexType name="getEventsFaultType">
+		<xs:sequence>
+			<xs:element name="Reason">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="RepositoryMissing"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

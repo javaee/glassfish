@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
+<!ENTITY jaxwsTools SYSTEM "file:./../jaxwstools.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="Hello2" default="core" basedir=".">
+
+        &commonSetup;
+        &commonBuild;
+        &commonRun;
+        &testproperties;
+        &jaxwsTools;
+
+        <property name="src-name" value="endpoint/Hello.java"/>
+        <property name="client-src-name" value="client/Client.java"/>
+
+        <target name="compile" depends="init-common">
+          <antcall target="compile-common">
+            <param name="src" value="endpoint"/>
+          </antcall>
+        </target>
+
+         <target name="deploy-app">
+          <antcall target="deploy-war-common">
+            <param name="contextroot" value="${appname}"/>
+          </antcall>
+        </target>
+
+        <target name="undeploy" depends="init-common">
+            <antcall target="undeploy-war-common"/>
+            <antcall target="undeploy-client"/>
+        </target>
+
+
+
+        <target name="all" depends="clean, setup, runtest1,  undeploy"/>
+        <target name="runtest1" depends="init-common">
+          <mkdir dir="${build.classes.dir}/client"/>
+          <javac srcdir="." destdir="${build.classes.dir}/client"
+                classpath="${env.APS_HOME}/lib/reporter.jar"
+                includes="client/**"/>
+          <unjar src="${env.APS_HOME}/lib/reporter.jar" dest="${build.classes.dir}/client"/>
+          <java classname="client.TestClient">
+            <classpath>
+              <pathelement path="${build.classes.dir}/client"/>
+            </classpath>
+            <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
+          </java>
+          <!--restore the tokens back in file--> 
+          <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+          <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
+        </target>
+
+
+        <target name="setup" depends="assemble-web, deploy-app, assemble-client,deploy-client"/>
+        <target name="assemble-web" depends="init-common, compile">
+          <antcall target="pkg-war">
+            <param name="war.classes" value="${build.classes.dir}"/>
+            <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
+           </antcall>
+        </target>
+
+        <target name="clean" depends="init-common">
+          <antcall target="clean-common"/>
+        </target>
+
+        <target name="assemble-client" depends="init-common">
+          <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
+          <antcall target="wsimport">
+            <param name="wsimport.args"
+              value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/oneway/HelloService?wsdl"/>
+          </antcall>
+          <replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+          <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
+          <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
+                includes="webclient/**">
+             <classpath refid="classpath"/>
+             <compilerarg value="-Djava.endorsed.dirs=${env.S1AS_HOME}/modules/endorsed"/>
+
+          </javac>
+          <copy file="client-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/web.xml"/>
+          <copy file="client-sun-web.xml" tofile="${build.classes.dir}/webclient/WEB-INF/sun-web.xml"/>
+          <jar destfile="${assemble.dir}/wsclient.war" basedir="${build.classes.dir}/webclient" includes="**"/>
+        </target>
+
+
+        <target name="undeploy-client" depends="init-common">
+          <exec executable="${ASADMIN}">
+            <arg line="undeploy"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${admin.password.file}"/>
+            <arg line="--host ${admin.host}"/>
+            <arg line="--port ${admin.port}"/>
+            <arg line="wsclient"/>
+          </exec>
+        </target>
+
+        <target name="deploy-client" depends="init-common">
+          <property name="client.war" value="${assemble.dir}/wsclient.war"/>      <echo message="Deploying ${wsdl.war} from ${basedir}." level="verbose"/>
+          <exec executable="${ASADMIN}">
+            <arg line="deploy"/>
+            <arg line="--user ${admin.user}"/>
+            <arg line="--passwordfile ${admin.password.file}"/>
+            <arg line="--host ${admin.host}"/>
+            <arg line="--port ${admin.port}"/>
+            <arg line="${client.war}"/>
+          </exec>
+        </target>
+
+
+
+        <target name="report-success">
+                <echo message="Test PASSED"/>
+        </target>
+
+        <target name="report-failure">
+                <echo message="Test FAILED"/>
+        </target>
+
+    </project>
+
+
+<!--
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "file:./../annotations-common.xml">
+]>
+
+<project name="Hello" default="core" basedir=".">
+
+    &commonBuild;
+    <property name="src-name" value="endpoint/Hello.java"/>
+    <property name="client-src-name" value="client/Client.java"/>
+
+    <target name="run-client">
+        <echo message="Deployed passed"/>
+    </target>	
+
+    <target name="report-success">
+            <echo message="Test PASSED"/>
+    </target>
+
+    <target name="report-failure">
+            <echo message="Test FAILED"/>
+    </target>   	
+    
+</project>
+-->
