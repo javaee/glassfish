@@ -128,7 +128,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             if (bd instanceof WebBundleDescriptor || bd instanceof ApplicationClientDescriptor)
                 parseResources(bd, appResources);
             if (bd instanceof EjbBundleDescriptor) {
-                parseResources(bd, appResources);
+                // Resources from Java files in the ejb.jar which are neither an EJB nor a managed bean are stored here.
+                // Skip validation for them, validate only Managed Beans.
+                for (ManagedBeanDescriptor mbd: bd.getManagedBeans()) {
+                    parseResources(mbd, (JndiNameEnvironment) bd, appResources);
+                }
                 EjbBundleDescriptor ebd = (EjbBundleDescriptor) bd;
                 for (EjbDescriptor ejb : ebd.getEjbs())
                     parseEJB(ejb, appResources);
