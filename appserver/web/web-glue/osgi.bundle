@@ -76,7 +76,6 @@
                         version=${project.osgi.version}
 
 Import-Package: \
-    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
     com.sun.logging.enterprise.system.container.web, \
     *
 
