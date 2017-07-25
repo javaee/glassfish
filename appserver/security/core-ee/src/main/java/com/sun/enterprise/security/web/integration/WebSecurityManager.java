@@ -429,10 +429,10 @@ public class WebSecurityManager  {
             try {
 		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 	    } catch(ClassNotFoundException cnfe){
-		logger.severe("jaccfactory.notfound");
+               logger.log(Level.SEVERE, "[Web-Security] WebSecurityManager - Exception while getting the PolicyFactory");
 		throw new PolicyContextException(cnfe);
 	    } catch(PolicyContextException pce){
-		logger.severe("jaccfactory.notfound");
+               logger.log(Level.SEVERE, "[Web-Security] WebSecurityManager - Exception while getting the PolicyFactory");
 		throw pce;
 	    }
 	}
