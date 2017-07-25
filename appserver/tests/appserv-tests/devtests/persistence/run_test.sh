@@ -43,12 +43,12 @@ list_test_ids(){
 }
 
 test_run(){
-  $S1AS_HOME/bin/asadmin start-domain
-  $S1AS_HOME/bin/asadmin start-database
+  #$S1AS_HOME/bin/asadmin start-domain
+  #$S1AS_HOME/bin/asadmin start-database
   cd $APS_HOME/devtests/persistence/tests/packaging
   ant $TARGET | tee $TEST_RUN_LOG
-  $S1AS_HOME/bin/asadmin stop-database
-  $S1AS_HOME/bin/asadmin stop-domain   
+  #$S1AS_HOME/bin/asadmin stop-database
+  #$S1AS_HOME/bin/asadmin stop-domain
 }
 
 run_test_id(){

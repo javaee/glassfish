@@ -58,7 +58,7 @@
     &reporting;
 
     <target name="all">
-
+        <antcall target="test-setup"/>
         <delete>
            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
         </delete>
@@ -66,6 +66,7 @@
            <fileset dir="." includes="*.output"/>
         </delete>
         <record name="persistence_packaging.output" action="start" />
+
 
 	<ant dir="pkgEarLibTest" target="all"/>
 	<ant dir="pkgEjbTest" target="all"/>
@@ -75,6 +76,7 @@
 
         <record name="persistence_packaging.output" action="stop" />
         <antcall target="report"/>
+        <antcall target="test-unsetup"/>
 
     </target>
 
@@ -109,6 +111,32 @@
             <ant dir="pkgWarTest1" target="all"/>
         <record name="pkgWarTest1.output" action="stop" />
         <antcall target="report"/>
+    </target>
+
+    <target name="test-setup">
+        <antcall target="start-database"/>
+        <ant target="startDomain"/>
+    </target>
+
+    <target name="test-unsetup">
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+        <antcall target="stop-database"/>
+    </target>
+
+    <target name="start-database" depends="init-common">
+        <echo message="Starting database" />
+        <!-- spawn is added to prevent a hang on Windows -->
+        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
+            <arg line="start-database"/>
+        </exec>
+    </target>
+
+    <target name="stop-database" depends="init-common">
+        <echo message="Stopping database"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="stop-database"/>
+        </exec>
     </target>
 
     <target name="usage">
