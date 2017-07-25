@@ -43,6 +43,7 @@ package org.glassfish.hk2.runlevel;
 import java.lang.annotation.Annotation;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
@@ -59,8 +60,11 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @Visibility(DescriptorVisibility.LOCAL)
+@Service @Named(RunLevelContext.CONTEXT_NAME) @Visibility(DescriptorVisibility.LOCAL)
 public class RunLevelContext implements Context<RunLevel> {
+    /** The name under which this context will be advertised */
+    public static final String CONTEXT_NAME = "DefaultRunLevelContext";
+    
     private final AsyncRunLevelContext asyncRunLevelContext;
     
     @Inject
