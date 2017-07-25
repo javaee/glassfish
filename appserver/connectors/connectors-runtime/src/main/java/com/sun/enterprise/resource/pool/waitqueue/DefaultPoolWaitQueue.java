@@ -70,11 +70,9 @@ public class DefaultPoolWaitQueue implements PoolWaitQueue {
         return list.size();
     }
 
-    public synchronized Object addToQueue() {
+    public synchronized void addToQueue(Object waitMonitor) {
 
-        Object waitMonitor = new Object();
         list.addLast(waitMonitor);
-        return waitMonitor;
     }
 
     public synchronized boolean removeFromQueue(Object o) {

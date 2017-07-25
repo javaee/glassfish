@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<portmaps>
-<portmap direction="inbound"  endPoint="HiEJBPort" service="{http://endpoint/jaxws}HiEJBService"/>
-</portmaps>

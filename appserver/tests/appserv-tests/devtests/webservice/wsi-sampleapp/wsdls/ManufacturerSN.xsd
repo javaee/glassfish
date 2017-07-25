@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<xs:schema targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-10/ManufacturerSN.xsd" xmlns:sn="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-10/ManufacturerSN.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Shipment Notification schema for Manufacturer system of WS-I sample application</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ShipmentNotice" type="sn:ShipmentNoticeType"/>
+	<xs:complexType name="ShipmentNoticeType">
+		<xs:sequence>
+			<xs:element name="shipNum" type="xs:string"/>
+			<xs:element name="orderNum" type="xs:string"/>
+			<xs:element name="customerRef" type="sn:CustomerReferenceType"/>
+			<xs:element name="items" type="sn:ItemList"/>
+			<xs:element name="total" type="xs:float"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CustomerReferenceType">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="20"/>
+			<xs:pattern value="[A-D][0-9]{5}-[0-9A-Z]{7}-[a-z]{3}#*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ItemList">
+		<xs:sequence>
+			<xs:element name="Item" type="sn:Item" nillable="false" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Item">
+		<xs:sequence>
+			<xs:element name="ID" type="xs:nonNegativeInteger"/>
+			<xs:element name="qty" type="xs:unsignedShort"/>
+			<xs:element name="price" type="xs:float"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ackSN" type="xs:boolean"/>
+	<xs:element name="submitSNFault" type="sn:submitSNFaultType"/>
+	<xs:complexType name="submitSNFaultType">
+		<xs:sequence>
+			<xs:element name="Reason">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="UnkknownOrder"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
