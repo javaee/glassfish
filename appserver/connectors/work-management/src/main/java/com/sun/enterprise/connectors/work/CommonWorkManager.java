@@ -137,9 +137,9 @@ public final class CommonWorkManager implements WorkManager {
                 // Set the message appropriately.
                 String format = null;
                 format = logger.getResourceBundle().getString(RAR_DEFAULT_THREAD_POOL_NOT_FOUND);
-                if(format==null || format.trim().equals("")){
+                if (format.trim().equals("")) {
                     format = "Failed to get the default thread-pool for resource adapter "+raName+".";
-                }else{
+                } else {
                     format = MessageFormat.format(format, raName);
                 }
                 ConnectorRuntimeException cre =  new ConnectorRuntimeException(format);

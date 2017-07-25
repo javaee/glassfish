@@ -47,6 +47,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.resourcebase.resources.api.PoolInfo;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -198,9 +199,11 @@ public class ConnectionLeakDetector {
      */
     private void clearAllConnectionLeakTasks() {
         synchronized (connectionLeakLock) {
-            for (ResourceHandle resourceHandle : connectionLeakTimerTaskHashMap.keySet()) {
-                ConnectionLeakTask connectionLeakTask = connectionLeakTimerTaskHashMap.get(resourceHandle);
-                connectionLeakTask.cancel();
+            Iterator<Map.Entry<ResourceHandle, ConnectionLeakTask>> entries =
+                    connectionLeakTimerTaskHashMap.entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry<ResourceHandle, ConnectionLeakTask> connectionLeakTaskEntry = entries.next();
+                connectionLeakTaskEntry.getValue().cancel();
             }
             if (getTimer() != null)
                 getTimer().purge();

@@ -252,7 +252,8 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
         }
 
         if (localResource.get() == null) {
-            setInThreadLocal((AssocWithThreadResourceHandle) result);
+            if (result instanceof AssocWithThreadResourceHandle)
+                setInThreadLocal((AssocWithThreadResourceHandle) result);
         }
 
         return result;
