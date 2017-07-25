@@ -42,7 +42,6 @@ package org.glassfish.soteria.test;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
-import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
 import static org.glassfish.soteria.Utils.unmodifiableSet;
 
 import java.util.HashMap;
@@ -62,8 +61,8 @@ import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition;
 @LdapIdentityStoreDefinition(
         url = "ldap://localhost:33389/",
         callerBaseDn = "ou=caller,dc=jsr375,dc=net",
-        groupBaseDn = "ou=group,dc=jsr375,dc=net",
-        useFor = VALIDATE
+        groupSearchBase = "ou=group,dc=jsr375,dc=net",
+        useForExpression = "#{'VALIDATE'}" // usage of expression just for test
 )
 @ApplicationScoped
 public class GroupProviderIdentityStore implements IdentityStore {

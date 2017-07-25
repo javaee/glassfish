@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://oss.oracle.com/licenses/CDDL+GPL-1.1
- * or LICENSE.txt.  See the License for the specific
+ * http://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at LICENSE.txt.
+ * file and include the License file at packager/legal/LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -39,42 +39,30 @@
  */
 package org.glassfish.soteria.test;
 
-import java.io.IOException;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
+import javax.security.enterprise.identitystore.PlaintextPasswordHash;
 
-import javax.annotation.security.DeclareRoles;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-/**
- * Test Servlet that prints out the name of the authenticated caller and whether
- * this caller is in any of the roles {foo, bar, kaz}
- * 
- *
- */
-@DeclareRoles({ "foo", "bar", "kaz" })
-@WebServlet("/servlet")
-public class Servlet extends HttpServlet {
-
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.getWriter().write("This is a servlet \n");
-
-        String webName = null;
-        if (request.getUserPrincipal() != null) {
-            webName = request.getUserPrincipal().getName();
-        }
-
-        response.getWriter().write("web username: " + webName + "\n");
-
-        response.getWriter().write("web user has role \"foo\": " + request.isUserInRole("foo") + "\n");
-        response.getWriter().write("web user has role \"bar\": " + request.isUserInRole("bar") + "\n");
-        response.getWriter().write("web user has role \"kaz\": " + request.isUserInRole("kaz") + "\n");
+@DatabaseIdentityStoreDefinition(
+    dataSourceLookup="${'jdbc/__default'}", 
+    callerQuery="#{'select password from caller where name = ?'}",
+    groupsQuery="select group_name from caller_groups where caller_name = ?",
+    hashAlgorithm = PlaintextPasswordHash.class,
+    hashAlgorithmParameters = {
+        "foo=bar", 
+        "kax=zak", 
+        "foox=${'iop'}",
+        "${applicationConfig.dyna}"
+        
+    } // just for test / example
+)
+@ApplicationScoped
+@Named
+public class ApplicationConfig {
+    
+    public String[] getDyna() {
+        return new String[] {"dyn=1","dyna=2","dynam=3"};
     }
-
+    
 }
