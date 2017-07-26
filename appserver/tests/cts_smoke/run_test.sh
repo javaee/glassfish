@@ -174,7 +174,7 @@ test_run_servlet_tck(){
 	ant config.security
 	ant deploy.all
 
-	cd $TS_HOME/src/com/sun/ts/tests
+	cd $TS_HOME/src/com/sun/ts/tests/servlet/api/javax_servlet_http
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
 
 	cd $S1AS_HOME
