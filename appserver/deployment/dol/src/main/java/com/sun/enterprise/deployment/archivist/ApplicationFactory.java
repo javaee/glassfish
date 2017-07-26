@@ -185,10 +185,9 @@ public class ApplicationFactory {
         }
 
         // validate
-        if (application != null) {
-            application.setClassLoader(archivist.getClassLoader());
-            application.visit((ApplicationVisitor) new ApplicationValidator());
-        }
+         application.setClassLoader(archivist.getClassLoader());
+         application.visit(new ApplicationValidator());
+
 
         return application;
 
