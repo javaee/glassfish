@@ -40,8 +40,6 @@
 
 package org.glassfish.weld.services;
 
-import com.sun.ejb.containers.BaseContainer;
-import com.sun.ejb.containers.EJBContextImpl;
 import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.BundleDescriptor;
@@ -57,7 +55,6 @@ import org.glassfish.weld.WeldDeployer;
 import org.glassfish.weld.connector.WeldUtils;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.contexts.WeldCreationalContext;
 import org.jboss.weld.manager.api.WeldManager;
 import org.jvnet.hk2.annotations.Service;
 
@@ -86,10 +83,9 @@ import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -180,25 +176,17 @@ public class JCDIServiceImpl implements JCDIService {
         }
     }
 
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, T instance, Map<Class, Object> ejbInfo ) {
-	    return _createJCDIInjectionContext(ejbDesc, instance, ejbInfo);
+    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejb, T instance) {
+	    return _createJCDIInjectionContext(ejb, instance);
     }
 
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, Map<Class, Object> ejbInfo) {
-	    return _createJCDIInjectionContext(ejbDesc, null, ejbInfo);
+    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejb) {
+	    return _createJCDIInjectionContext(ejb, null);
     }
 
     // instance could be null. If null, create a new one
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private <T> JCDIInjectionContext<T> _createJCDIInjectionContext(EjbDescriptor ejb,
-                                                                    T instance,
-                                                                    Map<Class, Object> ejbInfo) {
-        BaseContainer baseContainer = null;
-        EJBContextImpl ejbContext = null;
-        if ( ejbInfo != null ) {
-           baseContainer = ( BaseContainer ) ejbInfo.get( BaseContainer.class );
-           ejbContext = ( EJBContextImpl ) ejbInfo.get( EJBContextImpl.class );
-        }
+    private <T> JCDIInjectionContext<T> _createJCDIInjectionContext(EjbDescriptor ejb, T instance) {
 
         BundleDescriptor topLevelBundleDesc = (BundleDescriptor)
                 ejb.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
@@ -212,51 +200,23 @@ public class JCDIServiceImpl implements JCDIService {
         org.jboss.weld.ejb.spi.EjbDescriptor ejbDesc = weldManager.getEjbDescriptor(ejb.getName());
 
         // Get an the Bean object
-        //todo: remove
-//        Bean<?> bean = weldManager.getBean(ejbDesc);
-        // get or create the ejb's creational context
-        JCDIService.JCDIInjectionContext jcdiCtx = ( JCDIService.JCDIInjectionContext ) ejbInfo.get( JCDIService.JCDIInjectionContext.class );
-        CreationalContext<?> creationalContext = jcdiCtx.getCreationalContext();
-        if ( creationalContext == null ) {
-            // The creational context may have been created by interceptors because they are created first
-            // (see createInterceptorInstance below.)
-            // And we only want to create the ejb's creational context once or we will have a memory
-            // leak there too.
-            Bean<?> bean = weldManager.getBean(ejbDesc);
-            creationalContext = weldManager.createCreationalContext(bean);
-            jcdiCtx.setCreationalContext( creationalContext );
-        }
-
+        Bean<?> bean = weldManager.getBean(ejbDesc);
 
         // Create the injection target
         InjectionTarget it = weldManager.createInjectionTarget(ejbDesc);
-        jcdiCtx.setInjectionTarget( it );
 
         // Per instance required, create the creational context
-        //todo: remove
-//        CreationalContext<?> cc = weldManager.createCreationalContext(bean);
-
-        // JJS: 7/20/17 We must perform the around_construct interception because Weld does not know about
-        // interceptors defined by descriptors.
-        WeldCreationalContext weldCreationalContext = (WeldCreationalContext) creationalContext;
-        weldCreationalContext.setConstructorInterceptionSuppressed(true);
-
-        JCDIAroundConstructCallback aroundConstructCallback =
-                new JCDIAroundConstructCallback( baseContainer, ejbContext );
-        weldCreationalContext.registerAroundConstructCallback(  aroundConstructCallback );
+        CreationalContext<?> cc = weldManager.createCreationalContext(bean);
 
     	Object beanInstance = instance;
 
     	if( beanInstance == null ) {
     	    // Create instance , perform constructor injection.
-    	    beanInstance = it.produce(creationalContext);
+    	    beanInstance = it.produce(cc);
     	}
 
-    	jcdiCtx.setInstance( beanInstance );
-    	return jcdiCtx;
-        //todo: remove
-        // Injection is not performed yet. Separate injectEJBInstance() call is required.
-//        return new JCDIInjectionContextImpl(it, cc, beanInstance);
+    	// Injection is not performed yet. Separate injectEJBInstance() call is required.
+        return new JCDIInjectionContextImpl(it, cc, beanInstance);
 
     }
 
@@ -343,44 +303,17 @@ public class JCDIServiceImpl implements JCDIService {
         return null;
     }
 
-    /**
-     *
-     * @param interceptorClass The interceptor class.
-     * @param ejb The ejb descriptor.
-     * @param ejbContext The ejb jcdi context.  This context is only used to store any contexts for interceptors
-     *                   not bound to the ejb.  Nothing else in this context will be used in this method as they are
-     *                   most likely null.
-     * @param ejbInterceptors All of the ejb interceptors for the ejb.
-     *
-     * @return The interceptor instance.
-     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> T createInterceptorInstance(Class<T> interceptorClass,
-                                           EjbDescriptor ejb,
+                                           BundleDescriptor bundle,
                                            JCDIService.JCDIInjectionContext ejbContext,
                                            Set<EjbInterceptor> ejbInterceptors ) {
-        BundleDescriptor topLevelBundleDesc = (BundleDescriptor)
-                ejb.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
+        BundleDescriptor topLevelBundleDesc = (BundleDescriptor) bundle.getModuleDescriptor().getDescriptor();
 
         // First get BeanDeploymentArchive for this ejb
-        BeanDeploymentArchive bda = getBDAForBeanClass(topLevelBundleDesc, ejb.getEjbClassName());
-
-        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(ejb.getEjbBundleDescriptor().getApplication());
-        WeldManager beanManager = bootstrap.getManager(bda);
-
-        org.jboss.weld.ejb.spi.EjbDescriptor ejbDesc = beanManager.getEjbDescriptor( ejb.getName());
-
-        // get or create the ejb's creational context
-        CreationalContext<?> creationalContext = ejbContext.getCreationalContext();
-        if ( creationalContext == null ) {
-            // We have to do this because interceptors are created before the ejb but in certain cases we must associate
-            // the interceptors with the ejb so that they are cleaned up correctly.
-            // And we only want to create the ejb's creational context once or we will have a memory
-            // leak there too.
-            Bean<?> bean = beanManager.getBean(ejbDesc);
-            creationalContext = beanManager.createCreationalContext(bean);
-            ejbContext.setCreationalContext( creationalContext );
-        }
+        BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
+        BeanManager beanManager = bootstrap.getManager(bda);
 
         // first see if there's an Interceptor object defined for the interceptorClass
         // This happens when @Interceptor or @InterceptorBinding is used.
@@ -388,6 +321,7 @@ public class JCDIServiceImpl implements JCDIService {
         if ( interceptor != null ) {
             // using the ejb's creationalContext so we don't have to do any cleanup.
             // the cleanup will be handled by weld when it clean's up the ejb.
+            CreationalContext creationalContext = ejbContext.getCreationalContext();
             Object instance = beanManager.getReference( interceptor, interceptorClass, creationalContext );
             return ( T ) instance;
         }
@@ -399,23 +333,26 @@ public class JCDIServiceImpl implements JCDIService {
             // using the ejb's creationalContext so we don't have to do any cleanup.
             // the cleanup will be handled by weld when it clean's up the ejb.
             Bean<?> interceptorBean = beanManager.resolve( availableBeans );
+            CreationalContext creationalContext = ejbContext.getCreationalContext();
             Object instance = beanManager.getReference(interceptorBean, interceptorClass, creationalContext );
             return ( T ) instance;
         }
 
         // There are other interceptors like SessionBeanInterceptor that are
         // defined via code and they are not beans.
+
+        // There are other interceptors like SessionBeanInterceptor that are not beans.
         // Cannot use the ejb's creationalContext.
-        creationalContext = beanManager.createCreationalContext(null);
+        CreationalContext cc = beanManager.createCreationalContext(null);
 
         AnnotatedType annotatedType = beanManager.createAnnotatedType(interceptorClass);
         InjectionTarget it =
-          beanManager.getInjectionTargetFactory(annotatedType).createInterceptorInjectionTarget();
-        T interceptorInstance = (T) it.produce(creationalContext);
-        it.inject(interceptorInstance, creationalContext);
+          ((WeldManager) beanManager).getInjectionTargetFactory(annotatedType).createInterceptorInjectionTarget();
+        T interceptorInstance = (T) it.produce(cc);
+        it.inject(interceptorInstance, cc);
 
         // make sure the interceptor's cdi objects get cleaned up when the ejb is cleaned up.
-        ejbContext.addDependentContext( new JCDIInjectionContextImpl<>( it, creationalContext, interceptorInstance ) );
+        ejbContext.addDependentContext( new JCDIInjectionContextImpl<>( it, cc, interceptorInstance ) );
 
         return interceptorInstance;
     }
@@ -536,11 +473,6 @@ public class JCDIServiceImpl implements JCDIService {
 
     }
 
-    public JCDIInjectionContext createEmptyJCDIInjectionContext() {
-        return new JCDIInjectionContextImpl();
-    }
-
-
     @SuppressWarnings("rawtypes")
     private static class JCDIInjectionContextImpl<T> implements JCDIInjectionContext<T> {
 
@@ -551,10 +483,7 @@ public class JCDIServiceImpl implements JCDIService {
         private List<JCDIInjectionContext> dependentContexts =
           new ArrayList<JCDIInjectionContext>();
 
-        public JCDIInjectionContextImpl() {
-        }
-
-        public JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc, T i) {
+        JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc, T i) {
             this.it = it;
             this.cc = cc;
             this.instance = i;
@@ -565,10 +494,6 @@ public class JCDIServiceImpl implements JCDIService {
             return instance;
         }
 
-        public void setInstance( T instance ) {
-            this.instance = instance;
-        }
-
         @SuppressWarnings("unchecked")
         public void cleanup(boolean callPreDestroy) {
             for ( JCDIInjectionContext context : dependentContexts ) {
@@ -576,18 +501,11 @@ public class JCDIServiceImpl implements JCDIService {
             }
 
             if( callPreDestroy ) {
-                if ( it != null ) {
-                    it.preDestroy(instance);
-                }
+                it.preDestroy(instance);
             }
 
-            if ( it != null ) {
-                it.dispose(instance);
-            }
-
-            if ( cc != null ) {
-                cc.release();
-            }
+            it.dispose(instance);
+            cc.release();
         }
 
         //todo: test
@@ -595,28 +513,14 @@ public class JCDIServiceImpl implements JCDIService {
             return it;
         }
 
-        @Override
-        public void setInjectionTarget(InjectionTarget<T> injectionTarget) {
-            this.it = injectionTarget;
-        }
-
         //todo: test
         public CreationalContext<T> getCreationalContext() {
             return cc;
         }
 
-        @Override
-        public void setCreationalContext(CreationalContext<T> creationalContext) {
-            this.cc = creationalContext;
-        }
-
         //todo: test
         public void addDependentContext( JCDIInjectionContext dependentContext ) {
             dependentContexts.add( dependentContext );
-        }
-
-        public Collection<JCDIInjectionContext> getDependentContexts() {
-            return dependentContexts;
         }
 
     }

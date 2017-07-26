@@ -1675,13 +1675,8 @@ public abstract class BaseContainer
     }
 
     public void createEjbInstance(Object[] params, EJBContextImpl ctx) throws Exception {
-        EjbBundleDescriptorImpl ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
-        if( (jcdiService == null) || ! jcdiService.isJCDIEnabled(ejbBundle)) {
-            // ejb creation for cdi is handled in JCDIServiceImpl not here.
-            // this is only for non-cdi case.
-            Object instance = _constructEJBInstance();
-            ctx.setEJB(instance);
-        }
+        Object instance = _constructEJBInstance();
+        ctx.setEJB(instance);
     }
 
     protected EJBContextImpl createEjbInstanceAndContext() throws Exception {
@@ -1696,22 +1691,9 @@ public abstract class BaseContainer
         try {
             ejbInv = createEjbInvocation(null, ctx);
             invocationManager.preInvoke(ejbInv);
-
-            if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
-                // In cdi we need this for the interceptors to store dependent jcdi contexts.  We can't assign the
-                // other info as the ejb has not been created yet.
-                jcdiCtx = jcdiService.createEmptyJCDIInjectionContext();
-            }
-
-            // Interceptors must be created before the ejb so they're available for around construct.
-            createEjbInterceptors( ctx, jcdiCtx );
             
             if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
-                HashMap<Class, Object> ejbInfo = new HashMap<>();
-                ejbInfo.put( BaseContainer.class, this );
-                ejbInfo.put( EJBContextImpl.class, ctx );
-                ejbInfo.put( JCDIService.JCDIInjectionContext.class, jcdiCtx );
-                jcdiService.createJCDIInjectionContext(ejbDescriptor, ejbInfo );
+                jcdiCtx = jcdiService.createJCDIInjectionContext(ejbDescriptor);
                 instance = jcdiCtx.getInstance();
             } else {
                 injectEjbInstance(ctx);
@@ -1721,12 +1703,6 @@ public abstract class BaseContainer
             success = true;
             
         } catch (Throwable th) {
-            try {
-                if ( jcdiCtx != null ) {
-                    // protecte against memory leak
-                    jcdiCtx.cleanup( true );
-                }
-            } catch (Throwable ignore ) {}
             throw new InvocationTargetException(th);
         } finally {
             try {
@@ -1744,12 +1720,12 @@ public abstract class BaseContainer
             
         }
 
+        EJBContextImpl contextImpl = _constructEJBContextImpl(instance);
         if( jcdiCtx != null ) {
-            ctx.setJCDIInjectionContext(jcdiCtx);
+            contextImpl.setJCDIInjectionContext(jcdiCtx);
         }
-        ctx.setEJB( instance );
 	
-        return ctx;
+        return contextImpl;
     }
 
     protected EJBContextImpl _constructEJBContextImpl(Object instance) {
@@ -1761,13 +1737,16 @@ public abstract class BaseContainer
 	return ejbClass.newInstance();
     }
 
-    private void createEjbInterceptors(EJBContextImpl context,
-                                       JCDIService.JCDIInjectionContext ejbInterceptorsJCDIInjectionContext) throws Exception {
+    protected void injectEjbInstance(EJBContextImpl context) throws Exception {
+
         EjbBundleDescriptorImpl ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
 
-        Object[] interceptorInstances;
+        Object[] interceptorInstances = null;
 
         if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
+
+	        jcdiService.injectEJBInstance(context.getJCDIInjectionContext());
+
             Class[] interceptorClasses = interceptorManager.getInterceptorClasses();
 
             interceptorInstances = new Object[interceptorClasses.length];
@@ -1777,14 +1756,18 @@ public abstract class BaseContainer
                 // is still our responsibility
                 interceptorInstances[i] =
                             jcdiService.createInterceptorInstance(interceptorClasses[i],
-                                                                  ejbDescriptor,
-                                                                  ejbInterceptorsJCDIInjectionContext,
+                                                                  ejbBundle,
+                                                                  context.getJCDIInjectionContext(),
                                                                   context.getContainer().getEjbDescriptor().getInterceptorClasses() );
             }
 
             interceptorManager.initializeInterceptorInstances(interceptorInstances);
 
         } else {
+            if (context.getEJB() != null) {
+                injectionManager.injectInstance(context.getEJB(), ejbDescriptor, false);
+            }
+
             interceptorInstances = interceptorManager.createInterceptorInstances();
 
             for (Object interceptorInstance : interceptorInstances) {
@@ -1794,19 +1777,7 @@ public abstract class BaseContainer
         }
 
         context.setInterceptorInstances(interceptorInstances);
-    }
 
-    protected void injectEjbInstance(EJBContextImpl context) throws Exception {
-
-        EjbBundleDescriptorImpl ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
-
-        if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
-	        jcdiService.injectEJBInstance(context.getJCDIInjectionContext());
-        } else {
-            if (context.getEJB() != null) {
-                injectionManager.injectInstance(context.getEJB(), ejbDescriptor, false);
-            }
-        }
     }
 
     protected void cleanupInstance(EJBContextImpl context) {
@@ -2039,8 +2010,8 @@ public abstract class BaseContainer
             throw new PreInvokeException(ejbEx);
         }
     }
-
-    public boolean intercept(CallbackType eventType, EJBContextImpl ctx)
+    
+    protected boolean intercept(CallbackType eventType, EJBContextImpl ctx)
             throws Throwable {
 
         return interceptorManager.intercept(eventType, ctx);

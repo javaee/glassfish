@@ -60,7 +60,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
-import java.util.*;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:phil.zampino@oracle.com">Phil Zampino</a>
@@ -190,10 +190,10 @@ public class ACCJCDIServiceImpl implements JCDIService {
 
 
     @Override
-    public <T> T createInterceptorInstance( Class<T> interceptorClass,
-                                     EjbDescriptor ejbDesc,
-                                     JCDIService.JCDIInjectionContext ejbContext,
-                                     Set<EjbInterceptor> ejbInterceptors ) {
+    public <T> T createInterceptorInstance(Class<T> interceptorClass,
+                                    BundleDescriptor bundle,
+                                    JCDIService.JCDIInjectionContext ejbContext,
+                                           Set<EjbInterceptor> ejbInterceptors ) {
         T interceptorInstance = null;
 
         WeldContainer wc = getWeldContainer();
@@ -215,19 +215,14 @@ public class ACCJCDIServiceImpl implements JCDIService {
 
 
     @Override
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, Map<Class, Object> ejbInfo) {
-        return createJCDIInjectionContext(ejbDesc, null, null);
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc) {
+        return createJCDIInjectionContext(ejbDesc, null);
     }
 
 
     @Override
-    public <T> JCDIInjectionContext<T> createJCDIInjectionContext(EjbDescriptor ejbDesc, T instance, Map<Class, Object> ejbInfo) {
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc, Object instance) {
         throw new UnsupportedOperationException("Application Client Container");
-    }
-
-    @Override
-    public JCDIInjectionContext createEmptyJCDIInjectionContext() {
-        return new JCDIInjectionContextImpl();
     }
 
 
@@ -260,9 +255,6 @@ public class ACCJCDIServiceImpl implements JCDIService {
         CreationalContext cc;
         Object instance;
 
-        JCDIInjectionContextImpl() {
-        }
-
         JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc, Object i) {
             this.it = it;
             this.cc = cc;
@@ -271,11 +263,6 @@ public class ACCJCDIServiceImpl implements JCDIService {
 
         public Object getInstance() {
             return instance;
-        }
-
-        @Override
-        public void setInstance(Object instance) {
-            this.instance = instance;
         }
 
         @SuppressWarnings("unchecked")
@@ -295,27 +282,12 @@ public class ACCJCDIServiceImpl implements JCDIService {
         }
 
         @Override
-        public void setInjectionTarget(InjectionTarget injectionTarget) {
-            this.it = injectionTarget;
-        }
-
-        @Override
         public CreationalContext getCreationalContext() {
             return cc;
         }
 
-        @Override
-        public void setCreationalContext(CreationalContext creationalContext) {
-            this.cc = creationalContext;
-        }
-
         public void addDependentContext( JCDIInjectionContext dependentContext ) {
             // nothing for now
-        }
-
-        @Override
-        public Collection<JCDIInjectionContext> getDependentContexts() {
-            return new ArrayList<JCDIInjectionContext>();
         }
     }
 

@@ -52,7 +52,6 @@ import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.enterprise.inject.spi.InterceptionType;
 import javax.enterprise.inject.spi.Interceptor;
-import javax.interceptor.AroundConstruct;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.naming.InitialContext;
@@ -181,12 +180,6 @@ public class EjbServicesImpl implements EjbServices {
         // EjbDescriptor.   299 interceptors are always added after any interceptors defined via
         // EJB-defined metadata, so the ordering will be correct since all the ejb interceptors
         // have already been processed.
-        List<EjbInterceptor> aroundConstructChain =
-                makeInterceptorChain(InterceptionType.AROUND_CONSTRUCT,
-                        interceptorBindings.getLifecycleInterceptors(InterceptionType.AROUND_CONSTRUCT),
-                                glassfishEjbDesc);
-        glassfishEjbDesc.appendToInterceptorChain(aroundConstructChain);
-
         List<EjbInterceptor> postConstructChain =
                 makeInterceptorChain(InterceptionType.POST_CONSTRUCT,
                         interceptorBindings.getLifecycleInterceptors(InterceptionType.POST_CONSTRUCT),
@@ -310,9 +303,6 @@ public class EjbServicesImpl implements EjbServices {
                         case AROUND_TIMEOUT :
                             ejbInt.addAroundTimeoutDescriptor(lifecycleDesc);
                             break;
-                        case AROUND_CONSTRUCT :
-                            ejbInt.addAroundConstructDescriptor(lifecycleDesc);
-                            break;
                         default :
                             throw new IllegalArgumentException("Invalid lifecycle interception type " +
                                                                interceptionType);
@@ -331,8 +321,6 @@ public class EjbServicesImpl implements EjbServices {
     private Class<?> getInterceptorAnnotationType(InterceptionType interceptionType) {
 
         switch(interceptionType) {
-            case AROUND_CONSTRUCT :
-                return AroundConstruct.class;
             case POST_CONSTRUCT :
                 return PostConstruct.class;
             case PRE_DESTROY :
