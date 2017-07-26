@@ -26,3 +26,4 @@ jms_all
 persistence_all
 webservice_all
 naming_all
+batch_all
