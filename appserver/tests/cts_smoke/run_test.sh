@@ -174,8 +174,8 @@ test_run_servlet_tck(){
 	ant config.security
 	ant deploy.all
 	
-	if [ -n ${TEST_DIR} ]; then
-		cd $TS_HOME/src/com/sun/ts/tests/$TEST_DIR
+	if [ -n $1 ]; then
+		cd $TS_HOME/src/com/sun/ts/tests/$1
 	else
 		cd $TS_HOME/src/com/sun/ts/tests/
 	fi
@@ -208,8 +208,7 @@ run_test_id(){
 		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
 		TEST_DIR=(`cat ${TEST_DIR_PROPERTIES} | grep ${TEST_DIR_PROP_KEY} | cut -d'=' -f2`)		
 		echo $TEST_DIR
-		export $TEST_DIR
-		test_run_servlet_tck
+		test_run_servlet_tck $1
 		result=$WORKSPACE/results/tests.log
 	else
 		echo "Invalid Test ID"
