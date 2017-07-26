@@ -49,14 +49,12 @@ test_run(){
   export HUDSON=true
   export ROOT=`pwd`
   echo $ROOT
-  cd $APS_HOME/../v2-tests/appserv-tests
   ant startDomain startDerby
   cd $ROOT
   echo Running target: $TARGET
   time ant clean-all clean $TARGET report | tee $TEST_RUN_LOG
   antStatus=$?
   cp connector.output tests-run.log
-  cd $APS_HOME/../v2-tests/appserv-tests
   ant stopDomain stopDerby
   if [ $antStatus -ne 0 ]
   then
