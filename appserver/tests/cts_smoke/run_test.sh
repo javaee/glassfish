@@ -173,8 +173,12 @@ test_run_servlet_tck(){
 	cd $TS_HOME/bin
 	ant config.security
 	ant deploy.all
-
-	cd $TS_HOME/src/com/sun/ts/tests/servlet/api/javax_servlet_http
+	
+	if [ -n ${TEST_DIR} ]; then
+		cd $TS_HOME/src/com/sun/ts/tests/$TEST_DIR
+	else
+		cd $TS_HOME/src/com/sun/ts/tests/
+	fi
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
 
 	cd $S1AS_HOME
@@ -197,7 +201,12 @@ run_test_id(){
 	if [[ $1 = "cts_smoke_all" ]]; then
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
-	elif [[ $1 = "servlet_tck_all" ]]; then
+	elif [[ $1 = "servlet_tck_"* ]]; then
+		TEST_DIR_PROPERTIES="./test_dir.properties"
+		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
+		TEST_DIR=(`cat ${TEST_DIR_PROPERTIES} | grep ${TEST_DIR_PROP_KEY} | cut -d'=' -f2`)		
+		echo $TEST_DIR
+		export $TEST_DIR
 		test_run_servlet_tck
 		result=$WORKSPACE/results/tests.log
 	else
@@ -212,7 +221,7 @@ post_test_run(){
     	if [[ $TEST_ID = "cts_smoke_all" ]]; then
 	  		archive_cts || true
 	  	fi
-	  	if [[ $TEST_ID = "servlet_tck_all" ]]; then
+	  	if [[ $TEST_ID = "servlet_tck_"* ]]; then
 	  		archive_servlet_tck || true
 	  	fi
 	fi
@@ -223,7 +232,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all
+	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec servlet_tck_signaturetest-servlet
 }
 
 cts_to_junit(){
