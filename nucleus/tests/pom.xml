@@ -86,7 +86,7 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
@@ -113,9 +113,9 @@
                             <configuration>
                                 <target>
                                     <echo message="${nucleus.home}  Adding jacoco jvm arg to domain.xml :- ${surefireArgLine}" />
-                                    <!--copy file="${nucleus.home}/domains/domain1/config/domain.xml"
+                                    <!copy file="${nucleus.home}/domains/domain1/config/domain.xml"
                                       tofile="${nucleus.home}/domains/domain1/config/domain.xml.bak"
-                                      overwrite="true" /-->
+                                      overwrite="true" />
                                     <replaceregexp  file="${nucleus.home}/domains/domain1/config/domain.xml"
                                                 match="&lt;java-config (.*)&gt;"
                                                 replace="&lt;java-config \1&gt;${line.separator}
@@ -128,7 +128,7 @@
                             </goals>
                         </execution>
                     </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
@@ -141,4 +141,81 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>code-coverage</id>
+            <activation>
+                <property>
+                    <name>coverage.code</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <jacoco.version>0.7.9</jacoco.version>
+                <jacoco.ft.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ft.exec</jacoco.ft.execution.data.file>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${jacoco.ut.execution.data.file}</destFile>
+                                    <propertyName>surefireArgLine</propertyName>
+                                    <classDumpDir>${project.build.directory}/jacoco-classes/</classDumpDir>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>attach-jacoco-agent</id>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <target>
+                                        <echo message="${nucleus.home}  Adding jacoco jvm arg to domain.xml :- ${surefireArgLine}" />
+                                        <copy file="${nucleus.home}/domains/domain1/config/domain.xml"
+                                          tofile="${nucleus.home}/domains/domain1/config/domain.bak"
+                                          />
+                                        <replaceregexp  file="${nucleus.home}/domains/domain1/config/domain.xml"
+                                                        match="&lt;java-config (.*)&gt;"
+                                                        replace="&lt;java-config \1&gt;${line.separator}
+        &lt;jvm-options&gt;${surefireArgLine}&lt;/jvm-options&gt;"
+                                                        byline="true"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>de-attach jacoco agent</id>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <move file="${nucleus.home}/domains/domain1/config/domain.bak"
+                                              tofile="${nucleus.home}/domains/domain1/config/domain.xml"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

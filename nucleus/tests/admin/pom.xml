@@ -122,6 +122,9 @@ of COPY_LIB map constant.)
                 </goals>
                 <projectsDirectory>${basedir}/src/addon/</projectsDirectory>
                 <cloneProjectsTo>${project.build.directory}/addon</cloneProjectsTo>
+                <properties>
+                    <nucleus.home>${nucleus.home}</nucleus.home>
+                </properties>
             </configuration>
             <executions>
               <execution>
