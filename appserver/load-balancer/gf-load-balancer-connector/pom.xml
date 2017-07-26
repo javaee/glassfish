@@ -85,6 +85,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version.lowerbound}</version>
+        </dependency>
 	<!-- Dependencies on other modules/jars -->
         <dependency>
             <groupId>org.glassfish.hk2</groupId>

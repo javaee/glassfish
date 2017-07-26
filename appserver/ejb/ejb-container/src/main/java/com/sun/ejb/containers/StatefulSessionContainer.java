@@ -513,26 +513,12 @@ public final class StatefulSessionContainer
     }
 
     protected void registerMonitorableComponents() {
+        registerEjbCacheProbeProvider();
         super.registerMonitorableComponents();
         cacheProbeListener = new EjbCacheStatsProvider(sessionBeanCache,
                 getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         cacheProbeListener.register();
-
-        try {
-            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
-            String invokerId = EjbMonitoringUtils.getInvokerId(containerInfo.appName,
-                    containerInfo.modName, containerInfo.ejbName);
-            cacheProbeNotifier = probeFactory.getProbeProvider(EjbCacheProbeProvider.class, invokerId);
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Got ProbeProvider: " + cacheProbeNotifier.getClass().getName());
-            }
-        } catch (Exception ex) {
-            cacheProbeNotifier = new EjbCacheProbeProvider();
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Error getting the EjbMonitoringProbeProvider");
-            }
-        }
 
         if (isHAEnabled) {
             sfsbStoreMonitor = new HAStatefulSessionStoreMonitor();
@@ -540,7 +526,42 @@ public final class StatefulSessionContainer
             sfsbStoreMonitor = new StatefulSessionStoreMonitor();
         }
         sessionBeanCache.setStatefulSessionStoreMonitor(sfsbStoreMonitor);
-        _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "[SFSBContainer] registered monitorable");
+        }
+    }
+
+
+    private void registerEjbCacheProbeProvider() {
+        String appName = null;
+        String modName = null;
+        String ejbName = null;
+
+        try {
+            appName = (ejbDescriptor.getApplication().isVirtual()) ? null
+                    : ejbDescriptor.getApplication().getRegistrationName();
+            if (appName == null) {
+                modName = ejbDescriptor.getApplication().getRegistrationName();
+            } else {
+                String archiveuri = ejbDescriptor.getEjbBundleDescriptor()
+                        .getModuleDescriptor().getArchiveUri();
+                modName = com.sun.enterprise.util.io.FileUtils
+                        .makeFriendlyFilename(archiveuri);
+            }
+            ejbName = ejbDescriptor.getName();
+
+            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+            String invokerId = EjbMonitoringUtils.getInvokerId(appName, modName, ejbName);
+            cacheProbeNotifier = probeFactory.getProbeProvider(EjbCacheProbeProvider.class, invokerId);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Got ProbeProvider: " + cacheProbeNotifier.getClass().getName());
+            }
+        } catch (Exception ex) {
+            cacheProbeNotifier = new EjbCacheProbeProvider();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error getting the EjbCacheProbeProvider");
+            }
+        }
     }
 
     public String getMonitorAttributeValues() {

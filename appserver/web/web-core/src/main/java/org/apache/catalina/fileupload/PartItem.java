@@ -66,6 +66,7 @@ import org.apache.catalina.util.RequestUtil;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -733,10 +734,30 @@ class PartItem
         // read values
         in.defaultReadObject();
 
+        if (repository != null) {
+            if (repository.isDirectory()) {
+                                // Check path for nulls
+                if (repository.getPath() != null && repository.getPath().contains("\0")) {
+                    String msg = MessageFormat.format(
+                            rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), repository.getPath());
+                    throw new IOException(msg);
+                }
+            } else {
+                String msg = MessageFormat.format(
+                        rb.getString(LogFacade.REPOSITORY_IS_NOT_A_DIRECTORY), repository.getAbsolutePath());
+                throw new IOException(msg);
+            }
+        }
+
         OutputStream output = getOutputStream();
         if (cachedContent != null) {
             output.write(cachedContent);
         } else {
+            if (dfosFile != null && (dfosFile.getPath() == null || dfosFile.getPath().contains("\0"))) {
+                String msg = MessageFormat.format(
+                        rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), dfosFile.getPath());
+                throw new IOException(msg);
+            }
             FileInputStream input = new FileInputStream(dfosFile);
             Streams.copy(input, output, false);
             deleteFile(dfosFile);

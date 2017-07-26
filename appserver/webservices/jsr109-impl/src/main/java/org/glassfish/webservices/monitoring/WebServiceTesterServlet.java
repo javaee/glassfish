@@ -422,7 +422,7 @@ public class WebServiceTesterServlet extends HttpServlet {
                 }   
                 if (short.class.equals(targetParamType) || 
                         (Short.class.equals(targetParamType))) {
-                    convertedValue = new Short(webValue);
+                    convertedValue = Short.valueOf(webValue);
                 }     
                 if (StringBuffer.class.equals(targetParamType)) {
                     convertedValue = new StringBuffer(webValue);
@@ -674,13 +674,16 @@ public class WebServiceTesterServlet extends HttpServlet {
     
     private List<File> getListOfFiles(File path) {
         
-        File[] files = path.listFiles();
+        File[] files = path != null ? path.listFiles() : null;
         List<File> result = new ArrayList<File>();
+        if (files == null) {
+            return result;
+        }
         for (File f : files) {
             if (f.isDirectory()) {
                 result.addAll(getListOfFiles(f));
             } else {
-                result.add(f);                
+                result.add(f);
             }
         }
         return result;
@@ -690,11 +693,13 @@ public class WebServiceTesterServlet extends HttpServlet {
 
         if (path.exists() && path.isFile()) {
             File[] files = path.listFiles();
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    deleteDir(f);
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isDirectory()) {
+                        deleteDir(f);
+                    }
+                    assert f.delete();
                 }
-                assert f.delete();
             }
             assert path.delete();
         }

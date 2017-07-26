@@ -117,7 +117,7 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
 
-	$TS_HOME/tools/ant/bin/ant -f smoke.xml smoke
+	$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
 
 	#POST CLEANUPS
 	kill_process
@@ -179,6 +179,8 @@ test_run_servlet_tck(){
 	else
 		cd $TS_HOME/src/com/sun/ts/tests/
 	fi
+	export JAVA_OPTIONS="-Xbootclasspath/p:$TS_HOME/lib/flow.jar"
+
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
 
 	cd $S1AS_HOME

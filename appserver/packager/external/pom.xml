@@ -65,7 +65,6 @@
     </properties>
 
     <modules>
-        <module>ant</module>
         <module>javadb</module>    
 	<module>jmsra</module>
         <module>jaxr_ra</module>
