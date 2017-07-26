@@ -169,7 +169,7 @@
               we can remove this.
             <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
-            <version>${project.version}</version>
+            <version>${ant.version}</version>
         </dependency>
             -->
 
