@@ -204,7 +204,7 @@ run_test_id(){
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
 	elif [[ $1 = "servlet_tck_"* ]]; then
-		TEST_DIR_PROPERTIES="./test_dir.properties"
+		TEST_DIR_PROPERTIES=`dirname $0`/test_dir.properties
 		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
 		TEST_DIR=(`cat ${TEST_DIR_PROPERTIES} | grep ${TEST_DIR_PROP_KEY} | cut -d'=' -f2`)		
 		echo $TEST_DIR
