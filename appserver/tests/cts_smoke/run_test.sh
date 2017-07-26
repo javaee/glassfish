@@ -208,7 +208,7 @@ run_test_id(){
 		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
 		TEST_DIR=(`cat ${TEST_DIR_PROPERTIES} | grep ${TEST_DIR_PROP_KEY} | cut -d'=' -f2`)		
 		echo $TEST_DIR
-		test_run_servlet_tck $1
+		test_run_servlet_tck $TEST_DIR
 		result=$WORKSPACE/results/tests.log
 	else
 		echo "Invalid Test ID"
