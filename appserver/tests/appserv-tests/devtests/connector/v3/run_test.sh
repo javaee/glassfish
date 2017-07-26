@@ -41,7 +41,7 @@
 
 #Contract 1. returns the TEST ID, which you assigned in step 3.a
 list_test_ids(){
-  echo connector_all connector_group_1 connector_group_2 connector_group_3 connector_group_4 connector_group_5 connector_group_6 connector_group_7
+  echo connector_all connector_group_1 connector_group_2 connector_group_3 connector_group_4 connector_group_5 connector_group_6 connector_group_7 connector_group_8
 }
  
 test_run(){

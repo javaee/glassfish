@@ -368,32 +368,32 @@
         <ant dir="osgi-resources-test" target="all"/>
     </target>
 
-	<target name="connector-run-fail">
+	<target name="connector_group_8">
 		<!--FAILING SO COMMENTED-->
-		<!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
-        <ant dir="installed-libraries-embedded" target="all"/-->
+		<echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/>
 
 		<!--FAILING SO COMMENTED-->
-		<!--echo message="@@## beanvalidation-simple ##@@"/>
+		<echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="all"/>
 
         <echo message="@@## beanvalidation-simple ##@@"/>
-        <ant dir="beanvalidation-simple" target="embedded-all"/-->
+        <ant dir="beanvalidation-simple" target="embedded-all"/>
 
 		<!--FAILING SO COMMENTED-->
-		<!--echo message="@@## defaultConnectorResource ##@@"/>
-        <ant dir="defaultConnectorResource" target="${connector-target}"/-->
+		<echo message="@@## defaultConnectorResource ##@@"/>
+        <ant dir="defaultConnectorResource" target="${connector-target}"/>
 
-		<!--echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
-        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/-->
-
-		<!--FAILING SO COMMENTED-->
-		<!--echo message="@@## connector1.6 ##@@"/>
-        <ant dir="connector1.6" target="${connector-target}"/-->
+		<echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/>
 
 		<!--FAILING SO COMMENTED-->
-		<!--echo message="@@## Annotated Connector1.5 ##@@"/>
-        <ant dir="annotation-connector1.5" target="${connector-target}"/-->
+		<echo message="@@## connector1.6 ##@@"/>
+        <ant dir="connector1.6" target="${connector-target}"/>
+
+		<!--FAILING SO COMMENTED-->
+		<echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/>
 	</target>
 
     <target name="connector">
