@@ -1146,6 +1146,12 @@
                 <artifactId>javax.security.enterprise-api</artifactId>
                 <version>${javax.security.enterprise-api.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>derby-distribution</artifactId>
+                <version>${derby.version}</version>
+                <type>zip</type>
+           </dependency>
       </dependencies>
     </dependencyManagement>
 

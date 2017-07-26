@@ -59,29 +59,6 @@
 
         <build>
         <plugins>
-            <!--plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>glassfishbuild-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-zip</id>
-                        <phase>package</phase>
-                            <configuration>
-                                <duplicate>preserve</duplicate>
-                                <filesets>
-                                    <fileset>
-                                        <dir>${stage.dir}/..</dir>
-                                        <excludes>derby-distribution-${derby.version}-bin/demo/**</excludes>
-                                        <excludes>derby-distribution-${derby.version}-bin/docs/**</excludes>
-                                        <excludes>derby-distribution-${derby.version}-bin/javadoc/**</excludes>
-                                        <excludes>derby-distribution-${derby.version}-bin/test/**</excludes>
-                                    </fileset>
-                                </filesets>
-                            </configuration>
-                        </execution>
-                    </executions>
-            </plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
