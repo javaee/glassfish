@@ -65,8 +65,9 @@
 
     <dependencies>
        <dependency>
-           <groupId>org.apache.ant</groupId>
+           <groupId>org.glassfish.external</groupId>
            <artifactId>ant</artifactId>
+           <version>${ant.version}</version>
            <optional>true</optional>
        </dependency>
 
