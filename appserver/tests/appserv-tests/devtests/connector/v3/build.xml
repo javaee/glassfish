@@ -406,6 +406,7 @@
         <antcall target="connector_group_5"/>
         <antcall target="connector_group_6"/>
         <antcall target="connector_group_7"/>
+		<antcall target="connector_group_8"/>
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
