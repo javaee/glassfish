@@ -219,7 +219,7 @@ public class CallbackInvocationContext implements InvocationContext {
                 targetObjectInstance = targetObjectClass.newInstance();
                 interceptorInfo.setTargetObjectInstance(targetObjectInstance);
             } else {
-                container.createEjbInstance(ctorParams, ctx);
+                container.createEjbInstanceForInterceptors(ctorParams, ctx);
                 targetObjectInstance = ctx.getEJB();
             }
         } // else do nothing? XXX
