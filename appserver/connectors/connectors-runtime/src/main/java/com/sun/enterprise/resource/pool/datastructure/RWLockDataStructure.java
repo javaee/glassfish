@@ -136,7 +136,11 @@ public class RWLockDataStructure implements DataStructure {
                 }
             }
         } finally {
-            readLock.unlock();
+            try {
+                readLock.unlock();
+            } catch ( Exception e) {
+                //ignore
+            }
         }
         return null;
     }
