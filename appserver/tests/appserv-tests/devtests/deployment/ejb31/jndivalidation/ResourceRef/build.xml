@@ -45,7 +45,7 @@
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 ]>
 
-<project name="resourceref" default="all" basedir=".">
+<project name="ResourceRef" default="all" basedir=".">
 
     &commonBuild;
 

@@ -45,11 +45,11 @@
     <description>Application description</description>
     <module>
         <web>
-            <web-uri>deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-web.war</web-uri>
-            <context-root>/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-war</context-root>
+            <web-uri>deployment-ejb31-jndivalidation-EJBRef-RemoteRef-web.war</web-uri>
+            <context-root>/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-war</context-root>
         </web>
     </module>
     <module>
-        <ejb>deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb.jar</ejb>
+        <ejb>deployment-ejb31-jndivalidation-EJBRef-RemoteRef-ejb.jar</ejb>
     </module>
 </application>

@@ -55,16 +55,16 @@ import test.ejb.Sless;
 public class TestServlet extends HttpServlet {
     // Portable JNDI names
     // Testing mapped name using java:global and java:app JNDI names
-    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB")
+    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-ejb/SlessEJB")
     Sless ejb1;
 
-    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB")
+    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-ejb/SlessEJB")
     Sless ejb2;
 
-    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB!test.ejb.Sless")
+    @EJB(mappedName="java:global/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-ejb/SlessEJB!test.ejb.Sless")
     Sless ejb3;
 
-    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-ejb/SlessEJB!test.ejb.Sless")
+    @EJB(mappedName="java:app/deployment-ejb31-jndivalidation-EJBRef-RemoteRef-ejb/SlessEJB!test.ejb.Sless")
     Sless ejb4;
 
     // Non-portable jndi names

@@ -53,8 +53,8 @@
         <ant dir="CorrectLocalRef" target="private-all">
             <property name="build" value="${build}/CorrectLocalRef"/>
         </ant>
-        <ant dir="RemoteRef1" target="private-all">
-            <property name="build" value="${build}/RemoteRef1"/>
+        <ant dir="RemoteRef" target="private-all">
+            <property name="build" value="${build}/RemoteRef"/>
         </ant>
     </target>
 </project>

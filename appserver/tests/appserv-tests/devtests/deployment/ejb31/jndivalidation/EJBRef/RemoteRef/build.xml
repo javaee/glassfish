@@ -45,11 +45,11 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 ]>
 
-<project name="deployment-ejb31-jndivalidation-EJBRef-RemoteRef1-App" default="all" basedir=".">
+<project name="deployment-ejb31-jndivalidation-EJBRef-RemoteRef-App" default="all" basedir=".">
 
     &commonBuild;
 
-    <property name="testName" value="deployment-ejb31-jndivalidation-EJBRef-RemoteRef1"/>
+    <property name="testName" value="deployment-ejb31-jndivalidation-EJBRef-RemoteRef"/>
     <property name="archivedir" value="${build}/archives"/>
     <property name="contextroot" value="${testName}"/>
 
@@ -111,7 +111,7 @@
 
     <target name="private-all">
         <antcall target="declare-test">
-            <param name="description" value="ejb31/jndivalidation/EJBRef/RemoteRef1 Test asadmin deploy"/>
+            <param name="description" value="ejb31/jndivalidation/EJBRef/RemoteRef Test asadmin deploy"/>
         </antcall>
         <antcall target="deploy.asadmin"/>
         <antcall target="undeploy.asadmin"/>

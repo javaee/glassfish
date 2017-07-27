@@ -68,8 +68,8 @@
         <ant dir="ConflitedResourceRef" target="private-all">
             <property name="build" value="${build}/ConflitedResourceRef"/>
         </ant>
-        <ant dir="resourceref" target="private-all">
-            <property name="build" value="${build}/resourceref"/>
+        <ant dir="ResourceRef" target="private-all">
+            <property name="build" value="${build}/ResourceRef"/>
         </ant>
         <ant dir="AppScopedResources" target="private-all">
             <property name="build" value="${build}/AppScopedResources"/>
