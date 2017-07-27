@@ -56,12 +56,12 @@
             <outputDirectory>${install.dir.name}</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}</directory>
+            <directory>${temp.dir}/derby-distribution-${derby.version}-bin</directory>
             <excludes>
                 <exclude>glassfish/**</exclude>
                 <exclude>pkg_proto.py</exclude>
             </excludes>
-            <outputDirectory>${install.dir.name}</outputDirectory>
+            <outputDirectory>${install.dir.name}/javadb</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
