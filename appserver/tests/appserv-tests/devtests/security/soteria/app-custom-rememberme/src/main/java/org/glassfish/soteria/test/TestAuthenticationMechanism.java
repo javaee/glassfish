@@ -59,7 +59,8 @@ import static javax.security.enterprise.identitystore.CredentialValidationResult
 
 @RememberMe(
     cookieMaxAgeSeconds = 3600,
-    isRememberMeExpression ="self.isRememberMe(httpMessageContext)"
+    cookieSecureOnly = false,
+    isRememberMeExpression ="#{self.isRememberMe(httpMessageContext)}"
 )
 @RequestScoped
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
