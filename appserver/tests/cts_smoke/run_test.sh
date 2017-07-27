@@ -233,7 +233,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec servlet_tck_signaturetest-servlet
+	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec servlet_tck_signaturetest-servlet
 }
 
 cts_to_junit(){
