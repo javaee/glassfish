@@ -386,8 +386,14 @@
 		<echo message="@@## defaultConnectorResource ##@@"/>
         <ant dir="defaultConnectorResource" target="${connector-target}"/>
 
+		<!--echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/-->
+
 		<echo message="@@## connector1.6 ##@@"/>
         <ant dir="connector1.6" target="${connector-target}"/>
+
+		<!--echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/-->
     </target>
 
     <target name="connector">
