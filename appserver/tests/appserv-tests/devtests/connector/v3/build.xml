@@ -351,8 +351,8 @@
 		<echo message="@@## installed libraries (--libraries) ##@@"/>
 		<ant dir="installed-libraries" target="all--libraries"/>
 
-		<echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
-		<ant dir="installed-libraries-embedded" target="all-ext"/>
+		<!--echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+		<ant dir="installed-libraries-embedded" target="all-ext"/-->
 	</target>
 
 
