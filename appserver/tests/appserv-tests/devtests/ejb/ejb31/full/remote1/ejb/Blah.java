@@ -44,6 +44,6 @@ import javax.ejb.EJB;
 
 public class Blah {
 
-    @EJB HelloRemote foo;
+    @EJB Hello foo;
 
 }

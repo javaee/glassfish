@@ -192,6 +192,11 @@
           <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.main.resourcebase.resources</groupId>
+            <artifactId>nucleus-resources</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>3.0</version>
