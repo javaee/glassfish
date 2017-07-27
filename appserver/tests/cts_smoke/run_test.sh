@@ -217,7 +217,7 @@ run_test_id(){
 
 post_test_run(){
     if [[ $? -ne 0 ]]; then
-    	if [[ $TEST_ID = "cts_smoke_all" | $TEST_ID = "cts_smoke_group-"* ]]; then
+    	if [[ $TEST_ID = "cts_smoke_all" || $TEST_ID = "cts_smoke_group-"* ]]; then
 	  		archive_cts || true
 	fi
 	  	if [[ $TEST_ID = "servlet_tck_all" ]]; then
