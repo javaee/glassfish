@@ -55,7 +55,11 @@ archive_cts(){
 
 test_run_cts_smoke(){
 	TS_HOME=$WORKSPACE/javaee-smoke
-	CTS_SMOKE=http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/promoted/
+	if [[ -z ${CTS_SMOKE_URL} ]]; then
+		CTS_SMOKE=${JENKINS_URL}/gf-cts-promotion/lastSuccessfulBuild/artifact/
+	else
+		CTS_SMOKE=${CTS_SMOKE_URL}
+	fi
 	CTS_SMOKE_BUNDLE=javaee-smoke-8.0_latest.zip
 	CTS_EXCLUDE_LIST=ts.jtx
 
@@ -137,7 +141,12 @@ test_run_servlet_tck(){
 	export TS_HOME=$WORKSPACE/servlettck
 	java -version
 	# Java EE 8 servlet tck.
-	wget http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/nightly/servlettck-4.0_Latest.zip -O servlettck.zip
+	if [[ -z ${SERVELT_TCK_URL} ]]; then
+		SERVELT_TCK=${JENKINS_URL}/job/gf-cts-promotion/lastSuccessfulBuild/artifact/
+	else
+		SERVELT_TCK=${SERVELT_TCK_URL}
+	fi
+	wget ${SERVELT_TCK}/servlettck-4.0_Latest.zip -O servlettck.zip
 
 	unzip -q servlettck.zip
 
