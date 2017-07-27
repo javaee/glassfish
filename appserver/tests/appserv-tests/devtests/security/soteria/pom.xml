@@ -44,9 +44,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>net.java</groupId>
-        <artifactId>jvnet-parent</artifactId>
-        <version>3</version>
+        <groupId>org.glassfish.main</groupId>
+        <artifactId>glassfish-nucleus-parent</artifactId>
+        <version>5.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <groupId>org.glassfish.soteria.test</groupId>
@@ -66,8 +66,8 @@
         <module>common</module>
         <module>app-mem-basic</module>
         <module>app-custom</module>
-	<module>app-custom-session</module>
-        <module>app-custom-rememberme</module> 
+        <module>app-custom-session</module>
+        <module>app-custom-rememberme</module>
         <module>app-securitycontext-auth</module>
         <module>app-securitycontext-auth-ejb</module>
         <module>app-double-ham</module>
@@ -113,13 +113,13 @@
         <dependency>
             <groupId>javax.security.enterprise</groupId>
             <artifactId>javax.security.enterprise-api</artifactId>
-            <version>1.0-b06</version>
+            <version>1.0-b09</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
             <artifactId>javax.security.enterprise</artifactId>
-            <version>1.0-b07</version>
+            <version>1.0-b10</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

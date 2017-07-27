@@ -37,52 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.soteria.test;
 
-import static java.util.Arrays.asList;
-import static javax.security.enterprise.AuthenticationStatus.SEND_FAILURE;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
+import javax.security.enterprise.identitystore.PlaintextPasswordHash;
 
-import java.util.HashSet;
-
-import javax.enterprise.context.RequestScoped;
-import javax.security.enterprise.AuthenticationStatus;
-import javax.security.enterprise.AuthenticationException;
-import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
-import javax.security.enterprise.credential.CallerOnlyCredential;
-import javax.security.enterprise.credential.Credential;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-@RequestScoped
-public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
-
-    @Override
-    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
-
-        if (httpMessageContext.isAuthenticationRequest()) {
-
-            Credential credential = httpMessageContext.getAuthParameters().getCredential();
-            if (!(credential instanceof CallerOnlyCredential)) {
-                throw new IllegalStateException("This authentication mechanism requires a programmatically provided CallerOnlyCredential");
-            }
-
-            CallerOnlyCredential callerOnlyCredential = (CallerOnlyCredential) credential;
-
-            if ("reza".equals(callerOnlyCredential.getCaller())) {
-                return httpMessageContext.notifyContainerAboutLogin("reza", new HashSet<>(asList("foo", "bar")));
-            }
-
-            if ("rezax".equals(callerOnlyCredential.getCaller())) {
-                throw new AuthenticationException();
-            }
-
-            return SEND_FAILURE;
-
-        }
-
-        return httpMessageContext.doNothing();
+@DatabaseIdentityStoreDefinition(
+    dataSourceLookup="${'jdbc/__default'}", 
+    callerQuery="#{'select password from caller where name = ?'}",
+    groupsQuery="select group_name from caller_groups where caller_name = ?",
+    hashAlgorithm = PlaintextPasswordHash.class,
+    hashAlgorithmParameters = {
+        "foo=bar", 
+        "kax=zak", 
+        "foox=${'iop'}",
+        "${applicationConfig.dyna}"
+        
+    } // just for test / example
+)
+@ApplicationScoped
+@Named
+public class ApplicationConfig {
+    
+    public String[] getDyna() {
+        return new String[] {"dyn=1","dyna=2","dynam=3"};
     }
-
+    
 }
