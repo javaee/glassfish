@@ -120,7 +120,7 @@ public class InterceptorUtil {
                 throw new IllegalArgumentException("Wrong number of parameters for "
                         + " method: " + method);
             }
-            if (paramTypes.length != params.length) {
+            if (params!= null && paramTypes.length != params.length) {
                 throw new IllegalArgumentException("Wrong number of parameters for "
                         + " method: " + method);
             }

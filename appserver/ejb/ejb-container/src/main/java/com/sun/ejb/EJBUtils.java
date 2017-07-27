@@ -650,10 +650,11 @@ public class EJBUtils {
                 break;
             }
         }
-        
-        Object obj = ctor.newInstance(new Object[] 
-            { delegate, businessInterface } );
-
+        Object obj = null;
+        if (ctor != null) {
+            obj = ctor.newInstance(new Object[]
+                    {delegate, businessInterface});
+        }
         return (RemoteBusinessWrapperBase) obj;
     }
 

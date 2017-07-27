@@ -122,7 +122,6 @@ public abstract class AbstractListCommandProxy
                 }
             }
         } else {
-            //target.equals("server") or anything else
             subReport = executeInternalCommand(context, target);
         }
 
