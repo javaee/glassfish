@@ -323,38 +323,41 @@
         <echo message="@@## connection-factory-definition##@@"/>
         <ant dir="connection-factory-definition" target="${connector-target}"/>
 
-        <echo message="@@## connection-factory-definition-embedra##@@"/>
-        <ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
-
-        <echo message="@@## administered-object-definition-embedra##@@"/>
-        <ant dir="administered-object-definition-embedra" target="${connector-target}"/>
-
-        <echo message="@@## administered-object-definition##@@"/>
-        <ant dir="administered-object-definition" target="${connector-target}"/>
-
     </target>
 
     <target name="connector_group_6">
 	<echo message="************  Starting connector_group_6  ************"/>
+		<echo message="@@## connection-factory-definition-embedra##@@"/>
+		<ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
+
+		<echo message="@@## administered-object-definition-embedra##@@"/>
+		<ant dir="administered-object-definition-embedra" target="${connector-target}"/>
+
+		<echo message="@@## administered-object-definition##@@"/>
+		<ant dir="administered-object-definition" target="${connector-target}"/>
+
 		<echo message="@@## jms-connection-factory-definition##@@"/>
 		<ant dir="jms-connection-factory-definition" target="${connector-target}"/>
+    </target>
 
+	<target name="connector_group_7">
+		<echo message="************  Starting connector_group_7  ************"/>
 		<echo message="@@## jms-destination-definition##@@"/>
 		<ant dir="jms-destination-definition" target="${connector-target}"/>
 
 		<echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
-        <ant dir="installed-libraries" target="all-ext"/>
+		<ant dir="installed-libraries" target="all-ext"/>
 
-        <echo message="@@## installed libraries (--libraries) ##@@"/>
-        <ant dir="installed-libraries" target="all--libraries"/>
+		<echo message="@@## installed libraries (--libraries) ##@@"/>
+		<ant dir="installed-libraries" target="all--libraries"/>
 
-        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
-        <ant dir="installed-libraries-embedded" target="all-ext"/>
-    </target>
+		<echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+		<ant dir="installed-libraries-embedded" target="all-ext"/>
+	</target>
 
 
-    <target name="connector_group_7">
-	<echo message="************  Starting connector_group_7  ************"/>
+    <target name="connector_group_8">
+	<echo message="************  Starting connector_group_8  ************"/>
         <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
 
@@ -368,8 +371,9 @@
         <ant dir="osgi-resources-test" target="all"/>
     </target>
 
-    <target name="connector_group_8">
-		<echo message="************  Starting connector_group_8 ************"/>
+
+	<target name="connector_group_9">
+		<echo message="************  Starting connector_group_9 ************"/>
 		<echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
         <ant dir="installed-libraries-embedded" target="all"/>
 
@@ -403,6 +407,7 @@
         <antcall target="connector_group_6"/>
         <antcall target="connector_group_7"/>
 		<antcall target="connector_group_8"/>
+		<antcall target="connector_group_9"/>
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
