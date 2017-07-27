@@ -104,13 +104,14 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     public synchronized Map<URI, List<String>> getTldListenerMap() {
         if (tldListenerMap == null) {
             tldListenerMap = new HashMap<URI, List<String>>();
-            for (URI uri : tldMap.keySet()) {
+            Set<Map.Entry<URI, List<String>>> entrySet = tldMap.entrySet();
+            for (Map.Entry<URI, List<String>> entry : entrySet) {
                 /*
                  * In the case of JSF, the only TLD that declares any
                  * listener is META-INF/jsf_core.tld 
                  */
-                if (tldMap.get(uri).contains("META-INF/jsf_core.tld")) {
-                    tldListenerMap.put(uri, tldMap.get(uri));
+                if (entry.getValue().contains("META-INF/jsf_core.tld")) {
+                    tldListenerMap.put(entry.getKey(), entry.getValue());
                     break;
                 }
             }

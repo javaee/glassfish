@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="simplestressApp" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &testproperties;
+
+    <target name="all" depends="build,setup,deploy,run,undeploy,unsetup"/>
+    <target name="run-test" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/*Bean*.class" />
+            <param name="appclientjar.classes" 
+              value="**/*Client*.class" />
+        </antcall>
+    </target> 
+    
+    <target name="setup" depends="init-common">
+        <antcall target="deploy-jms-common"/>
+        <antcall target="create-jms-resource-common">
+            <param name="dest.name"
+                 value="clientQueue"/>
+            <param name="dest.type"
+                 value="queue"/>
+            <param name="jms.resource.name"
+                 value="jms/clientQueue"/>
+            <param name="jms.resource.type"
+                 value="javax.jms.Queue"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+    
+    <target name="run" depends="init-common" >
+        <antcall target="test-send-receive-message"/>
+        <antcall target="test-send-recreate-fail"/>
+        <antcall target="test-send-create-newdomain"/>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="undeploy-jms-common"/>
+        <antcall target="delete-jms-resource-common">
+             <param name="dest.name"
+                 value="clientQueue"/>
+             <param name="dest.type"
+                 value="queue"/>
+             <param name="jms.resource.name"
+                 value="jms/clientQueue"/>
+        </antcall>
+    </target>
+
+    <target name="test-send-receive-message">
+        <antcall target="create-jms-user">
+            <param name="userName" value="user1"/>
+            <param name="FAILONERR" value="false"/>
+            <param name="userPassword" value="password1"/>
+            <param name="jmsServer" value=""/>
+            <param name="vardir" value=""/>
+	</antcall>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" 
+	           value="TestNewUser SENDRECEIVE VERIFY user1 password1"/>
+	</antcall>
+    </target>
+
+    <target name="test-send-recreate-fail">
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" 
+	           value="SettingupLooseMessageOnRecreate SEND NOVERIFY user1 password1"/>
+	</antcall>
+	<antcall target="start-clean-server"/>
+	<antcall target="setup"/>
+	<antcall target="deploy-common"/>
+        <antcall target="create-jms-user">
+            <param name="userName" value="user1"/>
+            <param name="userPassword" value="password1"/>
+            <param name="jmsServer" value=""/>
+            <param name="vardir" value=""/>
+            <param name="FAILONERR" value="true"/>
+	</antcall>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" 
+	           value="TestLooseMessageOnRecreate RECEIVE NOVERIFY user1 password1"/>
+	</antcall>
+    </target>
+    <target name="test-send-create-newdomain">
+	<antcall target="stopDomain"/>
+	<antcall target="create-domain-common">
+            <param name="admin.domain" value="domain2"/>
+            <param name="http.port" value="48080"/>
+	    <param name="orb.port" value="43700"/>			
+	</antcall>
+	<antcall target="startDomain">
+            <param name="admin.domain" value="domain2"/>
+	</antcall>
+        <antcall target="create-jms-user">
+            <param name="userName" value="user1"/>
+            <param name="userPassword" value="password1"/>
+            <param name="jmsServer" value=""/>
+            <param name="vardir" value="-varhome ${env.S1AS_HOME}/domains/domain2/imq"/>
+            <param name="FAILONERR" value="true"/>
+	</antcall>
+	<antcall target="setup"/>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" 
+	           value="SendMessageToNewDomainMQStore SEND NOVERIFY user1 password1"/>
+	</antcall>
+	<antcall target="deploy-common"/>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" 
+	           value="TestReceiveNewDomainMQStore RECEIVE VERIFY user1 password1"/>
+	</antcall>
+	<antcall target="stopDomain">
+            <param name="admin.domain" value="domain2"/>
+	</antcall>
+	<antcall target="delete-domain-common">
+            <param name="admin.domain" value="domain2"/>
+	</antcall>
+	<antcall target="startDomain"/>
+    </target>
+
+    <target name="create-jms-user" depends="init-common">
+           <exec executable="${env.S1AS_HOME}/../mq/bin/imqusermgr" failonerror="${FAILONERR}">
+               <env key="IMQ_JAVAHOME" value="${java.home}"/>
+                  <arg line="${jmsServer}"/>
+                  <arg line="${vardir}"/>
+                  <arg line=" add"/>
+                  <arg line=" -u ${userName} "/>
+                  <arg line=" -p ${userPassword} "/>
+                  <arg line=" -g admin "/>
+                  <arg line=" -f "/>
+           </exec>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

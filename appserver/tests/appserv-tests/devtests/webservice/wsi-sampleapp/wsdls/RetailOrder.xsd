@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+      xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd" 
+targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">Definition of PartsOrder types for Retailer component of WS-I</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="PartsOrderType">
+		<xsd:sequence>
+			<xsd:element name="Item" type="tns:PartsOrderItem" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PartsOrderItem">
+		<xsd:sequence>
+			<xsd:element name="productNumber" type="tns:productNumber" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="quantity" type="xsd:nonNegativeInteger" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="price"    type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PartsOrderResponseType">
+		<xsd:sequence>
+			<xsd:element name="Item" type="tns:PartsOrderResponseItem" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PartsOrderResponseItem">
+		<xsd:sequence>
+			<xsd:element name="productNumber" type="tns:productNumber" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="quantity" type="xsd:nonNegativeInteger" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="price"    type="xsd:decimal" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="comment"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerDetailsType">
+		<xsd:sequence>
+			<xsd:element name="custnbr"  type="tns:CustomerReferenceType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name"     type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="street1"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="street2"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="city"     type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="state"    type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="zip"      type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="country"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="productNumber">
+		<xsd:restriction base="xsd:integer">
+			<xsd:minInclusive value="1"/>
+			<xsd:maxInclusive value="999999"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CustomerReferenceType">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:maxLength value="20"/>
+			<xsd:pattern value="[A-D][0-9]{5}-[0-9A-Z]{7}-[a-z]{3}#*"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	<xsd:element name="InvalidProductCode" type="tns:InvalidProductCodeType"/>
+	<xsd:complexType name="InvalidProductCodeType">
+		<xsd:sequence>
+			<xsd:element name="Reason">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="InvalidProductCode"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ProductNumber" type="tns:productNumber" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

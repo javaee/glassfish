@@ -1,0 +1,116 @@
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+  <!ENTITY common SYSTEM "../../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
+]>
+
+<project name="JDBCConnector top level" default="build">
+    <property name="pkg.dir" value="com/sun/jdbcra/spi"/>
+    
+    &common;
+    &testcommon;
+    <property file="./build.properties"/>
+    
+    <target name="build" depends="compile,assemble" />
+          
+
+    <!-- init. Initialization involves creating publishing directories and
+         OS specific targets. --> 
+    <target name="init" description="${component.name} initialization">
+        <tstamp>
+            <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+        </tstamp>    
+        <echo message="Building component ${component.name}"/>
+        <mkdir dir="${component.classes.dir}"/>
+        <mkdir dir="${component.lib.home}"/>    
+    </target>
+    <!-- compile --> 
+    <target name="compile" depends="init"
+            description="Compile com/sun/* com/iplanet/* sources">  
+        <!--<echo message="Connector api resides in ${connector-api.jar}"/>-->
+        <javac srcdir="${src.dir}" 
+               destdir="${component.classes.dir}"
+               failonerror="true">
+            <classpath>
+                <fileset dir="${env.S1AS_HOME}/modules">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <include name="com/sun/jdbcra/**"/>
+            <include name="com/sun/appserv/**"/>
+        </javac>
+    </target>
+     
+    <target name="all" depends="build"/>
+
+   <target name="assemble">    
+    	
+	<jar jarfile="${component.lib.home}/jdbc.jar" 
+            basedir="${component.classes.dir}" includes="${pkg.dir}/**/*, 
+            com/sun/appserv/**/*, com/sun/jdbcra/util/**/*, com/sun/jdbcra/common/**/*"/> 
+   	
+        <copy file="${src.dir}/com/sun/jdbcra/spi/1.4/ra-xa.xml" 
+                tofile="${component.lib.home}/ra.xml" overwrite="yes">	
+        </copy>
+   	<jar jarfile="${component.lib.home}/jdbc-ra-xa.rar" 
+		basedir="${component.lib.home}" includes="jdbc.jar">
+
+   		<metainf dir="${component.lib.home}">
+   			<include name="ra.xml"/>
+   		</metainf>
+   	</jar>
+
+   	<delete file="${component.lib.home}/ra.xml"/>
+	
+  </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${component.classes.dir}"/>
+            <fileset dir="${component.lib.home}"/>
+        </delete>
+    </target>
+
+</project>
+

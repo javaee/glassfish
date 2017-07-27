@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions xmlns="http://www.w3.org/2004/08/wsdl" xmlns:tns="http://example.web.service/Calculator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2004/08/wsdl file:///E:/javatools/xmlschemaeditor/examples/filebinding/wsdl20sug8.xsd" xmlns:jms="http://sun.com/jbi/wsdl/jms10" xmlns:tout="http://sun.com/transformationout.xsd" xmlns:tin="http://sun.com/transformation.xsd" targetNamespace="http://example.web.service/Calculator">
+    <xs:types xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2003/XMLSchema-instance">  
+		<schema targetNamespace="http://sun.com/transformation.xsd" xmlns:ns="http://sun.com/transformation.xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+			<complexType name="transform">
+				<sequence>
+					<element name="catalog" maxOccurs="1" type="tin:catalogType"/>
+				</sequence>
+			</complexType>
+
+			<complexType name="catalogType">
+				<sequence>
+					<element name="cd" maxOccurs="10" type="tin:cdType"/>
+				</sequence>
+			</complexType>
+			<complexType name="cdType">
+				<sequence>
+					<element name="title" type="string"/>
+					<element name="artist" type="string"/>
+					<element name="country" type="string"/>
+					<element name="company" type="string"/>
+					<element name="price" type="string"/>
+					<element name="year" type="string"/>
+				</sequence>
+			</complexType>
+		</schema>
+		<schema targetNamespace="http://sun.com/transformationout.xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+
+			<complexType name="htmlOuput">
+				<sequence>
+					<element name="html" maxOccurs="1" type="tout:htmlType"/>
+				</sequence>
+			</complexType>
+			<complexType name="htmlType">
+				<sequence>
+					<element name="body" type="tout:bodyType"/>
+				</sequence>
+			</complexType>
+			<complexType name="bodyType">
+				<sequence>
+					<element name="h2" type="tout:h2Type"/>
+					<element name="table" type="tout:tableType"/>
+				</sequence>
+			</complexType>
+
+			<complexType name="h2Type" type="xs:string"/>
+			<complexType name="tableType">
+				<sequence>
+					<element name="tr" type="tyType"/>
+				</sequence>
+				<attribute name="border" use="required" type="xs:integer"/>
+			</complexType>
+
+			<complexType name="trType">
+				<complexType>
+					<choice>
+						<element name="td" type="tdType"/>
+						<element name="th" type="thType"/>
+					</choice>
+					<attribute name="bgcolor"/>
+				</complexType>
+			</complexType>
+			<complexType name="tdType" type="xs:string"/>
+			<complexType name="thType">
+				<complexType>
+					<simpleContent>
+						<extension base="xs:NCName">
+							<attribute name="align" use="required" type="xs:NCName"/>
+						</extension>
+					</simpleContent>
+				</complexType>
+			</complexType>
+		</schema>
+	</xs:types>
+    <interface name="transformIF">
+        <operation name="add" style="http://www.w3.org/2004/08/wsdl/style/rpc" pattern="http://www.w3.org/2004/08/wsdl/in-out">
+          <input messageLabel="A" element="tin:transform"/>
+          <output messageLabel="B" element="tout:htmlOuput"/>
+        </operation>
+        <operation name="getMessageInOnly" style="http://www.w3.org/2004/08/wsdl/style/rpc" pattern="http://www.w3.org/2004/08/wsdl/in-only">
+          <input messageLabel="A" element="tin:transform"/>
+          <output messageLabel="B" element="tout:htmlOuput"/>
+        </operation>
+        <operation name="getMessageRobustInOnly" style="http://www.w3.org/2004/08/wsdl/style/rpc" pattern="http://www.w3.org/2004/08/wsdl/robust-in-only">
+          <input messageLabel="A" element="tin:transform"/>
+          <output messageLabel="B" element="tout:htmlOuput"/>
+        </operation>
+    </interface>    
+    <binding name="jmsbinding" interface="tns:transformIF" type="http://sun.com/jbi/wsdl/jms10">
+    <!-- if the ref is not qualified by the tns then it takes the xmlns by default -->
+        <operation ref="add" jms:input-message-type="TextMessage" jms:output-message-type="TextMessage">
+          <input messageLabel="A">
+          </input>
+          <output messageLabel="B">
+          </output>
+        </operation>
+        <operation ref="getMessageInOnly" jms:input-message-type="TextMessage" jms:output-message-type="TextMessage">
+          <input messageLabel="A">
+          </input>
+          <output messageLabel="B">
+          </output>
+        </operation>
+        <operation ref="getMessageRobustInOnly" jms:input-message-type="TextMessage" jms:output-message-type="TextMessage">
+          <input messageLabel="A">
+          </input>
+          <output messageLabel="B">
+          </output>
+        </operation>
+    </binding>
+    <binding name="somebingin" interface="tns:transformIF" type="http://sun.com/jbi/wsdl/file10">
+        <operation ref="getMessage" jms:input-message-type="TextMessage" jms:output-message-type="TextMessage">
+          <input messageLabel="A">
+          </input>
+          <output messageLabel="B">
+          </output>
+        </operation>
+    </binding>
+    <service name="CalculatorService" interface="tns:transformIF">
+		<documentation>
+      		Transforms the input xml document to another xml format using the deployed stylesheet for this service
+    		</documentation>	
+        <endpoint name="Calculator" binding="tns:jmsbinding" 
+		 jms:destination-name="provideroutgoingqueue" 
+		 jms:endpoint-role="Provider"
+		 jms:destination-style="Queue"
+		 jms:connection-factory-name="MyQueueConnectionFactory" 
+		 jms:connection-user-name="guest" 
+		 jms:connection-password="guest" 
+		 jms:message-selector="" 
+		 jms:time-to-live="5000" jms:reply-to="" >
+        </endpoint>
+    </service>
+</definitions>

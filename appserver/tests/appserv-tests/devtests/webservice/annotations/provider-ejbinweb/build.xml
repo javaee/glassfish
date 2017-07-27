@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "file:./../../ejb_annotations/annotations-common.xml">
+]>
+
+<project name="Hello" default="core" basedir=".">
+
+    &commonBuild;
+    <property name="src-name" value="endpoint/HelloImpl.java"/>
+    <property name="client-src-name" value="client/Client.java"/>
+    <basename file="${src-name}" property="server" suffix=".java"/>
+    <dirname file="${src-name}" property="directory"/>
+    <basename file="${directory}" property="pkg-name"/> 
+    <target name="all" depends="clean">
+        <exec executable="${env.S1AS_HOME}/bin/wsimport">
+            <arg line="-keep -d ${env.APS_HOME}/build/module/classes endpoint/wsdl/HelloImplService.wsdl"/>
+        </exec>
+        <antcall target="test-compile"/>
+        <war destfile="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.war" needxmlfile="false">
+            <webinf dir="${pkg-name}"
+                    includes="*.xml **/*.wsdl **/*.xsd"/>
+            <classes dir="${env.APS_HOME}/build/module/classes" 
+                     includes="${pkg-name}/**"/>
+        </war>  
+        <waitfor maxwait="100" maxwaitunit="second">
+            <or>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.war_deployed"/>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.war_deployFailed"/>
+            </or>
+        </waitfor>
+        <condition property="deploy_succeeded">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.war_deployed"/>
+        </condition>
+        <condition property="deploy_failed">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.war_deployFailed"/>
+        </condition>
+
+        <fail if="deploy_failed" message="Deployment failed"/>
+        <antcall target="compile-client"/>
+        <exec executable="${env.S1AS_HOME}/bin/wsimport">
+            <arg line="-keep -d ${env.APS_HOME}/build/module/classes http://${http.host}:${http.port}/${server}/${server}Service?WSDL"/>	
+        </exec>
+        <antcall target="unjar-client-utils"/>
+        <antcall target="internal-run"/>
+        <antcall target="autoundeploy-file">
+            <param name="filename" value="${server}.war"/>
+        </antcall>
+        <condition property="undeploy_succeeded">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.jar_undeployed"/>
+        </condition>
+        <condition property="undeploy_failed">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/${server}.jar_undeployFailed"/>
+        </condition>
+        <fail if="undeploy_failed" message="undeployment failed"/>
+        <antcall target="report"/>
+    </target>
+
+    <target name="test_build">
+        <exec executable="${env.S1AS_HOME}/bin/wsimport">
+            <arg line="-keep -d ${env.APS_HOME}/build/module/classes endpoint/wsdl/HelloImplService.wsdl"/>
+        </exec>
+        <antcall target="build"/>
+    </target>
+
+    <target name="report-success">
+        <echo message="Test passed"/>
+    </target>
+
+    <target name="report-failure">
+        <echo message="Test failed"/>
+    </target>   	
+    
+</project>

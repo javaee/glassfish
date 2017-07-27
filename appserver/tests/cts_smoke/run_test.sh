@@ -117,9 +117,9 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
         if [ -n $1 ]; then
-		 $TS_HOME/tools/ant/bin/ant -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml -Dgroups.count=5 -Dgroup.id=$1 smoke.split.groups
+		 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -Dgroups.count=5 -Dgroup.id=$1 -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
         else
-		$TS_HOME/tools/ant/bin/ant -f smoke.xml smoke
+		 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
 	fi
 
 	#POST CLEANUPS
@@ -176,6 +176,7 @@ test_run_servlet_tck(){
 	cd $TS_HOME/bin
 	ant config.security
 	ant deploy.all
+	export JAVA_OPTIONS="-Xbootclasspath/p:$TS_HOME/lib/flow.jar"
 
 	cd $TS_HOME/src/com/sun/ts/tests
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true

@@ -304,7 +304,10 @@ public class HandlerChainHandler extends AbstractHandler {
                     if (DOLUtils.warType().equals(endpoint.getBundleDescriptor().getModuleType())) {
                         jndiContainer = endpoint.getBundleDescriptor();                 
                     } else {
-                        jndiContainer = Descriptor.class.cast(endpoint.getEjbComponentImpl());
+                        EjbDescriptor ejbDescriptor = endpoint.getEjbComponentImpl();
+                        if(ejbDescriptor instanceof Descriptor) {
+                            jndiContainer = Descriptor.class.cast(ejbDescriptor);
+                        }
                     }
                 } else { 
                     ServiceReferenceDescriptor ref = (ServiceReferenceDescriptor) container;
@@ -316,7 +319,8 @@ public class HandlerChainHandler extends AbstractHandler {
                             try {
                                 if(ejb.getServiceReferenceByName(ref.getName()) != null) {
                                     // found the ejb; break out of the loop
-                                    jndiContainer = Descriptor.class.cast(ejb);
+                                    if (ejb instanceof Descriptor)
+                                        jndiContainer = Descriptor.class.cast(ejb);
                                     break;
                                 }
                             } catch (IllegalArgumentException illex) {

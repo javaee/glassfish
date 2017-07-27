@@ -91,7 +91,33 @@
         <servlet-name>AAsyncDispatchToC</servlet-name>
         <url-pattern>/AAsyncDispatchToC</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>BIncludeDispatchServletNamedDispatcher</servlet-name>
+        <servlet-class>BIncludeDispatchServletNamedDispatcher</servlet-class>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BIncludeDispatchServletNamedDispatcher</servlet-name>
+        <url-pattern>/BIncludeDispatchServletNamedDispatcher</url-pattern>
+    </servlet-mapping>
+    <!-- getNamedDispatcher cases -->
+    <servlet>
+      <servlet-name>BForwardToCNamedDispatcher</servlet-name>
+      <servlet-class>BForwardToCNamedDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BForwardToCNamedDispatcher</servlet-name>
+      <url-pattern>/BForwardToCNamedDispatcher</url-pattern>
+    </servlet-mapping>
 
+    <servlet>
+      <servlet-name>BIncludeCNamedDispatcher</servlet-name>
+      <servlet-class>BIncludeCNamedDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>BIncludeCNamedDispatcher</servlet-name>
+      <url-pattern>/BIncludeCNamedDispatcher</url-pattern>
+    </servlet-mapping>
 
     <!-- The end of the line -->
 

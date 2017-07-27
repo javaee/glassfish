@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<batch-artifacts xmlns="http://jcp.org.batch/jsl">
-<ref id="SimpleItemReader" class="com.oracle.javaee7.samples.batch.twosteps.SimpleItemReader"/>
-<ref id="SimpleItemProcessor" class="com.oracle.javaee7.samples.batch.twosteps.SimpleItemProcessor"/>
-<ref id="SimpleItemWriter" class="com.oracle.javaee7.samples.batch.twosteps.SimpleItemWriter"/>
-</batch-artifacts>

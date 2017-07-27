@@ -40,5 +40,9 @@
 
 -exportcontents: \
     org.glassfish.orb.admin.config; version=${project.osgi.version} 
+Import-Package: \
+    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
+    *
+
  
 
