@@ -107,17 +107,20 @@ test_run_cts_smoke(){
 	${SED} -e "s/javamail\.password=/javamail\.password\=cts1/g" ts.jte > ts.jte.new
 	mv ts.jte.new ts.jte
 	# End temp fix for javamail password
-
+        cp  `dirname $0`/smoke-groups.xml $TS_HOME/bin/xml/impl/glassfish/
 	cd $TS_HOME/bin/xml
 	export ANT_HOME=$TS_HOME/tools/ant
 	export PATH=$ANT_HOME/bin:$PATH
-
+        
 	# SECURITY MANAGER ON
 	$S1AS_HOME/bin/asadmin start-domain
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
-
-	$TS_HOME/tools/ant/bin/ant -f smoke.xml smoke
+        if [ -n $1 ]; then
+		 $TS_HOME/tools/ant/bin/ant -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml -Dgroups.count=5 -Dgroup.id=$1 smoke.split.groups
+        else
+		$TS_HOME/tools/ant/bin/ant -f smoke.xml smoke
+	fi
 
 	#POST CLEANUPS
 	kill_process
@@ -197,6 +200,10 @@ run_test_id(){
 	if [[ $1 = "cts_smoke_all" ]]; then
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
+         elif [[ $TEST_ID = "cts_smoke_group-"* ]]; then
+                GROUP_ID=(`echo $1 | sed 's/cts_smoke_group-//'`)
+                test_run_cts_smoke $GROUP_ID
+                result=$WORKSPACE/results/smoke.log
 	elif [[ $1 = "servlet_tck_all" ]]; then
 		test_run_servlet_tck
 		result=$WORKSPACE/results/tests.log
@@ -209,9 +216,9 @@ run_test_id(){
 
 post_test_run(){
     if [[ $? -ne 0 ]]; then
-    	if [[ $TEST_ID = "cts_smoke_all" ]]; then
+    	if [[ $TEST_ID = "cts_smoke_all" | $TEST_ID = "cts_smoke_group-"* ]]; then
 	  		archive_cts || true
-	  	fi
+	fi
 	  	if [[ $TEST_ID = "servlet_tck_all" ]]; then
 	  		archive_servlet_tck || true
 	  	fi
@@ -223,7 +230,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all
+	echo cts_smoke_all servlet_tck_all cts_smoke_group-1 cts_smoke_group-2 cts_smoke_group-3 cts_smoke_group-4 cts_smoke_group-5
 }
 
 cts_to_junit(){
