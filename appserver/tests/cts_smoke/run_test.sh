@@ -56,7 +56,7 @@ archive_cts(){
 test_run_cts_smoke(){
 	TS_HOME=$WORKSPACE/javaee-smoke
 	if [[ -z ${CTS_SMOKE_URL} ]]; then
-		CTS_SMOKE=${JENKINS_URL}/gf-cts-promotion/lastSuccessfulBuild/artifact/
+		CTS_SMOKE=${JENKINS_URL}job/gf-cts-promotion/lastSuccessfulBuild/artifact
 	else
 		CTS_SMOKE=${CTS_SMOKE_URL}
 	fi
@@ -142,7 +142,7 @@ test_run_servlet_tck(){
 	java -version
 	# Java EE 8 servlet tck.
 	if [[ -z ${SERVELT_TCK_URL} ]]; then
-		SERVELT_TCK=${JENKINS_URL}/job/gf-cts-promotion/lastSuccessfulBuild/artifact/
+		SERVELT_TCK=${JENKINS_URL}job/gf-cts-promotion/lastSuccessfulBuild/artifact/
 	else
 		SERVELT_TCK=${SERVELT_TCK_URL}
 	fi
