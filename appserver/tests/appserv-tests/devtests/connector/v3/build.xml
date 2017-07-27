@@ -374,8 +374,8 @@
 
 	<target name="connector_group_9">
 		<echo message="************  Starting connector_group_9 ************"/>
-		<echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
-        <ant dir="installed-libraries-embedded" target="all"/>
+		<!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/-->
 
 		<echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="all"/>
