@@ -244,8 +244,9 @@
         <echo message="@@## embeddedConnector1.5 ##@@"/>
         <ant dir="../embeddedConnector1.5" target="${connector-target}"/>
 
-        <echo message="@@## embeddedweb ##@@"/>
-        <ant dir="embeddedweb" target="${connector-target}"/>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/-->
 
 		<echo message="@@## mq ##@@"/>
 		<ant dir="../mq" target="${connector-target}"/>
@@ -394,14 +395,14 @@
         <antcall target="clean-file"/>
         <record name="connector.output" action="start"/>
         <antcall target="connector_group_1"/>
-        <antcall target="connector_group_2"/>
+        <!--antcall target="connector_group_2"/>
         <antcall target="connector_group_3"/>
         <antcall target="connector_group_4"/>
         <antcall target="connector_group_5"/>
         <antcall target="connector_group_6"/>
         <antcall target="connector_group_7"/>
 		<antcall target="connector_group_8"/>
-		<antcall target="connector_group_9"/>
+		<antcall target="connector_group_9"/-->
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
