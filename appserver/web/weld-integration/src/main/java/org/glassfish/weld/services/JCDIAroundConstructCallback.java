@@ -93,8 +93,11 @@ public class JCDIAroundConstructCallback<T> implements AroundConstructCallback<T
     }
 
     public T createEjb() {
-        T instance = handle.proceed(parameters, new HashMap<String, Object>() );
-        target.set(instance);
+	T instance =null;
+	if( null != handle ) {
+            instance = handle.proceed(parameters, new HashMap<String, Object>() );
+	}        
+	target.set(instance);
         return instance;
     }
 }

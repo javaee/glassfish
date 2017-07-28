@@ -195,6 +195,7 @@ public class JCDIServiceImpl implements JCDIService {
                                                                     Map<Class, Object> ejbInfo) {
         BaseContainer baseContainer = null;
         EJBContextImpl ejbContext = null;
+	JCDIInjectionContextImpl jcdiCtx =null;
         if ( ejbInfo != null ) {
            baseContainer = ( BaseContainer ) ejbInfo.get( BaseContainer.class );
            ejbContext = ( EJBContextImpl ) ejbInfo.get( EJBContextImpl.class );
@@ -210,9 +211,11 @@ public class JCDIServiceImpl implements JCDIService {
         WeldManager weldManager = bootstrap.getManager(bda);
 
         org.jboss.weld.ejb.spi.EjbDescriptor ejbDesc = weldManager.getEjbDescriptor(ejb.getName());
-
+	
         // get or create the ejb's creational context
-        JCDIInjectionContextImpl jcdiCtx = ( JCDIInjectionContextImpl ) ejbInfo.get( JCDIService.JCDIInjectionContext.class );
+	 if ( null != ejbInfo ) {
+             jcdiCtx = ( JCDIInjectionContextImpl ) ejbInfo.get( JCDIService.JCDIInjectionContext.class );
+	 }
         CreationalContext<?> creationalContext = jcdiCtx.getCreationalContext();
         if ( creationalContext == null ) {
             // The creational context may have been created by interceptors because they are created first
@@ -608,7 +611,9 @@ public class JCDIServiceImpl implements JCDIService {
 
         @Override
         public T createEjbAfterAroundConstruct() {
-            setInstance( (T) jcdiAroundConstructCallback.createEjb() );
+	    if( null != jcdiAroundConstructCallback) {
+                setInstance( (T) jcdiAroundConstructCallback.createEjb() );
+	     }
             return instance;
         }
 
