@@ -264,8 +264,9 @@
 		<echo message="@@## web2connector (second time) ##@@"/>
 		<ant dir="../web2connector" target="${connector-target}" />
 
-		<echo message="@@## nonstringmcfproperties ##@@"/>
-		<ant dir="nonstringmcfproperties" target="${connector-target}"/>
+		<!--Due to Deepak deployment fix -->
+		<!--echo message="@@## nonstringmcfproperties ##@@"/>
+		<ant dir="nonstringmcfproperties" target="${connector-target}"/-->
 	</target>
 
     <target name="connector_group_3">
