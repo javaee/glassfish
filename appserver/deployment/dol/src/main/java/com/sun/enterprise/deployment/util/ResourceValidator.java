@@ -518,13 +518,21 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
 
     /**
      * Store the resource definitions in our namespace.
-     * CFD and AODD are not valid in an AppClient.
+     * CFD and AODD are not valid in an AppClient. O/w need to validate the ra-name in them.
      */
     private void parseResources(ResourceDescriptor resourceDescriptor, JndiNameEnvironment env, AppResources appResources) {
-        if (env instanceof ApplicationClientDescriptor)
-            if (resourceDescriptor.getResourceType().equals(JavaEEResourceType.CFD) || resourceDescriptor.getResourceType().equals(JavaEEResourceType.AODD))
+        JavaEEResourceType type = resourceDescriptor.getResourceType();
+        if (type.equals(JavaEEResourceType.CFD) || type.equals(JavaEEResourceType.AODD)) {
+            if (env instanceof ApplicationClientDescriptor)
                 return;
-        storeInNamespace(resourceDescriptor.getName(), env, appResources);
+            // No need to type check as CFD and AODD extend from AbstractConnectorResourceDescriptor
+            AbstractConnectorResourceDescriptor acrd = (AbstractConnectorResourceDescriptor) resourceDescriptor;
+            appResources.store(new AppResource(resourceDescriptor.getName(), acrd.getResourceAdapter(), type.toString(), env, true));
+        }
+        else {
+            // nothing to validate here. store the definitions in our namespace.
+            storeInNamespace(resourceDescriptor.getName(), env, appResources);
+        }
     }
 
     /**
@@ -685,9 +693,52 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
      */
     private void validateResources(AppResources appResources) {
         for (AppResource resource : appResources.myResources) {
-            if (resource.validate)
+            if (!resource.validate)
+                continue;
+            if (resource.getType().equals("CFD") || resource.getType().equals("AODD"))
+                validateRAName(resource);
+            else
                 validateJNDIRefs(resource, appResources.myNamespace);
         }
+    }
+
+    private void validateRAName(AppResource resource) {
+        String raname = resource.getJndiName();
+        // No ra-name specified
+        if (raname == null || raname.length() == 0) {
+            deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
+                    new Object[] {resource.getName(), null, resource.getType()});
+            throw new DeploymentException(localStrings.getLocalString("enterprise.deployment.util.resource.validation",
+                    "RA name invalid: Name: {0}, ra name: {1}, Type: {2}",
+                    resource.getName(), null, resource.getType()));
+        }
+        int poundIndex = raname.indexOf("#");
+
+        // Stand-alone RA: check for app named raname in domain.xml, check for system ra's
+        if (poundIndex < 0) {
+            if (domain.getApplications().getApplication(raname) != null)
+                return;
+            // System RA's - Copied from ConnectorConstants
+            if (raname.equals("jmsra") || raname.equals("__ds_jdbc_ra") || raname.equals("jaxr-ra") ||
+                    raname.equals("__cp_jdbc_ra") || raname.equals("__xa_jdbc_ra") || raname.equals("__dm_jdbc_ra"))
+                return;
+        }
+        // Embedded RA
+        // In case the app name does not match, we fail the deployment
+        else if (raname.substring(0, poundIndex).equals(application.getAppName())) {
+            raname = raname.substring(poundIndex + 1);
+            // check for rar named this
+            for (BundleDescriptor bd : application.getBundleDescriptors(ConnectorDescriptor.class)) {
+                if(raname.equals(bd.getModuleName()))
+                    return;
+            }
+        }
+        deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
+                new Object[] {resource.getName(), raname, resource.getType()});
+        throw new DeploymentException(localStrings.getLocalString(
+                "enterprise.deployment.util.resource.validation",
+                "RA name invalid: Name: {0}, ra name: {1}, Type: {2}",
+                resource.getName(), raname, resource.getType()));
     }
 
     /**
