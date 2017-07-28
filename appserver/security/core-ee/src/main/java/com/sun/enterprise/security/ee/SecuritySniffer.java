@@ -84,6 +84,13 @@ public class SecuritySniffer extends GenericSniffer {
         super("security", null, null);
     }
 
+    /**
+     * Returns true if the passed file or directory is recognized by this
+     * sniffer.
+     *
+     * @param context deployment context
+     * @return true if the location is recognized by this sniffer
+     */
     public boolean handles(DeploymentContext context) {
         ArchiveType archiveType = habitat.getService(ArchiveType.class, context.getArchiveHandler().getArchiveType());
         if (archiveType != null && !supportsArchiveType(archiveType)) return false;
