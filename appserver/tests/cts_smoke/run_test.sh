@@ -117,7 +117,7 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin stop-domain
         if [ -n $1 ]; then
 		 $TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
-                 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile=/tmp/javaee-smoke-group$1.properties -f ./smoke.xml smoke
+                 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
         else
 		 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
 	fi
