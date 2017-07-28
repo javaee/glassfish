@@ -141,6 +141,7 @@ test_run_servlet_tck(){
 
 	unzip -q servlettck.zip
 	#Checking to confirm that no new test directory got added which not present in test_dir.properties file
+	mkdir $WORKSPACE/servlettck/src/com/sun/ts/tests/xyz
         if [[ -n $1 ]]; then
 		TESTDIR=$WORKSPACE/servlettck/src/com/sun/ts/tests
 		for i in `ls $TEST_PATH`
