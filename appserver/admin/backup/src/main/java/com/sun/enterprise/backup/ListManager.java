@@ -162,7 +162,7 @@ public class ListManager extends BackupRestoreManager
             sb.append("\n" + strings.get("backup-list.nothing"));
 
         // List any zips that had bad props.
-        if (badPropsList != null && !badPropsList.isEmpty()) {
+        if (!badPropsList.isEmpty()) {
             sb.append("\n\n");
             sb.append(strings.get("backup-list.bad-props"));
             for (Integer iInt : badPropsList) {

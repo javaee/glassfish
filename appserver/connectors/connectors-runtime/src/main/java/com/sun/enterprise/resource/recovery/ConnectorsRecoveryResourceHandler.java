@@ -221,7 +221,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
 
         Collection<ConnectorResource> connectorResources = getAllConnectorResources();
 
-        if (connectorResources == null || connectorResources.size() == 0) {
+        if (connectorResources.size() == 0) {
             return;
         }
 
@@ -254,9 +254,6 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
 
             try {
                 String[] dbUserPassword = getdbUserPasswordOfConnectorConnectionPool(connPool);
-                if (dbUserPassword == null) {
-                    continue;
-                }
                 String dbUser = dbUserPassword[0];
                 String dbPassword = dbUserPassword[1];
                 Subject subject = new Subject();

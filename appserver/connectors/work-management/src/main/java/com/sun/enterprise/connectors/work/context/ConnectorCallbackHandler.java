@@ -72,7 +72,7 @@ public class ConnectorCallbackHandler implements CallbackHandler {
 
     private static final Logger logger = LogFacade.getLogger();
 
-    public static final List<String> supportedCallbacks = new ArrayList<String>();
+    private static final List<String> supportedCallbacks = new ArrayList<String>();
 
     static {
         supportedCallbacks.add(GroupPrincipalCallback.class.getName());

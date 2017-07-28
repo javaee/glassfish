@@ -179,6 +179,7 @@ public class ListBatchJobExecutions
         return new String[]{JOB_NAME, EXECUTION_ID, START_TIME, END_TIME, BATCH_STATUS, EXIT_STATUS};
     }
 
+    /*
     private boolean isSimpleMode() {
         for (String h : getOutputHeaders()) {
             if (!JOB_NAME.equals(h)) {
@@ -187,6 +188,7 @@ public class ListBatchJobExecutions
         }
         return true;
     }
+    */
 
     private static List<JobExecution> getJobExecutionForInstance(long instId)
             throws JobSecurityException, NoSuchJobException, NoSuchJobInstanceException, NoSuchJobExecutionException {

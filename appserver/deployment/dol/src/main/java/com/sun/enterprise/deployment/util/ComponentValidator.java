@@ -256,7 +256,7 @@ public class ComponentValidator extends DefaultDOLVisitor implements ComponentVi
             // ok this is getting a little complicated here
             // the jndi name is not null, if this is a remote ref, proceed with resolution
             // if this is a local ref, proceed with resolution only if ejb-link is null            
-            if (!ejbRef.isLocal() || (ejbRef.isLocal() && ejbRef.getLinkName()==null)) {
+            if (!ejbRef.isLocal() || ejbRef.getLinkName()==null) {
                 if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
                     DOLUtils.getDefaultLogger().fine("Ref " + ejbRef.getName() + " is bound to Ejb with JNDI Name " + ejbRef.getJndiName());
                 }
