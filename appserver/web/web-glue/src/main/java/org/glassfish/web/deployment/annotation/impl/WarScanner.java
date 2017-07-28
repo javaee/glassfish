@@ -117,7 +117,7 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
 
         if (isScanOtherLibraries()) {
             addLibraryJars(webBundleDesc, readableArchive);
-            calculateResults();
+            calculateResults(webBundleDesc);
             return;
         }
 
@@ -144,7 +144,7 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
             }
             scanXmlDefinedClassesIfNecessary(webBundleDesc);
         }
-        calculateResults();
+        calculateResults(webBundleDesc);
     }
 
     // This is not mandated by the spec. It is for WSIT.

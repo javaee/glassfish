@@ -62,6 +62,7 @@ public class ResourcePrincipal extends  PrincipalImpl {
         return password;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;

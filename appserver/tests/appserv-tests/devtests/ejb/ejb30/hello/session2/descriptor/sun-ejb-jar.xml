@@ -51,10 +51,6 @@
     <ejb>
       <ejb-name>SlessEJB</ejb-name>
       <jndi-name>ejb_ejb30_hello_session2_Sless</jndi-name>
-      <ejb-ref>
-         <ejb-ref-name>ejb/External</ejb-ref-name>
-         <jndi-name>ejb_ejb30_hello_session4_External</jndi-name>
-      </ejb-ref>
     </ejb>
     <ejb>
       <ejb-name>SlessEJB2</ejb-name>

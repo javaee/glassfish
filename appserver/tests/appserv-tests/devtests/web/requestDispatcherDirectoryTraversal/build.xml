@@ -89,6 +89,8 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
+	  <arg value="${env.S1AS_HOME}"/>
+	  <arg value="${admin.port}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>

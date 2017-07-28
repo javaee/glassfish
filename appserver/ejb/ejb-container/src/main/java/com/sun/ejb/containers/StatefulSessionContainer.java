@@ -285,8 +285,6 @@ public final class StatefulSessionContainer
     private final static long CONCURRENCY_NOT_ALLOWED = 0;
     private final static long BLOCK_INDEFINITELY = -1;
 
-    private long instanceCount = 1;
-
     private ArrayList passivationCandidates = new ArrayList();
     private Object asyncTaskSemaphore = new Object();
 

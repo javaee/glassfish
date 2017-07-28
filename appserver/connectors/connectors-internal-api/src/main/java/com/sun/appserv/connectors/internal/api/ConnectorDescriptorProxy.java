@@ -85,21 +85,19 @@ public class ConnectorDescriptorProxy implements NamingObjectProxy.Initializatio
         return connectorRuntimeProvider.get();
     }
 
-    public Object create(Context ic) throws NamingException {
+    public synchronized Object create(Context ic) throws NamingException {
         //this is a per-lookup object and once we have the descriptor,
         //we remove the proxy and bind the descriptor with same jndi-name
         //hence block synchronization is fine as it blocks only callers
         //of this particular connector descriptor and also only for first time (initialization)
-        synchronized(this){
-            if(desc == null){
-                try {
-                    desc = getConnectorRuntime().getConnectorDescriptor(rarName);
-                    ic.rebind(jndiName, desc);
-                } catch (ConnectorRuntimeException e) {
-                    NamingException ne = new NamingException(e.getMessage());
-                    ne.initCause(e);
-                    throw ne;
-                }
+        if(desc == null) {
+            try {
+                desc = getConnectorRuntime().getConnectorDescriptor(rarName);
+                ic.rebind(jndiName, desc);
+            } catch (ConnectorRuntimeException e) {
+                NamingException ne = new NamingException(e.getMessage());
+                ne.initCause(e);
+                throw ne;
             }
         }
         return desc;
