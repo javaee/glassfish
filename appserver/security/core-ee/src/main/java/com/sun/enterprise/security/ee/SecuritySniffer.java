@@ -93,8 +93,12 @@ public class SecuritySniffer extends GenericSniffer {
      */
     public boolean handles(DeploymentContext context) {
         ArchiveType archiveType = habitat.getService(ArchiveType.class, context.getArchiveHandler().getArchiveType());
-        if (archiveType != null && !supportsArchiveType(archiveType)) return false;
-        return archiveType.equals(DOLUtils.warType()) || archiveType.equals(DOLUtils.earType()) || archiveType.equals(DOLUtils.ejbType()) || handles(context.getSource());
+        if (archiveType != null && !supportsArchiveType(archiveType)) {
+            return false;
+        }
+        if (archiveType != null && (archiveType.equals(DOLUtils.warType()) || archiveType.equals(DOLUtils.earType()) || archiveType.equals(DOLUtils.ejbType())))
+            return true;
+        return handles(context.getSource());
     }
 
     /**
