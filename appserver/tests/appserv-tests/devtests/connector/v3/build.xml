@@ -170,12 +170,6 @@
         </antcall>
     </target>
 
-    <target name="clean">
-        <antcall target="connector">
-            <param name="connector-target" value="clean"/>
-        </antcall>
-    </target>
-
     <target name="build">
         <antcall target="connector">
             <param name="connector-target" value="build"/>
