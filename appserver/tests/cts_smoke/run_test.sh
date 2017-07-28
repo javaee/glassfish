@@ -144,9 +144,9 @@ test_run_servlet_tck(){
 	mkdir $WORKSPACE/servlettck/src/com/sun/ts/tests/xyz
         if [[ -n $1 ]]; then
 		TESTDIR=$WORKSPACE/servlettck/src/com/sun/ts/tests
-		for i in `ls $TEST_PATH`
+		for i in `ls $TESTDIR`
 			do
-				if [[ (-d $TEST_PATH/$i)  && ( $i != "jsp" &&  $i != "common") ]]; then
+				if [[ (-d $TESTDIR/$i)  && ( $i != "jsp" &&  $i != "common") ]]; then
 					if [[ -z $(grep $i ./test_dir.properties) ]]; then
 						echo "A new folder is added in the test source which has to entry in the properties file" 
 						exit 1
