@@ -201,10 +201,10 @@ public class WebServiceHandler extends AbstractHandler {
                         EjbDescriptor descriptor = ejbCtx.getDescriptor();
                         if (name.equals(descriptor.getName())) {
                             bundleDesc = descriptor.getEjbBundleDescriptor();
+                            bundleDesc.setSpecVersion("3.0");
                             break;
                         }
                     }
-                    bundleDesc.setSpecVersion("3.0");
                 }
             }
 
