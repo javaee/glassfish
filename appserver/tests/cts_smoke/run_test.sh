@@ -75,7 +75,7 @@ test_run_cts_smoke(){
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
 	unzip -q $CTS_SMOKE_BUNDLE
-
+        cp  -p `dirname $0`/smoke-groups.xml $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml
 	cd $TS_HOME/bin
 	#cp $CTS_SMOKE/$CTS_EXCLUDE_LIST .
 	cp ts.jte ts.jte.orig
@@ -107,8 +107,6 @@ test_run_cts_smoke(){
 	${SED} -e "s/javamail\.password=/javamail\.password\=cts1/g" ts.jte > ts.jte.new
 	mv ts.jte.new ts.jte
 	# End temp fix for javamail password
-        ls -ltr `pwd`
-        cp  -p `dirname $0`/smoke-groups.xml $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml
 	cd $TS_HOME/bin/xml
 	export ANT_HOME=$TS_HOME/tools/ant
 	export PATH=$ANT_HOME/bin:$PATH
