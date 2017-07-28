@@ -48,7 +48,7 @@ import javax.naming.Context;
 @Service
 public class SimpleNamingObjectFactory
     implements NamingObjectFactory {
-    
+
     private String name;
 
     private Object value;
@@ -60,6 +60,10 @@ public class SimpleNamingObjectFactory
 
     public boolean isCreateResultCacheable() {
         return true;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Object create(Context ic) {

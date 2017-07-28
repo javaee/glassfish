@@ -101,9 +101,9 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
             while (it.hasNext()) {
                 secPerm = (SecurityPermission) it.next();
                 permissionString = secPerm.getPermission();
-                int intIndex = policyContent.indexOf(permissionString);
-                if (intIndex == -1) {
-                    if (permissionString != null) {
+                if(permissionString != null) {
+                    int intIndex = policyContent.indexOf(permissionString);
+                    if (intIndex == -1) {
                         if (policyString != null) {
                             policyString = policyString + "\n \n" + permissionString;
                         } else {

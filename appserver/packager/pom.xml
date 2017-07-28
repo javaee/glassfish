@@ -118,7 +118,7 @@
         <module>metro</module>
         <module>glassfish-verifier</module>
         <module>glassfish-appclient</module>
-        <module>javadb</module>
+        <module>derby</module>
         <module>jersey</module>
         <module>glassfish-jcdi</module>
         <module>mq</module>

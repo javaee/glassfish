@@ -236,11 +236,14 @@ public class ConnectorsClassLoaderUtil {
     private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         //TODO for embedded rars -consider MANIFEST.MF's classpath attribute
         if (moduleDir.isDirectory()) {
-            for (File file : moduleDir.listFiles()) {
-                if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
-                    cl.appendURL(file.toURI().toURL());
-                } else if (file.isDirectory()) {
-                    appendJars(file, cl); //recursive add
+            File[] list = moduleDir.listFiles();
+            if(list != null) {
+                for (File file : list) {
+                    if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
+                        cl.appendURL(file.toURI().toURL());
+                    } else if (file.isDirectory()) {
+                        appendJars(file, cl); //recursive add
+                    }
                 }
             }
         }

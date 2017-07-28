@@ -128,6 +128,14 @@ public class ConnectorConfigProperty extends EnvironmentProperty {
         }
         return value;
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    @Override
+    public boolean equals(Object other) {
+       return super.equals(other);
+    }
 
     public boolean isSupportsDynamicUpdates() {
         return supportsDynamicUpdates;

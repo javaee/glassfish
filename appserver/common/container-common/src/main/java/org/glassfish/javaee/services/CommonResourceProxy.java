@@ -99,7 +99,7 @@ public class CommonResourceProxy implements NamingObjectProxy.InitializationNami
         return serviceLocator.<ResourceManagerFactory>getService(ResourceManagerFactory.class).getResourceDeployer(resource);
     }
 
-    public void setDescriptor(ResourceDescriptor desc) {
+    public synchronized void setDescriptor(ResourceDescriptor desc) {
         this.desc = desc;
     }
 }

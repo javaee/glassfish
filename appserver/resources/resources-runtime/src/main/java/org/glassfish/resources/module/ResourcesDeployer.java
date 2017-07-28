@@ -250,6 +250,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             if (ResourceUtil.hasResourcesXML(archive, locator)) {
 
                 Map<String,Map<String, List>> appScopedResources = new HashMap<String,Map<String,List>>();
+                Map<String, List<String>> jndiNames = new HashMap<String, List<String>>();
                 Map<String, String> fileNames = new HashMap<String, String>();
 
                 String appName = getAppNameFromDeployCmdParams(dc);
@@ -278,16 +279,31 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     List list = parser.getResourcesList();
 
                     Map<String, List> resourcesList = new HashMap<String, List>();
+                    List<String> jndiNamesList = new ArrayList<String>();
                     List<org.glassfish.resources.api.Resource> nonConnectorResources =
                             ResourcesXMLParser.getNonConnectorResourcesList(list, false, true);
                     resourcesList.put(NON_CONNECTOR_RESOURCES, nonConnectorResources);
-                    
+                    for (org.glassfish.resources.api.Resource resource : nonConnectorResources) {
+                        String jndiName = extractJNDIName(resource);
+                        if (jndiName != null) {
+                            jndiNamesList.add(jndiName);
+                        }
+                    }
+
                     List<org.glassfish.resources.api.Resource> connectorResources =
                             ResourcesXMLParser.getConnectorResourcesList(list, false, true);
                     resourcesList.put(CONNECTOR_RESOURCES, connectorResources);
+                    for (org.glassfish.resources.api.Resource resource : connectorResources) {
+                        String jndiName = extractJNDIName(resource);
+                        if (jndiName != null) {
+                            jndiNamesList.add(jndiName);
+                        }
+                    }
 
+                    jndiNames.put(moduleName, jndiNamesList);
                     appScopedResources.put(moduleName, resourcesList);
                 }
+                dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_JNDI_NAMES, jndiNames);
                 dc.addTransientAppMetaData(APP_SCOPED_RESOURCES_MAP, appScopedResources);
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if(appInfo != null){
@@ -300,6 +316,17 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             // in the event notification infrastructure
             throw new DeploymentException("Failue while processing glassfish-resources.xml(s) in the archive ", e);
         }
+    }
+
+    /**
+     * Extract the JNDI name from the resource. Collecting for resource valitation.
+     *
+     * @param resource
+     * @return jndi name if present, null otherwise
+     */
+    private String extractJNDIName(org.glassfish.resources.api.Resource resource) {
+        HashMap attrs = resource.getAttributes();
+        return (String) attrs.get(JNDI_NAME);
     }
 
     private static void validateResourcesXML(File file, ResourcesXMLParser parser) throws ResourceConflictException {

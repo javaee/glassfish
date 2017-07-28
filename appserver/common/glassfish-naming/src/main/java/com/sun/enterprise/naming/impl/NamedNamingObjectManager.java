@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 import javax.naming.NamingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -145,9 +146,11 @@ public class NamedNamingObjectManager {
     private static NamedNamingObjectProxy getCachedProxy(String name) {
         rwLock.readLock().lock();
         try {
-            for (String proxyPrefix : proxies.keySet()) {
-                if (name.startsWith(proxyPrefix)) {
-                    return proxies.get(proxyPrefix);
+            Iterator it = proxies.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                if(name.startsWith(pair.getKey().toString())) {
+                    return (NamedNamingObjectProxy) pair.getValue();
                 }
             }
         } finally {
