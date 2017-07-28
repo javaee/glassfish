@@ -140,6 +140,19 @@ test_run_servlet_tck(){
 	wget http://busgo1208.us.oracle.com/JWSCQE/links/builds/tcks/javaee_cts/8/nightly/servlettck-4.0_Latest.zip -O servlettck.zip
 
 	unzip -q servlettck.zip
+	#Checking to confirm that no new test directory got added which not present in test_dir.properties file
+        if [[ -n $1 ]]; then
+		TESTDIR=$WORKSPACE/servlettck/src/com/sun/ts/tests
+		for i in `ls $TEST_PATH`
+			do
+				if [[ (-d $TEST_PATH/$i)  && ( $i != "jsp" &&  $i != "common") ]]; then
+					if [[ -z $(grep $i ./test_dir.properties) ]]; then
+						echo "A new folder is added in the test source which has to entry in the properties file" 
+						exit 1
+					fi
+				fi
+			done
+	fi
 
 	cd $TS_HOME/bin
 	cp ts.jte ts.jte.orig
