@@ -727,9 +727,10 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         // In case the app name does not match, we fail the deployment
         else if (raname.substring(0, poundIndex).equals(application.getAppName())) {
             raname = raname.substring(poundIndex + 1);
+            String ranameWithRAR = raname + ".rar";
             // check for rar named this
             for (BundleDescriptor bd : application.getBundleDescriptors(ConnectorDescriptor.class)) {
-                if(raname.equals(bd.getModuleName()))
+                if(raname.equals(bd.getModuleName()) || ranameWithRAR.equals(bd.getModuleName()))
                     return;
             }
         }
