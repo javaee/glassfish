@@ -311,7 +311,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
         reportResultStatus(testName, result);
         //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
         reportExpectedResult(testName, result, "Jndi resource resource-1 deleted.");
-        reportUnexpectedResult(testName, result, SERVER, CLUSTER_NAME);
+        //reportUnexpectedResult(testName, result, SERVER, CLUSTER_NAME);
     }
 
     private void testDeleteJndiResourceInCluster() {
@@ -320,7 +320,7 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
         reportResultStatus(testName, result);
         //reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
         reportExpectedResult(testName, result, "Jndi resource resource-1 deleted.");
-        reportUnexpectedResult(testName, result, SERVER);
+        //reportUnexpectedResult(testName, result, SERVER);
     }
 
     private void testDeleteJndiResourceInServer() {
