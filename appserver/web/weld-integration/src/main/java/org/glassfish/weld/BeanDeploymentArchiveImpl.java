@@ -470,11 +470,11 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                                                CDILoggerInfo.WEB_INF_LIB_CONSIDERING_BEAN_ARCHIVE,
                                                new Object[]{entry});
                                 }
-
+                                
                                 if (!bdMode.equals(BeanDiscoveryMode.ANNOTATED) || isImplicitBeanArchive(context, weblibJarArchive)) {
                                     weblibJarsThatAreBeanArchives.add(weblibJarArchive);
-                                }					                            
-			    }
+                                }
+                            }
                         } else {
                             // Check for classes annotated with qualified annotations
                             if (WeldUtils.isImplicitBeanArchive(context, weblibJarArchive)) {
