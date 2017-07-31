@@ -1489,9 +1489,7 @@ public class Application extends CommonResourceBundleDescriptor
             aModule.print(toStringBuffer);
         }
         toStringBuffer.append("\n Bundles: \n");
-        if (this.getBundleDescriptors() != null) {
-            printDescriptorSet(this.getBundleDescriptors(), toStringBuffer);
-        }
+        printDescriptorSet(this.getBundleDescriptors(), toStringBuffer);
         toStringBuffer.append("\n roles ").append(getRoles());
         toStringBuffer.append("\n RoleMapper ").append(this.getRoleMapper());
         toStringBuffer.append("\n Realm ").append(realm);

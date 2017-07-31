@@ -47,7 +47,7 @@ import java.util.HashSet;
 
 import javax.enterprise.context.RequestScoped;
 import javax.security.enterprise.AuthenticationStatus;
-import javax.security.auth.message.AuthException;
+import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import javax.security.enterprise.credential.CallerOnlyCredential;
@@ -59,7 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
 
     @Override
-    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthException {
+    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
 
         if (httpMessageContext.isAuthenticationRequest()) {
 
@@ -75,7 +75,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
             }
 
             if ("rezax".equals(callerOnlyCredential.getCaller())) {
-                throw new AuthException();
+                throw new AuthenticationException();
             }
 
             return SEND_FAILURE;

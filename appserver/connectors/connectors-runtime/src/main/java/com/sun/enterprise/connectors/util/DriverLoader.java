@@ -247,14 +247,14 @@ public class DriverLoader implements ConnectorConstants {
         
         List<File> jarFileLocations = getJdbcDriverLocations();
         Set<File> allJars = new HashSet<File>();
-        
-        if(jarFileLocations != null) {
-            for(File lib : jarFileLocations) {
-                if(lib.isDirectory()) {
-                    for(File file : lib.listFiles(new JarFileFilter())) {
+        for(File lib : jarFileLocations) {
+            if (lib.isDirectory()) {
+                File[] files = lib.listFiles(new JarFileFilter());
+                if (files != null) {
+                    for (File file : files) {
                         allJars.add(file);
                     }
-                }            
+                }
             }
         }
         for (File file : allJars) {
@@ -318,11 +318,9 @@ public class DriverLoader implements ConnectorConstants {
                         if (entry.toUpperCase(Locale.getDefault()).indexOf("DATASOURCE") != -1 ||
                                 entry.toUpperCase(Locale.getDefault()).indexOf("DRIVER") != -1) {
                             implClass = getClassName(entry);
-                            if (implClass != null) {
-                                if (isLoaded(implClass, resType)) {
-                                    if (isVendorSpecific(f, dbVendor, implClass, origDbVendor)) {
-                                        implClassNames.add(implClass);
-                                    }
+                            if (isLoaded(implClass, resType)) {
+                                if (isVendorSpecific(f, dbVendor, implClass, origDbVendor)) {
+                                    implClassNames.add(implClass);
                                 }
                             }
                         }

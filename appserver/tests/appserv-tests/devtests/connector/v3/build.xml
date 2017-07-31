@@ -42,11 +42,11 @@
 
 -->
 
-        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-        <!ENTITY commonRun SYSTEM "./../../../config/run.xml">
-        <!ENTITY reporting   SYSTEM "./report.xml">
-        ]>
+<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../config/run.xml">
+<!ENTITY reporting   SYSTEM "./report.xml">
+]>
 
 <project name="connector" default="usage" basedir=".">
 
@@ -170,12 +170,6 @@
         </antcall>
     </target>
 
-    <target name="clean">
-        <antcall target="connector">
-            <param name="connector-target" value="clean"/>
-        </antcall>
-    </target>
-
     <target name="build">
         <antcall target="connector">
             <param name="connector-target" value="build"/>
@@ -242,42 +236,35 @@
         <delete  file="glassfish-resources-xml-tests.output" failonerror="false"/>
     </target>
 
-    <target name="connector-run-1">
-	    <echo message="************  Starting connector-run-1  ************"/>    
+    <target name="connector_group_1">
+	    <echo message="************  Starting connector_group_1  ************"/>    
         <echo message="@@## connector1.5 ##@@"/>
         <ant dir="connector1.5" target="${connector-target}"/>
 
         <echo message="@@## embeddedConnector1.5 ##@@"/>
         <ant dir="../embeddedConnector1.5" target="${connector-target}"/>
 
-        <echo message="@@## embeddedweb ##@@"/>
-        <ant dir="embeddedweb" target="${connector-target}"/>
-    </target>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/-->
 
-    <target name="connector-run-2">
-	<echo message="************  Starting connector-run-2  ************"/>
-        <echo message="@@## embeddedweb ##@@"/>
-        <ant dir="embeddedweb" target="${connector-target}"/>
+		<echo message="@@## mq ##@@"/>
+		<ant dir="../mq" target="${connector-target}"/>
 
-        <echo message="@@## mq ##@@"/>
-        <ant dir="../mq" target="${connector-target}"/>
-
-        <echo message="@@## nonacc ##@@"/>
+		<echo message="@@## nonacc ##@@"/>
         <ant dir="../nonacc" target="${connector-target}"/>
-    </target>
 
-    <target name="connector-run-3">
-	<echo message="************  Starting connector-run-3  ************"/>
-        <echo message="@@## web2connector ##@@"/>
-        <ant dir="../web2connector" target="${connector-target}" />
+		<echo message="@@## web2connector ##@@"/>
+		<ant dir="../web2connector" target="${connector-target}" />
 
-        <echo message="@@## web2connector (second time) ##@@"/>
-        <ant dir="../web2connector" target="${connector-target}" />
+		<echo message="@@## web2connector (second time) ##@@"/>
+		<ant dir="../web2connector" target="${connector-target}" />
 
-        <echo message="@@## nonstringmcfproperties ##@@"/>
-        <ant dir="nonstringmcfproperties" target="${connector-target}"/>
+		<!--Due to Deepak deployment fix -->
+		<!--echo message="@@## nonstringmcfproperties ##@@"/>
+		<ant dir="nonstringmcfproperties" target="${connector-target}"/-->
 
-        <echo message="@@## nonstringraproperties ##@@"/>
+		<echo message="@@## nonstringraproperties ##@@"/>
         <ant dir="../nonstringraproperties" target="${connector-target}" />
 
         <echo message="@@## txlevelswitch ##@@"/>
@@ -286,39 +273,17 @@
         <echo message="@@## threadpool ##@@"/>
         <ant dir="../threadpool" target="${connector-target}" />
 
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## connector1.6 ##@@"/>
-        <ant dir="connector1.6" target="${connector-target}"/-->
-
         <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
         <ant dir="ejb32-mdb" target="${connector-target}"/>
 
-        <echo message="@@## SunRaXml ##@@"/>
-        <ant dir="SunRaXml" target="${connector-target}"/>
-    </target>
-
-    <target name="connector-run-4">
-	<echo message="************  Starting connector-run-4  ************"/>
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## defaultConnectorResource ##@@"/>
-        <ant dir="defaultConnectorResource" target="${connector-target}"/-->
-
-        <!--echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
-        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/-->
+		<echo message="@@## SunRaXml ##@@"/>
+		<ant dir="SunRaXml" target="${connector-target}"/>
 
         <echo message="@@## serializabletest ##@@"/>
         <ant dir="serializabletest" target="${connector-target}"/>
 
         <echo message="@@## config-property-accessor-test ##@@"/>
         <ant dir="config-property-accessor-test" target="${connector-target}"/>
-
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## connector1.6 - with mappings ##@@"/>
-        <ant dir="connector1.6" target="all"/-->
-
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## Annotated Connector1.5 ##@@"/>
-        <ant dir="annotation-connector1.5" target="${connector-target}"/-->
 
         <echo message="@@## Annotated Connector - mixed mode (ra.xml as well annotations) ##@@"/>
         <ant dir="annotation-connector-mixedmode" target="${connector-target}"/>
@@ -327,13 +292,14 @@
         <ant dir="redeployRar" target="${connector-target}"/>
     </target>
 
-    <target name="connector-run-5">
-	<echo message="************  Starting connector-run-5  ************"/>
+    <target name="connector_group_2">
+	<echo message="************  Starting connector_group_2  ************"/>
         <echo message="@@## force-deploy-rar ##@@"/>
         <ant dir="force-deploy-rar" target="${connector-target}"/>
 
-        <echo message="@@## annotation-embeddedweb ##@@"/>
-        <ant dir="annotation-embeddedweb" target="${connector-target}"/>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## annotation-embeddedweb ##@@"/>
+        <ant dir="annotation-embeddedweb" target="${connector-target}"/-->
 
         <echo message="@@## built-in-custom-resources ##@@"/>
         <ant dir="built-in-custom-resources" target="${connector-target}"/>
@@ -344,47 +310,39 @@
         <echo message="@@## connection-factory-definition##@@"/>
         <ant dir="connection-factory-definition" target="${connector-target}"/>
 
-        <echo message="@@## connection-factory-definition-embedra##@@"/>
-        <ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
-
-        <echo message="@@## administered-object-definition-embedra##@@"/>
-        <ant dir="administered-object-definition-embedra" target="${connector-target}"/>
-
-        <echo message="@@## administered-object-definition##@@"/>
-        <ant dir="administered-object-definition" target="${connector-target}"/>
-
-        <echo message="@@## jms-connection-factory-definition##@@"/>
-        <ant dir="jms-connection-factory-definition" target="${connector-target}"/>
-
-        <echo message="@@## jms-destination-definition##@@"/>
-        <ant dir="jms-destination-definition" target="${connector-target}"/>
     </target>
 
-    <target name="connector-run-6">
-	<echo message="************  Starting connector-run-6  ************"/>
-        <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
-        <ant dir="installed-libraries" target="all-ext"/>
+    <target name="connector_group_3">
+	<echo message="************  Starting connector_group_3  ************"/>
+		<echo message="@@## connection-factory-definition-embedra##@@"/>
+		<ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
 
-        <echo message="@@## installed libraries (--libraries) ##@@"/>
-        <ant dir="installed-libraries" target="all--libraries"/>
+		<echo message="@@## administered-object-definition-embedra##@@"/>
+		<ant dir="administered-object-definition-embedra" target="${connector-target}"/>
 
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
-        <ant dir="installed-libraries-embedded" target="all"/-->
+		<echo message="@@## administered-object-definition##@@"/>
+		<ant dir="administered-object-definition" target="${connector-target}"/>
 
-        <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
-        <ant dir="installed-libraries-embedded" target="all-ext"/>
-
-        <!--FAILING SO COMMENTED-->
-        <!--echo message="@@## beanvalidation-simple ##@@"/>
-        <ant dir="beanvalidation-simple" target="all"/>
-
-        <echo message="@@## beanvalidation-simple ##@@"/>
-        <ant dir="beanvalidation-simple" target="embedded-all"/-->
+		<echo message="@@## jms-connection-factory-definition##@@"/>
+		<ant dir="jms-connection-factory-definition" target="${connector-target}"/>
     </target>
 
-    <target name="connector-run-7">
-	<echo message="************  Starting connector-run-7  ************"/>
+	<target name="connector_group_4">
+		<echo message="************  Starting connector_group_4  ************"/>
+		<echo message="@@## jms-destination-definition##@@"/>
+		<ant dir="jms-destination-definition" target="${connector-target}"/>
+
+		<echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
+		<ant dir="installed-libraries" target="all-ext"/>
+
+		<echo message="@@## installed libraries (--libraries) ##@@"/>
+		<ant dir="installed-libraries" target="all--libraries"/>
+
+		<!--Due to Deepak deployment fix -->
+		<!--echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
+		<ant dir="installed-libraries-embedded" target="all-ext"/-->
+
+		<echo message="************  Starting connector_group_8  ************"/>
         <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
 
@@ -396,20 +354,44 @@
 
         <echo message="@@## osgi-resources-test ##@@"/>
         <ant dir="osgi-resources-test" target="all"/>
+
+    	<echo message="************  Starting connector_group_9 ************"/>
+		<!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
+        <ant dir="installed-libraries-embedded" target="all"/-->
+
+		<echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="all"/>
+
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="embedded-all"/>
+
+		<!--Due to Deepak deployment fix -->
+		<!--echo message="@@## defaultConnectorResource ##@@"/>
+        <ant dir="defaultConnectorResource" target="${connector-target}"/-->
+
+		<!--echo message="@@## defaultConnectorResource-standalone-rar ##@@"/>
+        <ant dir="defaultConnectorResource-standalone-rar" target="${connector-target}"/-->
+
+		<!--echo message="@@## connector1.6 ##@@"/>
+        <ant dir="connector1.6" target="${connector-target}"/-->
+
+		<!--echo message="@@## Annotated Connector1.5 ##@@"/>
+        <ant dir="annotation-connector1.5" target="${connector-target}"/-->
     </target>
 
-    <target name="connector">
-        <antcall target="clean-file"/>
-        <record name="connector.output" action="start"/>
-        <antcall target="connector-run-1"/>
-        <antcall target="connector-run-2"/>
-        <antcall target="connector-run-3"/>
-        <antcall target="connector-run-4"/>
-        <antcall target="connector-run-5"/>
-        <antcall target="connector-run-6"/>
-        <antcall target="connector-run-7"/>
-        <antcall target="report"/>
-        <record name="connector.output" action="stop"/>
+	<target name="start-record">
+		<record name="connector.output" action="start"/>
+	</target>
+
+	<target name="stop-record">
+		<record name="connector.output" action="stop"/>
+	</target>
+
+	<target name="connector">
+        <antcall target="connector_group_1"/>
+        <antcall target="connector_group_2"/>
+        <antcall target="connector_group_3"/>
+        <antcall target="connector_group_4"/>
     </target>
 
     <target name="connector-clean">
@@ -587,11 +569,13 @@
         <echo message="@@## multiple-resources.xml ##@@"/>
         <ant dir="multiple-resources.xml" target="all-with-mappings"/>
 
-        <echo message="@@## multiple-resources.xml-1 ##@@"/>
-        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## multiple-resources.xml-1 ##@@"/>
+        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/-->
 
-        <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
-        <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
+        <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/-->
         
         <echo message="jpa-tx_propagation-resources-xml##@@"/>
         <ant dir="jpa-tx-propagation-gf-resources-xml" target="all"/>
@@ -599,8 +583,9 @@
         <echo message="@@## ejb30mdb-resources-xml ##@@"/>
         <ant dir="./../mq/ejb30mdb-resources-xml" target="all"/>
 
-        <echo message="@@## markconnectionasbad.xa.resources-xml ##@@"/>
-        <ant dir="./../markconnectionasbad.xa.resources-xml" target="all"/>
+		<!--Due to Deepak deployment fix -->
+        <!--echo message="@@## markconnectionasbad.xa.resources-xml ##@@"/>
+        <ant dir="./../markconnectionasbad.xa.resources-xml" target="all"/-->
 
         <record name="glassfish-resources-xml-tests.output" action="stop"/>
 

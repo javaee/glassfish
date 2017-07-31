@@ -43,10 +43,10 @@ package org.glassfish.javaee.core.deployment;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.inject.Inject;
 
 import com.sun.enterprise.config.serverbeans.Application;
@@ -233,21 +233,23 @@ public class ListSubComponentsCommand implements AdminCommand {
             part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
         }
         int i=0;
-        for (String key : subComponents.keySet()) {
+        Iterator<Map.Entry<String, String>> entries = subComponents.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, String> subComponent = entries.next();
             ActionReport.MessagePart childPart = part.addChild();
             childPart.setMessage(
                     String.format(formattedLine,
-                    new Object[]{key, subComponents.get(key)} ));
+                            new Object[]{subComponent.getKey(), subComponent.getValue()} ));
             if (appname == null && !app.isVirtual()) {
-                // we use the property mechanism to provide 
+                // we use the property mechanism to provide
                 // support for JSR88 client
                 if (subModuleInfos.get(i) != null) {
-                    childPart.addProperty("moduleInfo", 
-                        subModuleInfos.get(i));
+                    childPart.addProperty("moduleInfo",
+                            subModuleInfos.get(i));
                 }
             }
             if (resources) {
-                Module module = application.getModule(key);
+                Module module = application.getModule(subComponent.getKey());
                 if (module != null) {
                     ActionReport subReport = report.addSubActionsReport();
                     CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("_list-resources", subReport, context.getSubject());
@@ -267,9 +269,10 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         // add the properties for GUI to display
-        Set<String> keys = subComponentsMap.keySet();
-        for (String key : keys) {
-            part.addProperty(key, subComponentsMap.get(key));
+        Iterator<Map.Entry<String, String>> entryIterator = subComponentsMap.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> subComponentMap = entryIterator.next();
+            part.addProperty(subComponentMap.getKey(), subComponentMap.getValue());
         }
         // now this is the normal output for the list-sub-components command
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

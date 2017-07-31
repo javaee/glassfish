@@ -170,14 +170,11 @@ public class ConnectorsUtil {
                 //check whether its embedded RAR
                 String rarName = getRarNameFromApplication(moduleName);
                 String appName = getApplicationNameOfEmbeddedRar(moduleName);
-
-                if(appName != null && rarName != null){
-                    location = internalGetLocation(appName);
-                    if(location != null){
-                        location = location + File.separator + rarName + "_rar";
-                    }else{
-                        throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
-                    }
+                location = internalGetLocation(appName);
+                if(location != null){
+                    location = location + File.separator + rarName + "_rar";
+                }else{
+                    throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
                 }
             }
         }
@@ -832,8 +829,7 @@ public class ConnectorsUtil {
             while (enum1.hasMoreElements()) {
                 java.util.jar.JarEntry file = (java.util.jar.JarEntry) enum1.nextElement();
                 java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
-                if (file.isDirectory()) {
-                    f.mkdir();
+                if (file.isDirectory() && f.mkdir()) {
                     continue;
                 }
                 InputStream is = null;

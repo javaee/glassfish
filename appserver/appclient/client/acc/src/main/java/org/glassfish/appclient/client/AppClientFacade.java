@@ -676,32 +676,4 @@ public class AppClientFacade {
         throw ue;
 
     }
-
-    private static class JavaVersion {
-        private String versionString = System.getProperty("java.version");
-
-        private int initVersionAsInt() {
-            int firstDot = versionString.indexOf(".");
-            String tensString = versionString.substring(0,firstDot);
-            int nextDot = versionString.indexOf(".", firstDot+1);
-            if (nextDot<0) {
-                nextDot= versionString.length();
-            }
-            String onesString = versionString.substring(firstDot+1, nextDot);
-            int version = -1;
-    //        try {
-                int tens = Integer.parseInt(tensString);
-                int ones = Integer.parseInt(onesString);
-                version = (tens*10) + ones;
-    //        } catch(NumberFormatException nfe) {
-    //
-    //        }
-            return version;
-        }
-
-        @Override
-        public String toString() {
-            return versionString;
-        }
-    }
 }

@@ -80,7 +80,7 @@ public class ConstantPoolInfo {
                 case ASCIZ:
                 case UNICODE:
                     final short length = buffer.getShort();
-                    if (length<0 || length>Short.MAX_VALUE) {
+                    if (length<0) {
                         return true;
                     }
                     buffer.get(bytes, 0, length);
