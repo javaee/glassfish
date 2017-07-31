@@ -92,9 +92,10 @@ public class MethodExecutor implements java.io.Serializable {
             if (parameters.length == 1) {
                 Object[] values = new Object[1];
                 values[0] = convertType(parameters[0], value);
+                method.setAccessible(true);
                 method.invoke(obj, values);
             }
-        } catch (IllegalAccessException iae) {
+        } catch (IllegalAccessException | InvocationTargetException | SecurityException iae) {
             _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
             _logger.log(Level.SEVERE, "", iae);
             String msg = sm.getString("me.access_denied", method.getName());
@@ -103,11 +104,6 @@ public class MethodExecutor implements java.io.Serializable {
             _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
             _logger.log(Level.SEVERE, "", ie);
             String msg = sm.getString("me.illegal_args", method.getName());
-            throw new ResourceException(msg);
-        } catch (InvocationTargetException ite) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
-            _logger.log(Level.SEVERE, "", ite);
-            String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         }
     }
@@ -137,8 +133,9 @@ public class MethodExecutor implements java.io.Serializable {
                     actualValues[i] = convertType(parameters[i], val);
                 }
             }
+            method.setAccessible(true);
             method.invoke(obj, actualValues);
-        } catch (IllegalAccessException iae) {
+        } catch (IllegalAccessException | InvocationTargetException | SecurityException iae) {
             _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
             _logger.log(Level.SEVERE, "", iae);
             String msg = sm.getString("me.access_denied", method.getName());
@@ -147,11 +144,6 @@ public class MethodExecutor implements java.io.Serializable {
             _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
             _logger.log(Level.SEVERE, "", ie);
             String msg = sm.getString("me.illegal_args", method.getName());
-            throw new ResourceException(msg);
-        } catch (InvocationTargetException ite) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
-            _logger.log(Level.SEVERE, "", ite);
-            String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         }
     }
@@ -235,12 +227,11 @@ public class MethodExecutor implements java.io.Serializable {
         }
         if (actualMethod != null) {
             try {
+                actualMethod.setAccessible(true);
                 returnValue = actualMethod.invoke(object, values);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalAccessException | InvocationTargetException | SecurityException ex) {
                 throw new ResourceException(ex);
             } catch (IllegalArgumentException ex) {
-                throw new ResourceException(ex);
-            } catch (InvocationTargetException ex) {
                 throw new ResourceException(ex);
             }
         }
