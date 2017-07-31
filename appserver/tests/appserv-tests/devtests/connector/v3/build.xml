@@ -251,11 +251,7 @@
 		<echo message="@@## mq ##@@"/>
 		<ant dir="../mq" target="${connector-target}"/>
 
-	</target>
-
-    <target name="connector_group_2">
-	<echo message="************  Starting connector_group_2  ************"/>
-        <echo message="@@## nonacc ##@@"/>
+		<echo message="@@## nonacc ##@@"/>
         <ant dir="../nonacc" target="${connector-target}"/>
 
 		<echo message="@@## web2connector ##@@"/>
@@ -267,11 +263,8 @@
 		<!--Due to Deepak deployment fix -->
 		<!--echo message="@@## nonstringmcfproperties ##@@"/>
 		<ant dir="nonstringmcfproperties" target="${connector-target}"/-->
-	</target>
 
-    <target name="connector_group_3">
-	<echo message="************  Starting connector_group_3  ************"/>
-        <echo message="@@## nonstringraproperties ##@@"/>
+		<echo message="@@## nonstringraproperties ##@@"/>
         <ant dir="../nonstringraproperties" target="${connector-target}" />
 
         <echo message="@@## txlevelswitch ##@@"/>
@@ -282,10 +275,7 @@
 
         <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
         <ant dir="ejb32-mdb" target="${connector-target}"/>
-    </target>
 
-    <target name="connector_group_4">
-	<echo message="************  Starting connector_group_4  ************"/>
 		<echo message="@@## SunRaXml ##@@"/>
 		<ant dir="SunRaXml" target="${connector-target}"/>
 
@@ -302,8 +292,8 @@
         <ant dir="redeployRar" target="${connector-target}"/>
     </target>
 
-    <target name="connector_group_5">
-	<echo message="************  Starting connector_group_5  ************"/>
+    <target name="connector_group_2">
+	<echo message="************  Starting connector_group_2  ************"/>
         <echo message="@@## force-deploy-rar ##@@"/>
         <ant dir="force-deploy-rar" target="${connector-target}"/>
 
@@ -322,8 +312,8 @@
 
     </target>
 
-    <target name="connector_group_6">
-	<echo message="************  Starting connector_group_6  ************"/>
+    <target name="connector_group_3">
+	<echo message="************  Starting connector_group_3  ************"/>
 		<echo message="@@## connection-factory-definition-embedra##@@"/>
 		<ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
 
@@ -337,8 +327,8 @@
 		<ant dir="jms-connection-factory-definition" target="${connector-target}"/>
     </target>
 
-	<target name="connector_group_7">
-		<echo message="************  Starting connector_group_7  ************"/>
+	<target name="connector_group_4">
+		<echo message="************  Starting connector_group_4  ************"/>
 		<echo message="@@## jms-destination-definition##@@"/>
 		<ant dir="jms-destination-definition" target="${connector-target}"/>
 
@@ -351,11 +341,8 @@
 		<!--Due to Deepak deployment fix -->
 		<!--echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
 		<ant dir="installed-libraries-embedded" target="all-ext"/-->
-	</target>
 
-
-    <target name="connector_group_8">
-	<echo message="************  Starting connector_group_8  ************"/>
+		<echo message="************  Starting connector_group_8  ************"/>
         <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
 
@@ -367,11 +354,8 @@
 
         <echo message="@@## osgi-resources-test ##@@"/>
         <ant dir="osgi-resources-test" target="all"/>
-    </target>
 
-
-	<target name="connector_group_9">
-		<echo message="************  Starting connector_group_9 ************"/>
+    	<echo message="************  Starting connector_group_9 ************"/>
 		<!--echo message="@@## installed libraries embedded rar (-libraries) ##@@"/>
         <ant dir="installed-libraries-embedded" target="all"/-->
 
@@ -408,11 +392,6 @@
         <antcall target="connector_group_2"/>
         <antcall target="connector_group_3"/>
         <antcall target="connector_group_4"/>
-        <antcall target="connector_group_5"/>
-        <antcall target="connector_group_6"/>
-        <antcall target="connector_group_7"/>
-		<antcall target="connector_group_8"/>
-		<antcall target="connector_group_9"/>
     </target>
 
     <target name="connector-clean">
