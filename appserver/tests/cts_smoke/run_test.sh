@@ -75,7 +75,6 @@ test_run_cts_smoke(){
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
 	unzip -q $CTS_SMOKE_BUNDLE
-        cp  -p `dirname $0`/smoke-groups.xml $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml
 	cd $TS_HOME/bin
 	#cp $CTS_SMOKE/$CTS_EXCLUDE_LIST .
 	cp ts.jte ts.jte.orig
@@ -116,7 +115,7 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
         if [ -n $1 ]; then
-		 $TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
+		 $TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
                  $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
         else
 		 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
