@@ -113,10 +113,8 @@
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0-RC1</eclipselink.version>
         <javax-persistence-api.version>2.2.0-RC1</javax-persistence-api.version>
-        <dbschema.version>3.1.1</dbschema.version>
-        <dbschema.osgi.version>6.0</dbschema.osgi.version>
-        <schema2beans.version>3.1.1</schema2beans.version>
-        <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
+        <dbschema.version>6.5</dbschema.version>
+        <schema2beans.version>6.5</schema2beans.version>
         <mq.version>5.1.1-b05</mq.version>
         <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
@@ -137,8 +135,9 @@
         <javax.xml.soap-api.version>1.3.7</javax.xml.soap-api.version>
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
-	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
-	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+	    <bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
+	    <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <libpam4j.version>1.3</libpam4j.version>
     </properties>
 
     <modules>
@@ -161,7 +160,6 @@
         <module>extras</module>
         <module>admingui</module>
         <module>extras/embedded/shell</module>
-        <module>packager</module>
         <module>featuresets</module>
         <module>distributions</module>
         <module>security</module>
@@ -720,16 +718,19 @@
                         <groupId>org.jboss.classfilewriter</groupId>
                         <artifactId>jboss-classfilewriter</artifactId>
                     </exclusion>
-                </exclusions>                
+                </exclusions>
             </dependency>
             <dependency>
-
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se-core</artifactId>
+                <version>${weld.version}</version>             
+            </dependency>
+            <dependency>
                  <groupId>org.jboss.classfilewriter</groupId>
                  <artifactId>jboss-classfilewriter</artifactId>
                  <version>${jboss.classfilewriter.version}</version>
              </dependency>
-
-<dependency>
+             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-shaded</artifactId>
                 <version>${weld.version}</version>
@@ -920,7 +921,7 @@
                 <artifactId>osgi-http</artifactId>
                 <version>1.0.6</version>
             </dependency>
-	    <dependency>
+	        <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-cdi</artifactId>
                 <version>1.0.4</version>
@@ -962,12 +963,12 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>dbschema-repackaged</artifactId>
+                <artifactId>dbschema</artifactId>
                 <version>${dbschema.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>schema2beans-repackaged</artifactId>
+                <artifactId>schema2beans</artifactId>
                 <version>${schema2beans.version}</version>
             </dependency>
             <dependency>
@@ -1145,6 +1146,11 @@
                 <groupId>javax.security.enterprise</groupId>
                 <artifactId>javax.security.enterprise-api</artifactId>
                 <version>${javax.security.enterprise-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>libpam4j</artifactId>
+                <version>${libpam4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>

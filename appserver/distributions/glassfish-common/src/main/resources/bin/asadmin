@@ -50,3 +50,4 @@ if [ ${AS_JAVA} ]; then
 fi
 
 exec "$JAVA" -jar "$AS_INSTALL_LIB/client/appserver-cli.jar" "$@"
+

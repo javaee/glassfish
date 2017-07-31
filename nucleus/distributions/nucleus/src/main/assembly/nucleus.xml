@@ -54,15 +54,6 @@
 
         <!-- nucleus-common -->
         <fileSet>
-            <directory>${temp.dir}/nucleus-common</directory>
-            <includes>
-                <include>osgi/**</include>
-                <include>config/**</include>
-                <include>modules/**</include>
-            </includes>
-            <outputDirectory>${install.dir.name}</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>${temp.dir}/nucleus-common/nucleus</directory>
             <excludes>
                 <exclude>bin/**</exclude>
@@ -84,6 +75,18 @@
                 <include>nadmin*</include>
             </includes>
             <outputDirectory>${install.dir.name}/lib</outputDirectory>
+        </fileSet>
+
+        <!-- nucleus-dts -->
+        <fileSet>
+            <directory>${temp.dir}/nucleus-dtds</directory>
+            <outputDirectory>${install.dir.name}/lib/dtds</outputDirectory>
+        </fileSet>
+
+        <!-- nucleus-schemas -->
+        <fileSet>
+            <directory>${temp.dir}/nucleus-schemas</directory>
+            <outputDirectory>${install.dir.name}/lib/schemas</outputDirectory>
         </fileSet>
 
         <!-- staging jars -->
@@ -172,6 +175,7 @@
                 <exclude>felix.jar</exclude>
                 <exclude>nucleus-domain.jar</exclude>
                 <exclude>javax.annotation-api.jar</exclude>
+                <exclude>cluster-cli.jar</exclude>
             </excludes>
             <outputDirectory>${install.dir.name}/modules</outputDirectory>
         </fileSet>

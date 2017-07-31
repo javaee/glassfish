@@ -10,12 +10,12 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://oss.oracle.com/licenses/CDDL+GPL-1.1
-    or LICENSE.txt.  See the License for the specific
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
     When distributing the software, include this License Header Notice in each
-    file and include the License file at LICENSE.txt.
+    file and include the License file at packager/legal/LICENSE.txt.
 
     GPL Classpath Exception:
     Oracle designates this particular file as subject to the "Classpath"
@@ -48,17 +48,15 @@
         <artifactId>nucleus-distributions</artifactId>
         <version>5.0-SNAPSHOT</version>
     </parent>
-    <artifactId>nucleus-new</artifactId>
+    <artifactId>nucleus</artifactId>
     <name>Nucleus Distribution</name>
     <packaging>glassfish-distribution</packaging>
-    <description>This pom describes how to assemble the Nucleus Distribution</description>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>glassfishbuild-maven-plugin</artifactId>
-                <extensions>true</extensions>
                 <executions>
                     <execution>
                         <id>create-domain</id>
@@ -66,65 +64,26 @@
                             <goal>exec</goal>
                         </goals>
                         <phase>process-resources</phase>
-                    </execution>                    
+                    </execution>
                 </executions>
-            </plugin>          
+            </plugin>
         </plugins>
     </build>
-    
-    <dependencies>
-        <!-- atomic distribution -->
+
+   <dependencies>
         <dependency>
-            <groupId>org.glassfish.main.distributions</groupId>
-            <artifactId>atomic</artifactId>
+            <groupId>org.glassfish.main.featuresets</groupId>
+            <artifactId>nucleus</artifactId>
             <version>${project.version}</version>
-            <type>zip</type>
+            <type>pom</type>
             <optional>true</optional>
         </dependency>
- 
-	<!-- all other nucleus distribution packages -->
         <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
+            <groupId>org.glassfish.main.distributions</groupId>
             <artifactId>nucleus-common</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>nucleus-shoal</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>nucleus-cluster</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>       
-        <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>nucleus-jersey</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>nucleus-management</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-       <dependency>
-            <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>nucleus-corba-base</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-       </dependency>
     </dependencies>
 </project>
-

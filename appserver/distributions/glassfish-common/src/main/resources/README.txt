@@ -6,7 +6,7 @@ Here are a few short steps to get you started...
 0. Prerequisite
 ===============
 
-GlassFish 4.1 requires Oracle JDK 7 Update 65+ or Oracle JDK 8 Update 5+.
+GlassFish 4.1 requires Oracle JDK 7 Update 65+ or Oracle JDK 8 Update 5+. 
 Check http://www.oracle.com/technetwork/java/javase/downloads/index.html to download the JDK.
 
 
@@ -33,7 +33,7 @@ After a few seconds, GlassFish will be up and ready to accept requests. The defa
 To manage GlassFish, just go to web administration console: http://localhost:4848
 
 
-3. Stopping GlassFish
+3. Stopping GlassFish 
 =====================
 
 To stop GlassFish, just issue the following command :
@@ -54,7 +54,7 @@ If you are new to Java EE, the Java EE Tutorial (see below) is a good way to lea
 
 
 
-5. Documentation
+5. Documentation 
 ================
 
 GlassFish 4.1 Releases Notes : https://glassfish.java.net/docs/4.1/release-notes.pdf
@@ -72,3 +72,4 @@ GlassFish Forum : https://www.java.net/forums/glassfish/glassfish
 ============
 
 Make sure to follow @GlassFish and @Java_EE on Twitter and read The Aquarium Blog (https://blogs.oracle.com/TheAquarium) to get the latest news on GlassFish and Java EE.
+

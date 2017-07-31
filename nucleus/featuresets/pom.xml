@@ -3,19 +3,19 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://oss.oracle.com/licenses/CDDL+GPL-1.1
-    or LICENSE.txt.  See the License for the specific
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
     When distributing the software, include this License Header Notice in each
-    file and include the License file at LICENSE.txt.
+    file and include the License file at packager/legal/LICENSE.txt.
 
     GPL Classpath Exception:
     Oracle designates this particular file as subject to the "Classpath"
@@ -40,55 +40,32 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.main.persistence.cmp</groupId>
-        <artifactId>cmp</artifactId>
+        <groupId>org.glassfish.main</groupId>
+        <artifactId>glassfish-nucleus-parent</artifactId>
         <version>5.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>cmp-model</artifactId>
-    <packaging>glassfish-jar</packaging>
-    
-    <name>model module for cmp</name>
+    <packaging>pom</packaging>
+    <groupId>org.glassfish.main.featuresets</groupId>
+    <artifactId>nucleus-featuresets</artifactId>
+
+    <name>Glassfish featuresets</name>
 
     <developers>
         <developer>
-            <id>mm110999</id>
-            <name>Mitesh Meswani</name>
-            <organization>Oracle, Inc.</organization>
+            <id>romain_grecourt</id>
+            <name>Romain Grecourt</name>
+            <organization>Oracle, Inc</organization>
             <roles>
                 <role>developer</role>
-                <role>lead</role>
             </roles>
         </developer>
     </developers>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.main.persistence.cmp</groupId>
-            <artifactId>cmp-utility</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.persistence</groupId>
-            <artifactId>persistence-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>dbschema</artifactId>
-        </dependency>
-    </dependencies>
+
+    <modules>
+        <module>atomic</module>
+        <module>nucleus</module>
+    </modules>
 </project>
