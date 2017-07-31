@@ -371,6 +371,7 @@ public class AdminObjectTest extends AdminBaseDevTest {
         reportResultStatus(testName, result);
         //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
         reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
+	/*Commenting out the failed test, can be uncommented after fixing Glassfish Issue 21774 */
         //reportUnexpectedResult(testName, result, SERVER, CLUSTER_NAME);
     }
 
@@ -380,6 +381,7 @@ public class AdminObjectTest extends AdminBaseDevTest {
         reportResultStatus(testName, result);
         //reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
         reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
+	/*Commenting out the failed test, can be uncommented after fixing Glassfish Issue 21774 */
         //reportUnexpectedResult(testName, result, SERVER);
     }
 
@@ -431,6 +433,7 @@ public class AdminObjectTest extends AdminBaseDevTest {
         reportExpectedResult(testName, result);
         //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME);
         reportExpectedResult(testName, result, "Administered object resource-1 created.");
+	/*Commenting out the failed test, can be uncommented after fixing Glassfish Issue 21774 */
         //reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
