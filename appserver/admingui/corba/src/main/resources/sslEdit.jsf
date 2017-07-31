@@ -65,44 +65,7 @@
         setPageSessionAttribute(key="createSslUrl", value="#{pageSession.parentUrl}/create-ssl");
         createMap(result="#{pageSession.createMap}");
         mapPut(map="#{pageSession.createMap}" key="target" value="#{pageSession.configName}");
-
-        setPageSessionAttribute(key="edit" value="#{false}" )
-        mapPut(map="#{pageSession.createMap}", key="certNickname",  value="testName")
-        gf.restRequest(endpoint="#{pageSession.createSslUrl}", attrs="#{pageSession.createMap}", method="POST", result="#{pageSession.resultMap}", throwException="false");
-        if ("#{pageSession.resultMap.data.exit_code}=FAILURE") {
-            setPageSessionAttribute(key="edit" value="#{true}" )
-        }
-        if (#{pageSession.edit}){
-            gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json" valueMap="#{pageSession.valueMap}");
-            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['ssl3TlsCiphers']}"
-                CommonCiphersList="#{pageSession.selectedCommon}"
-                EphemeralCiphersList="#{pageSession.selectedEphemeral}"
-                OtherCiphersList="#{pageSession.selectedOther}"
-                EccCiphersList="#{pageSession.selectedEcc}")
-
-        }
-        if (! #{pageSession.edit}){
-            <!-- this <ssl> does not exists, we cannot find a way to get the default value, so hard coded here for now.
-                 TODO: REST need to provide an endpoint to get the default value.
-              -->
-            createMap(result="#{pageSession.valueMap}");
-            mapPut(map="#{pageSession.valueMap}" key="ssl3Enabled" value="true");
-            mapPut(map="#{pageSession.valueMap}" key="tlsEnabled" value="true");
-            mapPut(map="#{pageSession.valueMap}" key="trustMaxCertLength" value="5");
-
-            convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['ssl3TlsCiphers']}"
-                CommonCiphersList="#{pageSession.selectedCommon}"
-                EphemeralCiphersList="#{pageSession.selectedEphemeral}"
-                OtherCiphersList="#{pageSession.selectedOther}"
-                EccCiphersList="#{pageSession.selectedEcc}")
-        }
-
-        //set the following for including buttons.inc
-        setPageSessionAttribute(key="convertToFalseList" value={"ssl3Enabled" "tlsEnabled" "clientAuthEnabled" })
-        setPageSessionAttribute(key="skipAttrsList", value={"sslInactivityTimeout"});
-        setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )
+#include "/common/shared/sslPrepare.inc"
       />
   </event>
 
@@ -112,41 +75,7 @@
 
         <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.sslPageTitle}" helpText="$resource{i18n_corba.sslPageTitleHelp}">
-        <!facet pageButtonsTop>
-          <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{pageSession.edit}" text="$resource{i18n.button.Save}"
-                   onClick="if (checkSSLRequiredElements() && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-              <!command
-                convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="ssl3TlsCiphers" value="#{requestScope.ciphers}")
-                gf.createEntity(endpoint="#{pageSession.selfUrl}"
-                                attrs="#{pageSession.valueMap}"
-                                skipAttrs="#{pageSession.skipAttrsList}"
-                                convertToFalse="#{pageSession.convertToFalseList}"
-                );
-                prepareSuccessfulMsg();
-                gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}" exists="#{requestScope.exist}")
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-              />
-            </sun:button>
-
-            <sun:button id="newButton" rendered="#{!pageSession.edit}" text="$resource{i18n.button.OK}"
-                        onClick="if (checkSSLRequiredElements()  && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-              <!command
-                convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
-                mapPut(map="#{pageSession.valueMap}" key="ssl3TlsCiphers" value="#{requestScope.ciphers}")
-                gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" skipAttrs="#{pageSession.skipAttrsList}" convertToFalse="#{pageSession.convertToFalseList}");
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-              />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-              <!command
-                gf.redirect(page="#{parentPage}?configName=#{configName}");
-              />
-            </sun:button>
-          </sun:panelGroup>
-        </facet>
+#include "/common/shared/sslButtons.inc"
         </sun:title>
         "<br><br>
 #include "/common/shared/sslAttrs.inc"
