@@ -87,11 +87,11 @@ public class JaxrpcMappingDescriptor extends Descriptor {
      */
     public Collection getMappings() {
         Collection mappings = new HashSet();
-        for(Iterator nIter = namespaceUriToPackageMap.keySet().iterator(); 
-            nIter.hasNext();) {
-            String namespaceUri = (String) nIter.next();
-            String javaPackage = (String) 
-                namespaceUriToPackageMap.get(namespaceUri);
+        Iterator nIter = namespaceUriToPackageMap.entrySet().iterator();
+        while(nIter.hasNext()){
+            Map.Entry entry = (Map.Entry) nIter.next();
+            String namespaceUri = (String) entry.getKey();
+            String javaPackage = (String) entry.getValue();
             Mapping mapping = new Mapping(namespaceUri, javaPackage);
             mappings.add(mapping);
         }

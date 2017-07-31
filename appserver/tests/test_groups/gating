@@ -20,8 +20,9 @@ findbugs_all
 findbugs_low_priority_all
 embedded_publisher_all
 copyright
-connector_all
 jdbc_all
 jms_all
 persistence_all
 webservice_all
+naming_all
+batch_all

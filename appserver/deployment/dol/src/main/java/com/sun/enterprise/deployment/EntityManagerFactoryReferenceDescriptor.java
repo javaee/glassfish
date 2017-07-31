@@ -85,6 +85,14 @@ public class EntityManagerFactoryReferenceDescriptor extends
     {
 	this.referringBundle = referringBundle;
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
 
     public BundleDescriptor getReferringBundleDescriptor()
     {

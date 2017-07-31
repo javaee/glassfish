@@ -158,11 +158,14 @@ public class ConnectorClassLoader extends ASURLClassLoader
     //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
     private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         if (moduleDir.isDirectory()) {
-            for (File file : moduleDir.listFiles()) {
-                if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
-                    cl.appendURL(file.toURI().toURL());
-                } else if (file.isDirectory()) {
-                    appendJars(file, cl); //recursive add
+            File[] files = moduleDir.listFiles();
+            if(files != null) {
+                for (File file : files) {
+                    if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
+                        cl.appendURL(file.toURI().toURL());
+                    } else if (file.isDirectory()) {
+                        appendJars(file, cl); //recursive add
+                    }
                 }
             }
         }

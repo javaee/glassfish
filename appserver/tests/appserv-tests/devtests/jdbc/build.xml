@@ -138,7 +138,8 @@
 	<ant dir="dmmcf" target="all"/>
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
 	<ant dir="dmmcf.appclient" target="all"/>
-	<ant dir="tracingsql" target="all"/>
+        <!-- Temporarily disabling this test as there is a Derby compatibility issue-->
+	<!--ant dir="tracingsql" target="all"/-->
 	<ant dir="datasource40" target="all"/>
 	<ant dir="custom-validation" target="all"/>
 	<ant dir="custom-validation-1" target="all"/>

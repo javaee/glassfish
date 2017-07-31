@@ -148,7 +148,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
      */
     public String getJndiName() {
         String jndiName = super.getValue();
-        if (jndiName != null  && ! jndiName.equals("")) {
+        if (! jndiName.equals("")) {
             return jndiName;
         }
         if (mappedName != null && ! mappedName.equals("")) { 

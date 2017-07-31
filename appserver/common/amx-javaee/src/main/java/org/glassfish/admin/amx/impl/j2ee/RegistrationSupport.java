@@ -71,6 +71,7 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
@@ -622,14 +623,21 @@ final class RegistrationSupport
                 if ( type.equals( mResourceRefType ) )
                 {
                     mLogger.fine("New ResourceRef MBEAN registered: " + objectName);
-                    final ResourceRef ref = (ResourceRef) ConfigBeanRegistry.getInstance().getConfigBean(objectName);
-                    processResourceRef(ref);
+                    ConfigBean configBean = ConfigBeanRegistry.getInstance().getConfigBean(objectName);
+                    if ( configBean instanceof ResourceRef ) {
+                        final ResourceRef ref = (ResourceRef) configBean;
+                        processResourceRef(ref);
+                    }
                 }
                 else if ( type.equals( mApplicationRefType ) )
                 {
                     mLogger.fine( "NEW ApplicationRef MBEAN registered: " + objectName);
-                    final ApplicationRef ref = (ApplicationRef) ConfigBeanRegistry.getInstance().getConfigBean(objectName);
-                    processApplicationRef(ref);
+                    ConfigBean configBean = ConfigBeanRegistry.getInstance().getConfigBean(objectName);
+                    if ( configBean instanceof ApplicationRef) {
+                        final ApplicationRef ref = (ApplicationRef) configBean;
+                        processApplicationRef(ref);
+                    }
+
                 }
             }
             else if (notif.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION))

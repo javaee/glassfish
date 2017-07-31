@@ -51,12 +51,6 @@ import javax.transaction.UserTransaction;
 
 @Stateless
 
-// External remote ejb 3.0 reference.  Target ejb doesn't exist
-// but this shouldn't cause any problems as long as reference is
-// not looked up.  Remote jndi-names are not dereferenced until 
-// lookup time, in *our* implementation.  This works for old-style 
-// ejb-refs so this TYPE-level @EJB should have the same behavior.
-@EJB(name="ejb/External", beanInterface=ExternalBusiness.class)
 @Remote({Sless.class})
 public class SlessEJB 
 {
