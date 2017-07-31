@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration 
- 	xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
-  <wsdl location="http://localhost:8080/jaxrpc-coffee-supplier/jaxrpc?WSDL"
-       packageName="com.sun.cb"/>
-</configuration>

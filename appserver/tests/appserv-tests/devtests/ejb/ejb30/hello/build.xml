@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="hello" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="session"/>
+        <antcall target="session2"/>
+        <antcall target="session2full"/>
+        <antcall target="nopkg"/>
+        <antcall target="mdb"/>  
+        <antcall target="mdb2"/>  
+        <antcall target="session4"/>
+        <antcall target="session5"/> 
+        <antcall target="session3"/>
+        <antcall target="session_standalone"/>
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="mdb2">
+        <record name="mdb2.output" action="start" />
+            <ant dir="mdb2" target="all"/>
+        <record name="mdb2.output" action="stop" />
+    </target>
+
+    <target name="session">
+        <record name="session.output" action="start" />
+            <ant dir="session" target="all"/>
+        <record name="session.output" action="stop" />
+    </target>
+
+    <target name="session_standalone">
+        <record name="session_standalone.output" action="start" />
+            <ant dir="session_standalone" target="all"/>
+        <record name="session_standalone.output" action="stop" />
+    </target>
+
+    <target name="session2">
+        <record name="session2.output" action="start" />
+            <ant dir="session2" target="build"/>
+            <ant dir="session2" target="deploy"/>
+            <ant dir="session2" target="run"/>
+
+	<!-- needs handle support
+            <ant dir="dcode" target="build"/>
+            <ant dir="dcode" target="deploy"/>
+            <ant dir="dcode" target="run"/>
+            <ant dir="dcode" target="run"/>
+            <ant dir="dcode" target="undeploy"/>
+	-->
+            <ant dir="session2" target="undeploy"/>
+        <record name="session2.output" action="stop" />
+    </target>
+
+    <target name="session2full">
+        <record name="session2full.output" action="start" />
+            <ant dir="session2full" target="all"/>
+        <record name="session2full.output" action="stop" />
+    </target>
+
+    <target name="session3">
+        <record name="session3.output" action="start" />
+            <ant dir="session3" target="all"/>
+        <record name="session3.output" action="stop" />
+    </target>
+
+    <target name="session4">
+        <record name="session4.output" action="start" />
+            <ant dir="session4" target="all"/>
+        <record name="session4.output" action="stop" />
+    </target>
+
+    <target name="session5">
+        <record name="session5.output" action="start" />
+            <ant dir="session5" target="all"/>
+        <record name="session5.output" action="stop" />
+    </target>
+
+    <target name="nopkg">
+        <record name="nopkg.output" action="start" />
+            <ant dir="nopkg" target="all"/>
+        <record name="nopkg.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb30-hello tests)
+	</echo>
+    </target>
+</project>

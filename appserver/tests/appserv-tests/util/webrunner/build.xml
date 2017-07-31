@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY setup-props SYSTEM "../../config/properties.xml">
+]>
+
+
+<project name="webrunner" basedir="." default="jar">
+      &setup-props;
+      
+     <property name="proxy.src" value="proxy"/>
+     <property environment="myenv" />
+     <property name="webtest.src" value="webtest"/>
+     <property name="tomcattest.src" value="tomcattest"/>
+     <property name="http2test.src" value="http2test"/>
+     <property name="build.dest" value="build"/>
+     <property name="java.classpath" value="${JAVA_HOME}/lib/dt.jar:${JAVA_HOME}/lib/tools.jar:${build.dest}:${myenv.APS_HOME}/lib/reporter.jar"/>
+     <property name="server.host" value="dsingh"/>
+     
+  <target name="all" depends="compile-webtest,run-webtest">
+        <!-- WRITEME -->
+  </target>
+   
+  
+  <target name="compile-proxy" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Proxy Server source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${proxy.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+  
+  <target name="compile-webtest" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Proxy Server source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${webtest.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+  
+  <target name="compile-tomcattest" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Tomcat test util source files ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${tomcattest.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+
+  <target name="compile-http2test" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Grizzly test source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${http2test.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}:${myenv.S1AS_HOME}/modules/nucleus-grizzly-all.jar"
+                debug="on"
+		
+    />
+
+  </target>
+
+  <target name="run-webtest" depends="compile-webtest">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Running Web Test"/>
+    <java
+			fork="on"
+			classpath="${java.classpath}:${build.dest}"
+			classname="com.sun.ejte.ccl.webrunner.webtest.WebTest">
+                        <arg value="script.txt"/>
+                        <arg value="${server.host}"/>
+    		
+    </java>
+  </target>
+  
+  <target name="run-proxy" depends="compile-proxy">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Starting webserver at port 1235"/>
+    <java
+			fork="on"
+			classpath="${java.classpath}:${build.dest}"
+			classname="com.sun.ejte.ccl.webrunner.proxy.httpd">
+                        
+    		
+    </java>
+  </target>
+  
+  <target name="clean" depends="init-common">
+    <delete dir="${build.dest}"/>
+  </target>
+
+<target name="jar" depends="compile-proxy,compile-webtest,compile-tomcattest,compile-http2test">
+  <jar destfile="${myenv.APS_HOME}/lib/webtest.jar">
+	<fileset dir="${build.dest}"/>
+  </jar>
+  </target>
+
+
+  <target name="usage" depends="init-common">
+    <echo >
+    Targets are;
+    ant compile-proxy
+    ant compile-webtest
+    ant run-webtest
+    ant run-proxy
+    </echo>
+  </target>
+
+  
+</project>

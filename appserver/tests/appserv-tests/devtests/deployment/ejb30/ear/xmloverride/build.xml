@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="deployment-ejb30-ear-xmloverride-App" default="all" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="deployment-ejb30-ear-xmloverride"/>
+    <property name="archivedir" value="${build}/archives"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${archivedir}"/>
+        <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
+        <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
+        <property name="client.jar" value="${archivedir}/${testName}-client.jar"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="ejb" destdir="${build}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${inst}/modules/endorsed"/>
+          <classpath refid="gfv3.classpath"/>
+         </javac>
+        <javac srcdir="client" destdir="${build}" debug="on" failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+         </javac>
+    </target>
+ 
+    <target name="create.user" depends="setAsadminArgsWithoutPassword">
+        <antcall target="common.createuser.asadmin">
+            <param name="arg.list"
+                value="--groups j2ee --authrealmname file j2ee"/>
+            <param name="password" value="j2ee"/>
+        </antcall>
+        <antcall target="common.createuser.asadmin">
+            <param name="arg.list"
+                value="--groups sunuser --authrealmname file sunuser"/>
+            <param name="password" value="sunuser"/>
+        </antcall>
+    </target>
+
+    <target name="delete.user" depends="setAsadminArgs">
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                value="delete-file-user ${ASADMIN-ARGS} --authrealmname file j2ee"/>
+        </antcall>
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                value="delete-file-user ${ASADMIN-ARGS} --authrealmname file sunuser"/>
+        </antcall>
+    </target>
+
+    <target name="assemble" depends="compile">
+        <jar destfile="${ejb.jar}" basedir="${build}"
+                excludes="**/Client.class,**/Servlet.class">
+            <metainf dir="descriptor">
+                <include name="*ejb-jar.xml"/>
+            </metainf>
+        </jar>
+
+        <jar destfile="${client.jar}" basedir="${build}"
+                includes="**/Client.class,**/Sful.class,**/Sless.class"
+                manifest="client/MANIFEST.MF"/>
+
+        <ear destfile="${all.ear}" basedir="${archivedir}"
+            appxml="descriptor/application.xml" includes="*.jar, *.war">
+            <metainf dir="descriptor">
+                <include name="sun-application.xml"/>
+            </metainf>
+        </ear>
+    </target> 
+    
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin" depends="prepare">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>   
+
+    <target name="runclient" depends="prepare,setOrbPort2">
+        <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
+            <arg line="-client ${archivedir}/${testName}Client.jar"/>
+            <arg line="-targetserver ${appclient.targetservers}"/>
+            <arg line="-textauth"/>
+            <arg line="-user j2ee"/>
+            <arg line="-password j2ee"/>
+            <arg line="-xml ${env.S1AS_HOME}/domains/${admin.domain}/config/glassfish-acc.xml"/>
+        </exec>
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>  
+    </target>
+ 
+    <target name="private-all">
+        <antcall target="create.user"/>
+        <antcall target="assemble"/>
+        <antcall target="declare-test">
+            <param name="description" value="ejb30/security Test asadmin deploy"/>
+        </antcall>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="runclient">
+            <param name="log.id" value="1"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="ejb30/security Test asadmin redeploy"/>
+        </antcall>
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="runclient">
+            <param name="log.id" value="2"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+        <antcall target="delete.user"/>
+    </target>
+</project>

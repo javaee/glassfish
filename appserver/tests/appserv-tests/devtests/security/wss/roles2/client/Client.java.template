@@ -1,0 +1,130 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package com.sun.s1asdev.security.wss.roles2.client;
+
+import java.util.Map;
+
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+import com.sun.s1asdev.security.wss.roles2.ejbws.HelloEjb;
+import com.sun.s1asdev.security.wss.roles2.ejbws.WssRoles2EjbService;
+
+public class Client {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    private static String testSuite = "Sec:WSS Roles2 test ";
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/WssRoles2EjbService/HelloEjb?WSDL")
+    private static WssRoles2EjbService service;
+
+    public static void main(String[] args) {
+        stat.addDescription("security-wss-roles2");
+        String description = null;
+        try {
+            HelloEjb port = service.getHelloEjbPort();
+
+            description = testSuite + " ejbws: hello";
+            port.hello("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            description = testSuite + " ejbws: rolesAllowed1";
+            port.rolesAllowed1("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            try {
+                description = testSuite + " ejbws: rolesAllowed2";
+                port.rolesAllowed2("Sun");
+                stat.addStatus(description, stat.FAIL);  
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);  
+            }
+
+            description = testSuite + " ejbws: permitAll";
+            port.permitAll("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            try {
+                description = testSuite + " ejbws: denyAll";
+                port.denyAll("Sun");
+                stat.addStatus(description, stat.FAIL);  
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);  
+            }
+
+            try {
+                description = testSuite + " ejbws: runAs1";
+                port.runAs1();
+                stat.addStatus(description, stat.FAIL);
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);
+            }
+
+            description = testSuite + " ejbws: runAs2";
+            port.runAs2();
+            stat.addStatus(description, stat.PASS);
+
+            description = testSuite + " ejbws: runAsRunAs1";
+            port.runAsRunAs1();
+            stat.addStatus(description, stat.PASS);
+
+            try {
+                description = testSuite + " ejbws: runAsRunAs2";
+                port.runAsRunAs2();
+                stat.addStatus(description, stat.FAIL);
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);
+            }
+
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        stat.printSummary("security-wss-roles2");
+    }
+}

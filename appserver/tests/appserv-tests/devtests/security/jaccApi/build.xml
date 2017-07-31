@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+<project name="jacc-api" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+   &testProperties;
+
+    <property name="debug" value="false"/>
+
+    <target name="all" depends="build, run"/>
+
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="src"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile"/>
+
+    <target name="run" depends="init-common">
+        <antcall target="run-test"/>
+        <antcall target="run-pcftests"/>
+        <antcall target="run-ejbtests"/>
+        <antcall target="run-urltests"/>
+        <antcall target="run-webtests"/>
+        <antcall target="run-prog-auth"/>
+    </target>
+
+    <target name="run-prog-auth">
+      <ant dir="prog-auth" target="all"/>
+    </target>
+    <target name="run-test" depends="init-common">
+        <java classname="javax.security.jacc.Test" fork="yes"
+            classpath="${s1astest.classpath}"/>
+    </target>
+
+    <target name="run-pcftests" depends="init-common">
+        <property name="ISPCF" value="-Djavax.security.jacc.PolicyConfigurationFactory.provider=com.sun.s1asdev.security.jaccapi.DummyPolicyConfigurationFactory"/>
+        <property name="NOTPCF" value="-Djavax.security.jacc.PolicyConfigurationFactory.provider=javax.security.jacc.PolicyContextException"/>
+        <property name="PFL" value="-Djava.security.policy=${basedir}/config/java.policy"/>
+        <property name="PFL2" value="-Djava.security.policy=${basedir}/config/java.policy2"/>
+
+        <java classname="javax.security.jacc.TestPCF" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-DAPS_HOME=${env.APS_HOME}"/>
+            <jvmarg value="${PFL2}"/>
+            <arg value="true"/>
+            <arg value="java.lang.ClassNotFoundException"/>
+        </java>
+
+        <java classname="javax.security.jacc.TestPCF" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-DAPS_HOME=${env.APS_HOME}"/>
+            <jvmarg value="${NOTPCF}"/>
+            <jvmarg value="${PFL2}"/>
+            <arg value="true"/>
+            <arg value="java.lang.ClassCastException"/>
+        </java>
+
+        <java classname="javax.security.jacc.TestPCF" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-DAPS_HOME=${env.APS_HOME}"/>
+            <jvmarg value="${ISPCF}"/>
+            <jvmarg value="${PFL2}"/>
+            <arg value="true"/>
+            <arg value="javax.security.jacc.PolicyContextException"/>
+        </java>
+
+        <java classname="javax.security.jacc.TestPCF" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-DAPS_HOME=${env.APS_HOME}"/>
+            <jvmarg value="${NOTPCF}"/>
+            <jvmarg value="${PFL}"/>
+            <arg value="false"/>
+            <arg value="java.lang.ClassCastException"/>
+        </java>
+
+        <java classname="javax.security.jacc.TestPCF" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-DAPS_HOME=${env.APS_HOME}"/>
+            <jvmarg value="${ISPCF}"/>
+            <jvmarg value="${PFL}"/>
+            <arg value="false"/>
+        </java>
+    </target>
+
+    <target name="run-ejbtests" depends="init-common">
+        <java classname="javax.security.jacc.TestEJBPerms" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-Ddebug=${debug}"/>
+        </java>
+    </target>
+
+    <target name="run-urltests" depends="init-common">
+        <java classname="javax.security.jacc.TestURLPattern" fork="yes"
+            classpath="${s1astest.classpath}"/>
+        <java classname="javax.security.jacc.TestURLPatternSpec" fork="yes"
+            classpath="${s1astest.classpath}"/>
+    </target>
+
+    <target name="run-webtests" depends="init-common">
+        <java classname="javax.security.jacc.TestWebPerms" fork="yes"
+            classpath="${s1astest.classpath}">
+            <jvmarg value="-Ddebug=${debug}"/>
+        </java>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

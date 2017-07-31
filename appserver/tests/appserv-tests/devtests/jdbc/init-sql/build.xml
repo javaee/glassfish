@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "./../../../config/common.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/properties.xml">
+<!ENTITY jdbcCommon SYSTEM "./../JdbcCommon.xml">
+<!ENTITY jdbcCommonProps SYSTEM "./../JdbcCommon.properties">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="init-sql" basedir="." default="usage">
+
+  &commonSetup;
+  &commonBuild;
+  &testproperties;
+  &jdbcCommon;
+  &jdbcCommonProps;
+    
+  <target name="all" depends="clean,build,deploy,run,undeploy"/>
+  
+  <target name="clean" depends="init-common">
+    <delete dir="${build.classes.dir}"/>
+    <delete dir="${assemble.dir}"/>
+  </target>
+  
+  <target name="compile" depends="clean">
+    <antcall target="compile-common">
+      <param name="src" value="ejb"/>
+    </antcall>
+
+    <antcall target="compile-common">
+      <param name="src" value="client"/>
+    </antcall>
+  </target>
+
+  <target name="build" depends="compile">
+    <antcall target="build-ear-common">
+      <param name="ejbjar.classes" value="**/*.class"/>
+      <param name="appclientjar.classes"
+        value="**/*.class"/>
+    </antcall>
+    <antcall target="ear-common"/>
+  </target>
+
+  <target name="deploy" depends="init-common">
+    <antcall target="deploy-jdbc-oracle-common">
+	<param name="oracle.pool.name" value="jdbc-oracle-pool-initsql"/>
+	<param name="oracle.resource.name" value="jdbc/oracleres-initsql"/>
+    </antcall>
+    <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+		    value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-oracle-pool-initsql.init-sql='ALTER SESSION SET NLS_COMP=LINGUISTIC NLS_SORT=BINARY_CI'"/>
+    </antcall>
+    <antcall target="deploy-common"/>
+    <antcall target="execute-sql-oracle-common">
+	<param name="sql.file" value="sql/create.sql"/>
+    </antcall>
+  </target>
+
+  <target name="undeploy" depends="init-common">
+    <antcall target="undeploy-jdbc-oracle-common">
+	<param name="oracle.pool.name" value="jdbc-oracle-pool-initsql"/>
+	<param name="oracle.resource.name" value="jdbc/oracleres-initsql"/>
+    </antcall>
+    <antcall target="undeploy-common"/>
+    <antcall target="execute-sql-oracle-common">
+      <param name="sql.file" value="sql/drop.sql"/>
+    </antcall>
+  </target>
+  
+  <target name="run">
+    <antcall target="runclient-common">
+      <param name="appclient.application.args" value="1"/>
+    </antcall>
+    <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+        value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-oracle-pool-initsql.init-sql='ALTER SESSION SET NLS_SORT=BINARY'"/>
+    </antcall>
+    <antcall target="restart-server"/>
+    <antcall target="runclient-common">
+      <param name="appclient.application.args" value="2"/>
+    </antcall>
+  </target>
+  
+  <target name="usage">
+    <antcall target="usage-common"/>
+  </target>
+  
+</project>

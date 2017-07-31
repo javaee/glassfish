@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+
+<project name="pamrealm" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+    &testProperties;
+
+    <path id="pamclient.class.path">
+        <pathelement location="lib/commons-httpclient-3.1.jar"/>
+        <pathelement path="${s1astest.classpath}"/>
+    </path>
+
+
+    <target name="all" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile-pam" depends="init-common">
+        <mkdir dir="${build.classes.dir}"/>
+        <echo message="Compiling test source files"
+              level="verbose"/>
+        <mkdir dir="${src}"/>
+        <javac srcdir="${src}"
+               destdir="${build.classes.dir}"                       
+               debug="on"
+               failonerror="true">
+             <classpath refid="pamclient.class.path"/>
+        </javac>
+    </target>
+
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-pam">
+            <param name="src" value="client/src"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="create-auth-realm" />
+            <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.pam.PamRealm --property jaas-context=pamRealm pam"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common">
+            <param name="env.REGULAR" value="true"/>
+        </antcall>
+     </target>
+
+    <target name="run" depends="init-common">
+        <java classname="com.sun.pamrealm.test.PamBasicAuthTest">
+    <classpath>
+        <pathelement location="lib/commons-httpclient-3.1.jar"/>
+        <pathelement location="lib/commons-logging-1.1.1.jar"/>
+        <pathelement location="lib/commons-codec-1.4.jar"/>
+        <pathelement path="${s1astest.classpath}"/>
+       <!-- <pathelement location="${assemble.dir}/*.war"/>-->
+    </classpath>
+            <arg value="${host}"/>
+            <arg value="${port}"/>
+            <arg value="${username}"/>
+            <arg value="${password}"/>
+
+    </java>
+        
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common">
+            <param name="env.REGULAR" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="delete-auth-realm" />
+            <param name="operand.props" value="pam" />
+        </antcall>
+      <!--  <antcall target="reconfig-common"/>-->
+    </target>
+
+    <target name="usage">
+        <antcall target="undeploy-war-common"/>
+                                                     
+    </target>
+
+    <target name="restart">
+      <antcall target="restart-server-instance-common"/>
+    </target>
+</project>

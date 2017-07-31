@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2006-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!--
+    This ant script runs TestNG to manage tests in a GlassFish deployment devtest
+    directory.  Note that this script expects:
+ 
+    -  Environment variables:
+        APS_HOME should point to the GlassFish appserv-tests directory
+        JAVA_HOME should point to the JDK to be used for testing
+        
+    - The TestNG jar file be placed at ${APS_HOME}/lib with the name testng.jar.  
+    In the near future the TestNG jar may become available from the GlassFish 
+    site.  Until then testers who wish to use it should download it themselves
+    from http://www.testng.org and copy the jar file from that download as 
+    testng.jar into ${APS_HOME}/lib.
+    
+    -  One or more Java classes of any name exist at the lowest-level test
+    directory.  (For example, such a directory is ejb30/ear/session.)  These 
+    classes are required to use the TestNG annotations to identify and
+    describe the test methods to be run.  They must also (temporarily at least)
+    reside in a package that ends with .testng so the testng task below can
+    efficiently select which .class files to check for TestNG annotations.
+
+    Such classes may extend DeploymentTest (in the GlassFish repository at 
+    ${APS_HOME}/devtests/deployment/DeploymentTest.java) if they wish but 
+    they are not required to do so.
+    
+    To use TestNG to run such tests, cd to the lower-level test directory
+    of interest and invoke ant specifying this file.  
+    
+    Note that this script and the test classes are fairly simple and will 
+    likely evolve and improve over time.  
+        
+-->
+
+<project default="run-test" basedir=".">
+
+    <property environment="envng"/>
+    
+    <!-- 
+        Currently, deployment devtests user their own build area.
+    -->
+    <property name="depl.devtests.home" value="${envng.APS_HOME}/devtests/deployment"/>
+    <property name="depl.build.dir" value="${depl.devtests.home}/build"/>
+    
+  <!-- 
+    Classpath for the TestNG jar and the build class directory.  The test files
+    themselves will be compiled into the deployment devtest build directory.
+    
+    Currently, the TestNG-driven deployment devtests use callable ant, so the
+    various ant jars need to be in the class path.  Also, the devtests 
+    require compilation of Java files, so tools.jar must be in the classpath
+    for the compiler to be found when ant is invoked from the TestNG test.
+    
+  -->
+  <path id="cp">
+    <pathelement location="${envng.APS_HOME}/lib/testng.jar"/>
+    <pathelement location="${depl.build.dir}"/>
+    <fileset dir="${envng.S1AS_HOME}/lib/ant/lib">
+        <include name="*.jar"/>
+    </fileset>
+    <pathelement location="${envng.JAVA_HOME}/lib/tools.jar"/>
+  </path>
+ 
+  <!-- Define the task for running testng -->
+  <taskdef name="testng" classpathref="cp"
+           classname="org.testng.TestNGAntTask" />
+
+  <!--
+    The tests compiled are from the current directory - which should be the
+    low-level directory for a deployment dev test - and from the top-level
+    deployment devtest directory which contains the abstract DeploymentTest.java
+    file.
+  -->
+    <target name="compile-tests">
+        <javac 
+            srcdir="${user.dir}:${depl.devtests.home}" 
+            includes="*.java"
+            destdir="${depl.build.dir}" 
+            debug="on" 
+            failonerror="true">
+            <classpath>
+                <path refid="cp"/>
+            </classpath>
+        </javac>
+    </target>
+    
+ <!-- 
+    Run using all tests, looking in those .class files for which the package
+    ends with .testng (for efficiency of searching only).
+ -->
+ <target name="run-test" depends="compile-tests">
+    <testng classpathref="cp" >
+      <classfileset dir="${depl.build.dir}" includes="**/testng/*.class"/>
+    </testng>
+  </target>
+ 
+</project>
