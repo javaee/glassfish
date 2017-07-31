@@ -83,6 +83,14 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     )
     private static final String RESOURCE_REF_JNDI_LOOKUP_FAILED = "AS-DEPLOYMENT-00026";
 
+    @LogMessageInfo(
+            message = "Resource Adapter not present: RA Name: {0}, Type: {1}.",
+            level = "SEVERE",
+            cause = "Resource apapter specified is invalid.",
+            action = "Configure the required resource adapter."
+    )
+    private static final String RESOURCE_REF_INVALID_RA = "AS-DEPLOYMENT-00027";
+
     private String target;
 
     private DeploymentContext dc;
@@ -700,46 +708,75 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             else
                 validateJNDIRefs(resource, appResources.myNamespace);
         }
+        // Validate the ra-names of app scoped resources
+        // RA-name and the type of this resource are stored
+        List<Map.Entry<String, String>> raNames = (List<Map.Entry<String, String>>)
+                dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_RA_NAMES);
+        for (Map.Entry<String, String> entry: raNames) {
+            validateRAName(entry.getKey(), entry.getValue());
+        }
     }
 
+    /**
+     * Validate the resource adapter names of @CFD, @AODD.
+     */
     private void validateRAName(AppResource resource) {
-        String raname = resource.getJndiName();
+        validateRAName(resource.getJndiName(), resource.getType());
+    }
+
+    /**
+     * Strategy to validate the resource adapter name:
+     *
+     * 1) In case of stand-alone RA, look in the domain.xml and for default system RA's
+     * 2) In case of embedded RA, compare it with names of RAR descriptors
+     *
+     * In case of null ra name, we fail the deployment.
+     */
+    private void validateRAName(String raname, String type) {
         // No ra-name specified
         if (raname == null || raname.length() == 0) {
-            deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
-                    new Object[] {resource.getName(), null, resource.getType()});
-            throw new DeploymentException(localStrings.getLocalString("enterprise.deployment.util.resource.validation",
-                    "RA name invalid: Name: {0}, ra name: {1}, Type: {2}",
-                    resource.getName(), null, resource.getType()));
+            deplLogger.log(Level.SEVERE, RESOURCE_REF_INVALID_RA,
+                    new Object[] {null, type});
+            throw new DeploymentException(localStrings.getLocalString("enterprise.deployment.util.ra.validation",
+                    "Resource Adapter not present: RA Name: {0}, Type: {1}.",
+                    null, type));
         }
         int poundIndex = raname.indexOf("#");
 
-        // Stand-alone RA: check for app named raname in domain.xml, check for system ra's
+        // Pound not present: check for app named raname in domain.xml, check for system ra's
         if (poundIndex < 0) {
             if (domain.getApplications().getApplication(raname) != null)
                 return;
-            // System RA's - Copied from ConnectorConstants
+            // System RA's - Copied from ConnectorConstants.java
             if (raname.equals("jmsra") || raname.equals("__ds_jdbc_ra") || raname.equals("jaxr-ra") ||
                     raname.equals("__cp_jdbc_ra") || raname.equals("__xa_jdbc_ra") || raname.equals("__dm_jdbc_ra"))
+                return;
+            if(isEmbedded(raname))
                 return;
         }
         // Embedded RA
         // In case the app name does not match, we fail the deployment
         else if (raname.substring(0, poundIndex).equals(application.getAppName())) {
             raname = raname.substring(poundIndex + 1);
-            String ranameWithRAR = raname + ".rar";
-            // check for rar named this
-            for (BundleDescriptor bd : application.getBundleDescriptors(ConnectorDescriptor.class)) {
-                if(raname.equals(bd.getModuleName()) || ranameWithRAR.equals(bd.getModuleName()))
-                    return;
-            }
+            if(isEmbedded(raname))
+                return;
         }
-        deplLogger.log(Level.SEVERE, RESOURCE_REF_JNDI_LOOKUP_FAILED,
-                new Object[] {resource.getName(), raname, resource.getType()});
+        deplLogger.log(Level.SEVERE, RESOURCE_REF_INVALID_RA,
+                new Object[] {raname, type});
         throw new DeploymentException(localStrings.getLocalString(
-                "enterprise.deployment.util.resource.validation",
-                "RA name invalid: Name: {0}, ra name: {1}, Type: {2}",
-                resource.getName(), raname, resource.getType()));
+                "enterprise.deployment.util.ra.validation",
+                "Resource Adapter not present: RA Name: {0}, Type: {1}.",
+                raname, type));
+    }
+
+    private boolean isEmbedded(String raname) {
+        String ranameWithRAR = raname + ".rar";
+        // check for rar named this
+        for (BundleDescriptor bd : application.getBundleDescriptors(ConnectorDescriptor.class)) {
+            if(raname.equals(bd.getModuleName()) || ranameWithRAR.equals(bd.getModuleName()))
+                return true;
+        }
+        return false;
     }
 
     /**
