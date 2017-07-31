@@ -145,7 +145,7 @@ test_run_servlet_tck(){
 		for i in `ls $TESTDIR`
 			do
 				if [[ (-d $TESTDIR/$i)  && ( $i != "jsp" &&  $i != "common") ]]; then
-					if [[ -z $(grep $i ./test_dir.properties) ]]; then
+					if [[ -z $(grep $i `dirname $0`/test_dir.properties) ]]; then
 						echo "A new folder $i is added in the test source which has no entry in the properties file" 
 						exit 1
 					fi
