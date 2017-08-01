@@ -58,5 +58,6 @@
         <module>test1</module>
         <module>schema</module>
         <module>integration-test</module>
+        <module>hk2-json</module>
     </modules>
 </project>
