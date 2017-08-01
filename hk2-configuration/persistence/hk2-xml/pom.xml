@@ -59,5 +59,6 @@
         <module>schema</module>
         <module>integration-test</module>
         <module>hk2-json</module>
+        <module>hk2-pbuf</module>
     </modules>
 </project>
