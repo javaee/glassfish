@@ -62,7 +62,7 @@
 
     <target name="run-test" depends="build,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear"/>
 -->
-    <target name="all" depends="build, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
+    <target name="all" depends="build, disable-resource-validation, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
 
 <!--
 	<antcall target="build"/>
@@ -83,22 +83,29 @@
     </target>
     
     <target name="setup">
-    <antcall target="execute-sql-connector">
-        <param name="sql.file" value="sql/simpleBank.sql"/>
-    </antcall>
-    <antcall target="create-pool"/>
-    <antcall target="create-resource"/>
-    <antcall target="create-admin-object"/>
-        
+    	<antcall target="execute-sql-connector">
+        	<param name="sql.file" value="sql/simpleBank.sql"/>
+    	</antcall>
+    	<antcall target="create-pool"/>
+    	<antcall target="create-resource"/>
+    	<antcall target="create-admin-object"/>
     </target>
+
+	<target name="disable-resource-validation">
+		<antcall target="create-jvm-options">
+			<param name="option" value="-Ddeployment.resource.validation=false"/>
+		</antcall>
+		<antcall target="restart-server"/>
+	</target>
+
     <target name="create-pool">
-                <antcall target="create-connector-connpool-common">
+		<antcall target="create-connector-connpool-common">
                 <param name="ra.name" value="${appname}App#jdbcra"/>
                 <param name="extra-params" value="--matchconnections=false"/>
                 <param name="connection.defname" value="javax.sql.DataSource"/>
                 <param name="connector.conpool.name" value="embedded-ra-pool"/>
-                </antcall>
-                <antcall target="set-oracle-props">
+        </antcall>
+        <antcall target="set-oracle-props">
 		<param name="pool.type" value="connector"/>
 		<param name="conpool.name" value="embedded-ra-pool"/>
 		</antcall>

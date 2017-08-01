@@ -1367,6 +1367,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 -->
     <arg line="--target ${appserver.instance.name}"/>	
     <arg line="${extra-params}"/>
+    <arg line="--cascade=true"/>
 <!-- deployedapp.name defaults to {appname}App.declared in properties.xml-->
     <arg line="${deployedapp.name}"/>	
   </exec>
