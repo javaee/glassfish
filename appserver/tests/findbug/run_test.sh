@@ -112,6 +112,7 @@ generate_findbugs_low_priority_all_result(){
      echo "SUCCESS" > $WORKSPACE/results/findbugs_low_priority_all_results/findbugscheck.log
   fi
   set -e
+  cp /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest/fbstatsdetails.log $WORKSPACE/results/findbugs_low_priority_all_results/fbstatsdetails.log
   # archive the findbugs results
   for i in `find $WORKSPACE/main -name findbugsXml.xml`
   do
