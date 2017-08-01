@@ -46,6 +46,5 @@
 
 Import-Package: \
                         org.glassfish.grizzly*; version=${grizzly.version}, \
-                        javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
                         *
 
