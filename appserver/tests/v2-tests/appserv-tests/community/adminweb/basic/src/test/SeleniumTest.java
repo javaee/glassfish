@@ -56,7 +56,7 @@ public class SeleniumTest {
         selenium.type("j_username", "admin");        
         //selenium.waitForPageToLoad("30000");
         //selenium.type("Login.password", "adminadmin");
-        selenium.type("j_password", "adminadmin");
+        selenium.type("password", "adminadmin");
         //selenium.waitForPageToLoad("3000");
         selenium.click("loginButton");
         //selenium.waitForPageToLoad("30000");

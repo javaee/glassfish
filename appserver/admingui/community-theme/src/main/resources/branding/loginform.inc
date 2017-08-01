@@ -51,7 +51,7 @@
             />
         </sun:image>
 <f:verbatim>
-        <form method="POST" class="form" name="loginform" action="j_security_check">
+        <form method="POST" class="form" name="loginform" action="j_security_check" autocomplete="off">
         <table role="presentation">
         <tr>
             <td><label for="Login.username" style="font-weight: bold;">$resource{i18n.common.username}</label></td>
@@ -59,7 +59,7 @@
         </tr>
         <tr>
             <td><label for="Login.password" style="font-weight: bold;">$resource{i18n.common.password}</label>
-            <td><input type="password" name="j_password" id="Login.password" tabindex="2">
+            <td><input type="password" name="password" id="Login.password" tabindex="2" autocomplete="new-password">
         <tr>
             <td colspan="2" align="center">
                 <input type="submit" class="Btn1"

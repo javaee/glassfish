@@ -132,7 +132,7 @@ public class AdminGUITest {
             WebResponse client = sr.getResponse(URL+loginPage);
             WebForm form = client.getFormWithName("loginform");
             form.setParameter("j_username", new String[]{user});
-            form.setParameter("j_password", new String[]{passwd});
+            form.setParameter("password", new String[]{passwd});
             SubmitButton sb = form.getSubmitButton("loginButton");
             form.submit(sb);
         } catch (Exception ex) {

@@ -142,7 +142,7 @@ public class BaseAdminConsoleTest {
         // The login for was found, so let's now POST the form to authenticate our session.
         PostMethod post = new PostMethod(adminUrl + "j_security_check");
         post.setRequestBody(new NameValuePair[]{
-                    new NameValuePair("j_username", "admin"), new NameValuePair("j_password", "")
+                    new NameValuePair("j_username", "admin"), new NameValuePair("password", "")
                 });
         post.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 

@@ -76,7 +76,7 @@ public class Constants {
 
     // Form based authentication constants
     public static final String FORM_ACTION = "/j_security_check";
-    public static final String FORM_PASSWORD = "j_password";
+    public static final String FORM_PASSWORD = "password";
     public static final String FORM_USERNAME = "j_username";
 
     // Cookie name for single sign on support
