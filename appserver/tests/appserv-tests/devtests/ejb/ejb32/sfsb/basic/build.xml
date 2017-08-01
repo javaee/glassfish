@@ -71,7 +71,7 @@
     <target name="build" depends="compile">
         <antcall target="ejb-jar-common">
             <param name="ejbjar.classes" 
-              value="**/Foo*.class,**/Hell*.class,**/S*.class, **/E*.class, **/C*.class"/>
+              value="**/Foo*.class,**/Hell*.class,**/S*.class"/>
         </antcall>
     </target> 
     

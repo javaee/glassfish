@@ -43,16 +43,10 @@ package com.acme;
 import javax.ejb.*;
 import javax.persistence.*;
 import javax.annotation.*;
-import java.util.*;
 
 import javax.naming.InitialContext;
-import javax.validation.*;
-
 
 import javax.management.j2ee.ManagementHome;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.metadata.ConstraintDescriptor;
 
 @Stateful
 @LocalBean
@@ -64,126 +58,10 @@ public class SFSB extends SuperSFSB implements Hello {
     @PostConstruct
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void init() {
-        try {
-            System.out.println("In SFSB::init()");
-            FooEntity fe = new FooEntity("BAR");
-            fe.getCertifications().add("Sun Certified Java Programmer");
-            fe.getCertifications().add(null);
-            em.persist(fe);
-            System.out.println("Done SFSB::init()");
-        }catch(Throwable t){
-            t.printStackTrace();
-        }
-
-        try {
-            persistEmployee();
-        }catch(Throwable t){
-            t.printStackTrace();
-            System.out.println("Exception class: " + t.getClass());
-            if(t instanceof ConstraintViolationException){
-                ConstraintViolationException vio = (ConstraintViolationException)t;
-                for(ConstraintViolation violation :vio.getConstraintViolations()) {
-                    System.out.println("Violation property path: " +
-                        violation.getPropertyPath() + " : " +
-                        "Violation message : " + violation.getMessage());
-                }
-/*
-                for(ConstraintDescriptor desc: violation.getConstraintDescriptor()){
-                    desc.getM
-                }
-*/
-            }
-        }
-    }
-
-    private void persistEmployee(){
-        Employee prasad = new Employee();
-        prasad.setName("Prasad Kharkar");
-
-        Course java = new Course();
-        java.setCoursename("java standard edition");
-        //java.setDescription("Some description about java");
-
-        Course jpa = new Course();
-        jpa.setCoursename("jpa");
-        jpa.setDescription("some description about jpa");
-
-        System.out.println("Desc: " + java.getDescription());
-
-
-        java.util.List<Course> courses = prasad.getCourses();
-
-        courses.add(jpa);
-        courses.add(java);
-        //courses.add(null);
-
-        prasad.setCourses(courses);
-
-        for(com.acme.Course course: prasad.getCourses()){
-            System.out.println("Course: " + course);
-        }
-
-
-/*
-        Course course = new Course();
-        course.setCoursename("test");
-        prasad.setCourse(course);
-*/
-        em.persist(prasad);
-/*
-        em.refresh(prasad);
-
-        for(Course course: prasad.getCourses()){
-            System.out.println(("Course name: " + course.getCoursename() + " - description: " + course.getDescription()));
-        }
-*/
-
-        test();
-    }
-
-    private void test(){
-        Employee_2 employee = new Employee_2();
-        employee.setName("employee Kharkar");
-
-        Course_2 java = new Course_2();
-        java.setCoursename("java standard edition");
-        //java.setDescription("Some description about java");
-
-        Course_2 jpa = new Course_2();
-        jpa.setCoursename("jpa");
-        jpa.setDescription("some description about jpa");
-
-        System.out.println("Desc: " + java.getDescription());
-
-        java.util.List<Course_2> courses = employee.getCourse_2s();
-
-        courses.add(jpa);
-        courses.add(java);
-        //courses.add(null);
-        employee.setCourse_2s(courses);
-
-        for(Course_2 course: employee.getCourse_2s()){
-            System.out.println("Course_2: " + course);
-        }
-
-/*        Course_2 course = new Course_2();
-        course.setCourse_2name("test");
-        employee.setCourse_2(course); */
-
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-
-
-        Set<ConstraintViolation<Employee_2>> violations = validator.validate(employee);
-        if(violations.size() > 0) {
-            for (ConstraintViolation violation : violations) {
-                System.out.println("POJO Violation property path: " +
-                    violation.getPropertyPath() + " : " +
-                    "Violation message : " + violation.getMessage());
-            }
-        }else{
-            System.out.println("No Violations Found");
-        }
+        System.out.println("In SFSB::init()");
+        FooEntity fe = new FooEntity("BAR");
+        em.persist(fe);
+        System.out.println("Done SFSB::init()");
     }
     
     public String test(String value, int count) throws EJBException {
@@ -194,14 +72,7 @@ public class SFSB extends SuperSFSB implements Hello {
         if (result.size() != count) 
             throw new EJBException("ERROR: Found " + result.size() + " FooEntity named " + value + ", not expected " + count);
 
-        if(result.size() > 0){
-            FooEntity fe = (FooEntity) result.get(0);
-            if(fe.getCertifications().size() > 0){
-                for(String certification: fe.getCertifications())
-                System.out.println("Certification: " + certification);
-            }
-        }
-	return "Found " + result.size() + " FooEntity named " + value + " with certification : " + result;
+	return "Found " + result.size() + " FooEntity named " + value;
     }
 
     @Remove
