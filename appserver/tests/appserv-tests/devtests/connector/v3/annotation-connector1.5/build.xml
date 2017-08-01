@@ -130,7 +130,7 @@
 
   <target name="undeploy">
     <ant dir="app" inheritAll="false" target="undeploy"/>
-    <ant dir="ra" inheritAll="false" target="testDelAdmin"/>
+    <!--ant dir="ra" inheritAll="false" target="testDelAdmin"/-->
     <ant dir="ra" inheritAll="false" target="undeploy"/>
   </target>
 

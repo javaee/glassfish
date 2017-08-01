@@ -62,8 +62,8 @@
 
     <target name="run-test" depends="build,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear"/>
 -->
-    <target name="all" depends="clean, build-ra, build, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
-    <target name="all-ext" depends="clean, build-ra-with-extension, build, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
+    <target name="all" depends="clean, build-ra, build, deploy-ear, setup, unsetup, undeploy-ear"/>
+    <target name="all-ext" depends="clean, build-ra-with-extension, build, deploy-ear, setup, unsetup, undeploy-ear"/>
 
 <!--
 	<antcall target="build"/>
