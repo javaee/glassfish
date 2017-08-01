@@ -81,12 +81,13 @@ main() {
     [[ $# -eq 0 ]] && { echo -e "${USAGE}"; exit 0; }
 
     valid_test_ids=`list_test_ids`
-
+    cts_bundle_location="remote"
     # Process the input arguments
-    while getopts ":b:t:i:e:alsh" opt; do
+    while getopts ":b:t:i:e:c:alsh" opt; do
         case "$opt" in
             b) gfs_branch=$OPTARG;;
             t) test_ids=($OPTARG);;
+	    c) cts_bundle_location=$OPTARG;;
             a) test_ids=(`list_top_level_test_ids`);;
             l) print_test_ids "${valid_test_ids}";;
             s) print_test_ids "$(list_top_level_test_ids)";;
@@ -116,7 +117,7 @@ main() {
     # Generate a unique id for the job which will be used for identifying the job id later
 	unique_id=$RANDOM
 
-    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}"
+    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}&CTS_BUNDLE_LOCATION=${cts_bundle_location}"
     last_build=`get_last_build_number`        
 
     # Trigger the build
