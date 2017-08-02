@@ -253,16 +253,18 @@ public class JCDIServiceImpl implements JCDIService {
         JCDIAroundConstructCallback aroundConstructCallback =
                 new JCDIAroundConstructCallback( baseContainer, ejbContext );
         weldCreationalContext.registerAroundConstructCallback(  aroundConstructCallback );
-        jcdiCtx.setJCDIAroundConstructCallback( aroundConstructCallback );
-
+	if (null != jcdiCtx) {
+	    jcdiCtx.setJCDIAroundConstructCallback( aroundConstructCallback );
+	}
     	Object beanInstance = instance;
 
     	if( beanInstance == null ) {
     	    // Create instance , perform constructor injection.
     	    beanInstance = it.produce(creationalContext);
     	}
-
-    	jcdiCtx.setInstance( beanInstance );
+	if (null != jcdiCtx) {
+    	    jcdiCtx.setInstance( beanInstance );
+	}
     	return jcdiCtx;
         // Injection is not performed yet. Separate injectEJBInstance() call is required.
     }
