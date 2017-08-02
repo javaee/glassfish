@@ -263,7 +263,7 @@ public class MethodExecutor implements java.io.Serializable {
                     });
             } catch (PrivilegedActionException e) {
                 if(e.getException() != null){
-                    throw (ResourceException)e.getException();
+                    throw new ResourceException(e.getException());
                 }else{
                     throw new ResourceException(e);
                 }
