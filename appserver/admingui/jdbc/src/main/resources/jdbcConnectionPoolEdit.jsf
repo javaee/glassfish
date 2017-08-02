@@ -126,6 +126,10 @@
                     </sun:button>
                     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
                         <!command
+                            gf.restRequest(endpoint="#{pageSession.resourceUrl}/property.json", method="GET", result="#{requestScope.propTable}");
+                            setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
+                            javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                            gf.restRequest(endpoint="#{pageSession.resourceUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
                             urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                             gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
                             if(#{pageSession.isAppScopedRes}){
