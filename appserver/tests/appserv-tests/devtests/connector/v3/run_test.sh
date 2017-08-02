@@ -52,11 +52,7 @@ test_run(){
   ant startDomain startDerby
   cd $ROOT
   echo Running target: $TARGET
-  time ant clean-all start-record $TARGET stop-record | tee $TEST_RUN_LOG
-  if [ "$TARGET" = "connector_all" ]
-  then
-    ant report
-  fi
+  time ant clean-all start-record $TARGET stop-record report | tee $TEST_RUN_LOG
   antStatus=$?
   cp connector.output tests-run.log
   ant stopDomain stopDerby
