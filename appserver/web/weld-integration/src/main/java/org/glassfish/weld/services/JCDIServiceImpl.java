@@ -196,6 +196,7 @@ public class JCDIServiceImpl implements JCDIService {
         BaseContainer baseContainer = null;
         EJBContextImpl ejbContext = null;
 	JCDIInjectionContextImpl jcdiCtx =null;
+	CreationalContext<?> creationalContext = null;
         if ( ejbInfo != null ) {
            baseContainer = ( BaseContainer ) ejbInfo.get( BaseContainer.class );
            ejbContext = ( EJBContextImpl ) ejbInfo.get( EJBContextImpl.class );
@@ -216,7 +217,9 @@ public class JCDIServiceImpl implements JCDIService {
 	 if ( null != ejbInfo ) {
              jcdiCtx = ( JCDIInjectionContextImpl ) ejbInfo.get( JCDIService.JCDIInjectionContext.class );
 	 }
-        CreationalContext<?> creationalContext = jcdiCtx.getCreationalContext();
+	 if ( null != jcdiCtx ) {
+            creationalContext = jcdiCtx.getCreationalContext();
+	 }
         if ( creationalContext == null ) {
             // The creational context may have been created by interceptors because they are created first
             // (see createInterceptorInstance below.)
