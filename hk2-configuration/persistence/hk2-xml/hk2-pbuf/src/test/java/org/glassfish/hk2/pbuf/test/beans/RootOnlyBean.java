@@ -37,15 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.pbuf.api;
+package org.glassfish.hk2.pbuf.test.beans;
 
-import org.glassfish.hk2.api.ServiceLocator;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-public class PBufUtilities {
-    /** The name of the XmlService that uses PBuf as its encoding/decoding format */
-    public final static String PBUF_SERVICE_NAME = "PBufXmlParser";
+import org.jvnet.hk2.annotations.Contract;
+
+/**
+ * @author jwells
+ *
+ */
+@Contract
+@XmlRootElement(name="root-only")
+@XmlType(propOrder={ "name", "address" })
+public interface RootOnlyBean {
+    @XmlElement(name="name")
+    public String getName();
+    public void setName(String name);
     
-    public static void enablePBufService(ServiceLocator locator) {
-        throw new AssertionError("not yet implemented");
-    }
+    @XmlElement(name="address")
+    public String getAddress();
+    public void setAddress(String address);
+
 }

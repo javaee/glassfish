@@ -39,6 +39,15 @@
  */
 package org.glassfish.hk2.pbuf.test.basic;
 
+import java.io.ByteArrayOutputStream;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.pbuf.api.PBufUtilities;
+import org.glassfish.hk2.pbuf.test.beans.RootOnlyBean;
+import org.glassfish.hk2.pbuf.test.utilities.Utilities;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -46,8 +55,38 @@ import org.junit.Test;
  *
  */
 public class PBufParserTest {
+    private final static String ALICE = "Alice";
+    private final static String ALICE_ADDRESS = "Milky Way";
+    
+    /**
+     * Tests very basic marshaling
+     */
     @Test
-    public void testMarshal() {
+    @org.junit.Ignore
+    public void testMarshal() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<RootOnlyBean> handle = xmlService.createEmptyHandle(RootOnlyBean.class);
+        handle.addRoot();
+        
+        RootOnlyBean rootOnlyBean = handle.getRoot();
+        
+        rootOnlyBean.setAddress(ALICE_ADDRESS);
+        rootOnlyBean.setName(ALICE);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        Assert.assertTrue(asBytes.length > 0);
         
     }
 
