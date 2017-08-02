@@ -221,8 +221,6 @@ public class RestApiHandlers {
 
         boolean throwException = (Boolean) handlerCtx.getInputValue("throwException");
         parseResponse(response, handlerCtx, endpoint, attrs, false, throwException);
-        //??? I believe this should return a Map, whats the point of returning the endpoint that was passed in.
-        //But i haven't looked through all the code, so decide to leave it for now.
         handlerCtx.setOutputValue("result", response.getResponse());
     }
 
