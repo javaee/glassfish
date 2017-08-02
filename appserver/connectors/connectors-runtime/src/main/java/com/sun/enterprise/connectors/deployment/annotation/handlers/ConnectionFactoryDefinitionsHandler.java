@@ -68,6 +68,8 @@ public class ConnectionFactoryDefinitionsHandler extends AbstractResourceHandler
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ConnectionFactoryDefinitionsHandler.class);
 
+    public ConnectionFactoryDefinitionsHandler() {}
+
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {

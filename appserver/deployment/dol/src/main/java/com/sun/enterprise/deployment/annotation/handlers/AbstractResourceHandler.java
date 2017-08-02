@@ -73,9 +73,10 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractResourceHandler extends AbstractHandler {
 
-    public AbstractResourceHandler() {}
+    protected AbstractResourceHandler() {
+    }
 
-    public AbstractResourceHandler(AnnotationTypesProvider ejbProvider) {
+    protected AbstractResourceHandler(AnnotationTypesProvider ejbProvider) {
         this.ejbProvider = ejbProvider;
     }
 

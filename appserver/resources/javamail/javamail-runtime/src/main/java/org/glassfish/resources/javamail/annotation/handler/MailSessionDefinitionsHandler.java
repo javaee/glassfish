@@ -71,6 +71,8 @@ public class MailSessionDefinitionsHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(MailSessionDefinitionsHandler.class);
 
+    public MailSessionDefinitionsHandler() {}
+
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts) throws AnnotationProcessorException {
         MailSessionDefinitions defns = (MailSessionDefinitions) ainfo.getAnnotation();

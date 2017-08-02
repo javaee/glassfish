@@ -70,6 +70,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(AdministeredObjectDefinition.class)
 public class AdministeredObjectDefinitionHandler extends AbstractResourceHandler {
     
+    public AdministeredObjectDefinitionHandler() {}
+
     public AdministeredObjectDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }

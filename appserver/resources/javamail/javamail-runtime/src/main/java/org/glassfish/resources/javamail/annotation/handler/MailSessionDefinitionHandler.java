@@ -79,6 +79,8 @@ public class MailSessionDefinitionHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(MailSessionDefinitionHandler.class);
 
+    public MailSessionDefinitionHandler() {}
+
     public MailSessionDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }

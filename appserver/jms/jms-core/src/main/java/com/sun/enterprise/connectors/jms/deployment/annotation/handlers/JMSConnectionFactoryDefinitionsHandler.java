@@ -66,6 +66,8 @@ public class JMSConnectionFactoryDefinitionsHandler extends AbstractResourceHand
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(JMSConnectionFactoryDefinitionsHandler.class);
 
+    public JMSConnectionFactoryDefinitionsHandler() {}
+
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {

@@ -69,6 +69,8 @@ public class AdministeredObjectDefinitionsHandler extends AbstractResourceHandle
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AdministeredObjectDefinitionsHandler.class);
 
+    public AdministeredObjectDefinitionsHandler() {}
+
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {

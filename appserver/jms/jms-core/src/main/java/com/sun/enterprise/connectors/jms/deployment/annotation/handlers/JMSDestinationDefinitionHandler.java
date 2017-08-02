@@ -67,6 +67,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(JMSDestinationDefinition.class)
 public class JMSDestinationDefinitionHandler extends AbstractResourceHandler {
 
+    public JMSDestinationDefinitionHandler() {}
+
     public JMSDestinationDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }

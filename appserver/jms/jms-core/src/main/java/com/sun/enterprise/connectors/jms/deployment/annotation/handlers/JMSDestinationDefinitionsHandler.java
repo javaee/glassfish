@@ -65,6 +65,8 @@ public class JMSDestinationDefinitionsHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(JMSDestinationDefinitionsHandler.class);
 
+    public JMSDestinationDefinitionsHandler() {}
+
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {

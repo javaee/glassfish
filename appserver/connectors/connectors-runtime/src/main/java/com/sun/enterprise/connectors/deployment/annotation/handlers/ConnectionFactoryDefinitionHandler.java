@@ -70,6 +70,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(ConnectionFactoryDefinition.class)
 public class ConnectionFactoryDefinitionHandler extends AbstractResourceHandler {
 
+    public ConnectionFactoryDefinitionHandler() {}
+
     public ConnectionFactoryDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }

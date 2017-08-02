@@ -67,6 +67,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(JMSConnectionFactoryDefinition.class)
 public class JMSConnectionFactoryDefinitionHandler extends AbstractResourceHandler {
 
+    public JMSConnectionFactoryDefinitionHandler() {}
+
     public JMSConnectionFactoryDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }
