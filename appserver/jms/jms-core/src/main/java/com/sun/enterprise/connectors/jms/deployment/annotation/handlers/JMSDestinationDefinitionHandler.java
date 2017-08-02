@@ -68,7 +68,7 @@ import java.util.logging.Level;
 public class JMSDestinationDefinitionHandler extends AbstractResourceHandler {
 
     public JMSDestinationDefinitionHandler(AnnotationTypesProvider ejbProvider) {
-        this.ejbProvider = ejbProvider;
+        super(ejbProvider);
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts)

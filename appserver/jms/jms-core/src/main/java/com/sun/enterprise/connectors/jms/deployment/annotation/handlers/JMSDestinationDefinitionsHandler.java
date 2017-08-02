@@ -65,10 +65,6 @@ public class JMSDestinationDefinitionsHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(JMSDestinationDefinitionsHandler.class);
 
-
-    public JMSDestinationDefinitionsHandler() {
-    }
-
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {
@@ -88,7 +84,7 @@ public class JMSDestinationDefinitionsHandler extends AbstractResourceHandler {
                 } else {
                     duplicates.add(defnName);
                 }
-                JMSDestinationDefinitionHandler handler = new JMSDestinationDefinitionHandler(this.ejbProvider);
+                JMSDestinationDefinitionHandler handler = new JMSDestinationDefinitionHandler(ejbProvider);
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
