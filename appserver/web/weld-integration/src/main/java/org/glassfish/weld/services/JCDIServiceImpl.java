@@ -93,11 +93,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
+import org.glassfish.logging.annotation.LoggerInfo;
 
 
 @Service
 @Rank(10)
 public class JCDIServiceImpl implements JCDIService {
+	
+    @LogMessagesResourceBundle
+    public static final String SHARED_LOGMESSAGE_RESOURCE = "org.glassfish.cdi.LogMessages";
 
     private static final HashSet<String> validScopes = new HashSet<String>();
     static {
@@ -124,7 +129,11 @@ public class JCDIServiceImpl implements JCDIService {
     @Inject
     private InvocationManager invocationManager;
 
-    private Logger logger = Logger.getLogger(JCDIServiceImpl.class.getName());
+    @LoggerInfo(subsystem = "AS-WELD", description = "WELD", publish = true)
+    public static final String WELD_LOGGER_SUBSYSTEM_NAME = "javax.enterprise.resource.weld";
+    
+    private static final Logger logger = Logger.getLogger(WELD_LOGGER_SUBSYSTEM_NAME,
+            SHARED_LOGMESSAGE_RESOURCE);
 
 
     public boolean isCurrentModuleJCDIEnabled() {
@@ -232,7 +241,9 @@ public class JCDIServiceImpl implements JCDIService {
 
         // Create the injection target
         InjectionTarget it = weldManager.createInjectionTarget(ejbDesc);
+	if (null != jcdiCtx) {
         jcdiCtx.setInjectionTarget( it );
+	}
 
         // JJS: 7/20/17 We must perform the around_construct interception because Weld does not know about
         // interceptors defined by descriptors.
