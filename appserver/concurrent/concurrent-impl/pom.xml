@@ -53,6 +53,14 @@
     
     <name>Concurrent Implementation Module</name>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/manpages</directory>
+            </resource>
+        </resources>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.main.concurrent</groupId>
