@@ -69,6 +69,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(DataSourceDefinition.class)
 public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
+    public DataSourceDefinitionHandler() {}
+
     public DataSourceDefinitionHandler(AnnotationTypesProvider ejbProvider) {
         super(ejbProvider);
     }
