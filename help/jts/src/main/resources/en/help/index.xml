@@ -1,0 +1,22 @@
+<index version="2.0">
+  <indexitem text="keypoint interval">
+    <indexitem text="setting" target="task-setkeyptinterval"></indexitem>
+  </indexitem>
+  <indexitem text="logging">
+    <indexitem text="transactions" target="task-settranslog"></indexitem>
+  </indexitem>
+  <indexitem text="properties">
+    <indexitem text="transaction service" target="ref-transactionsvcproperties"></indexitem>
+  </indexitem>
+  <indexitem text="transaction service">
+    <indexitem text="configuring (reference)" target="ref-transactionservice"></indexitem>
+    <indexitem text="configuring (task)" target="task-configtransservice"></indexitem>
+    <indexitem text="properties" target="ref-transactionsvcproperties"></indexitem>
+  </indexitem>
+  <indexitem text="transactions">
+    <indexitem text="configuring recovery" target="task-configtransrecovery"></indexitem>
+    <indexitem text="setting log file compression interval" target="task-setkeyptinterval"></indexitem>
+    <indexitem text="setting log location" target="task-settranslog"></indexitem>
+    <indexitem text="setting timeouts" target="task-settranstimeout"></indexitem>
+  </indexitem>
+</index>
