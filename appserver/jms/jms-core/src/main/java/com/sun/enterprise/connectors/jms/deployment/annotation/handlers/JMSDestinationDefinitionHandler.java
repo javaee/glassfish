@@ -49,6 +49,7 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.interceptor.AroundInvoke;
@@ -66,7 +67,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(JMSDestinationDefinition.class)
 public class JMSDestinationDefinitionHandler extends AbstractResourceHandler {
 
-    public JMSDestinationDefinitionHandler() {
+    public JMSDestinationDefinitionHandler(AnnotationTypesProvider ejbProvider) {
+        this.ejbProvider = ejbProvider;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts)

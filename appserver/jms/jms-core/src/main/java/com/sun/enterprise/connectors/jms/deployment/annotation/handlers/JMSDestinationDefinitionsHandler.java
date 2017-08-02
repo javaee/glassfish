@@ -88,7 +88,7 @@ public class JMSDestinationDefinitionsHandler extends AbstractResourceHandler {
                 } else {
                     duplicates.add(defnName);
                 }
-                JMSDestinationDefinitionHandler handler = new JMSDestinationDefinitionHandler();
+                JMSDestinationDefinitionHandler handler = new JMSDestinationDefinitionHandler(this.ejbProvider);
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();

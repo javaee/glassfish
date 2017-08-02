@@ -49,6 +49,7 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.sql.DataSourceDefinition;
@@ -68,7 +69,8 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(DataSourceDefinition.class)
 public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
-    public DataSourceDefinitionHandler() {
+    public DataSourceDefinitionHandler(AnnotationTypesProvider ejbProvider) {
+        this.ejbProvider = ejbProvider;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts)
