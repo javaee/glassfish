@@ -49,6 +49,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Vector;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -253,20 +255,18 @@ public class MethodExecutor implements java.io.Serializable {
             throw new ResourceException(ex);
         }
         if (actualMethod != null) {
-            final ResourceException[] exception = new ResourceException[1];
-            returnValue = AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run() {
-                    try {
-                        actualMethod.setAccessible(true);
-                        return actualMethod.invoke(object, values);
-                    } catch (IllegalAccessException | InvocationTargetException | SecurityException | IllegalArgumentException ex) {
-                        exception[0] =  new ResourceException(ex);
-                    }
-                    return null;
+            try {
+                returnValue = AccessController.doPrivileged(
+                    (PrivilegedExceptionAction<Object>) () -> {
+                            actualMethod.setAccessible(true);
+                            return actualMethod.invoke(object, values);
+                    });
+            } catch (PrivilegedActionException e) {
+                if(e.getException() != null){
+                    throw (ResourceException)e.getException();
+                }else{
+                    throw new ResourceException(e);
                 }
-            });
-            if( exception[0] != null){
-                throw exception[0];
             }
         }
         return returnValue;
