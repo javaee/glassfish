@@ -62,6 +62,7 @@ test_run_embedded_publisher(){
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   cd $WORKSPACE/main/appserver/tests/embedded
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
+  mvn -Dbuild=snapshot  -Dmaven.repo.local=$WORKSPACE/repository -Dmaven.test.failure.ignore=true clean verify
   merge_junits
 }
 
