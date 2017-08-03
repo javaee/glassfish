@@ -82,6 +82,9 @@
                     <exclude>**/.gitkeep_empty_dir</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/manpages</directory>
+            </resource>
         </resources>
     </build>
     
@@ -149,12 +152,6 @@
             <artifactId>security</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.docs.help</groupId>
-           <artifactId>console-common-help</artifactId>
-           <version>${v3-docs.version}</version>
-           <type>zip</type>
         </dependency>
     </dependencies>
 </project>
