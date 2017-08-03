@@ -61,7 +61,7 @@
 
     <target name="run-test" depends="build,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear"/>
 -->
-    <target name="all" depends="build, disable-resource-validation, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
+    <target name="all" depends="build, disable-resource-validation, deploy-ear, setup, run-ear, unsetup, undeploy-ear, enable-resource-validation"/>
 
 <!--
 	<antcall target="build"/>
@@ -114,6 +114,14 @@
 		</antcall>
 		<antcall target="restart-server"/>
 	</target>
+
+	<target name="enable-resource-validation">
+		<antcall target="delete-jvm-options">
+			<param name="option" value="-Ddeployment.resource.validation=false"/>
+		</antcall>
+		<antcall target="restart-server"/>
+	</target>
+
 
      <target name="create-admin-object" depends="init-common">
          <!--<property file="../config/oracle.properties"/>-->

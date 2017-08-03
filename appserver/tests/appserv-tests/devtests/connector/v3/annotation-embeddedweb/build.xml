@@ -62,7 +62,7 @@
 
     <target name="run-test" depends="build,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear"/>
 -->
-    <target name="all" depends="build, disable-resource-validation, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
+    <target name="all" depends="build, disable-resource-validation, deploy-ear, setup, run-ear, unsetup, undeploy-ear, enable-resource-validation"/>
 
 <!--
 	<antcall target="build"/>
@@ -111,7 +111,14 @@
 		<antcall target="restart-server"/>
 	</target>
 
-    <target name="create-resource">
+	<target name="enable-resource-validation">
+		<antcall target="delete-jvm-options">
+		<param name="option" value="-Ddeployment.resource.validation=false"/>
+		</antcall>
+		<antcall target="restart-server"/>
+	</target>
+
+	<target name="create-resource">
                 <antcall target="create-connector-resource-common">
                 <param name="connector.conpool.name" value="embedded-ra-pool"/>
                 <param name="connector.jndi.name" value="jdbc/ejb-annotation-subclassing"/>
