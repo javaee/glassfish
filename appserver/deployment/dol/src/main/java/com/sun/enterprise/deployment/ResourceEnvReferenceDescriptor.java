@@ -112,7 +112,7 @@ public class ResourceEnvReferenceDescriptor extends EnvironmentProperty implemen
     */
     public String getJndiName() {
         String jndiName = this.getValue();
-        if (jndiName != null  && ! jndiName.equals("")) {
+        if (! jndiName.equals("")) {
             return jndiName;
         }
         if (mappedName != null && ! mappedName.equals("")) {

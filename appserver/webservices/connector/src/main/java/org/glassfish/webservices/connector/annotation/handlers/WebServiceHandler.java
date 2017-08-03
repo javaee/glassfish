@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
-import java.text.MessageFormat;
 
 import org.glassfish.apf.*;
 
@@ -56,6 +55,7 @@ import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.annotation.context.EjbsContext;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -188,15 +188,27 @@ public class WebServiceHandler extends AbstractHandler {
                 ape.setFatal(false);
                 throw ape;
             }*/
-
             // let's see the type of web service we are dealing with...
-            if ((ejbProvider!= null) && ejbProvider.getType("javax.ejb.Stateless")!=null &&(annCtx
-                    instanceof EjbContext)) {
+            if (ejbProvider != null && ejbProvider.getType("javax.ejb.Stateless") != null) {
                 // this is an ejb !
-                EjbContext ctx = (EjbContext) annCtx;
-                bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
-                bundleDesc.setSpecVersion("3.0");
-            } else {
+                if (annCtx instanceof EjbContext) {
+                    EjbContext ctx = (EjbContext) annCtx;
+                    bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
+                    bundleDesc.setSpecVersion("3.0");
+                } else if (annCtx instanceof EjbsContext) {
+                    String name = getEjbName(annElem);
+                    for (EjbContext ejbCtx : ((EjbsContext) annCtx).getEjbContexts()) {
+                        EjbDescriptor descriptor = ejbCtx.getDescriptor();
+                        if (name.equals(descriptor.getName())) {
+                            bundleDesc = descriptor.getEjbBundleDescriptor();
+                            bundleDesc.setSpecVersion("3.0");
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (bundleDesc == null) {
                 // this has to be a servlet since there is no @Servlet annotation yet
                 if(annCtx instanceof WebComponentContext) {
                     bundleDesc = ((WebComponentContext)annCtx).getDescriptor().getWebBundleDescriptor();
@@ -466,37 +478,7 @@ public class WebServiceHandler extends AbstractHandler {
 
            
             //TODO BM handle stateless
-            Stateless stateless = null;
-            try {
-                stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
-            } catch (Exception e) {
-                if (logger.isLoggable(Level.FINE)) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    conLogger.log(Level.FINE, LogUtils.EXCEPTION_THROWN, e);
-                }
-            }
-            Singleton singleton = null;
-            try {
-                singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
-            } catch (Exception e) {
-                if (logger.isLoggable(Level.FINE)) {
-                    //This can happen in the web.zip installation where there is no ejb
-                    //Just logging the error
-                    conLogger.log(Level.FINE, LogUtils.EXCEPTION_THROWN, e);
-                }
-            }
-            String name;
-
-
-            if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
-                name = stateless.name();
-            } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
-                name = singleton.name();
-
-            }else {
-                name = ((Class) annElem).getSimpleName();
-            }
+            String name = getEjbName(annElem);
             EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
             endpoint.setEjbComponentImpl(ejb);
             ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
@@ -604,5 +586,39 @@ public class WebServiceHandler extends AbstractHandler {
             //continue, processing
         }
         return riDeployment;
+    }
+
+    private String getEjbName(AnnotatedElement annElem) {
+        Stateless stateless = null;
+        try {
+            stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+        } catch (Exception e) {
+            if (logger.isLoggable(Level.FINE)) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                conLogger.log(Level.FINE, LogUtils.EXCEPTION_THROWN, e);
+            }
+        }
+        Singleton singleton = null;
+        try {
+            singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
+        } catch (Exception e) {
+            if (logger.isLoggable(Level.FINE)) {
+                //This can happen in the web.zip installation where there is no ejb
+                //Just logging the error
+                conLogger.log(Level.FINE, LogUtils.EXCEPTION_THROWN, e);
+            }
+        }
+        String name;
+
+        if ((stateless != null) && ((stateless).name() == null || stateless.name().length() > 0)) {
+            name = stateless.name();
+        } else if ((singleton != null) && ((singleton).name() == null || singleton.name().length() > 0)) {
+            name = singleton.name();
+
+        } else {
+            name = ((Class) annElem).getSimpleName();
+        }
+        return name;
     }
 }

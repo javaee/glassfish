@@ -45,7 +45,7 @@ import java.io.IOException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationStatus;
-import javax.security.auth.message.AuthException;
+import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
@@ -66,7 +66,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
     private IdentityStoreHandler identityStoreHandler;
 
     @Override
-    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthException {
+    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
 
         // Get the (caller) name and password from the request
         // NOTE: This is for the smallest possible example only. In practice
@@ -90,7 +90,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
                 return httpMessageContext.notifyContainerAboutLogin(
                     result.getCallerPrincipal(), result.getCallerGroups());
             } else {
-                return httpMessageContext.responseUnAuthorized();
+                return httpMessageContext.responseUnauthorized();
             }
         } 
 
@@ -98,7 +98,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
     }
 
     @Override
-    public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)  throws AuthException {
+    public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)  throws AuthenticationException {
         try {
             response.getWriter().write(",secureResponse");
         }catch (IOException e){

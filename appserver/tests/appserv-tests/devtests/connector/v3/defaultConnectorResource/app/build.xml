@@ -140,7 +140,8 @@
 
   <target name="undeploy" depends="init-common">
     <antcall target="undeploy-common">
-      <param name="deployedapp.name" value="generic-embeddedApp"/>
+        <param name="extra-params" value="--cascade=true"/>
+        <param name="deployedapp.name" value="generic-embeddedApp"/>
     </antcall>
   </target>
 

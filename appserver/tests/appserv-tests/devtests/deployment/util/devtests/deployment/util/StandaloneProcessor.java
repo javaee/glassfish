@@ -205,7 +205,7 @@ public class StandaloneProcessor {
                         
                     }
 
-                    AnnotationProcessor ap = serviceLocator.<SJSASFactory>getService(SJSASFactory.class).getAnnotationProcessor();
+                    AnnotationProcessor ap = serviceLocator.<SJSASFactory>getService(SJSASFactory.class).getAnnotationProcessor(false);
                     
                     
                     // if the user indicated a directory for handlers, time to add the                    
