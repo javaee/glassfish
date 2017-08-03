@@ -412,6 +412,9 @@
                             <pattern>.log</pattern>
                             <pattern>.bin</pattern>
                             <pattern>.bat</pattern>
+                            <pattern>.1</pattern>
+                            <pattern>.1m</pattern>
+                            <pattern>.5asc</pattern>
                             <pattern>/TODO</pattern>
                             <pattern>/MANIFEST.MF</pattern>
                             <pattern>/manifest.mf</pattern>
