@@ -617,16 +617,12 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         for (ResourceHandle h : handles) {
 
             if(h==null) {
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.info("Skipping lazy connection disassociation due to Resource Handle: null");
-                }
+                _logger.log(Level.WARNING, "lazy_association.lazy_association_resource_handle");
             }
             else {
                 ResourceSpec spec = h.getResourceSpec();
                 if(spec == null) {
-                    if (_logger.isLoggable(Level.INFO)) {
-                        _logger.info("Skipping lazy connection disassociation due to Resource Spec: null");
-                    }
+                    _logger.log(Level.WARNING, "lazy_association.lazy_association_resource_spec");
                 } else {
                     if (spec.isLazyAssociatable()) {
                         //In this case we are assured that the managedConnection is
