@@ -57,9 +57,3 @@
 		org.glassfish.admin.amx.impl.cmd; \
 		org.glassfish.admin.amx.impl.config.*; \
 		version=${project.osgi.version}
-Import-Package: \
-    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
-    *
-
-		
-

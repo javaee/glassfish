@@ -55,7 +55,7 @@
   &testcommon;
   &testproperties;
 
-  <target name="all" depends="init-common, build, setup, runtest, unset"/>
+  <target name="all" depends="init-common, build, disable-resource-validation, setup, runtest, unset, enable-resource-validation"/>
   <target name="build" depends="init-common">
    <ant dir="ra" inheritAll="false" target="all"/>
    <ant dir="app" inheritAll="false" target="all"/>
@@ -72,13 +72,28 @@
     <ant dir="." inheritAll="false" target="restart"/>
   </target>
 
-<!--
-  <target name="runtest" depends="init-common">
-    <antcall target="runclient-common">
-	<param name="appname" value="generic-embedded" />
+  <target name="disable-resource-validation">
+    <antcall target="create-jvm-options">
+      <param name="option" value="-Ddeployment.resource.validation=false"/>
     </antcall>
+    <antcall target="restart-server"/>
   </target>
--->
+
+  <target name="enable-resource-validation">
+    <antcall target="delete-jvm-options">
+      <param name="option" value="-Ddeployment.resource.validation=false"/>
+    </antcall>
+    <antcall target="restart-server"/>
+  </target>
+
+
+  <!--
+    <target name="runtest" depends="init-common">
+      <antcall target="runclient-common">
+      <param name="appname" value="generic-embedded" />
+      </antcall>
+    </target>
+  -->
 
     <target name="runtest" depends="init-common">
 
