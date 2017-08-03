@@ -91,6 +91,9 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
     )
     private static final String RESOURCE_REF_INVALID_RA = "AS-DEPLOYMENT-00027";
 
+    @LogMessageInfo(message = "Skipping resource validation")
+    private static final String SKIP_RESOURCE_VALIDATION = "AS-DEPLOYMENT-00028";
+
     private String target;
 
     private DeploymentContext dc;
@@ -119,7 +122,11 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
             application = dc.getModuleMetaData(Application.class);
             DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
             target = commandParams.target;
-            if (application == null || System.getProperty("deployment.resource.validation", "true").equals("false"))
+            if (System.getProperty("deployment.resource.validation", "true").equals("false")) {
+                deplLogger.log(Level.INFO, SKIP_RESOURCE_VALIDATION);
+                return;
+            }
+            if (application == null)
                 return;
             AppResources appResources = new AppResources();
             parseResources(appResources);
