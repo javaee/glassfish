@@ -172,7 +172,8 @@ public class ApplicationHandlers {
                 oneRow.put("hasLaunch", false);
                 oneRow.put("hasAppClientLaunch", false);
                 oneRow.put("hasAppClientStub", false);
-                oneRow.put("sniffers", snifferList.toString());
+                // Fix for 21210
+                oneRow.put("sniffers", snifferList.toString().replace("weld","cdi"));
 
                 if (snifferList.contains("web")) {
                     getLaunchInfo(appName, null, oneRow);
