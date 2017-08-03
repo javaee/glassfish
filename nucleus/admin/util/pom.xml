@@ -88,9 +88,6 @@
                     <exclude>**/.gitkeep_empty_dir</exclude>
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
         </resources>
     </build>
     <dependencies>

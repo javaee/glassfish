@@ -55,13 +55,6 @@
     
     <name>GlassFish AppClient Server-Side Core</name>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.main.deployment</groupId>

@@ -54,13 +54,7 @@
     <packaging>glassfish-jar</packaging>
     
     <name>Batch Commands for Glassfish</name>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
-    </build>
+
     <dependencies>
         <dependency>
             <groupId>javax.batch</groupId>

@@ -105,9 +105,6 @@
                     <exclude>**/.gitkeep_empty_dir</exclude>
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
             <!--
                 The next resource definition will include the DTDs and
                 schemas in the module so we can find them at runtime in the
@@ -151,7 +148,7 @@
                        <includes>**/*.dtd,**/*.xsd</includes>
                      </configuration>
                    </execution>
-               </executions>
+                  </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

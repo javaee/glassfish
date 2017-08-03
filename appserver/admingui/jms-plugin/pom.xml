@@ -117,9 +117,6 @@
                     <exclude>**/*.jar</exclude>
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
         </resources>
     </build>
 
@@ -153,6 +150,6 @@
             <artifactId>imqjmx</artifactId>
             <scope>provided</scope>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>
 

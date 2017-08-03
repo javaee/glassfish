@@ -82,11 +82,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
     </build>
 
     <dependencies>

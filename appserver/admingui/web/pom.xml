@@ -81,9 +81,6 @@
                     <exclude>**/.gitkeep_empty_dir</exclude> 
                 </excludes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
         </resources>
     </build>
 
@@ -123,5 +120,5 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>

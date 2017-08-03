@@ -85,11 +85,5 @@
          so the simple copying from src/main/resources to target/classes that Maven does by default
          is suffice.
    -->
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
-    </build>
+
 </project>

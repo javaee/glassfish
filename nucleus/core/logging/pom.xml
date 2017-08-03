@@ -82,12 +82,5 @@
         <optional>true</optional>
       </dependency>
     </dependencies>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
-    </build>
 </project>
 

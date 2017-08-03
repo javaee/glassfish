@@ -133,9 +133,6 @@
                     <include>**/login.conf</include>
                 </includes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
         </resources>
         <plugins>
            <plugin>
@@ -169,7 +166,7 @@
                  <!--<outputDirectory>${maven.project.build.outputDirectory}</outputDirectory>-->
                  <outputDirectory>target/classes</outputDirectory>
                </configuration>
-             </execution>                        
+             </execution>
            </executions>
          </plugin>
         </plugins>

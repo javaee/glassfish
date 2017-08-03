@@ -64,13 +64,6 @@
             </roles>
         </developer>
     </developers>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
-        </resources>
-    </build>  
 
     <dependencies>
         <dependency>

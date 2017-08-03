@@ -97,9 +97,6 @@
                     <include>**/*.1</include>
                 </includes>
             </resource>
-            <resource>
-                <directory>src/main/manpages</directory>
-            </resource>
         </resources>
     </build>
     <dependencies>
