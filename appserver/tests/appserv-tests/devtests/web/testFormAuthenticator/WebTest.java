@@ -228,7 +228,7 @@ public class WebTest {
             requestHead.append(CRLF);
             String request[] = new String[2];
             request[0] = requestHead.toString();
-            request[1] = "j_username=" + adminUser + "&j_password=" + adminPassword;
+            request[1] = "j_username=" + adminUser + "&password=" + adminPassword;
 
             doRequest(request);
         }

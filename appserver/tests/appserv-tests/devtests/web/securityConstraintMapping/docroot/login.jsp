@@ -54,7 +54,7 @@ out.println("Please Login \n");
 <HR>
 <FORM ACTION="j_security_check" METHOD=POST>
 UserName: <INPUT TYPE="text" NAME="j_username" VALUE=""> <BR>
-Password: <INPUT TYPE="password" NAME="j_password" VALUE=""> <BR>
+Password: <INPUT TYPE="password" NAME="password" VALUE=""> <BR>
 <BR>
 <INPUT TYPE="submit" value="Login"> <INPUT TYPE="reset" value="Clear">
 

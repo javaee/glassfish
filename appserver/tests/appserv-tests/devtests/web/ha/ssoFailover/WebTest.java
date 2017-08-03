@@ -127,7 +127,7 @@ public class WebTest extends BaseDevTest {
             sock = new Socket(host, new Integer(port1).intValue());
             os = sock.getOutputStream();
             String postData = "j_username=" + user
-                + "&j_password=" + password;
+                + "&password=" + password;
             String post = "POST " + contextRootPrefix + "-a/j_security_check"
                 + " HTTP/1.0\n"
                 + "Content-Type: application/x-www-form-urlencoded\n"
