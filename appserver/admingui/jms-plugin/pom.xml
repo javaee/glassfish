@@ -117,6 +117,9 @@
                     <exclude>**/*.jar</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/manpages</directory>
+            </resource>
         </resources>
     </build>
 
@@ -150,12 +153,6 @@
             <artifactId>imqjmx</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.docs.help</groupId>
-           <artifactId>console-jms-plugin-help</artifactId>
-           <version>${v3-docs.version}</version>
-           <type>zip</type>
-        </dependency>
-    </dependencies>
+   </dependencies>
 </project>
 
