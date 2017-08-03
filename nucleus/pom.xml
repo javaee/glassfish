@@ -211,10 +211,7 @@
             <resource>
                 <directory>src/main/manpages</directory>
             </resource>
-            <resource>
-                <directory>src/main/help</directory>
-            </resource>
-        </resources>
+       </resources>
         <pluginManagement>
             <plugins>
                 <plugin>

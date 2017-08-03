@@ -117,6 +117,9 @@
                     <exclude>**/*.jar</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/help</directory>
+            </resource>
         </resources>
     </build>
 
