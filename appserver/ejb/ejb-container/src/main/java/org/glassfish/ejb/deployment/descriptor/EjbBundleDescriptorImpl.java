@@ -1172,6 +1172,7 @@ public class EjbBundleDescriptorImpl extends com.sun.enterprise.deployment.EjbBu
         return (getInjectionInfoByClass(clazz, this));
     }
 
+    @Override
     public Boolean getDisableNonportableJndiNames() {
         return disableNonportableJndiNames;
     }

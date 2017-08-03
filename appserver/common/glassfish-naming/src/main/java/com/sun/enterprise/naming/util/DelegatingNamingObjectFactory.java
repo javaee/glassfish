@@ -89,4 +89,9 @@ public class DelegatingNamingObjectFactory
 
         return result;
     }
+
+    public String getName() {
+        return name;
+    }
+
 }

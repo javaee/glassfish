@@ -298,11 +298,14 @@ public class RARUtils {
     }
 
     private static void appendURLs(List<URL> urls, File f) throws MalformedURLException {
-        for (File file : f.listFiles()) {
-            if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
-                urls.add(file.toURI().toURL());
-            } else if (file.isDirectory()) {
-                appendURLs(urls, file);
+        File[] files = f.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().toUpperCase(Locale.getDefault()).endsWith(".JAR")) {
+                    urls.add(file.toURI().toURL());
+                } else if (file.isDirectory()) {
+                    appendURLs(urls, file);
+                }
             }
         }
     }

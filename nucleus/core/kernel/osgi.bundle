@@ -60,8 +60,7 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
 # optionally depend on that pkg. This way, when GF is embedded in 
 # OSGi environment, logging bundle need not be installed.
 Import-Package: \
-    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
- org.hibernate.validator.*;resolution:=optional;version="[${hibernate-validator.version.lowerbound},${hibernate-validator.version}]", \
     com.sun.enterprise.server.logging.*; resolution:=optional, \
+    org.hibernate.validator.*;resolution:=optional;version="${hibernate-validator.version}", \
     *
 

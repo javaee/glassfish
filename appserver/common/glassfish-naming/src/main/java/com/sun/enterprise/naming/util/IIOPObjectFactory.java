@@ -74,4 +74,8 @@ public class IIOPObjectFactory implements ObjectFactory {
         }
         return realObject;
     }
+
+    public Hashtable getEnv() {
+        return env;
+    }
 }

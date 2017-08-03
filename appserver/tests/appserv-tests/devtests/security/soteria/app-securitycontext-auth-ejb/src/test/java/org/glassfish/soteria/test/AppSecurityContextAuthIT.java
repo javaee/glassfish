@@ -120,14 +120,9 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
             readFromServer("/servlet?name=reza"));
     }
 
-    /**
-     * Flip testContextIsCallerInRole and testContextAllCallers tests test as part of soteria#89.
-     */
-
     @Test
     public void testContextIsCallerInRole(){
-        Assert.assertNotAuthenticatedRoles(
-//        Assert.assertAuthenticated(
+        Assert.assertAuthenticated(
                 "context",
                 "reza",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
@@ -135,8 +130,7 @@ public class AppSecurityContextAuthIT extends ArquillianBase {
 
     @Test
     public void testContextAllCallers(){
-        Assert.assertNotAuthenticatedRoles(
-//        Assert.assertAuthenticatedRoles(
+        Assert.assertAuthenticatedRoles(
                 "all roles",
                 readFromServer("/servlet?name=reza"), "foo", "bar");
     }

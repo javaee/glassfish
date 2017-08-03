@@ -42,6 +42,7 @@ package org.glassfish.ejb.deployment.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -289,26 +290,25 @@ public class InterceptorBindingTranslator {
                 results.classInterceptorChain.add(interceptor);
             }
         }
+        Iterator<Map.Entry<MethodDescriptor, LinkedList<String>>> entryIterator =
+                methodInterceptorsMap.entrySet().iterator();
+        while(entryIterator.hasNext()) {
+            Map.Entry<MethodDescriptor, LinkedList<String>> entry = entryIterator.next();
+            List<String> interceptorClassChain = entry.getValue();
 
-        for(MethodDescriptor nextMethod : methodInterceptorsMap.keySet()) {
+            List<EjbInterceptor> interceptorChain =
+                    new LinkedList<EjbInterceptor>();
 
-            List<String> interceptorClassChain = (List<String>)
-                methodInterceptorsMap.get(nextMethod);
-            
-            List<EjbInterceptor> interceptorChain = 
-                new LinkedList<EjbInterceptor>();
-            
             for(String nextClass : interceptorClassChain) {
-                EjbInterceptor interceptor = 
-                    ejbBundle.getInterceptorByClassName(nextClass);
+                EjbInterceptor interceptor =
+                        ejbBundle.getInterceptorByClassName(nextClass);
 
                 results.allInterceptorClasses.add(interceptor);
                 interceptorChain.add(interceptor);
 
             }
-            
-            results.methodInterceptorsMap.put(nextMethod, interceptorChain);
 
+            results.methodInterceptorsMap.put(entry.getKey(), interceptorChain);
         }
 
         return results;

@@ -104,11 +104,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax.validation.version.lowerbound}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
@@ -174,7 +169,7 @@
               we can remove this.
             <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
-            <version>${project.version}</version>
+            <version>${ant.version}</version>
         </dependency>
             -->
 

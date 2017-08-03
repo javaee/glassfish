@@ -53,6 +53,7 @@ import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.enterprise.deployment.util.ResourceValidator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
@@ -126,7 +127,10 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
     @Inject
     Provider<ClassLoaderHierarchy> clhProvider;
-    
+
+    @Inject
+    ResourceValidator resourceValidator;
+
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
 
