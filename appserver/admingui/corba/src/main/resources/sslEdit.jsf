@@ -65,7 +65,9 @@
         setPageSessionAttribute(key="createSslUrl", value="#{pageSession.parentUrl}/create-ssl");
         createMap(result="#{pageSession.createMap}");
         mapPut(map="#{pageSession.createMap}" key="target" value="#{pageSession.configName}");
-#include "/common/shared/sslPrepare.inc"
+<!-- This is a workaround for issue 21716 and can be reverted once REST issue 22134 is fixed -->
+<!-- #include "/common/shared/sslPrepare.inc" -->
+#include "sslPrepare-copy.inc"
       />
   </event>
 
