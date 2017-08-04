@@ -147,9 +147,8 @@ public final class CreateModuleConfigCommand extends AbstractConfigModularityCom
 
             try {
                 defaultConfigurationElements = getAllDefaultConfigurationElements(target);
-                if (defaultConfigurationElements != null) {
-                    report.setMessage(defaultConfigurationElements);
-                }
+                report.setMessage(defaultConfigurationElements);
+
             } catch (Exception e) {
                 String msg = localStrings.getLocalString("create.module.config.failure",
                         "Failed to execute the command due to: {0}. For more details check the log file.", e.getLocalizedMessage());
@@ -164,9 +163,8 @@ public final class CreateModuleConfigCommand extends AbstractConfigModularityCom
                     "Showing all default configurations not merged with domain configuration under target {0}.", target));
             try {
                 defaultConfigurationElements = getAllDefaultConfigurationElements(target);
-                if (defaultConfigurationElements != null) {
-                    report.setMessage(defaultConfigurationElements);
-                }
+                report.setMessage(defaultConfigurationElements);
+
             } catch (Exception e) {
                 String msg = localStrings.getLocalString("create.module.config.show.all.failed",
                         "Failed to show all default configurations not merged with domain configuration under target {0} due to: {1}.", target, e.getLocalizedMessage());

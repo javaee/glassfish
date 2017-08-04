@@ -103,10 +103,7 @@ public interface JvmOptionBag extends ConfigBeanProxy {
         }
 
         public static int toMeg(String whole, String which) {
-            String first  = whole.substring(0, which.length());
             String second = whole.substring(which.length());
-            if (first == null || second == null)
-                return -1;
             char unit = second.charAt(second.length()-1);
             try {
                 if (unit =='g' || unit == 'G')

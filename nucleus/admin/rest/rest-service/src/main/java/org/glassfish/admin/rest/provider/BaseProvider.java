@@ -218,12 +218,9 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
                 ConfigModel childModel = node.getModel();
                 List<ConfigModel> lcm = ResourceUtil.getRealChildConfigModels(childModel, dom.document);
                 Collections.sort(lcm, new ConfigModelComparator());
-
-                if (lcm != null) {
-                    Collections.sort(lcm, new ConfigModelComparator());
-                    for (ConfigModel cmodel : lcm) {
-                        links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo.get(), cmodel.getTagName()));
-                    }
+                Collections.sort(lcm, new ConfigModelComparator());
+                for (ConfigModel cmodel : lcm) {
+                    links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo.get(), cmodel.getTagName()));
                 }
             } else {
                 links.put(elementName, ProviderUtil.getElementLink(uriInfo.get(), elementName));

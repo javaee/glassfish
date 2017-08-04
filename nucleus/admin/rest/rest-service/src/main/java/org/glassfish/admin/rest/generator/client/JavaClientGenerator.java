@@ -167,7 +167,7 @@ public class JavaClientGenerator extends ClientGenerator {
 
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            if (files.length != 0) {
+            if (files != null && files.length != 0) {
                 for (File f : files) {
                     gatherFiles(f, list);
                 }
@@ -208,7 +208,7 @@ public class JavaClientGenerator extends ClientGenerator {
 
         if (dir.isDirectory()) {
             File[] f = dir.listFiles();
-            if (f.length != 0) {
+            if (f != null && f.length != 0) {
                 for (File file : f) {
                     addFiles(file, target, ext);
                 }

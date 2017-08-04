@@ -234,9 +234,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
         } catch (Exception ex) {
             RestLogging.restLogger.log(Level.SEVERE, null, ex);
         } finally {
-            if (formData != null) {
-                formData.cleanup();
-            }
+            formData.cleanup();
         }
         return data;
 
