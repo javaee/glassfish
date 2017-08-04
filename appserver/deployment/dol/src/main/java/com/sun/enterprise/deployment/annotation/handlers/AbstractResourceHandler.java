@@ -51,6 +51,7 @@ import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -71,6 +72,14 @@ import java.lang.reflect.Method;
  * @author Shing Wai Chan
  */
 public abstract class AbstractResourceHandler extends AbstractHandler {
+
+    protected AbstractResourceHandler() {
+    }
+
+    protected AbstractResourceHandler(AnnotationTypesProvider ejbProvider) {
+        this.ejbProvider = ejbProvider;
+    }
+
     /**
      * Process Annotation with given ResourceContainerContexts.
      * @param ainfo

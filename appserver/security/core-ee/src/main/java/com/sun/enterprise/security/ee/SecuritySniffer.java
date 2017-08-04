@@ -41,6 +41,7 @@
 package com.sun.enterprise.security.ee;
 
 import com.sun.enterprise.security.SecurityLifecycle;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveType;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -81,16 +82,34 @@ public class SecuritySniffer extends GenericSniffer {
 
     public SecuritySniffer() {
         super("security", "WEB-INF/web.xml", null);
-        
     }
-    
-   /**
+
+    /**
+     * Returns true if the passed file or directory is recognized by this
+     * sniffer.
+     *
+     * @param context deployment context
+     * @return true if the location is recognized by this sniffer
+     */
+    @Override
+    public boolean handles(DeploymentContext context) {
+        ArchiveType archiveType = habitat.getService(ArchiveType.class, context.getArchiveHandler().getArchiveType());
+        if (archiveType != null && !supportsArchiveType(archiveType)) {
+            return false;
+        }
+        if (archiveType != null && (archiveType.equals(DOLUtils.warType()) || archiveType.equals(DOLUtils.earType()) || archiveType.equals(DOLUtils.ejbType())))
+            return true;
+        return handles(context.getSource());
+    }
+
+    /**
      * Returns true if the passed file or directory is recognized by this
      * instance.
      *
      * @param location the file or directory to explore
      * @return true if this sniffer handles this application type
      */
+    @Override
     public boolean handles(ReadableArchive location) {
         return (DeploymentUtils.isArchiveOfType(location, DOLUtils.warType(), habitat) || DeploymentUtils.isArchiveOfType(location, DOLUtils.earType(), habitat) || isJar(location));
     }

@@ -50,6 +50,7 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.interceptor.AroundInvoke;
@@ -78,8 +79,10 @@ public class MailSessionDefinitionHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(MailSessionDefinitionHandler.class);
 
-    public MailSessionDefinitionHandler() {
+    public MailSessionDefinitionHandler() {}
 
+    public MailSessionDefinitionHandler(AnnotationTypesProvider ejbProvider) {
+        super(ejbProvider);
     }
 
     @Override

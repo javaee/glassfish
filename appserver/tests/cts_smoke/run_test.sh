@@ -149,6 +149,18 @@ test_run_servlet_tck(){
 	wget ${SERVELT_TCK}/servlettck-4.0_Latest.zip -O servlettck.zip
 
 	unzip -q servlettck.zip
+        if [[ -n $1 ]]; then
+		TESTDIR=$WORKSPACE/servlettck/src/com/sun/ts/tests
+		for i in `ls $TESTDIR`
+			do
+				if [[ (-d $TESTDIR/$i)  && ( $i != "jsp" &&  $i != "common" && $i != "signaturetest") ]]; then
+					if [[ -z $(grep $i `dirname $0`/test_dir.properties) ]]; then
+						echo "A new folder $i is added in the test source which has no entry in the properties file" 
+						exit 1
+					fi
+				fi
+			done
+	fi
 
 	cd $TS_HOME/bin
 	cp ts.jte ts.jte.orig
@@ -182,9 +194,14 @@ test_run_servlet_tck(){
 	cd $TS_HOME/bin
 	ant config.security
 	ant deploy.all
+	
+	if [ -n $1 ]; then
+		cd $TS_HOME/src/com/sun/ts/tests/$1
+	else
+		cd $TS_HOME/src/com/sun/ts/tests/
+	fi
 	export JAVA_OPTIONS="-Xbootclasspath/p:$TS_HOME/lib/flow.jar"
 
-	cd $TS_HOME/src/com/sun/ts/tests
 	(ant runclient -Dreport.dir=$WORKSPACE/servlettck/report | tee $WORKSPACE/tests.log) || true
 
 	cd $S1AS_HOME
@@ -207,8 +224,11 @@ run_test_id(){
 	if [[ $1 = "cts_smoke_all" ]]; then
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
-	elif [[ $1 = "servlet_tck_all" ]]; then
-		test_run_servlet_tck
+	elif [[ $1 = "servlet_tck_"* ]]; then
+		TEST_DIR_PROPERTIES=`dirname $0`/test_dir.properties
+		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
+		TEST_DIR=(`cat ${TEST_DIR_PROPERTIES} | grep ${TEST_DIR_PROP_KEY} | cut -d'=' -f2`)
+		test_run_servlet_tck $TEST_DIR
 		result=$WORKSPACE/results/tests.log
 	else
 		echo "Invalid Test ID"
@@ -222,7 +242,7 @@ post_test_run(){
     	if [[ $TEST_ID = "cts_smoke_all" ]]; then
 	  		archive_cts || true
 	  	fi
-	  	if [[ $TEST_ID = "servlet_tck_all" ]]; then
+	  	if [[ $TEST_ID = "servlet_tck_"* ]]; then
 	  		archive_servlet_tck || true
 	  	fi
 	fi
@@ -233,7 +253,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all
+	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec
 }
 
 cts_to_junit(){

@@ -194,6 +194,37 @@ public class RestApiHandlers {
     }
 
     /**
+     *
+     * REST-based version of createProxy
+     * @param handlerCtx
+     */
+    @Handler(id = "gf.createEntityResponseOutput",
+            input = {
+                    @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "attrs", type = Map.class, required = true),
+                    @HandlerInput(name = "skipAttrs", type = List.class),
+                    @HandlerInput(name = "onlyUseAttrs", type = List.class),
+                    @HandlerInput(name = "convertToFalse", type = List.class),
+                    @HandlerInput(name = "throwException", type = boolean.class, defaultValue = "true")},
+            output = {
+                    @HandlerOutput(name = "result", type = Map.class)
+            })
+    public static void createEntityResponseOutput(HandlerContext handlerCtx) {
+        Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
+        if (attrs == null) {
+            attrs = new HashMap<String, Object>();
+        }
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+
+        RestResponse response  = sendCreateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
+                (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
+
+        boolean throwException = (Boolean) handlerCtx.getInputValue("throwException");
+        parseResponse(response, handlerCtx, endpoint, attrs, false, throwException);
+        handlerCtx.setOutputValue("result", response.getResponse());
+    }
+
+    /**
      *        <p> This handler can be used to execute a generic REST request.  It
      *            will return a Java data structure based on the response of the
      *            REST request.  'data' and 'attrs' are mutually exclusive.  'data'
