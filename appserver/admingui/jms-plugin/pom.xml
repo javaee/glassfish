@@ -110,17 +110,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>**/*.jar</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/help</directory>
-            </resource>
-        </resources>
     </build>
 
     <dependencies>
