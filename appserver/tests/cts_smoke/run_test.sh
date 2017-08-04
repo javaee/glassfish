@@ -121,7 +121,8 @@ test_run_cts_smoke(){
         if [[ -n $1 ]]; then
                  cd $TS_HOME/bin/xml/impl/glassfish
 		 $TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f ./smoke-groups.xml smoke.split.groups
-                 cd -
+                 cat /tmp/javaee-smoke-group$1.properties
+		 cd -
                  $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
         else
 		 $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
