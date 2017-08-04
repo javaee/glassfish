@@ -49,7 +49,6 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
-import org.glassfish.internal.deployment.AnnotationTypesProvider;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.interceptor.AroundInvoke;
@@ -70,11 +69,10 @@ import java.util.logging.Level;
 @AnnotationHandlerFor(ConnectionFactoryDefinition.class)
 public class ConnectionFactoryDefinitionHandler extends AbstractResourceHandler {
 
-    public ConnectionFactoryDefinitionHandler() {}
-
-    public ConnectionFactoryDefinitionHandler(AnnotationTypesProvider ejbProvider) {
-        super(ejbProvider);
+    
+    public ConnectionFactoryDefinitionHandler() {
     }
+
 
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts)
