@@ -71,7 +71,9 @@ public class MailSessionDefinitionsHandler extends AbstractResourceHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(MailSessionDefinitionsHandler.class);
 
-    public MailSessionDefinitionsHandler() {}
+    public MailSessionDefinitionsHandler() {
+
+    }
 
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo, ResourceContainerContext[] rcContexts) throws AnnotationProcessorException {
@@ -92,7 +94,7 @@ public class MailSessionDefinitionsHandler extends AbstractResourceHandler {
                 } else {
                     duplicates.add(defnName);
                 }
-                MailSessionDefinitionHandler handler = new MailSessionDefinitionHandler(ejbProvider);
+                MailSessionDefinitionHandler handler = new MailSessionDefinitionHandler();
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
