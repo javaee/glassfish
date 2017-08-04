@@ -42,11 +42,11 @@ package com.sun.enterprise.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import java.net.URISyntaxException;
+import java.util.*;
 import java.util.logging.Logger;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.hk2.classmodel.reflect.Parser;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.*;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
@@ -157,5 +157,31 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
             }
         }
         return uriToAdd;
+    }
+
+    @Override
+    protected void calculateResults(ApplicationClientDescriptor bundleDesc) {
+        super.calculateResults(bundleDesc);
+
+        Class[] ejbAnnotations = new Class[] {javax.ejb.Stateful.class, javax.ejb.Stateless.class,
+                javax.ejb.MessageDriven.class, javax.ejb.Singleton.class};
+        Set<String> toBeRemoved = new HashSet<String>();
+        ParsingContext context = classParser.getContext();
+        for (Class ejbAnnotation: ejbAnnotations) {
+            Type type = context.getTypes().getBy(ejbAnnotation.getName());
+            if (type != null && type instanceof AnnotationType) {
+                AnnotationType at = (AnnotationType) type;
+                for (AnnotatedElement ae : at.allAnnotatedTypes()) {
+                    Type t = (ae instanceof Member?((Member) ae).getDeclaringType():(Type) ae);
+                    if (t.wasDefinedIn(scannedURI)) {
+                        toBeRemoved.add(t.getName());
+                    }
+                }
+            }
+        }
+
+        for (String element: toBeRemoved) {
+            entries.remove(element);
+        }
     }
 }
