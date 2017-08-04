@@ -118,7 +118,7 @@ test_run_cts_smoke(){
 	$S1AS_HOME/bin/asadmin start-domain
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
-        if [ -n $1 ]; then
+        if [[ -n $1 ]]; then
 		 $TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
                  $TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
         else
@@ -226,7 +226,7 @@ run_test_id(){
 	if [[ $1 = "cts_smoke_all" ]]; then
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
-         elif [[ $TEST_ID = "cts_smoke_group-"* ]]; then
+         elif [[ $1 = "cts_smoke_group-"* ]]; then
                 GROUP_ID=(`echo $1 | sed 's/cts_smoke_group-//'`)
                 test_run_cts_smoke $GROUP_ID
                 result=$WORKSPACE/results/smoke.log
