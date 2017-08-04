@@ -113,10 +113,10 @@ class JvmOptions {
             Map.Entry<String, String> entry = entryIterator.next();
             String value = entry.getValue();
             if (value != null) {
-                ss.add("-XX" + entry.getKey() + "=" + value);
+                ss.add("-X" + entry.getKey() + "=" + value);
             }
             else {
-                ss.add("-XX" + entry.getKey());
+                ss.add("-X" + entry.getKey());
             }
         }
 
