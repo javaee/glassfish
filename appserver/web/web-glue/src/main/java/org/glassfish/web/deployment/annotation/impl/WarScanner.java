@@ -135,21 +135,6 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
                     } else {
                         addScanJar(jarFile);
                     }
-                    // Include FacesServlet from fragments for the later MultipartConfig annotation processing
-                    for (Iterator webComponents =
-                        webBundleDesc.getWebComponentDescriptors().iterator();
-                        webComponents.hasNext();) {
-                        WebComponentDescriptor webCompDesc =
-                            (WebComponentDescriptor)webComponents.next();
-                        if (webCompDesc.isServlet()) {
-                            String servletName = webCompDesc.getWebComponentImplementation();
-                            if("javax.faces.webapp.FacesServlet".equals(servletName)) {
-                              if (isScan(servletName, clh.getCommonClassLoader())) {
-                                addScanClassName(servletName);
-                              }
-                            }
-                        }
-                    }
                 }
             }
         } else {
@@ -157,8 +142,8 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
             if (classes.exists()) {
                 addScanDirectory(classes);   
             }
-            scanXmlDefinedClassesIfNecessary(webBundleDesc);
         }
+        scanXmlDefinedClassesIfNecessary(webBundleDesc);
         calculateResults(webBundleDesc);
     }
 
