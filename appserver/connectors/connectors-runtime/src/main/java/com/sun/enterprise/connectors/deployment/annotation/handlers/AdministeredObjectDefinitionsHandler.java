@@ -69,7 +69,8 @@ public class AdministeredObjectDefinitionsHandler extends AbstractResourceHandle
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AdministeredObjectDefinitionsHandler.class);
 
-    public AdministeredObjectDefinitionsHandler() {}
+    public AdministeredObjectDefinitionsHandler() {
+    }
 
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
@@ -91,7 +92,7 @@ public class AdministeredObjectDefinitionsHandler extends AbstractResourceHandle
                 }else{
                     duplicates.add(defnName);
                 }
-                AdministeredObjectDefinitionHandler handler = new AdministeredObjectDefinitionHandler(ejbProvider);
+                AdministeredObjectDefinitionHandler handler = new AdministeredObjectDefinitionHandler();
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
