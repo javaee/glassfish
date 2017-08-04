@@ -48,6 +48,8 @@ import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.classmodel.reflect.*;
 
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.deployment.common.GenericAnnotationDetector;
@@ -55,6 +57,9 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 
 import com.sun.enterprise.deployment.deploy.shared.MultiReadableArchive;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -73,6 +78,10 @@ import java.util.logging.Level;
 @Service(name="car")
 @PerLookup
 public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor> {
+
+    @Inject
+    @Named("EJB") @Optional
+    protected AnnotationTypesProvider ejbProvider;
 
     @Override
     public void process(ReadableArchive archive, ApplicationClientDescriptor bundleDesc, ClassLoader classLoader, Parser parser) throws IOException {
@@ -159,12 +168,16 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
         return uriToAdd;
     }
 
+    /**
+     * Overriding to handle the case where EJB class is mistakenly packages inside an appclient jar.
+     * Instead of throwing an error which might raise backward compatiability issues, a cleaner way is to
+     * just skip the annotation processing for them.
+     */
     @Override
     protected void calculateResults(ApplicationClientDescriptor bundleDesc) {
         super.calculateResults(bundleDesc);
 
-        Class[] ejbAnnotations = new Class[] {javax.ejb.Stateful.class, javax.ejb.Stateless.class,
-                javax.ejb.MessageDriven.class, javax.ejb.Singleton.class};
+        Class[] ejbAnnotations = ejbProvider.getAnnotationTypes();
         Set<String> toBeRemoved = new HashSet<String>();
         ParsingContext context = classParser.getContext();
         for (Class ejbAnnotation: ejbAnnotations) {
