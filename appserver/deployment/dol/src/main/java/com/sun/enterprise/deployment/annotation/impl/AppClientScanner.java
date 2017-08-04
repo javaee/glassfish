@@ -169,7 +169,7 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
     }
 
     /**
-     * Overriding to handle the case where EJB class is mistakenly packages inside an appclient jar.
+     * Overriding to handle the case where EJB class is mistakenly packaged inside an appclient jar.
      * Instead of throwing an error which might raise backward compatiability issues, a cleaner way is to
      * just skip the annotation processing for them.
      */
@@ -177,7 +177,12 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
     protected void calculateResults(ApplicationClientDescriptor bundleDesc) {
         super.calculateResults(bundleDesc);
 
-        Class[] ejbAnnotations = ejbProvider.getAnnotationTypes();
+        Class[] ejbAnnotations;
+        if (ejbProvider != null)
+            ejbAnnotations = ejbProvider.getAnnotationTypes();
+        else
+            ejbAnnotations = new Class[] {javax.ejb.Stateful.class, javax.ejb.Stateless.class,
+                    javax.ejb.MessageDriven.class, javax.ejb.Singleton.class};
         Set<String> toBeRemoved = new HashSet<String>();
         ParsingContext context = classParser.getContext();
         for (Class ejbAnnotation: ejbAnnotations) {
