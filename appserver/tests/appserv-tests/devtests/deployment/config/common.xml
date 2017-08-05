@@ -498,6 +498,21 @@ AS_ADMIN_MASTERPASSWORD=changeit
   <antcall target="common.delete.jms.resource" />
 </target>
 
+<target name="common.create.customresource">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="create-custom-resource ${ASADMIN-ARGS} --restype ${resource.type}
+               --factoryclass ${resource.factory.class} --property value=${resource.value} ${resource.name}"/>
+    </antcall>
+</target>
+
+<target name="common.delete.customresource">
+    <antcall target="common.run.asadmin">
+        <param name="arg.list"
+               value="delete-custom-resource ${ASADMIN-ARGS} ${resource.name}" />
+    </antcall>
+</target>
+
 <!-- deploy using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.deploy.asadmin" depends="setAsadminArgs">

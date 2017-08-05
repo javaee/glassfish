@@ -105,7 +105,7 @@ public final class RemoteListenerConnector implements NotificationListener, java
         return id;
     }
 
-    public void setMBeanServer(MBeanServer s) {
+    public synchronized void setMBeanServer(MBeanServer s) {
         server = s;
     }
 }

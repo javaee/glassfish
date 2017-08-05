@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<portmaps>
-<portmap direction="outbound"  endPoint="OneWayPort" service="{http://example.web.service/OneWay}OneWayService"/>
-</portmaps>

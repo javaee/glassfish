@@ -1,0 +1,156 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2002-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="xsd test" default="usage" basedir=".">
+
+  <!-- include common.xml and testcommon.xml -->
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+  <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+
+  <target name="run.wscompile">
+	<exec executable="${WSCOMPILE}" failonerror="true" >
+        <arg line="-source 1.1.2 ${wscompile.command}" />        
+	</exec>
+  </target>
+
+  <target name="compile" depends="">
+    <antcall target="compile-common">
+      <param name="src" value="client"/>
+    </antcall>
+  </target>
+
+  <target name="build" depends="init-common, clean">
+    <antcall target="wscompile-ejb"/>
+    <antcall target="wscompile-appclient"/>
+    <antcall target="assemble"/>
+  </target>
+
+  <target name="wscompile-appclient" depends="init-common">
+    <mkdir dir="output"/>
+    <antcall target="run.wscompile">
+      <param name="wscompile.command" 
+       value="-import -keep -d output -s output -classpath . -mapping SignatureMapping_appclient.xml -Xprintstacktrace -Xdebugmodel:appclient.model.txt wscompile_config_appclient.xml"/>
+    </antcall>
+    <copy todir="${build.classes.dir}/signature">
+       <fileset dir="output/signature" 
+        includes="SignatureTestService.class, SignatureTest.class, MyDateValueType.class, MySecondDateValueType.class"/>
+    </copy>
+<!--
+    <delete dir="output"/>
+-->
+  </target>
+
+  <target name="wscompile-ejb" depends="init-common">
+    <antcall target="compile-common">
+      <param name="src" value="signatureejb"/>
+    </antcall>
+    <antcall target="run.wscompile">
+      <param name="wscompile.command" 
+       value="-define -classpath ${build.classes.dir} -mapping SignatureMapping_ejb.xml -Xprintstacktrace -Xdebugmodel:ejb.model.txt wscompile_config_ejb.xml"/>
+    </antcall>
+  </target>
+
+  <target name="assemble" depends="init-common, compile">
+    <copy todir="${build.classes.dir}/META-INF/wsdl"
+      file="SignatureTestService.wsdl"/>
+    <copy todir="${build.classes.dir}" 
+	 file="SignatureMapping_appclient.xml"/>
+    <antcall target="appclient-jar-common">
+      <param name="appclientjar.classes" 
+             value="SignatureMapping_appclient.xml,META-INF/wsdl/**,signature/*.class" />
+
+    </antcall>
+    <copy todir="${build.classes.dir}" 
+	 file="SignatureMapping_ejb.xml"/>
+    <antcall target="ejb-jar-common">
+      <param name="ejbjar.classes" 
+             value="SignatureMapping_ejb.xml,META-INF/wsdl/**,signatureejb/*.class" />
+
+    </antcall>
+    <antcall target="ear-common" />
+  </target> 
+
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+      <delete dir="output"/>
+      <delete dir="signature"/>
+      <delete file="SignatureMapping_ejb.xml"/>
+      <delete file="SignatureMapping_appclient.xml"/>
+      <delete file="SignatureTestService.wsdl"/>
+      <delete file="jaxrpc.log"/>
+      <delete file="ejb.model.txt"/>
+      <delete file="appclient.model.txt"/>
+    </target>
+
+    <target name="run" depends="init-common">
+      <exec executable="${APPCLIENT}" failonerror="false">
+          <arg line="-client ${assemble.dir}/${appname}AppClient.jar"/>      
+          <arg line="http://${http.host}:${http.port}/signatureejb/SignatureTest"/>
+      </exec>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>  
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes the WebServices test)
+	</echo>
+    </target>
+</project>

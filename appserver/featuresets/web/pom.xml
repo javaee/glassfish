@@ -123,10 +123,10 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-        <!-- javadb package -->
+        <!-- derby package -->
         <dependency>
             <groupId>org.glassfish.main.packager</groupId>
-            <artifactId>javadb</artifactId>
+            <artifactId>derby</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

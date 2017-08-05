@@ -319,8 +319,7 @@ public class ConnectorConfigParserUtils {
         }
         String methodName = method.getName();
         Class[] parameterTypes = method.getParameterTypes();
-        if(methodName.startsWith("set") && 
-           parameterTypes != null       && parameterTypes.length == 1) {
+        if(methodName.startsWith("set")  && parameterTypes.length == 1) {
             return true;
         } else {
             return false;
@@ -370,7 +369,7 @@ public class ConnectorConfigParserUtils {
             if(allMethods[i].getName().equals(possibleGetMethodNames[0]) || 
                allMethods[i].getName().equals(possibleGetMethodNames[1])) {
                 parameterTypes = allMethods[i].getParameterTypes();
-                if(parameterTypes != null && parameterTypes.length == 0) {
+                if(parameterTypes.length == 0) {
                     return allMethods[i];
                 }
             }

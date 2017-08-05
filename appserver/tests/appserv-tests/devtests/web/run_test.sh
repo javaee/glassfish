@@ -114,6 +114,7 @@ is_target(){
         "clustering" | \
         "ha" | \
         "embedded-all" | \
+        "group-1" | \
         "all") echo 1;;
         *) echo 0;;
     esac
@@ -123,6 +124,13 @@ get_test_target(){
 	case $1 in
 		web_all )
 			TARGET=all
+			export TARGET;;
+
+		group-1 )
+			TARGET="init taglib el security http-connector comet misc clustering ha finish-report"
+			export TARGET;;
+		* )
+			TARGET="init $1 finish-report"
 			export TARGET;;
 	esac
 
@@ -260,15 +268,16 @@ run_test_id(){
 	unzip_test_resources $WORKSPACE/bundles/glassfish.zip
 	cd `dirname $0`
 	test_init
-	get_test_target $1
+        TARGET_FROM_INPUT=(`echo $1 | sed 's/web_//'`)
+	get_test_target $TARGET_FROM_INPUT
 	test_run -s webtier-dev-tests
 	check_successful_run
-    generate_junit_report $1
+    generate_junit_report $TARGET_FROM_INPUT
     change_junit_report_class_names
 }
 
 list_test_ids(){
-    echo web_all
+    echo web_all web_jsp web_servlet web_web-container web_group-1
 }
 post_test_run(){
     copy_test_artifects

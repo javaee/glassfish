@@ -428,33 +428,45 @@ public class ComponentEnvManagerImpl
         for (ResourceDescriptor descriptor : allDescriptors) {
             switch (descriptor.getResourceType()) {
                 case DSD:
-                    DataSourceDefinitionDescriptor dataSourceDefinitionDescriptor = (DataSourceDefinitionDescriptor)descriptor;
-                    if(dataSourceDefinitionDescriptor.isDeployed()) {
-                        if(undepoyResource(dataSourceDefinitionDescriptor)) {
-                            dataSourceDefinitionDescriptor.setDeployed(false);
+                    if(descriptor instanceof DataSourceDefinitionDescriptor ) {
+                        DataSourceDefinitionDescriptor dataSourceDefinitionDescriptor = (DataSourceDefinitionDescriptor)descriptor;
+                        if(dataSourceDefinitionDescriptor.isDeployed()) {
+                            if(undepoyResource(dataSourceDefinitionDescriptor)) {
+                                dataSourceDefinitionDescriptor.setDeployed(false);
+                            }
                         }
                     }
                     break;
                 case MSD:
-                    MailSessionDescriptor mailSessionDescriptor = (MailSessionDescriptor)descriptor;
-                    if(mailSessionDescriptor.isDeployed()) {
-                        if(undepoyResource(mailSessionDescriptor)) {
-                            mailSessionDescriptor.setDeployed(false);
+                    if (descriptor instanceof MailSessionDescriptor ) {
+                        MailSessionDescriptor mailSessionDescriptor = (MailSessionDescriptor) descriptor;
+                        if (mailSessionDescriptor.isDeployed()) {
+                            if (undepoyResource(mailSessionDescriptor)) {
+                                mailSessionDescriptor.setDeployed(false);
+                            }
                         }
                     }
                     break;
                 case CFD:
-                    ConnectionFactoryDefinitionDescriptor connectionFactoryDefinitionDescriptor = (ConnectionFactoryDefinitionDescriptor)descriptor;
-                    undepoyResource(connectionFactoryDefinitionDescriptor);
+                    if (descriptor instanceof ConnectionFactoryDefinitionDescriptor ) {
+                        ConnectionFactoryDefinitionDescriptor connectionFactoryDefinitionDescriptor = (ConnectionFactoryDefinitionDescriptor) descriptor;
+                        undepoyResource(connectionFactoryDefinitionDescriptor);
+                    }
                     break;
                 case JMSCFDD:
-                    JMSConnectionFactoryDefinitionDescriptor jmsConnectionFactoryDefinitionDescriptor = (JMSConnectionFactoryDefinitionDescriptor)descriptor;
-                    undepoyResource(jmsConnectionFactoryDefinitionDescriptor);
+                    if (descriptor instanceof JMSConnectionFactoryDefinitionDescriptor ) {
+                        JMSConnectionFactoryDefinitionDescriptor jmsConnectionFactoryDefinitionDescriptor = (JMSConnectionFactoryDefinitionDescriptor) descriptor;
+                        undepoyResource(jmsConnectionFactoryDefinitionDescriptor);
+                    }
                     break;
                 case AODD:
-                    AdministeredObjectDefinitionDescriptor administeredObjectDefinitionDescriptor = (AdministeredObjectDefinitionDescriptor)descriptor;
-                    undepoyResource(administeredObjectDefinitionDescriptor);
+                    if (descriptor instanceof AdministeredObjectDefinitionDescriptor ) {
+                        AdministeredObjectDefinitionDescriptor administeredObjectDefinitionDescriptor = (AdministeredObjectDefinitionDescriptor) descriptor;
+                        undepoyResource(administeredObjectDefinitionDescriptor);
+                    }
                     break;
+                default:
+                        break;
             }
         }
     }

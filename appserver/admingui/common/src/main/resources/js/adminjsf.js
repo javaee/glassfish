@@ -1945,7 +1945,7 @@ admingui.deploy = {
             //may as well set context root if it exist.
             var component = obj.document.getElementById(contextRootId);
             if (component != null){
-                component.value = appName;
+                component.value = '';
             }
         }
     },

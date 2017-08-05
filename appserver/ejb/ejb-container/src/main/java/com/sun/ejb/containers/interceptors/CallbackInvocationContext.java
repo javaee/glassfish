@@ -232,7 +232,7 @@ public class CallbackInvocationContext implements InvocationContext {
                 throw new IllegalArgumentException("Wrong number of parameters for "
                         + " constructor: " + ctor);
             }
-            if (ctorParamTypes.length != params.length) {
+            if (params != null && ctorParamTypes.length != params.length) {
                 throw new IllegalArgumentException("Wrong number of parameters for "
                         + " constructor: " + ctor);
             }

@@ -1022,10 +1022,13 @@ public abstract class EjbDescriptor extends CommonResourceDescriptor
 
         List<EjbInterceptor> classOrMethodInterceptors = null;
 
-        for (MethodDescriptor methodDesc : methodInterceptorsMap.keySet()) {
+        Iterator<Map.Entry<MethodDescriptor, List<EjbInterceptor>>> entryIterator =
+                methodInterceptorsMap.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<MethodDescriptor, List<EjbInterceptor>> entry = entryIterator.next();
+            MethodDescriptor methodDesc = entry.getKey();
             if (methodDesc.implies(businessMethod)) {
-                classOrMethodInterceptors =
-                        methodInterceptorsMap.get(methodDesc);
+                classOrMethodInterceptors = entry.getValue();
             }
         }
 
@@ -1550,9 +1553,9 @@ public abstract class EjbDescriptor extends CommonResourceDescriptor
         // method permission, let's reverse this to make the Map using the 
         // method permission as a key.
         Map styledMethodDescriptorsByPermission = new HashMap();
-        for (Iterator mdIterator = styledMethodDescriptors.keySet().iterator(); mdIterator.hasNext();) {
-            MethodDescriptor md = (MethodDescriptor) mdIterator.next();
-            Set methodPermissions = (Set) styledMethodDescriptors.get(md);
+        for (Iterator mdIterator = styledMethodDescriptors.entrySet().iterator(); mdIterator.hasNext();) {
+            Map.Entry md = (Map.Entry) mdIterator.next();
+            Set methodPermissions = (Set) md.getValue();
             for (Iterator mpIterator = methodPermissions.iterator(); mpIterator.hasNext();) {
                 MethodPermission mp = (MethodPermission) mpIterator.next();
 
@@ -1560,7 +1563,7 @@ public abstract class EjbDescriptor extends CommonResourceDescriptor
                 if (methodDescriptors == null) {
                     methodDescriptors = new HashSet();
                 }
-                methodDescriptors.add(md);
+                methodDescriptors.add(md.getKey());
                 styledMethodDescriptorsByPermission.put(mp, methodDescriptors);
             }
         }
@@ -1601,13 +1604,14 @@ public abstract class EjbDescriptor extends CommonResourceDescriptor
         Set allMethods = getMethodDescriptors();
         Set unpermissionedMethods = getMethodDescriptors();
 
-        Set methodDescriptors = styledMethodDescriptors.keySet();
+        Set methodDescriptors = styledMethodDescriptors.entrySet();
         for (Iterator styledMdItr = methodDescriptors.iterator(); styledMdItr.hasNext();) {
-            MethodDescriptor styledMd = (MethodDescriptor) styledMdItr.next();
+            Map.Entry entry = (Map.Entry) styledMdItr.next();
+            MethodDescriptor styledMd = (MethodDescriptor) entry.getKey();
 
             // Get the new permissions we are trying to set for this
             // method(s)
-            Set newPermissions = (Set) styledMethodDescriptors.get(styledMd);
+            Set newPermissions = (Set) entry.getValue();
 
             // Convert to style 3 method descriptors
             Vector mds = styledMd.doStyleConversion(this, allMethods);

@@ -42,6 +42,7 @@ package org.glassfish.ejb.deployment.node;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -68,8 +69,11 @@ public class TimeoutValueNode extends DeploymentDescriptorNode<TimeoutValueDescr
         elementToTimeUnit.put("Nanoseconds", TimeUnit.NANOSECONDS);
         
         timeUnitToElement = new HashMap<TimeUnit, String>();
-        for(String next : elementToTimeUnit.keySet()) {
-            timeUnitToElement.put(elementToTimeUnit.get(next), next);
+
+        Iterator<Map.Entry<String, TimeUnit>> entryIterator = elementToTimeUnit.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, TimeUnit> entry = entryIterator.next();
+            timeUnitToElement.put(entry.getValue(),entry.getKey());
         }
     }
 
