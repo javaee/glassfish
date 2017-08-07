@@ -359,7 +359,7 @@
 	<sysproperty key="glassfish.home" value="${glassfish.home}"/>
 	<sysproperty key="BASEDIR" value="${ws.root}"/>
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
-        <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+	    <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
 	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 	<jvmarg value="-DASADMIN=${ASADMIN}" />
@@ -374,7 +374,7 @@
     testname="${testng.test.name}"
             classpathref="run.testng.classpath">
         <xmlfileset dir="." includes="testng.xml"/>
-        <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+	    <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
 	<jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
 	<jvmarg value="-DASADMIN=${ASADMIN}" />
@@ -393,7 +393,7 @@
         <sysproperty key="glassfish.home" value="${glassfish.home}"/>
         <sysproperty key="BASEDIR" value="${ws.root}"/>
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
-        <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+	    <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
         <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
         <jvmarg value="-DASADMIN=${ASADMIN}" />
@@ -413,7 +413,6 @@
     <path id="wsit.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
     </path>
-
     <condition property="wsjar.available">
         <and>
             <available file="${glassfish.home}/modules/webservices-osgi.jar"/>
@@ -459,7 +458,7 @@
         testname="${testng.test.name}"
                 classpathref="wsit.classpath" classpath="${build.classes.home}:${basedir}/etc">
             <xmlfileset dir="." includes="testng.xml"/>
-            <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+	        <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
             <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
             <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
             <bootclasspath classpathref="boot.class.path"/>

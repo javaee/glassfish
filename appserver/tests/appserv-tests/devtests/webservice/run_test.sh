@@ -43,10 +43,10 @@ list_test_ids(){
 }
 
 test_run(){
-  $S1AS_HOME/bin/asadmin start-domain
+  #$S1AS_HOME/bin/asadmin start-domain
   cd $APS_HOME/devtests/webservice
   ant $TARGET | tee $TEST_RUN_LOG
-  $S1AS_HOME/bin/asadmin stop-domain   
+  #$S1AS_HOME/bin/asadmin stop-domain
 }
 
 run_test_id(){

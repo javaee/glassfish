@@ -193,6 +193,7 @@
 
     <target name="cdi">
         <record name="cdi.output" action="start" />
+        <antcall target="test-setup" />
 		<echo message="@@## Running all CDI developer tests##@@"/>
         <ant dir="smoke-tests" target="${cdi-target}"/>
         <ant dir="qualifiers" target="${cdi-target}"/>
@@ -242,7 +243,7 @@
         </if>
         <!-- now generate report -->
         <antcall target="report"/>
-
+        <antcall target="test-unsetup" />
         <record name="cdi.output" action="stop" />
     </target>
 
@@ -265,4 +266,31 @@
         <arg value="./resultCount.sh"/>
       </exec>
     </target>
+
+    <target name="test-setup">
+        <antcall target="start-database"/>
+        <ant target="startDomain"/>
+    </target>
+
+    <target name="test-unsetup">
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+        <antcall target="stop-database"/>
+    </target>
+
+    <target name="start-database" depends="init-common">
+        <echo message="Starting database" />
+        <!-- spawn is added to prevent a hang on Windows -->
+        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
+            <arg line="start-database"/>
+        </exec>
+    </target>
+
+    <target name="stop-database" depends="init-common">
+        <echo message="Stopping database"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="stop-database"/>
+        </exec>
+    </target>
+
 </project>

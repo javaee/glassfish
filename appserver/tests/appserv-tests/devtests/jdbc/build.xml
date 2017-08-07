@@ -49,6 +49,7 @@
         <!ENTITY reporting   SYSTEM "./report.xml">
         <!ENTITY eeCommon SYSTEM "./config/ee-common.xml">
         <!ENTITY eeCommonProperties SYSTEM "./config/ee-properties.xml">
+        <!ENTITY commonRun SYSTEM "./../../config/run.xml">
         ]>
 
 <project name="jdbc" default="usage" basedir=".">
@@ -61,6 +62,7 @@
     &eeCommonProperties;
     -->
     &reporting;
+    &commonRun;
 
     <target name="jdbc-all">
         <delete>
@@ -205,7 +207,9 @@
     </target>
 
     <target name="all">
+    <antcall target="test-setup"/>
 	<antcall target="jdbc-all"/>
+    <antcall target="test-unsetup"/>
     </target>
 
     <target name="all-oracle">
@@ -482,10 +486,37 @@
 	<record name="jpa-dsd.appclient-exposed-dsd.output" action="stop"/>
     </target>
 
+    <target name="test-setup">
+        <antcall target="start-database"/>
+        <ant target="startDomain"/>
+    </target>
+
+    <target name="test-unsetup">
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+        <antcall target="stop-database"/>
+    </target>
+
+    <target name="start-database" depends="init-common">
+        <echo message="Starting database" />
+        <!-- spawn is added to prevent a hang on Windows -->
+        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
+            <arg line="start-database"/>
+        </exec>
+    </target>
+
+    <target name="stop-database" depends="init-common">
+        <echo message="Stopping database"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="stop-database"/>
+        </exec>
+    </target>
+
     <target name="usage">
         <echo>
             Usage:
             ant all (Executes all the jdbc tests)
         </echo>
     </target>
+
 </project>

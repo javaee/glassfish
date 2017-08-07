@@ -45,6 +45,7 @@
 <!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
 <!ENTITY reporting   SYSTEM "file:./report.xml">
+<!ENTITY commonRun SYSTEM "./../../config/run.xml">
 ]>
 
 <project name="webservice" default="usage" basedir=".">
@@ -52,8 +53,10 @@
     &commonSetup;
     &commonBuild;
     &reporting;
+    &commonRun;
 
     <target name="all">
+        <antcall target="test-setup"/>
         <delete file="${env.APS_HOME}/test_results.html"/>
         <delete file="${env.APS_HOME}/test_resultsValid.xml"/>
         <delete file="${env.APS_HOME}/test_results.xml"/>
@@ -79,6 +82,7 @@
         <record name="webservice.output" action="stop" />
         <antcall target="report"/>
         <antcall target="dev-report"/>
+        <antcall target="test-unsetup"/>
     </target>
 
     <target name="google">
@@ -120,6 +124,15 @@
         <ant dir="webstub_properties" target="clean"/>
         <ant dir="filter_urlhandling" target="clean"/>        
      </target>
+
+    <target name="test-setup">
+        <ant target="startDomain"/>
+    </target>
+
+    <target name="test-unsetup">
+        <echo message="Stopping app server instance"/>
+        <ant target="stopDomain"/>
+    </target>
 
     <target name="usage">
 	<echo>
