@@ -977,64 +977,9 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-common-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-cluster-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-corba-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-ejb-lite-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-ejb-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jca-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jdbc-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-common-full-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jms-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
                 <artifactId>console-jruby-plugin-help</artifactId>
                 <version>${v3-docs.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jts-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-web-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>            
             <dependency>
                 <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
                 <artifactId>console-common-help-l10n</artifactId>

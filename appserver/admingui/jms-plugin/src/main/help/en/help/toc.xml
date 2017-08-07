@@ -1,0 +1,104 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<toc version="2.0">
+  <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-jmsresources" text="Configuring JMS Resources" expand="false">
+      <tocitem target="task-jmsconnectionnew" text="To Create a JMS Connection Factory Resource" expand="false"></tocitem>
+      <tocitem target="task-jmsconnectionedit" text="To Edit a JMS Connection Factory Resource" expand="false"></tocitem>
+      <tocitem target="task-jmsconnectiondelete" text="To Delete a JMS Connection Factory Resource" expand="false"></tocitem>
+      <tocitem target="task-jmsdestinationnew" text="To Create a JMS Destination Resource" expand="false"></tocitem>
+      <tocitem target="task-jmsdestinationedit" text="To Edit a JMS Destination Resource" expand="false"></tocitem>
+      <tocitem target="task-jmsdestinationdelete" text="To Delete a JMS Destination Resource" expand="false"></tocitem>
+    </tocitem>
+    <tocitem target="task-group-jmsservice" text="Configuring the Java Message Service" expand="false">
+      <tocitem target="task-jmsservice" text="To Configure the JMS Service" expand="false"></tocitem>
+      <tocitem target="task-jmshostnew" text="To Create a JMS Host" expand="false"></tocitem>
+      <tocitem target="task-jmshostedit" text="To Edit a JMS Host" expand="false"></tocitem>
+      <tocitem target="task-jmshostdelete" text="To Delete a JMS Host" expand="false"></tocitem>
+      <tocitem target="task-jmsphysicaldestnew" text="To Create a JMS Physical Destination" expand="false"></tocitem>
+      <tocitem target="task-jmsphysicaldestedit" text="To Edit a JMS Physical Destination" expand="false"></tocitem>
+      <tocitem target="task-jmsphysicaldestdelete" text="To Delete a JMS Physical Destination" expand="false"></tocitem>
+      <tocitem target="task-jmsflushmessages" text="To Remove Messages from a JMS Physical Destination" expand="false"></tocitem>
+      <tocitem target="task-jmsphysicaldeststats" text="To View Statistics for a JMS Physical Destination" expand="false"></tocitem>
+    </tocitem>
+  </tocitem>
+  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-resources" text="Resources" expand="false">
+      <tocitem target="ref-group-jmsresources" text="JMS Resources" expand="false">
+        <tocitem target="ref-jmsresources" text="JMS Resources" expand="false"></tocitem>
+        <tocitem target="ref-group-jmsconnectionfactories" text="Connection Factories" expand="false">
+          <tocitem target="ref-jmsconnectionfactories" text="JMS Connection Factories" expand="false"></tocitem>
+          <tocitem target="ref-jmsconnectionnew" text="New JMS Connection Factory" expand="false"></tocitem>
+          <tocitem target="ref-jmsconnectionedit" text="Edit JMS Connection Factory" expand="false"></tocitem>
+          <tocitem target="ref-jmsconnectionproperties" text="Properties Specific to JMS Connection Factories" expand="false"></tocitem>
+        </tocitem>
+        <tocitem target="ref-group-jmsdestinationresources" text="Destination Resources" expand="false">
+          <tocitem target="ref-jmsdestinationresources" text="JMS Destination Resources" expand="false"></tocitem>
+          <tocitem target="ref-jmsdestinationnew" text="New JMS Destination Resource" expand="false"></tocitem>
+          <tocitem target="ref-jmsdestinationedit" text="Edit JMS Destination Resource" expand="false"></tocitem>
+        </tocitem>
+      </tocitem>
+    </tocitem>
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+      <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+        <tocitem target="ref-jmsavailability" text="JMS Availability" expand="false"></tocitem>
+      </tocitem>
+      <tocitem target="ref-group-jmsservice" text="Java Message Service" expand="false">
+        <tocitem target="ref-jmsservice" text="Java Message Service" expand="false"></tocitem>
+        <tocitem target="ref-mqschemeservice" text="MQ Scheme and MQ Service Address Syntax" expand="false"></tocitem>
+        <tocitem target="ref-jmsservice-additional-props" text="Properties Specific to the JMS Service" expand="false"></tocitem>
+        <tocitem target="ref-group-jmshosts" text="JMS Hosts" expand="false">
+          <tocitem target="ref-jmshosts" text="JMS Hosts" expand="false"></tocitem>
+          <tocitem target="ref-jmshostnew" text="New JMS Host" expand="false"></tocitem>
+          <tocitem target="ref-jmshostedit" text="Edit JMS Host" expand="false"></tocitem>
+        </tocitem>
+        <tocitem target="ref-group-jmsphysicaldest" text="Physical Destinations" expand="false">
+          <tocitem target="ref-jmsphysicaldest" text="JMS Physical Destinations" expand="false"></tocitem>
+          <tocitem target="ref-jmsphysicaldestnew" text="New JMS Physical Destination" expand="false"></tocitem>
+          <tocitem target="ref-jmsphysicaldestedit" text="Edit JMS Physical Destination" expand="false"></tocitem>
+          <tocitem target="ref-jmsphysicaldeststats" text="View JMS Physical Destination Statistics" expand="false"></tocitem>
+        </tocitem>
+      </tocitem>
+    </tocitem>
+  </tocitem>
+</toc>
