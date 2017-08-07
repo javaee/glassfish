@@ -41,7 +41,7 @@
 
 #Contract 1. returns the TEST ID, which you assigned in step 3.a
 list_test_ids(){
-  echo connector_all
+  echo connector_all connector_group_1 connector_group_2 connector_group_3 connector_group_4
 }
  
 test_run(){
@@ -49,14 +49,12 @@ test_run(){
   export HUDSON=true
   export ROOT=`pwd`
   echo $ROOT
-  cd $APS_HOME/../v2-tests/appserv-tests
   ant startDomain startDerby
-  antTarget="clean-all clean all report"
   cd $ROOT
-  time ant $antTarget | tee $TEST_RUN_LOG
+  echo Running target: $TARGET
+  time ant clean-all start-record $TARGET stop-record report | tee $TEST_RUN_LOG
   antStatus=$?
   cp connector.output tests-run.log
-  cd $APS_HOME/../v2-tests/appserv-tests
   ant stopDomain stopDerby
   if [ $antStatus -ne 0 ]
   then
@@ -75,6 +73,7 @@ run_test_id(){
   unzip_test_resources $WORKSPACE/bundles/glassfish.zip
   cd `dirname $0`
   test_init
+  get_test_target $1
   export ROOT=`pwd`
   export TEST_RUN_LOG=$ROOT/tests-run.log
   #run the actual test function
@@ -90,6 +89,18 @@ post_test_run(){
      delete_bundle
      cd -
 }
+
+get_test_target(){
+	case $1 in
+		connector_all )
+			TARGET=all
+			export TARGET;;
+                * )
+                       TARGET=$1
+                       export TARGET;;
+	esac
+
+}
  
 #Contract 3. script init code.
 OPT=$1
@@ -100,6 +111,4 @@ case $OPT in
   run_test_id )
     trap post_test_run EXIT
     run_test_id $TEST_ID ;;
-  connector_all )
-    test_run;;
 esac
