@@ -183,11 +183,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>javax.security.enterprise</groupId>
-            <artifactId>javax.security.enterprise-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <optional>true</optional>
