@@ -80,6 +80,27 @@ public final class Assert {
         assertNotNull(response);
         assertEquals(500, response.getStatusCode());
     }
+
+    public static void assertApplicationPrincipalAndContainerPrincipalName(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertApplicationPrincipalAndContainerPrincipalSubject("reza", "foo", response
+                .getContentAsString());
+    }
+
+    public static void assertBundledHAMPrecedenceOverLoginConfig(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertBundledHAMPrecedenceOverLoginConfig("reza", "foo", response
+                .getContentAsString());
+    }
+
+    public static void assertOnlyContainerCallerPrincipalIsPresent(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertOnlyContainerCallerPrincipalIsPresent("reza", "foo", response
+                .getContentAsString());
+    }
     
     public static void assertAuthenticated(String userType, String name, String response, String... roles) {
         assertTrue(
@@ -154,5 +175,33 @@ public final class Assert {
                         response,
                 response.contains(userType + " user has access to " + resource + ": true"));
     }
+
+    public static void assertBundledHAMPrecedenceOverLoginConfig(String name, String role, String response) {
+        assertTrue(
+                "For " + name + " authentication should have been performed by TestAuthenticationMechanism, but wasn't. \n" +
+                        "+ Response: \n" +
+                        response,
+                response.contains(String.format("Authentication Mechanism:TestAuthenticationMechanism")));
+    }
+
+    public static void assertApplicationPrincipalAndContainerPrincipalSubject(String name, String role, String response) {
+        assertTrue(
+                "Both application principal's and container principal's name should have been same as "
+                        + " but was not. \n Response: \n" +
+                        response,
+                response.contains(String.format("Subject representing caller %s contains both container principal and " +
+                        "application principal and is in role %s", name, role)));
+    }
+
+    public static void assertOnlyContainerCallerPrincipalIsPresent(String name, String role, String response) {
+        assertTrue(
+                "For " + name + " only container caller principal should have been present, but wasn't. \n" +
+                        "+ Response: \n" +
+                        response,
+                response.contains(String.format("Only container caller principal is present for user %s in role %s",
+                        name, role)));
+    }
+
+
 
 }
