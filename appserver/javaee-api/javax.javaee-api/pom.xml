@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -49,8 +49,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaee-api</artifactId>
-    <name>Java(TM) EE 7 Specification APIs</name>
-    <description>Java(TM) EE 7 Specification APIs</description>
+    <name>Java(TM) EE 8 Specification APIs</name>
+    <description>Java(TM) EE 8 Specification APIs</description>
     
     <developers>
         <developer>

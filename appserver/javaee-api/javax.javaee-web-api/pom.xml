@@ -49,8 +49,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaee-web-api</artifactId>
-    <name>Java(TM) EE 7 Web Specification APIs</name>
-    <description>Java(TM) EE 7 Web Specification APIs</description>
+    <name>Java(TM) EE 8 Web Specification APIs</name>
+    <description>Java(TM) EE 8 Web Specification APIs</description>
     
     <developers>
         <developer>
@@ -180,6 +180,11 @@
         <dependency>
             <groupId>javax.json.bind</groupId>
             <artifactId>javax.json.bind-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

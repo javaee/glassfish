@@ -202,7 +202,7 @@
                         <doctitle>${project.name}</doctitle>
                         <windowtitle>${project.name}</windowtitle>
                         <bottom>
-<![CDATA[Copyright &#169; 1996-2015,
+<![CDATA[Copyright &#169; 1996-2017,
     <a href="http://www.oracle.com">Oracle</a>
     and/or its affiliates. All Rights Reserved.
     Use is subject to
