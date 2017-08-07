@@ -45,7 +45,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.main</groupId>
-        <artifactId>glassfish-nucleus-parent</artifactId>
+        <artifactId>glassfish-parent</artifactId>
         <version>5.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -113,13 +113,13 @@
         <dependency>
             <groupId>javax.security.enterprise</groupId>
             <artifactId>javax.security.enterprise-api</artifactId>
-            <version>1.0-b09</version>
+            <version>${javax.security.enterprise-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
             <artifactId>javax.security.enterprise</artifactId>
-            <version>1.0-b10</version>
+            <version>${javax.security.enterprise.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -37,31 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+ 
 package org.glassfish.soteria.test;
+import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
+import javax.enterprise.context.Dependent;
+import javax.security.enterprise.identitystore.PasswordHash;
 
-@DatabaseIdentityStoreDefinition(
-    dataSourceLookup="${'jdbc/__default'}", 
-    callerQuery="#{'select password from caller where name = ?'}",
-    groupsQuery="select group_name from caller_groups where caller_name = ?",
-    hashAlgorithm = PlaintextPasswordHash.class,
-    hashAlgorithmParameters = {
-        "foo=bar", 
-        "kax=zak", 
-        "foox=${'iop'}",
-        "${applicationConfig.dyna}"
-        
-    } // just for test / example
-)
-@ApplicationScoped
-@Named
-public class ApplicationConfig {
-    
-    public String[] getDyna() {
-        return new String[] {"dyn=1","dyna=2","dynam=3"};
+@Dependent
+public class PlaintextPasswordHash implements PasswordHash {
+
+    @Override
+    public void initialize(Map<String, String> parameters) {
+
     }
-    
+
+    @Override
+    public String generate(char[] password) {
+        return new String(password);
+    }
+
+    @Override
+    public boolean verify(char[] password, String hashedPassword) {
+         //don't bother with constant time comparison; more portable
+         //this way, and algorithm will be used only for testing.
+        return (password != null && password.length > 0 &&
+                hashedPassword != null && hashedPassword.length() > 0 &&
+                hashedPassword.equals(new String(password)));
+    }
 }
