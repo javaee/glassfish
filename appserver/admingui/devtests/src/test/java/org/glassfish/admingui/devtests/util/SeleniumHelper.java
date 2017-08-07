@@ -116,10 +116,13 @@ public class SeleniumHelper {
     }
 
     public String getBaseUrl() {
-        String hostName = null;
+        String hostName = SeleniumHelper.getParameter("host", null);
         try {
-            hostName = InetAddress.getLocalHost().getCanonicalHostName();
+            if (hostName == null) {
+              hostName = InetAddress.getLocalHost().getCanonicalHostName();
+            }
         } catch (UnknownHostException ex) {
+            hostName = "localhost";
             Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "http://" + hostName + ":" + getParameter("admin.port", "4848");
