@@ -211,7 +211,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
         // See if the username / password has been passed in...
         String username = request.getParameter("j_username");
-        String password = request.getParameter("password");
+        String password = request.getParameter("j_password");
         if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
             // Not passed in, show the login page...
             String origPath = request.getRequestURI();

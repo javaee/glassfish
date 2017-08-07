@@ -177,7 +177,7 @@ public class WebTest {
             os = sock.getOutputStream();
             String get = "GET " + contextRoot
                 + "/j_security_check?j_username=" + adminUser
-                + "&password=" + adminPassword
+                + "&j_password=" + adminPassword
                 + " HTTP/1.0\n";
             System.out.println(get);
             os.write(get.getBytes());

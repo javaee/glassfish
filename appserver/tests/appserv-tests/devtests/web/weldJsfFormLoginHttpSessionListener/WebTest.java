@@ -95,7 +95,7 @@ public class WebTest {
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET " + contextRoot + "/j_security_check?j_username=" + adminUser
-            + "&password=" + adminPassword + " HTTP/1.0";
+            + "&j_password=" + adminPassword + " HTTP/1.0";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n\n".getBytes());

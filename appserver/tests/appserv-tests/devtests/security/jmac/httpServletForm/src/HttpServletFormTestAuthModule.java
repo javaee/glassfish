@@ -115,7 +115,7 @@ public class HttpServletFormTestAuthModule implements ServerAuthModule {
             }
 
             username = request.getParameter("j_username");
-            password = request.getParameter("password");
+            password = request.getParameter("j_password");
 
             if (username == null || password == null) {
                 System.out.println("forward to login form");
