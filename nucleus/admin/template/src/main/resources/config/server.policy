@@ -144,3 +144,7 @@ grant  codeBase "file:${com.sun.aas.instanceRoot}/applications/-"{
     permission java.io.FilePermission       "<<ALL FILES>>", "read,write";
     permission org.hibernate.validator.HibernateValidatorPermission "accessPrivateMembers";
 };
+//Added for changes proposed by Derby 10.12.1.1 (DERBY-6648)
+grant {
+     permission org.apache.derby.security.SystemPermission "engine", "usederbyinternals";
+};

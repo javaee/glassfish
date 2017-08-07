@@ -153,7 +153,7 @@ test_run_servlet_tck(){
 		TESTDIR=$WORKSPACE/servlettck/src/com/sun/ts/tests
 		for i in `ls $TESTDIR`
 			do
-				if [[ (-d $TESTDIR/$i)  && ( $i != "jsp" &&  $i != "common") ]]; then
+				if [[ (-d $TESTDIR/$i)  && ( $i != "jsp" &&  $i != "common" && $i != "signaturetest") ]]; then
 					if [[ -z $(grep $i `dirname $0`/test_dir.properties) ]]; then
 						echo "A new folder $i is added in the test source which has no entry in the properties file" 
 						exit 1
@@ -253,7 +253,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec servlet_tck_signaturetest-servlet
+	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec
 }
 
 cts_to_junit(){

@@ -44,7 +44,7 @@ import javax.ejb.Remote;
 
 @Remote
 public interface MySessionBeanRemote {
-    public static final String RemoteJNDIName =  MySessionBean.class.getSimpleName() + "/remote";
+    public static final String RemoteJNDIName =  "MySessionBean/remote";
 
     public void sendMessage(String text);
 

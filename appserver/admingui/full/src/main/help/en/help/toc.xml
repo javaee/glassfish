@@ -1,0 +1,96 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<toc version="2.0">
+  <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-batchjobexecutions" text="Viewing Batch Job Executions" expand="false">
+      <tocitem target="task-viewbatchjobexecutions" text="To View Batch Job Executions" expand="false"></tocitem>
+    </tocitem>
+    <tocitem target="task-group-batchruntime" text="Configuring the Batch Runtime" expand="false">
+      <tocitem target="task-configurebatchruntime" text="To Configure the Batch Runtime" expand="false"></tocitem>
+    </tocitem>
+    <tocitem target="task-group-javamailresources" text="Configuring JavaMail Sessions" expand="false">
+      <tocitem target="task-javamailsessioncreate" text="To Create a JavaMail Session" expand="false"></tocitem>
+      <tocitem target="task-javamailsessionsedit" text="To Edit a JavaMail Session" expand="false"></tocitem>
+      <tocitem target="task-javamailtargets" text="To Manage JavaMail Session Targets" expand="false"></tocitem>
+      <tocitem target="task-javamailsessionsdelete" text="To Delete a JavaMail Session" expand="false"></tocitem>
+    </tocitem>
+    <tocitem target="task-group-jndiresources" text="Configuring JNDI Resources" expand="false">
+      <tocitem target="task-jndicustomresourcenew" text="To Create a Custom JNDI Resource" expand="false"></tocitem>
+      <tocitem target="task-jndicustomresourceedit" text="To Edit a Custom JNDI Resource" expand="false"></tocitem>
+      <tocitem target="task-jndicustomresourcedelete" text="To Delete a Custom JNDI Resource" expand="false"></tocitem>
+      <tocitem target="task-jndiexternalresourcecreate" text="To Create an External JNDI Resource" expand="false"></tocitem>
+      <tocitem target="task-jndiexternalresourceedit" text="To Edit an External JNDI Resource" expand="false"></tocitem>
+      <tocitem target="task-jndiexternalresourcedelete" text="To Delete an External JNDI Resource" expand="false"></tocitem>
+    </tocitem>
+  </tocitem>
+  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-appservsettings" text="server (Admin Server)" expand="false">
+      <tocitem target="ref-group-batchjobs" text="Batch" expand="false">
+        <tocitem target="ref-batchjobslisting" text="Batch Job Executions" expand="false"></tocitem>
+        <tocitem target="ref-batchjobsexecution" text="Batch Job Execution Details" expand="false"></tocitem>
+        <tocitem target="ref-batchjobssteps" text="Batch Job Execution Steps" expand="false"></tocitem>
+        <tocitem target="ref-batchjobsconfiguration" text="Batch Runtime Configuration" expand="false"></tocitem>
+      </tocitem>
+    </tocitem>
+    <tocitem target="ref-group-resources" text="Resources" expand="false">
+      <tocitem target="ref-group-javamailresources" text="JavaMail Sessions" expand="false">
+        <tocitem target="ref-javamailsessions" text="JavaMail Sessions" expand="false"></tocitem>
+        <tocitem target="ref-javamailsessioncreate" text="New JavaMail Session" expand="false"></tocitem>
+        <tocitem target="ref-javamailsessionsedit" text="Edit JavaMail Session" expand="false"></tocitem>
+      </tocitem>
+      <tocitem target="ref-group-jndi" text="JNDI" expand="false">
+        <tocitem target="ref-jndi" text="JNDI" expand="false"></tocitem>
+        <tocitem target="ref-group-jndicustomresources" text="Custom Resources" expand="false">
+          <tocitem target="ref-jndicustomresources" text="Custom Resources" expand="false"></tocitem>
+          <tocitem target="ref-jndicustomresourcenew" text="New Custom Resource" expand="false"></tocitem>
+          <tocitem target="ref-jndicustomresourceedit" text="Edit Custom Resource" expand="false"></tocitem>
+        </tocitem>
+        <tocitem target="ref-group-jndiexternalresources" text="External Resources" expand="false">
+          <tocitem target="ref-jndiexternalresources" text="External Resources" expand="false"></tocitem>
+          <tocitem target="ref-jndiexternalresourcenew" text="New External Resource" expand="false"></tocitem>
+          <tocitem target="ref-jndiexternalresourceedit" text="Edit External Resource" expand="false"></tocitem>
+        </tocitem>
+      </tocitem>
+    </tocitem>
+  </tocitem>
+</toc>

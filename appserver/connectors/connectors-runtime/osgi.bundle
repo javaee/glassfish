@@ -54,7 +54,6 @@
 # we need to add it to the import list explicitly, as bnd can't
 # discover such dependencies.
 Import-Package: \
-    javax.validation.*;resolution:=optional;version="[${javax.validation.osgi.version.lowerbound},${javax.validation.osgi.version}]", \
     javax.resource.spi.endpoint, \
     *
 
