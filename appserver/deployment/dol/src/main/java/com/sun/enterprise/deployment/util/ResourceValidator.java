@@ -719,6 +719,8 @@ public class ResourceValidator implements EventListener, ResourceValidatorVisito
         // RA-name and the type of this resource are stored
         List<Map.Entry<String, String>> raNames = (List<Map.Entry<String, String>>)
                 dc.getTransientAppMetadata().get(ResourceConstants.APP_SCOPED_RESOURCES_RA_NAMES);
+        if (raNames == null)
+            return;
         for (Map.Entry<String, String> entry: raNames) {
             validateRAName(entry.getKey(), entry.getValue());
         }

@@ -411,6 +411,9 @@
                             <pattern>.log</pattern>
                             <pattern>.bin</pattern>
                             <pattern>.bat</pattern>
+                            <pattern>.1</pattern>
+                            <pattern>.1m</pattern>
+                            <pattern>.5asc</pattern>
                             <pattern>/TODO</pattern>
                             <pattern>/MANIFEST.MF</pattern>
                             <pattern>/manifest.mf</pattern>
@@ -460,6 +463,28 @@
                 </executions>
             </plugin>
 	    -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/manpages</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>glassfishbuild-maven-plugin</artifactId>
@@ -1053,18 +1078,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
                 <version>1.6.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.man</groupId>
-                <artifactId>osgi-cli-remote-manpage</artifactId>
-                <version>${v3-docs.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.man</groupId>
-                <artifactId>osgi-cli-interactive-manpage</artifactId>
-                <version>${v3-docs.version}</version>
-                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
