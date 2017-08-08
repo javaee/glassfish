@@ -52,7 +52,8 @@ OPTIONS
 
        --contextroot
            Valid only if the archive is a web module. It is ignored for other
-           archive types; defaults to filename without extension.
+           archive types; it will be the value specified by default-context-path
+           in web.xml, if specified; defaults to filename without extension.
 
        --precompilejsp
            By default this option does not allow the JSP to be precompiled

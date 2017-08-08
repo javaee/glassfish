@@ -204,7 +204,7 @@ public class CommandResourceMetaData {
                 
                 try {
                     Class<?> tclass = Class.forName(t);
-                    if (tclass != null && ConfigBeanProxy.class.isAssignableFrom(tclass)) {
+                    if (ConfigBeanProxy.class.isAssignableFrom(tclass)) {
                         String beanName = tclass.getSimpleName();
                         for (Method m : tclass.getMethods()) {
                             if (m.isAnnotationPresent(Create.class)) {
