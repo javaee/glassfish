@@ -54,7 +54,7 @@
     
     <developers>
         <developer>
-            <id>shannon</id>
+            <id>bshannon</id>
             <name>Bill Shannon</name>
             <organization>Oracle Corp.</organization>
             <roles>
@@ -146,24 +146,6 @@
         <dependency>
             <groupId>javax.resource</groupId>
             <artifactId>javax.resource-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!-- 
-            should be replaced with javax.jws-api, see GLASSFISH-19652
-        -->
-        <dependency>
-            <groupId>javax.jws</groupId>
-            <artifactId>jsr181-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>javax.xml.soap-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.ws</groupId>
-            <artifactId>jaxws-api</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
