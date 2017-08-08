@@ -63,7 +63,7 @@ public class ValidateAvailablePrincipalIT extends ArquillianBase {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
     @Rule
-    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::AppCallerPrincipal");
+    public TestWatcher reportWatcher=new ReportWatcher(stat, "Security::soteria::ValidateAvailablePrincipalIT");
 
     @AfterClass
     public static void printSummary(){
