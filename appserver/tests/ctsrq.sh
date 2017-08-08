@@ -65,7 +65,7 @@ Usage:
  6. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>"
 	                     -c "</net/<Host_name>/<cts_bundle_location>/*.zip"
 		 --->  Run the specified CTS test identifiers against specified
-		       branch using the locally build CTS bundle. Note that CTS
+		       branch using the locally built CTS bundle. Note that CTS
 		       bundle location should be network accessible.
  7. ctsrq.sh [-h]--->  Show this message
 EOF
