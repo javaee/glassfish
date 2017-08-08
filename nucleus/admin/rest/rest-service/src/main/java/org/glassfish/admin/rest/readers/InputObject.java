@@ -280,7 +280,7 @@ public abstract class InputObject extends ProviderUtil {
                 if (s.indexOf('.') > -1 || s.indexOf('e') > -1 || s.indexOf('E') > -1) {
                     return Double.valueOf(s);
                 } else {
-                    Long myLong = new Long(s);
+                    Long myLong = Long.valueOf(s);
                     if (myLong.longValue() == myLong.intValue()) {
                         return myLong.intValue();
                     } else {

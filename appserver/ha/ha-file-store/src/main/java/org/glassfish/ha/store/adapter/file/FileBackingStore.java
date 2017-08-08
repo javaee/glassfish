@@ -346,9 +346,7 @@ public class FileBackingStore<K extends Serializable, V extends Serializable>
                 }
             } catch (IOException ioEx) {/* Noop */}
             try {
-                if (bos != null) {
-                    bos.close();
-                }
+                bos.close();
             } catch (IOException ioEx) {/* Noop */}
         }
 

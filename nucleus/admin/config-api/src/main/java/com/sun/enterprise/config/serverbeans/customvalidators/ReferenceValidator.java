@@ -87,7 +87,7 @@ public class ReferenceValidator implements ConstraintValidator<ReferenceConstrai
             return true; //During creation the coresponding DOM is not fully loaded.
         }
         Collection<RemoteKeyInfo> remoteKeys = findRemoteKeys(config);
-        if (remoteKeys != null && !remoteKeys.isEmpty()) {
+        if (!remoteKeys.isEmpty()) {
             ServiceLocator habitat = dom.getHabitat();
             boolean result = true;
             boolean disableGlobalMessage = true;

@@ -330,7 +330,8 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
 
     private void setConnectionType(ConnectionHolder con, boolean isNonTx) {
         con.setConnectionType(conType_);
-        if (conType_ == ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE) {
+        if (conType_ == ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE &&
+                cm instanceof javax.resource.spi.LazyAssociatableConnectionManager) {
             con.setLazyAssociatableConnectionManager(
                     (javax.resource.spi.LazyAssociatableConnectionManager) cm);
         } else if (conType_ == ConnectionHolder.ConnectionType.LAZY_ENLISTABLE) {
@@ -338,7 +339,7 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
                 //if this is a getNonTxConnection call on the DataSource, we
                 //should not LazyEnlist
                 con.setConnectionType(ConnectionHolder.ConnectionType.STANDARD);
-            } else {
+            } else if(cm instanceof javax.resource.spi.LazyEnlistableConnectionManager) {
                 con.setLazyEnlistableConnectionManager(
                         (javax.resource.spi.LazyEnlistableConnectionManager) cm);
             }

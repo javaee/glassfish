@@ -33,11 +33,11 @@ CREATE TABLE expected_sql_trace (
 );
 
 
-INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection40', 'prepareStatement', 'select * from customer_stmt_wrapper;1003;1007;');
+INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection', 'prepareStatement', 'select * from customer_stmt_wrapper;1003;1007;');
 
 INSERT INTO expected_sql_trace VALUES('com.sun.gjc.spi.jdbc40.PreparedStatementWrapper40', 'getConnection', '');
 
-INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection40', 'prepareStatement', 'INSERT INTO null_entry_table VALUES(?);1003;1007;');
+INSERT INTO expected_sql_trace VALUES('org.apache.derby.client.net.NetConnection', 'prepareStatement', 'INSERT INTO null_entry_table VALUES(?);1003;1007;');
 
 INSERT INTO expected_sql_trace VALUES('com.sun.gjc.spi.jdbc40.PreparedStatementWrapper40', 'setString', '1;');
 
