@@ -56,6 +56,7 @@ import org.glassfish.apf.AnnotationHandlerFor;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
+import org.glassfish.internal.deployment.AnnotationTypesProvider;
 import org.jvnet.hk2.annotations.Service;
 
 @Service
@@ -65,9 +66,7 @@ public class JMSConnectionFactoryDefinitionsHandler extends AbstractResourceHand
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(JMSConnectionFactoryDefinitionsHandler.class);
 
-
-    public JMSConnectionFactoryDefinitionsHandler() {
-    }
+    public JMSConnectionFactoryDefinitionsHandler() {}
 
     @Override
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,  ResourceContainerContext[] rcContexts)
@@ -88,7 +87,7 @@ public class JMSConnectionFactoryDefinitionsHandler extends AbstractResourceHand
                 } else {
                     duplicates.add(defnName);
                 }
-                JMSConnectionFactoryDefinitionHandler handler = new JMSConnectionFactoryDefinitionHandler();
+                JMSConnectionFactoryDefinitionHandler handler = new JMSConnectionFactoryDefinitionHandler(ejbProvider);
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
