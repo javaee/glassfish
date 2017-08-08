@@ -54,9 +54,6 @@ import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
-
 @RequestScoped
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
     
