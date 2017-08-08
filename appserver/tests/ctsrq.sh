@@ -62,7 +62,12 @@ Usage:
                        specified Glassfish branch and email the results to the
                        specified email-ids. Note that double quotes are 
                        necessary if providing multiple test-ids.
- 6. ctsrq.sh [-h]--->  Show this message
+ 6. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>"
+	                     -c "</net/<Host_name>/<cts_bundle_location>/*.zip"
+		 --->  Run the specified CTS test identifiers against specified
+		       branch using the locally build CTS bundle. Note that CTS
+		       bundle location should be network accessible.
+ 7. ctsrq.sh [-h]--->  Show this message
 EOF
 )
 
