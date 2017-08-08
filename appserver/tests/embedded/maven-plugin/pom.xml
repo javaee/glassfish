@@ -90,8 +90,6 @@
                 </property>
             </activation>
             <modules>
-		<module>remoteejbs</module>
-		<module>mdb</module>
                 <module>init</module>
                 <module>applicationDispatcher</module>
                 <module>dirListing</module>
