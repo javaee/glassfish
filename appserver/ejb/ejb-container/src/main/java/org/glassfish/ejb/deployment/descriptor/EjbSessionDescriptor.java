@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -306,16 +307,20 @@ public class EjbSessionDescriptor extends EjbDescriptor
      */
     public EjbRemovalInfo getRemovalInfo(MethodDescriptor method) {
         // first try to find the exact match
-        for (MethodDescriptor methodDesc : removeMethods.keySet()) {
-            if (methodDesc.equals(method)) {
-                return removeMethods.get(methodDesc);
+        Iterator<Map.Entry<MethodDescriptor, EjbRemovalInfo>> entryIterator = removeMethods.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<MethodDescriptor, EjbRemovalInfo> entry = entryIterator.next();
+            if (entry.getKey().equals(method)) {
+                return entry.getValue();
             }
         }
 
         // if nothing is found, try to find the loose match
-        for (MethodDescriptor methodDesc : removeMethods.keySet()) {
-            if (methodDesc.implies(method)) {
-                return removeMethods.get(methodDesc);
+        entryIterator = removeMethods.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<MethodDescriptor, EjbRemovalInfo> entry = entryIterator.next();
+            if (entry.getKey().implies(method)) {
+                return entry.getValue();
             }
         }
 

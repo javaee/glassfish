@@ -734,8 +734,7 @@ public final class ConfigModularityUtils {
             return null;
         } finally {
             try {
-                if (bos != null)
-                    bos.close();
+                bos.close();
                 if (writer != null)
                     writer.close();
                 if (indentingXMLStreamWriter != null)
@@ -935,9 +934,6 @@ public final class ConfigModularityUtils {
             ConfigInjector injector = serviceLocator.getService(ConfigInjector.class, desc.getName());
             if (injector != null) {
                 String clzName = injector.getClass().getName().substring(0, injector.getClass().getName().length() - 8);
-                if (clzName == null) {
-                    continue;
-                }
                 try {
                     clz = injector.getClass().getClassLoader().loadClass(clzName);
                     if (clz == null) {
@@ -984,7 +980,7 @@ public final class ConfigModularityUtils {
 
         for (Class c : cbeans) {
             try {
-                if (c.asSubclass(extensionType) != null && c != extensionType) {
+                if (c != extensionType) {
                     extensions.add(c);
                 }
             } catch (ClassCastException e) {

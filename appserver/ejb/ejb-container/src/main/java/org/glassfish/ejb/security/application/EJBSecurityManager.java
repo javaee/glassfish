@@ -1087,7 +1087,7 @@ public final class EJBSecurityManager
 
     private static void resetPolicyContext(final String newV, String oldV)
             throws Throwable {
-        if (oldV != newV && newV != null && (oldV == null || !oldV.equals(newV))) {
+        if ( newV != null && (oldV == null || !oldV.equals(newV))) {
 
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("JACC: Changing Policy Context ID: oldV = "

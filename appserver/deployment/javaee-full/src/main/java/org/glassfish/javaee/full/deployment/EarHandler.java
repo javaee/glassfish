@@ -767,12 +767,10 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                             // ignore
                         }
                     }
-                    if (input != null) {
-                        try {
-                            input.close();
-                        } catch(Exception ex) {
+                    try {
+                        input.close();
+                    } catch(Exception ex) {
                             // ignore
-                        }
                     }
                 }
             }

@@ -333,19 +333,20 @@ public class ApplicationValidator extends ComponentValidator
 
     Set<EnvironmentProperty> environmentProperties = application != null ? application
         .getEnvironmentProperties() : null;
+    if(environmentProperties != null) {
+        for (EnvironmentProperty environmentProperty : environmentProperties) {
+            String jndiName = environmentProperty.getName();
+            if (environmentProperty.hasLookupName()) {
+                jndiName = environmentProperty.getLookupName();
+            } else if (environmentProperty.getMappedName().length() > 0) {
+                jndiName = environmentProperty.getMappedName();
+            }
 
-    for (EnvironmentProperty environmentProperty : environmentProperties) {
-      String jndiName = environmentProperty.getName();
-      if (environmentProperty.hasLookupName()) {
-        jndiName = environmentProperty.getLookupName();
-      } else if (environmentProperty.getMappedName().length() > 0) {
-        jndiName = environmentProperty.getMappedName();
-      }
-
-      if (jndiName.startsWith(JNDI_COMP) || jndiName.startsWith(JNDI_MODULE)) {
-        inValidJndiName = jndiName;
-        return false;
-      }
+            if (jndiName.startsWith(JNDI_COMP) || jndiName.startsWith(JNDI_MODULE)) {
+                inValidJndiName = jndiName;
+                return false;
+            }
+        }
     }
 
     // Reads resource definition descriptor at application level
@@ -618,9 +619,10 @@ public class ApplicationValidator extends ComponentValidator
 
         Vector appVectorName = validNameSpaceDetails.get(APP_KEYS);
         Vector ebdVectorName = validNameSpaceDetails.get(EJBBUNDLE_KEYS);
-
-        for (String key : allResourceDescriptors.keySet()) {
-            CommonResourceValidator commonResourceValidator = allResourceDescriptors.get(key);
+        Iterator<Map.Entry<String, CommonResourceValidator>> entires = allResourceDescriptors.entrySet().iterator();
+        while(entires.hasNext()) {
+            Map.Entry<String, CommonResourceValidator> entry = entires.next();
+            CommonResourceValidator commonResourceValidator = entry.getValue();
             Vector scopeVector = commonResourceValidator.getScope();
             String jndiName = commonResourceValidator.getJndiName();
 
@@ -631,7 +633,7 @@ public class ApplicationValidator extends ComponentValidator
                         if (scope.equals(appVectorName.get(j))) {
                             inValidJndiName = jndiName;
                             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.util.application.invalid.jndiname.scope",
-                                new Object[] { jndiName });
+                                    new Object[] { jndiName });
                             return false;
                         }
                     }
@@ -639,7 +641,7 @@ public class ApplicationValidator extends ComponentValidator
                         if (scope.equals(ebdVectorName.get(j))) {
                             inValidJndiName = jndiName;
                             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.util.application.invalid.jndiname.scope",
-                                new Object[] { jndiName });
+                                    new Object[] { jndiName });
                             return false;
                         }
                     }
@@ -653,7 +655,7 @@ public class ApplicationValidator extends ComponentValidator
                         if (scope.equals(appVectorName.get(j))) {
                             inValidJndiName = jndiName;
                             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.util.application.invalid.jndiname.scope",
-                                new Object[] { jndiName });
+                                    new Object[] { jndiName });
                             return false;
                         }
                     }

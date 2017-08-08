@@ -74,6 +74,10 @@ public class CloningNamingObjectFactory
         return false;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public Object create(Context ic)
             throws NamingException {
         return (delegate != null)

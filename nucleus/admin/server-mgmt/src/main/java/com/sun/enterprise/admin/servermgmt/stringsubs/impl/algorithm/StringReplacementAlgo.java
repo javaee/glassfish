@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.servermgmt.stringsubs.impl.algorithm;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.sun.enterprise.admin.servermgmt.stringsubs.StringSubstitutionException;
@@ -81,8 +82,10 @@ public class StringReplacementAlgo implements SubstitutionAlgorithm {
             int count = 0;
             while ((count = reader.read(cbuffer)) > 0) {
                 inputLine = new String(cbuffer, 0, count);
-                for(String key : _substitutionMap.keySet()) {
-                    inputLine = inputLine.replace(key, _substitutionMap.get(key));
+                Iterator<Map.Entry<String, String>> entryIterator = _substitutionMap.entrySet().iterator();
+                while (entryIterator.hasNext()) {
+                    Map.Entry<String, String> entry = entryIterator.next();
+                    inputLine = inputLine.replace(entry.getKey(),entry.getValue());
                 }
                 writer.write(inputLine);
             }

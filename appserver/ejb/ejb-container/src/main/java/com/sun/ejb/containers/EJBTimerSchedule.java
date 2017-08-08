@@ -170,15 +170,9 @@ public class EJBTimerSchedule extends TimerSchedule {
         return getScheduleAsString().hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (o == null || !(o instanceof EJBTimerSchedule))
-            return false;
-
-        EJBTimerSchedule t = (EJBTimerSchedule)o;
-        return getScheduleAsString().equals(t.getScheduleAsString());
-
+        return (o instanceof EJBTimerSchedule) && super.equals(o);
     }
 
     /**
