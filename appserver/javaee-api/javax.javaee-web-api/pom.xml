@@ -73,7 +73,8 @@
     
     <properties>
         <!-- we don't process the rpc classes inlined in ejb-api -->
-        <extra.excludes>javax/xml/rpc/**</extra.excludes>
+        <!-- do NOT pacakge javax.resource and javax.security.jacc as part of web api -->
+        <extra.excludes>javax/xml/rpc/**,javax/resource/**,javax/security/jacc/**</extra.excludes>
     </properties>
 
     <build>
@@ -221,6 +222,26 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.resource</groupId>
+            <artifactId>javax.resource-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.jacc</groupId>
+            <artifactId>javax.security.jacc-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.auth.message</groupId>
+            <artifactId>javax.security.auth.message-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
