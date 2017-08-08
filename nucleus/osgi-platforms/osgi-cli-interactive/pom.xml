@@ -109,12 +109,6 @@
                                     <artifactId>jline</artifactId>
                                     <overWrite>true</overWrite>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.glassfish.docs.man</groupId>
-                                    <artifactId>osgi-cli-interactive-manpage</artifactId>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
