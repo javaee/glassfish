@@ -42,7 +42,6 @@ package org.glassfish.soteria.test;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
-import javax.security.enterprise.identitystore.PlaintextPasswordHash;
 
 @DatabaseIdentityStoreDefinition(
     dataSourceLookup="${'jdbc/__default'}", 

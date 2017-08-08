@@ -259,15 +259,13 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             des="";
         }
         final String message = ResourceUtil.encodeString((ar instanceof RestActionReporter) ? ((RestActionReporter)ar).getCombinedMessage() : ar.getMessage());
-        if (message!=null){
-            result.append("<h2>")
+        result.append("<h2>")
                 .append(des)
                 .append(" output:</h2><h3>")
                 .append("<pre>")
                 .append(message)
                 .append("</pre>")
                 .append("</h3>");
-        }
         if (ar.getActionExitCode() != ExitCode.SUCCESS) {
             result.append("<h3>Exit Code: ").append(ar.getActionExitCode().toString()).append("</h3>");
 
