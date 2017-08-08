@@ -375,9 +375,12 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             Application app = applications.getApplication(appName);
             this.name = appName;
 
-            final DeploymentContext basicDC = deployment.disable(this, app, appInfo, report, logger);
-            
-            suppInfo.setDeploymentContext((ExtendedDeploymentContext)basicDC);
+            String serverName = server.getName();
+            if (serverName.equals(target) || (server.getCluster() != null && server.getCluster().getName().equals(target))) {
+                final DeploymentContext basicDC = deployment.disable(this, app, appInfo, report, logger);
+
+                suppInfo.setDeploymentContext((ExtendedDeploymentContext) basicDC);
+            }
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error during disabling: ", e);
