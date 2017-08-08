@@ -64,7 +64,7 @@
 
     <modules>
         <module>common</module>
-        <!--module>app-mem-basic</module>
+        <module>app-mem-basic</module>
         <module>app-custom</module>
         <module>app-custom-session</module>
         <module>app-custom-rememberme</module>
@@ -80,7 +80,6 @@
         <module>app-bundled-ham-basic-login-config-form</module>
         <module>app-caller-principal</module> 
         <module>app-no-application-caller-principal</module>
-        
     </modules>
     
     <dependencyManagement>
