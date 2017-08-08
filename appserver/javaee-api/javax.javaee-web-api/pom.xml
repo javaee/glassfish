@@ -49,8 +49,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaee-web-api</artifactId>
-    <name>Java(TM) EE 8 Web Specification APIs</name>
-    <description>Java(TM) EE 8 Web Specification APIs</description>
+    <name>Java(TM) EE 8 Web Profile Specification APIs</name>
+    <description>Java(TM) EE 8 Web Profile Specification APIs</description>
     
     <developers>
         <developer>
