@@ -62,6 +62,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+		<module>remoteejbs</module>
+		<module>mdb</module>
                 <module>applicationDispatcher</module>
                 <module>dirListing</module>
                 <module>filterURIMapping</module>
