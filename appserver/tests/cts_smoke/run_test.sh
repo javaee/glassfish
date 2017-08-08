@@ -79,7 +79,6 @@ test_run_cts_smoke(){
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
 	unzip -q $CTS_SMOKE_BUNDLE
-
 	cd $TS_HOME/bin
 	#cp $CTS_SMOKE/$CTS_EXCLUDE_LIST .
 	cp ts.jte ts.jte.orig
@@ -111,17 +110,21 @@ test_run_cts_smoke(){
 	${SED} -e "s/javamail\.password=/javamail\.password\=cts1/g" ts.jte > ts.jte.new
 	mv ts.jte.new ts.jte
 	# End temp fix for javamail password
-
 	cd $TS_HOME/bin/xml
 	export ANT_HOME=$TS_HOME/tools/ant
 	export PATH=$ANT_HOME/bin:$PATH
-
+        
 	# SECURITY MANAGER ON
 	$S1AS_HOME/bin/asadmin start-domain
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
-
-	$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
+        if [[ -n $1 ]]; then
+		$TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
+		cat /tmp/javaee-smoke-group$1.properties
+		$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
+        else
+		$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
+	fi
 
 	#POST CLEANUPS
 	kill_process
@@ -224,6 +227,10 @@ run_test_id(){
 	if [[ $1 = "cts_smoke_all" ]]; then
 		test_run_cts_smoke
 		result=$WORKSPACE/results/smoke.log
+         elif [[ $1 = "cts_smoke_group-"* ]]; then
+                GROUP_ID=(`echo $1 | sed 's/cts_smoke_group-//'`)
+                test_run_cts_smoke $GROUP_ID
+                result=$WORKSPACE/results/smoke.log
 	elif [[ $1 = "servlet_tck_"* ]]; then
 		TEST_DIR_PROPERTIES=`dirname $0`/test_dir.properties
 		TEST_DIR_PROP_KEY=(`echo $1 | sed 's/servlet_tck_//'`)
@@ -239,9 +246,9 @@ run_test_id(){
 
 post_test_run(){
     if [[ $? -ne 0 ]]; then
-    	if [[ $TEST_ID = "cts_smoke_all" ]]; then
+    	if [[ $TEST_ID = "cts_smoke_all" || $TEST_ID = "cts_smoke_group-"* ]]; then
 	  		archive_cts || true
-	  	fi
+	fi
 	  	if [[ $TEST_ID = "servlet_tck_"* ]]; then
 	  		archive_servlet_tck || true
 	  	fi
@@ -253,7 +260,7 @@ post_test_run(){
 
 
 list_test_ids(){
-	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec
+	echo cts_smoke_all servlet_tck_all servlet_tck_servlet-api-servlet servlet_tck_servlet-api-servlet-http servlet_tck_servlet-compat servlet_tck_servlet-pluggability servlet_tck_servlet-spec  cts_smoke_group-1 cts_smoke_group-2 cts_smoke_group-3 cts_smoke_group-4 cts_smoke_group-5
 }
 
 cts_to_junit(){

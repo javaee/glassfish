@@ -143,7 +143,7 @@ public class Util {
             typeName = typeName.substring(0, typeName.length() - 1);
         }
 
-        if ((typeName != null) && (typeName.length() > 0)) {
+        if (typeName.length() > 0) {
             int index = typeName.lastIndexOf(delimiter);
             if (index != -1) {
                 return typeName.substring(index + 1);
@@ -436,15 +436,17 @@ public class Util {
 
         if (dir.isDirectory()) {
             File[] f = dir.listFiles();
-            if (f.length == 0) {
-                if (!dir.delete()) {
-                    if (RestLogging.restLogger.isLoggable(Level.WARNING)) {
-                        RestLogging.restLogger.log(Level.WARNING, RestLogging.UNABLE_DELETE_DIRECTORY, dir.getAbsolutePath());
+            if (f != null) {
+                if (f.length == 0) {
+                    if (!dir.delete()) {
+                        if (RestLogging.restLogger.isLoggable(Level.WARNING)) {
+                            RestLogging.restLogger.log(Level.WARNING, RestLogging.UNABLE_DELETE_DIRECTORY, dir.getAbsolutePath());
+                        }
                     }
-                }
-            } else {
-                for (final File ff : f) {
-                    deleteDirectory(ff);
+                } else {
+                    for (final File ff : f) {
+                        deleteDirectory(ff);
+                    }
                 }
             }
         } else {

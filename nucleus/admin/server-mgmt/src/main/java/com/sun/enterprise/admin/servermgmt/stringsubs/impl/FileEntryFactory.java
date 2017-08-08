@@ -92,16 +92,18 @@ class FileEntryFactory {
                 String expression = file.getName();
                 String[] fileList = parentDir.list();
                 Pattern pattern = Pattern.compile(expression);
-                for(String fileName : fileList) {
-                    Matcher matcher = pattern.matcher(fileName);
-                    if(matcher.matches()) {
-                        File matchingFile = new File(parentDir, fileName);
-                        if(matchingFile.exists() && matchingFile.canRead() && matchingFile.canWrite()) {
-                            retrievedFiles.add(matchingFile);
-                        } else {
-                        	if (_logger.isLoggable(Level.FINER)) {
-                        		_logger.log(Level.FINER, _strings.get("skipFileFromSubstitution", matchingFile.getAbsolutePath()));
-                        	}
+                if(fileList != null) {
+                    for (String fileName : fileList) {
+                        Matcher matcher = pattern.matcher(fileName);
+                        if (matcher.matches()) {
+                            File matchingFile = new File(parentDir, fileName);
+                            if (matchingFile.exists() && matchingFile.canRead() && matchingFile.canWrite()) {
+                                retrievedFiles.add(matchingFile);
+                            } else {
+                                if (_logger.isLoggable(Level.FINER)) {
+                                    _logger.log(Level.FINER, _strings.get("skipFileFromSubstitution", matchingFile.getAbsolutePath()));
+                                }
+                            }
                         }
                     }
                 }
