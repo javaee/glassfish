@@ -133,7 +133,9 @@ public class CustomTokenClient {
                                     port = Integer.valueOf(token.getValue());
                                 }
                                 // Find next available unused port by incrementing the port value by 1
-                                while (!NetUtils.isPortFree(port) && !usedPorts.contains(port++));
+                                while (!NetUtils.isPortFree(port) && !usedPorts.contains(port)) {
+                                    port++;
+                                }
                             }
                             usedPorts.add(port);
                             generatedSysTags.append(SystemPropertyTagBuilder.buildSystemTag(token, port.toString()));

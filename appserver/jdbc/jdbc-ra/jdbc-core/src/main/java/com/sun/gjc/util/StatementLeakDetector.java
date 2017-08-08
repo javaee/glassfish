@@ -48,6 +48,7 @@ import org.glassfish.resourcebase.resources.api.PoolInfo;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -215,8 +216,11 @@ public class StatementLeakDetector {
      */
     public void clearAllStatementLeakTasks() {
         synchronized (statementLeakLock) {
-            for (Statement stmt : statementLeakTimerTaskHashMap.keySet()) {
-                StatementLeakTask statementLeakTask = statementLeakTimerTaskHashMap.get(stmt);
+            Iterator<Map.Entry<Statement, StatementLeakTask>> entryIterator =
+                    statementLeakTimerTaskHashMap.entrySet().iterator();
+            while (entryIterator.hasNext()) {
+                Map.Entry<Statement,StatementLeakTask> entry = entryIterator.next();
+                StatementLeakTask statementLeakTask = entry.getValue();
                 statementLeakTask.cancel();
             }
             if (timer != null)

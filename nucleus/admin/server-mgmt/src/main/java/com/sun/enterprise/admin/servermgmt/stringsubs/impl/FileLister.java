@@ -182,8 +182,10 @@ final class FileLister {
         }
         else {
             File files[] = rootfile.listFiles();
-            for (File file : files) {
-                retFiles.addAll(getAllChildFiles(file));
+            if(files != null) {
+                for (File file : files) {
+                    retFiles.addAll(getAllChildFiles(file));
+                }
             }
         }
         return retFiles;

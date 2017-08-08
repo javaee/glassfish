@@ -108,9 +108,12 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
             ArrayList<URL> urls = new ArrayList<URL>();
             File idir = new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
             File mdir = new File(idir, "modules");
-            for (File f : mdir.listFiles()) {
-                if (f.toString().endsWith(".jar")) {
-                    urls.add(f.toURI().toURL());
+            File[] files = mdir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.toString().endsWith(".jar")) {
+                        urls.add(f.toURI().toURL());
+                    }
                 }
             }
                        

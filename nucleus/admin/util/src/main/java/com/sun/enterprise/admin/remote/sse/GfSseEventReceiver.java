@@ -89,7 +89,7 @@ public final class GfSseEventReceiver implements Closeable {
                         } else if(data != '\n') {
                             baos.write(data);
                             currentState = State.FIELD_NAME;
-                        } else if(data == '\n') {
+                        } else {
 //                            System.out.println(sbr);
                             if(!inboundEvent.isEmpty()) {
                                 return inboundEvent;
