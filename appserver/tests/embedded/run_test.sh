@@ -40,12 +40,9 @@
 #
 
 test_run_embedded_publisher(){
-#	M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
 	MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=384m"; export MAVEN_OPTS
 	MAVEN_REPO=$WORKSPACE/repository
-#	MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
 	PATH=$JAVA_HOME/bin:$PATH; export PATH
-#	mvn -version
 	echo $WORKSPACE
   cd $WORKSPACE/main
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
@@ -56,12 +53,11 @@ test_run_embedded_publisher(){
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
   cd $EMBEDDED_WORKSPACE/web
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
-#  cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/remoteejbs
-#  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
-#  cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/mdb
-#  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
+  cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/remoteejbs
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
+  cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/mdb
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   cd $WORKSPACE/main/appserver/tests/embedded
-#  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   mvn -Dbuild=snapshot  -Dmaven.repo.local=$WORKSPACE/repository -Dmaven.test.failure.ignore=true clean verify
   merge_junits
 }
