@@ -98,8 +98,11 @@ public class PythonClientGenerator extends ClientGenerator {
             addFileFromClasspath(ZIP_REST_PACKAGE_DIR, "restclient.py", zip);
             addFileFromClasspath(ZIP_REST_PACKAGE_DIR, "restresponse.py", zip);
             addFileFromClasspath(ZIP_REST_PACKAGE_DIR, "restclientbase.py", zip);
-            for (File file : baseDirectory.listFiles()) {
-                add(ZIP_REST_PACKAGE_DIR, file, zip);
+            File[] files = baseDirectory.listFiles();
+            if(files != null) {
+                for (File file : files) {
+                    add(ZIP_REST_PACKAGE_DIR, file, zip);
+                }
             }
         
             artifacts.put(zipFile.getName(), zipFile.toURI());

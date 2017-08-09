@@ -174,12 +174,10 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactoryImpl {
             validateAndSetIsolation(mc);
         } finally {
             if (mc == null) {
-                if (dsConn != null) {
-                    try {
-                        dsConn.close();
-                    } catch (SQLException e) {
-                        _logger.log(Level.FINEST, "Exception while closing connection : createManagedConnection" + dsConn);
-                    }
+                try {
+                    dsConn.close();
+                } catch (SQLException e) {
+                    _logger.log(Level.FINEST, "Exception while closing connection : createManagedConnection" + dsConn);
                 }
             }
         }

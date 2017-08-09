@@ -125,8 +125,10 @@ public class SubstitutionFileUtil
         }
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for(File f : files) {
-                removeDir(f);
+            if(files != null) {
+                for (File f : files) {
+                    removeDir(f);
+                }
             }
         }
         if (!file.delete()) {
