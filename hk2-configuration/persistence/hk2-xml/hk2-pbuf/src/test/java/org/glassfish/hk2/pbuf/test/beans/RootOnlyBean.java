@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Contract;
 @XmlRootElement(name="root-only")
 @XmlType(propOrder={ "name", "address" })
 public interface RootOnlyBean {
-    @XmlElement(name="name")
+    @XmlElement(name="name", defaultValue="bob")
     public String getName();
     public void setName(String name);
     

@@ -40,6 +40,8 @@
 package org.glassfish.hk2.pbuf.test.basic;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
@@ -49,6 +51,8 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.protobuf.DescriptorProtos;
 
 /**
  * @author jwells
@@ -64,6 +68,9 @@ public class PBufParserTest {
     @Test
     @org.junit.Ignore
     public void testMarshal() throws Exception {
+        ClassLoader cl = getClass().getClassLoader();
+        URL protoURL = cl.getResource("proto/RootOnlyBean.proto");
+        
         ServiceLocator locator = Utilities.enableLocator();
         
         XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);

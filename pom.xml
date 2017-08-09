@@ -190,6 +190,7 @@
         <springcontext.version>4.3.9.RELEASE</springcontext.version>
         <guice.version>4.1.0</guice.version>
         <hk2.mvn.plugins.version>2.5.0-b42</hk2.mvn.plugins.version>
+        <protobuf.version>3.3.1</protobuf.version>
 
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
@@ -860,6 +861,11 @@
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>jsr311-api</artifactId>
                 <version>${javax.jsr311.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

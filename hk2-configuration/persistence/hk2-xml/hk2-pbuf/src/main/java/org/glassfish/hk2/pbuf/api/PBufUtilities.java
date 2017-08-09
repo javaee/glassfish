@@ -40,12 +40,17 @@
 package org.glassfish.hk2.pbuf.api;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.pbuf.internal.PBufParser;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.xml.api.XmlServiceUtilities;
 
 public class PBufUtilities {
     /** The name of the XmlService that uses PBuf as its encoding/decoding format */
     public final static String PBUF_SERVICE_NAME = "PBufXmlParser";
     
     public static void enablePBufService(ServiceLocator locator) {
-        throw new AssertionError("not yet implemented");
+        ServiceLocatorUtilities.addClasses(locator, true, PBufParser.class);
+        
+        XmlServiceUtilities.enableXmlService(locator);
     }
 }

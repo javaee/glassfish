@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message RootOnlyBean {
+  string name = 1;
+  string address = 2;
+}
