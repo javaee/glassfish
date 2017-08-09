@@ -39,7 +39,7 @@
 # holder.
 #
 
-test_run_embedded_publisher(){
+test_run_embedded(){
 	MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=384m"; export MAVEN_OPTS
 	MAVEN_REPO=$WORKSPACE/repository
 	PATH=$JAVA_HOME/bin:$PATH; export PATH
@@ -63,7 +63,7 @@ test_run_embedded_publisher(){
 }
 
 merge_junits(){
-  TEST_ID="embedded_publisher_all"
+  TEST_ID="embedded_all"
   rm -rf ${WORKSPACE}/results || true
   mkdir -p ${WORKSPACE}/results/junitreports
   JUD="${WORKSPACE}/results/junitreports/test_results_junit.xml"
@@ -86,8 +86,8 @@ run_test_id(){
 	rm -rf main || true
 	unzip_test_resources "$WORKSPACE/bundles/main.zip -d main/"
   case ${TEST_ID} in
-    embedded_publisher_all)
-   	  test_run_embedded_publisher;;
+    embedded_all)
+   	  test_run_embedded;;
   esac
   upload_test_results
   delete_bundle
@@ -96,7 +96,7 @@ run_test_id(){
 
 
 list_test_ids(){
-	echo embedded_publisher_all
+	echo embedded_all
 }
 
 OPT=$1
