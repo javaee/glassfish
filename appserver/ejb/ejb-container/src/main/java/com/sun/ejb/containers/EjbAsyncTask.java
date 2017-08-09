@@ -103,7 +103,6 @@ public class EjbAsyncTask<V>
             if (returnValue instanceof Future) {
                 returnValue = (V) ((Future) returnValue).get();
             }
-
         } catch (InvocationTargetException ite) {
             inv.exception = ite.getCause();
             inv.exceptionFromBeanMethod = inv.exception;
@@ -133,6 +132,7 @@ public class EjbAsyncTask<V>
                 ejbFutureTask.setResultException(ee);
                 throw ee;
             } finally {
+                SecurityContext.setCurrent(null);
                 Utility.setContextClassLoader(prevCL);
             }
         }
