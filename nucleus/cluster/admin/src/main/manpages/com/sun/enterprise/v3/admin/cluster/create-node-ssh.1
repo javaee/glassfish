@@ -46,7 +46,7 @@ OPTIONS
        --installdir
            The full path to the parent of the base installation directory of
            the GlassFish Server software on the host, for example,
-           /export/glassfish3/. The default is the parent of the default base
+           /export/glassfish5/. The default is the parent of the default base
            installation directory of the GlassFish Server software for the
            DAS. This default is useful only if GlassFish Server is installed
            in the same location on all hosts.
@@ -173,11 +173,11 @@ EXAMPLES
        Example 1, Creating a Node
            This example creates the node adc for the host adc.example.com. By
            default, the parent of the base installation directory of the
-           GlassFish Server software is /export/glassfish3.
+           GlassFish Server software is /export/glassfish5.
 
                asadmin> create-node-ssh
                --nodehost adc.example.com
-               --installdir /export/glassfish3 adc
+               --installdir /export/glassfish5 adc
 
                Command create-node-ssh executed successfully.
 
@@ -211,4 +211,4 @@ SEE ALSO
 
        asadmin(1M)
 
-Java EE 7                         5 Jan 2012                create-node-ssh(1)
+Java EE 8                         09 Aug 2017                create-node-ssh(1)

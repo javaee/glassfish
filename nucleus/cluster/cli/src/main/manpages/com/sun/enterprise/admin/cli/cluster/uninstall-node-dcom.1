@@ -62,7 +62,7 @@ OPTIONS
        --installdir
            The absolute path to the parent of the base installation directory
            where the GlassFish Server software is installed on each host, for
-           example, C:\glassfish3.
+           example, C:\glassfish5.
 
            The user that is running this subcommand must have write access to
            the specified directory. Otherwise, an error occurs.
@@ -125,10 +125,10 @@ EXAMPLES
            xkyd.example.com.
 
            The software is uninstalled even if a user-defined node resides on
-           the host. The entire content of the C:\glassfish3 directory is
+           the host. The entire content of the C:\glassfish5 directory is
            removed.
 
-               asadmin> uninstall-node-dcom --force --installdir C:\glassfish3 xkyd.example.com
+               asadmin> uninstall-node-dcom --force --installdir C:\glassfish5 xkyd.example.com
                Command uninstall-node-dcom executed successfully.
 
 EXIT STATUS
@@ -143,4 +143,4 @@ SEE ALSO
 
        asadmin(1M)
 
-Java EE 7                         5 Jan 2012            uninstall-node-dcom(1)
+Java EE 8                         09 Aug 2017            uninstall-node-dcom(1)
