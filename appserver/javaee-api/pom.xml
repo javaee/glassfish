@@ -144,15 +144,6 @@
                     <inherited>false</inherited>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <configuration>
-                        <resourceBundles>
-                            <resourceBundle>org.glassfish:legal:1.1</resourceBundle>
-                        </resourceBundles>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>org.glassfish.build</groupId>
                     <artifactId>glassfishbuild-maven-plugin</artifactId>
                     <executions>
@@ -212,6 +203,16 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <resources>
+            <resource>
+                <targetPath>META-INF/</targetPath>
+                <filtering>false</filtering>
+                <directory>${project.basedir}/../license</directory>
+                <includes>
+                    <include>LICENSE.txt</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
     <profiles>
         <!--
