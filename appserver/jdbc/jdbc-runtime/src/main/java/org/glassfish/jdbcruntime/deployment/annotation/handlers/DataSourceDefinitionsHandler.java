@@ -94,7 +94,7 @@ public class DataSourceDefinitionsHandler extends AbstractResourceHandler {
                 }else{
                     duplicates.add(defnName);
                 }
-                DataSourceDefinitionHandler handler = new DataSourceDefinitionHandler();
+                DataSourceDefinitionHandler handler = new DataSourceDefinitionHandler(ejbProvider);
                 handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
