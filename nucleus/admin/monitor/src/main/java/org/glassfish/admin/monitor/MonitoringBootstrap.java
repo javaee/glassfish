@@ -432,15 +432,12 @@ public class MonitoringBootstrap implements PostConstruct, PreDestroy, EventList
         File[] files = xmlProvidersDir.listFiles(filter);
         if (files == null)
             return;
-        Map<String, File> providerMap = new HashMap();
-
         for (File file : files) {
             if (logger.isLoggable(Level.FINE))
                 logger.fine("Found the provider xml - " + file.getAbsolutePath());
             int index = file.getName().indexOf("-:");
             if (index != -1) {
                 String moduleName = file.getName().substring(0,index);
-                providerMap.put(moduleName, file);
                 if (logger.isLoggable(Level.FINE))
                     logger.fine(" The provider xml belongs to - \"" + moduleName + "\"");
                 if (!map.containsKey(moduleName)) {

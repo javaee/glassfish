@@ -575,7 +575,7 @@ public abstract class ManagedConnectionFactoryImpl implements javax.resource.spi
                                     parameterTypes = constructor.getParameterTypes();
                                     //For now only the no argument constructors are allowed.
                                     //TODO should this be documented?
-                                    if (parameterTypes != null && parameterTypes.length == 0) {
+                                    if (parameterTypes.length == 0) {
                                         listener = (SQLTraceListener) constructor.newInstance(initargs);
                                     }
                                 }

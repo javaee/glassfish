@@ -135,9 +135,8 @@ public class CachedCommandModel extends CommandModelData {
                     continue;
                 }
                 tag.append(pm.getName());
-                if (pm.getClass() != null) {
-                    tag.append(pm.getClass().getCanonicalName());
-                }
+                tag.append(pm.getClass().getCanonicalName());
+
                 Param param = pm.getParam();
                 if (param.multiple()) {
                     tag.append('M');
