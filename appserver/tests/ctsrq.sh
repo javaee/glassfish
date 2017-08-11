@@ -116,7 +116,7 @@ main() {
 
     shift "$((OPTIND-1))"
 
-    [[ -n "${gfs_branch}" && -n "${gfs_url}" ]] || { echo "Branch or glassfish binary url must be specified"; exit 1; }
+    [[ -n "${gfs_branch}" ]] || [[ -n "${gfs_url}" ]] || { echo "Branch or glassfish binary url must be specified"; exit 1; }
     [[ -n "${test_ids}" ]] || { echo "Test ids must be specified using -t option"; exit 1; }
 
     validate_given_test_ids ${test_ids[@]}
@@ -127,7 +127,7 @@ main() {
     # Generate a unique id for the job which will be used for identifying the job id later
 	unique_id=$RANDOM
 
-    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}&CTS_BUNDLE_LOCATION=${cts_bundle_location}"
+    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}&CTS_BUNDLE_LOCATION=${cts_bundle_location}&GLASSFISH_URL=${gfs_url}"
     last_build=`get_last_build_number`        
 
     # Trigger the build
