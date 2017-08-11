@@ -55,10 +55,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.devtests.util.ElementFinder;
 import org.glassfish.admingui.devtests.util.SeleniumHelper;
@@ -137,8 +133,19 @@ public class BaseSeleniumTestClass {
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
                 String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-                String url = "http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log";
-                InputStream is = getConnectionStream(url);
+                String url = "/management/domain/view-log";
+
+                String passwordFile = SeleniumHelper.getParameter("passwordfile", "");
+                String password = FileUtils.readFileToString(new File(passwordFile));
+                if(password.isEmpty() || !(password.startsWith("AS_ADMIN_PASSWORD=")) || password.length() <= 18) {
+                    throw new Exception("Password is not set correctly.");
+                } else {
+                    int index = password.indexOf("=");
+                    password = password.substring(index + 1, password.length() - 1);
+                }
+
+                int port = Integer.parseInt(SeleniumHelper.getParameter("admin.port", "4848"));
+                InputStream is = RestUtil.getInputStream(hostName, port, url, password, IS_SECURE_ADMIN_ENABLED);
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
                 String line = in.readLine();
@@ -154,15 +161,6 @@ public class BaseSeleniumTestClass {
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
-    }
-
-    private static InputStream getConnectionStream(String url) throws IOException{
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url);
-        HttpResponse response = client.execute(request);
-        InputStream is = response.getEntity().getContent();
-
-        return is;
     }
 
     @Before
