@@ -164,5 +164,6 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         reset();
         gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
+        waitForElement("propertyForm:resourcesTable");
     }
 }
