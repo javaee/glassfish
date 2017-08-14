@@ -49,6 +49,7 @@ import java.util.Properties;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -85,7 +86,18 @@ public abstract class ProxyImpl implements Proxy {
                 URI forwardURI = forwardUriBuilder.scheme("https").host(forwardInstance.getAdminHost()).port(forwardInstance.getAdminPort()).build(); //Host and Port are replaced to that of forwardInstanceName
                 client = addAuthenticationInfo(client, forwardInstance, habitat);
                 WebTarget resourceBuilder = client.target(forwardURI);
-                Response response = resourceBuilder.request(MediaType.APPLICATION_JSON).get(Response.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
+                SecureAdmin secureAdmin = habitat.getService(SecureAdmin.class);
+                final String indicatorValue = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
+                Invocation.Builder builder;
+                Response response;
+                if (indicatorValue != null) {
+                    builder = resourceBuilder.request(MediaType.APPLICATION_JSON).header(
+                            SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME,
+                            indicatorValue);
+                    response = builder.get(Response.class);
+                } else {
+                    response = resourceBuilder.request(MediaType.APPLICATION_JSON).get(Response.class);
+                }
                 Response.Status status = Response.Status.fromStatusCode(response.getStatus());
                 if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
                     String jsonDoc = response.readEntity(String.class);
