@@ -60,6 +60,8 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         markCheckbox("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad("Restart Required", 1000);
+        reset();
+        clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
         markCheckbox("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
