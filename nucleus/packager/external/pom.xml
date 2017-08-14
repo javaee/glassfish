@@ -68,7 +68,6 @@
         <module>jmxremote_optional</module>
         <module>ldapbp</module>
         <module>vboxjws</module>
-        <module>trilead-ssh2</module>
         <module>j-interop</module>
         <module>bean-validator</module>
         <module>bean-validator-cdi</module>
