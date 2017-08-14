@@ -136,6 +136,7 @@
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
 	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <libpam4j.version>1.4-SNAPSHOT</libpam4j.version>
     </properties>
 
     <modules>
@@ -1078,6 +1079,11 @@
                 <artifactId>derby-distribution</artifactId>
                 <version>${derby.version}</version>
                 <type>zip</type>
+           </dependency>
+           <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>libpam4j</artifactId>
+                <version>${libpam4j.version}</version>
            </dependency>
       </dependencies>
     </dependencyManagement>
