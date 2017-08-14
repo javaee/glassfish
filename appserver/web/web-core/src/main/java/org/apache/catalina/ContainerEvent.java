@@ -73,6 +73,12 @@ public final class ContainerEvent extends EventObject {
 
     public static final String PRE_DESTROY = "predestroy";
 
+    public static final String BEFORE_CONTEXT_INITIALIZER_ON_STARTUP
+        = "beforeContextInitializerOnStartup";
+
+    public static final String AFTER_CONTEXT_INITIALIZER_ON_STARTUP
+        = "afterContextInitializerOnStartup";
+
     public static final String BEFORE_CONTEXT_INITIALIZED
         = "beforeContextInitialized";
 
