@@ -175,6 +175,7 @@
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
         <javadoc.skip>false</javadoc.skip>
         <deploy.skip>false</deploy.skip>
+        <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
     </properties>
@@ -433,34 +434,11 @@
                         </exclude> 
                     </configuration>
                 </plugin>
-   
                 <plugin>
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
                     <artifactId>replacer</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>prepare-package</phase>
-                            <goals>
-                                <goal>replace</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <basedir>${project.basedir}</basedir>
-                        <includes>
-                            <include>**/*.1</include>
-                            <include>**/*.1m</include>
-                            <include>**/*.5asc</include>
-                        </includes>
-                        <replacements>
-                            <replacement>
-                                <token>Java EE ${javaee.version.old}</token>
-                                <value>Java EE ${javaee.version.new}</value>
-                            </replacement>
-                        </replacements>
-                    </configuration>
+                    <version>${replacer.plugin.version}</version>
                 </plugin>
-
             </plugins>
         </pluginManagement>
 
@@ -1260,6 +1238,40 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>edit-manPages-javaEEVersion</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <basedir>${project.basedir}</basedir>
+                            <includes>
+                                <include>**/*.1</include>
+                                <include>**/*.1m</include>
+                                <include>**/*.5asc</include>
+                            </includes>
+                            <replacements>
+                                <replacement>
+                                    <token>Java EE ${javaee.version.old}</token>
+                                    <value>Java EE ${javaee.version.new}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <dependencies>
