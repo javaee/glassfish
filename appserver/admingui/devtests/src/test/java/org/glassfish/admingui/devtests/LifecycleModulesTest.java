@@ -76,7 +76,7 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
         */
-        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_LIFECYCLE_MODULES);
+        clickAndWaitForElement("form:propertyContentPage:topButtons:newButton", "propertyForm:deployTable");
         assertTrue(isTextPresent(lifecycleName));
 
         testDisableButton(lifecycleName, "propertyForm:deployTable", "propertyForm:deployTable:topActionsGroup1:button3",
