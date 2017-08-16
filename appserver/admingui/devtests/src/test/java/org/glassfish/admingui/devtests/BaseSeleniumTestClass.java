@@ -1217,7 +1217,7 @@ public class BaseSeleniumTestClass {
                         .getAttribute("disabled"); // WebDriver-backed Selenium
                 return (Boolean.parseBoolean(attr) == desiredState);
             } catch (Exception ex) {
-                return true;// ???
+                return false;
             }
         }
     }

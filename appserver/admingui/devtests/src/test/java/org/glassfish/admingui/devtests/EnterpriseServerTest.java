@@ -126,6 +126,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
         
         gotoServerResourcesPage();
+        waitForPageLoad(jndiName, TIMEOUT);
         assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
