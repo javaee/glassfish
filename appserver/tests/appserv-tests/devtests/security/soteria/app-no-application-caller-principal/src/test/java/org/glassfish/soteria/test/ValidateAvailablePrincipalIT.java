@@ -77,7 +77,7 @@ public class ValidateAvailablePrincipalIT extends ArquillianBase {
 
     @Test
     public void testCallerSubjectPrincipals() {
-        assertOnlyContainerCallerPrincipalIsPresent(
+        assertBothContainerAndApplicationPrincipalsAreSame(
                 responseFromServer("/valildateAvailablePrincipalServlet?name=reza&password=secret1"));
     }
 

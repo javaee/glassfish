@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.security.enterprise.SecurityContext;
+import javax.security.enterprise.CallerPrincipal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -84,17 +85,26 @@ public class ValidateAvailablePrincipalServlet extends HttpServlet {
 
         Set<Principal> principals = securityContext.getPrincipalsByType(java.security.Principal.class);
 
-        Optional<Principal> principalOptional = principals.stream().filter((p) -> p.getClass().getName() == AppPrincipal.class.getName())
+        Optional<Principal> principalOptional = principals.stream().filter((p) -> p.getClass().getName() == CallerPrincipal.class
+                .getName())
                 .findAny();
         if (principalOptional.isPresent()) {
-            hasApplicationCallerPrincipal = true;
+            Principal applicationPrincipal = principalOptional.get();
+            if(applicationPrincipal.equals(containerCallerPrincipal)) {
+                response.getWriter().write("containerPrincipal:" + containerCallerPrincipal + "\n");
+                response.getWriter().write("appPrincipal:" + applicationPrincipal + "\n");
+                hasApplicationCallerPrincipal = true;
+                response.getWriter().write("hasApplicationCallerPrincipal:" + hasApplicationCallerPrincipal + "\n");
+            }
         }
         if (!hasApplicationCallerPrincipal && hasContainerCallerPrincipal && isUserInRole) {
-            response.getWriter().write(String.format("Only container caller principal is present for user %s in role %s",
+            response.getWriter().write(String.format("Container caller principal and application caller principal must have " +
+                            "been one and the same but are not for user %s in role " +
+                            "%s",
                     containerCallerPrincipal.getName(), "foo"));
         } else {
-            response.getWriter().write(String.format("Both container caller principal and application caller principals are " +
-                            "present for user %s in role %s",
+            response.getWriter().write(String.format("Both container caller principal and application caller principals are one" +
+                            " and the same for user %s in role %s",
                     containerCallerPrincipal.getName(), "foo"));
         }
     }

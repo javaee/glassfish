@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.security.enterprise.SecurityContext;
+import javax.security.enterprise.CallerPrincipal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -72,35 +73,45 @@ public class CallerSubjectServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        response.getWriter().write("This is a servlet \n");
-
         String containerCallerPrincipalName = null;
         String appPrincipalName = null;
+        String callerPrincipalFromSecurityContextName = null;
         boolean isUserInRole = securityContext.isCallerInRole("foo");
+        int callerPrincipalCount = 0;
 
         Principal containerCallerPrincipal = securityContext.getCallerPrincipal();
-
-        if (containerCallerPrincipal instanceof javax.security.enterprise.CallerPrincipal) {
-            containerCallerPrincipalName = containerCallerPrincipal.getName();
-
-        }
+        containerCallerPrincipalName = containerCallerPrincipal.getName();
 
         Set<Principal> principals = securityContext.getPrincipalsByType(java.security.Principal.class);
 
-        Optional<Principal> principalOptional = principals.stream().filter((p) -> p.getClass().getName() == AppPrincipal.class.getName())
+        Optional<Principal> appCallerPrincipalOptional = principals.stream().filter((p) -> p.getClass().getName() == AppPrincipal.class.getName())
                 .findAny();
         Principal appPrincipal = null;
-        if (principalOptional.isPresent()) {
-            appPrincipal = principalOptional.get();
+        if (appCallerPrincipalOptional.isPresent()) {
+            callerPrincipalCount++;
+            appPrincipal = appCallerPrincipalOptional.get();
             appPrincipalName = appPrincipal.getName();
         }
+
+        Optional<Principal> containerCallerPrincipalOptional = principals.stream().filter((p) -> p.getClass().getName() == CallerPrincipal
+                .class.getName())
+                .findAny();
+        Principal callerPrincipalFromSecurityContext = null;
+        if (containerCallerPrincipalOptional.isPresent()) {
+            callerPrincipalCount++;
+            callerPrincipalFromSecurityContext = containerCallerPrincipalOptional.get();
+            callerPrincipalFromSecurityContextName = callerPrincipalFromSecurityContext.getName();
+        }
+
         if (!containerCallerPrincipalName.isEmpty() && !appPrincipalName.isEmpty() && containerCallerPrincipalName.equals
-                (appPrincipalName) && isUserInRole) {
-            response.getWriter().write(String.format("Subject representing caller %s contains both container principal and " +
-                    "application principal and is in role %s", containerCallerPrincipal.getName(), "foo"));
+                (appPrincipalName) && isUserInRole & callerPrincipalCount == 1) {
+            response.getWriter().write(String.format("Container caller principal and application caller principal both are " +
+                    "represented by same principal for user %s and is in role %s", containerCallerPrincipal.getName(), "foo"));
         } else {
-            response.getWriter().write(String.format("Subject representing caller %s doesn't have principal for both " +
-                    "container caller principal and application caller principal."));
+            response.getWriter().write(String.format("Both %s and %s principal types are available wherein only principal of " +
+                    "type %s was expected for user %s and is in role %s",AppPrincipal.class.getName(), CallerPrincipal.class
+                            .getName(), AppPrincipal.class.getName(), containerCallerPrincipal.getName(),
+                    "foo"));
         }
     }
 }

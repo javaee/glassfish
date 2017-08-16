@@ -95,10 +95,10 @@ public final class Assert {
                 .getContentAsString());
     }
 
-    public static void assertOnlyContainerCallerPrincipalIsPresent(WebResponse response) {
+    public static void assertBothContainerAndApplicationPrincipalsAreSame(WebResponse response) {
         assertNotNull(response);
         assertEquals(200, response.getStatusCode());
-        assertOnlyContainerCallerPrincipalIsPresent("reza", "foo", response
+        assertBothContainerAndApplicationPrincipalsAreSame("reza", "foo", response
                 .getContentAsString());
     }
     
@@ -189,19 +189,20 @@ public final class Assert {
                 "Both application principal's and container principal's name should have been same as "
                         + " but was not. \n Response: \n" +
                         response,
-                response.contains(String.format("Subject representing caller %s contains both container principal and " +
-                        "application principal and is in role %s", name, role)));
+                response.contains(String.format("Container caller principal and application caller principal both are " +
+                        "represented by same principal for user %s and is in role %s", name, role)));
     }
 
-    public static void assertOnlyContainerCallerPrincipalIsPresent(String name, String role, String response) {
+    public static void assertBothContainerAndApplicationPrincipalsAreSame(String name, String role, String response) {
         assertTrue(
-                "For " + name + " only container caller principal should have been present, but wasn't. \n" +
+                "For user " + name + " both container caller principal and application caller principal should have been same, " +
+                        "but " +
+                        "wasn't. \n" +
                         "+ Response: \n" +
                         response,
-                response.contains(String.format("Only container caller principal is present for user %s in role %s",
+                response.contains(String.format("Both container caller principal and application caller principals are one and " +
+                                "the same for user %s in role %s",
                         name, role)));
     }
-
-
 
 }

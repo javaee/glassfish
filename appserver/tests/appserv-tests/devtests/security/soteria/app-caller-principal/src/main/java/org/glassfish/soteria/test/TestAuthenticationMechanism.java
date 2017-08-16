@@ -81,8 +81,6 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
                 new UsernamePasswordCredential(name, password));
 
             if (result.getStatus() == VALID) {
-                // Include container's caller principal in Subject representing the caller.
-                httpMessageContext.getClientSubject().getPrincipals().add(result.getCallerPrincipal());
                 // In this case , application chooses to provide its own caller principal
                 return httpMessageContext.notifyContainerAboutLogin(
                         new AppPrincipal(name), result.getCallerGroups());
