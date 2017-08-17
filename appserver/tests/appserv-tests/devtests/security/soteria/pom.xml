@@ -77,7 +77,9 @@
         <module>app-multiple-store</module>
         <module>app-multiple-store-backup</module>
         <module>app-no-role-mapping</module>
-        
+        <module>app-bundled-ham-basic-login-config-form</module>
+        <module>app-caller-principal</module> 
+        <module>app-no-application-caller-principal</module>
     </modules>
     
     <dependencyManagement>
