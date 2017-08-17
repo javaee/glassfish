@@ -5708,8 +5708,12 @@ public class StandardContext
                     }
                     ServletContainerInitializer iniInstance =
                         initializer.newInstance();
+                    fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZER_ON_STARTUP,
+                        iniInstance);
                     iniInstance.onStartup(
                         initializerList.get(initializer), ctxt);
+                    fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZER_ON_STARTUP,
+                        iniInstance);
                 } catch (Throwable t) {
                     String msg = MessageFormat.format(rb.getString(LogFacade.INVOKING_SERVLET_CONTAINER_INIT_EXCEPTION),
                                                       initializer.getCanonicalName());
