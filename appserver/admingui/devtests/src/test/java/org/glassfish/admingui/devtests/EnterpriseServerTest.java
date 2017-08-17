@@ -122,6 +122,11 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         final String description = "devtest test for server->resources page- " + jndiName;
         final String tableID = "propertyForm:resourcesTable";
 
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
+
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
         
