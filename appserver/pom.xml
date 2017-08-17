@@ -134,8 +134,7 @@
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
-	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
-	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
     </properties>
 
     <modules>
