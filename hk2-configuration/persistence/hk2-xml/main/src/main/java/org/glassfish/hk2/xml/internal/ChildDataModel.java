@@ -46,6 +46,9 @@ import java.util.Map;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
+ * This represents a child that is not a bean, as in a value like a string or a date
+ * or an integer
+ * 
  * @author jwells
  *
  */

@@ -66,7 +66,7 @@ public class PBufParserTest {
      * Tests very basic marshaling
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMarshal() throws Exception {
         ClassLoader cl = getClass().getClassLoader();
         URL protoURL = cl.getResource("proto/RootOnlyBean.proto");
@@ -94,7 +94,6 @@ public class PBufParserTest {
         
         byte[] asBytes = baos.toByteArray();
         Assert.assertTrue(asBytes.length > 0);
-        
     }
 
 }

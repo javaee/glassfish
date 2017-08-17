@@ -61,8 +61,11 @@ import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
+import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
+import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.DynamicMessage;
 
 @Singleton
 @Named(PBufUtilities.PBUF_SERVICE_NAME)
@@ -107,12 +110,64 @@ public class PBufParser implements XmlServiceParser {
         XmlHk2ConfigurationBean rootBean = (XmlHk2ConfigurationBean) rootObject;
         ModelImpl model = rootBean._getModel();
         
-        convertAllModels(model);
+        try {
+          convertAllModels(model);
+        }
+        catch (IOException ioe) {
+            throw ioe;
+        }
+        catch (Exception e) {
+            throw new IOException(e);
+        }
         
-        throw new AssertionError("not yet implemented");
+        DynamicMessage dynamicMessage = internalMarshal(rootBean);
+        CodedOutputStream cos = CodedOutputStream.newInstance(outputStream);
+        
+        try {
+          dynamicMessage.writeTo(cos);
+        }
+        finally {
+            cos.flush();
+        }
     }
     
-    private synchronized void convertAllModels(ModelImpl model) {
+    private synchronized <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {
+        Map<String, Object> blm = bean._getBeanLikeMap();
+        ModelImpl model = bean._getModel();
+        
+        for (ParentedModel pModel : model.getAllChildren()) {
+            throw new AssertionError("Child beans are not yet implemented: " + pModel);
+        }
+        
+        Class<?> originalAsClass = model.getOriginalInterfaceAsClass();
+        String originalInterface = model.getOriginalInterface();
+        String protoName = getSimpleName(originalInterface);
+        
+        Descriptors.Descriptor descriptor = allProtos.get(originalAsClass);
+        if (descriptor == null) {
+            throw new IOException("Unknown model: " + originalInterface + " with protoName=" + protoName);
+        }
+        
+        DynamicMessage.Builder retValBuilder = DynamicMessage.newBuilder(descriptor);
+        
+        for (Map.Entry<QName, ChildDataModel> nonChildPropertyEntries : model.getNonChildProperties().entrySet()) {
+            QName qname = nonChildPropertyEntries.getKey();
+            String localPart = qname.getLocalPart();
+            
+            Object value = blm.get(localPart);
+            
+            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(localPart);
+            if (fieldDescriptor == null) {
+                throw new IOException("Unknown field " + localPart + " in " + bean);
+            }
+            
+            retValBuilder.setField(fieldDescriptor, value);
+        }
+        
+        return retValBuilder.build();
+    }
+    
+    private synchronized void convertAllModels(ModelImpl model) throws Exception {
         Class<?> modelClass = model.getOriginalInterfaceAsClass();
         if (allProtos.containsKey(modelClass)) return;
         
@@ -140,18 +195,32 @@ public class PBufParser implements XmlServiceParser {
         throw new AssertionError("Unknown type to convert " + childClass.getName());
     }
     
-    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model) {
+    private static String getSimpleName(String dotDelimitedName) {
+        int index = dotDelimitedName.lastIndexOf('.');
+        if (index < 0) return dotDelimitedName;
+        
+        return dotDelimitedName.substring(index + 1);
+    }
+    
+    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model) throws Exception {
         Map<QName, ChildDataModel> nonChildren = model.getNonChildProperties();
         
+        String originalInterface = model.getOriginalInterface();
+        String protoName = getSimpleName(originalInterface);
+        
         DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
+        builder.setName(protoName);
+        
+        int number = 1;
         for(Map.Entry<QName, ChildDataModel> entry : nonChildren.entrySet()) {
-            QName qname = entry.getKey();
             ChildDataModel dataModel = entry.getValue();
             
             String localPart = entry.getKey().getLocalPart();
             
             DescriptorProtos.FieldDescriptorProto.Builder fBuilder =
                     DescriptorProtos.FieldDescriptorProto.newBuilder().setName(localPart);
+            fBuilder.setNumber(number);
+            number++;
             
             if (entry.getValue().getDefaultAsString() != null) {
                 fBuilder.setDefaultValue(entry.getValue().getDefaultAsString());
@@ -170,9 +239,10 @@ public class PBufParser implements XmlServiceParser {
         
         DescriptorProtos.FileDescriptorProto fProto = fileBuilder.build();
         
-        System.out.println("JRW(10) froto=\n" + fProto.toString());
+        Descriptors.FileDescriptor fDesc = Descriptors.FileDescriptor.buildFrom(fProto, new FileDescriptor[0]);
         
-        throw new AssertionError("not yet implemented");
+        Descriptors.Descriptor fD = fDesc.findMessageTypeByName(protoName);
         
+        return fD;
     }
 }
