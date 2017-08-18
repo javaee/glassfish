@@ -87,6 +87,12 @@ run_test_id(){
   test_run
   merge_junit_xmls $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports
   change_junit_report_class_names
+}
+
+post_test_run(){
+  cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/ || true
+  cp $TEST_RUN_LOG $WORKSPACE/results/ || true
+  cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
   upload_test_results
   delete_bundle
 }
@@ -97,5 +103,6 @@ case $OPT in
   list_test_ids )
     list_test_ids;;
   run_test_id )
+    trap post_test_run EXIT
     run_test_id $TEST_ID ;;
 esac
