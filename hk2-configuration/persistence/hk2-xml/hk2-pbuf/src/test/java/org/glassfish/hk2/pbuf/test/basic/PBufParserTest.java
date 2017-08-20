@@ -45,7 +45,10 @@ import java.net.URL;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
+import org.glassfish.hk2.pbuf.test.beans.CustomerBean;
 import org.glassfish.hk2.pbuf.test.beans.RootOnlyBean;
+import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBean;
+import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBlockBean;
 import org.glassfish.hk2.pbuf.test.utilities.Utilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -62,12 +65,24 @@ public class PBufParserTest {
     private final static String ALICE = "Alice";
     private final static String ALICE_ADDRESS = "Milky Way";
     
+    private final static String ACME = "Acme";
+    private final static long ACME_ID = 3000;
+    private final static String ACME_HASH = "aaabbbccc";
+    
+    private final static String BJS = "BJs";
+    private final static long BJS_ID = 4000;
+    private final static String BJS_HASH = "dddeeefff";
+    
+    private final static String COSTCO = "Costco";
+    private final static long COSTCO_ID = 5000;
+    private final static String COSTCO_HASH = "ggghhhiii";
+    
     /**
      * Tests very basic marshaling
      */
     @Test
     // @org.junit.Ignore
-    public void testMarshal() throws Exception {
+    public void testMarshalFlatBean() throws Exception {
         ClassLoader cl = getClass().getClassLoader();
         URL protoURL = cl.getResource("proto/RootOnlyBean.proto");
         
@@ -94,6 +109,74 @@ public class PBufParserTest {
         
         byte[] asBytes = baos.toByteArray();
         Assert.assertTrue(asBytes.length > 0);
+    }
+    
+    /**
+     * marshals a complex data structure
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testMarshalStructuredBean() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<ServiceRecordBlockBean> handle = getStandardTestBlock(xmlService);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        Assert.assertTrue(asBytes.length > 0);
+        
+    }
+    
+    private static CustomerBean createCustomerBean(XmlService xmlService, String companyName, long id) {
+        CustomerBean retVal = xmlService.createBean(CustomerBean.class);
+        
+        retVal.setCustomerName(companyName);
+        retVal.setCustomerID(id);
+        
+        return retVal;
+    }
+    
+    private static ServiceRecordBean createServiceRecordBean(XmlService xmlService, CustomerBean customer, String hash) {
+        ServiceRecordBean retVal = xmlService.createBean(ServiceRecordBean.class);
+        
+        retVal.setServiceRecordID(hash);
+        retVal.setCustomer(customer);
+        
+        return retVal;
+    }
+    
+    private static XmlRootHandle<ServiceRecordBlockBean> getStandardTestBlock(XmlService xmlService) {
+        XmlRootHandle<ServiceRecordBlockBean> handle = xmlService.createEmptyHandle(ServiceRecordBlockBean.class);
+        handle.addRoot();
+        
+        ServiceRecordBlockBean blockBean = handle.getRoot();
+        
+        CustomerBean acmeBean = createCustomerBean(xmlService, ACME, ACME_ID);
+        CustomerBean bjsBean = createCustomerBean(xmlService, BJS, BJS_ID);
+        CustomerBean costcoBean = createCustomerBean(xmlService, COSTCO, COSTCO_ID);
+        
+        
+        ServiceRecordBean acmeRecord = createServiceRecordBean(xmlService, acmeBean, ACME_HASH);
+        ServiceRecordBean bjsRecord = createServiceRecordBean(xmlService, bjsBean, BJS_HASH);
+        ServiceRecordBean costcoRecord = createServiceRecordBean(xmlService, costcoBean, COSTCO_HASH);
+        
+        blockBean.addServiceRecord(acmeRecord);
+        blockBean.addServiceRecord(bjsRecord);
+        blockBean.addServiceRecord(costcoRecord);
+        
+        return handle;
     }
 
 }

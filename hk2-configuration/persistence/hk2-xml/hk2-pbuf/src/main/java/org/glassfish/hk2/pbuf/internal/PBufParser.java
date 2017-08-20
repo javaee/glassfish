@@ -191,6 +191,9 @@ public class PBufParser implements XmlServiceParser {
         if (childClass.equals(int.class) || childClass.equals(Integer.class)) {
             return DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32;
         }
+        if (childClass.equals(long.class) || childClass.equals(Long.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64;
+        }
         
         throw new AssertionError("Unknown type to convert " + childClass.getName());
     }
