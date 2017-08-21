@@ -40,8 +40,9 @@
 package org.glassfish.hk2.pbuf.test.basic;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
@@ -138,6 +139,51 @@ public class PBufParserTest {
         Assert.assertTrue(asBytes.length > 0);
     }
     
+    /**
+     * Reads in a pre-generated binary protobuf
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testUnmarshalStructuredBean() throws Exception {
+        ClassLoader cl = getClass().getClassLoader();
+        URI standardPbufURI = cl.getResource("standard.pbuf").toURI();
+        
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<ServiceRecordBlockBean> handle = xmlService.unmarshal(standardPbufURI, ServiceRecordBlockBean.class);
+        
+        validateStandardBean(handle);
+    }
+    
+    private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle) {
+        ServiceRecordBlockBean root = handle.getRoot();
+        Assert.assertNotNull(root);
+        
+        List<ServiceRecordBean> records = root.getServiceRecords();
+        Assert.assertEquals(3, records.size());
+        
+        validateServiceRecordBean(records.get(0), ACME, ACME_ID, ACME_HASH);
+        validateServiceRecordBean(records.get(1), BJS, BJS_ID, BJS_HASH);
+        validateServiceRecordBean(records.get(2), COSTCO, COSTCO_ID, COSTCO_HASH);
+    }
+    
+    private static void validateServiceRecordBean(ServiceRecordBean record, String name, long id, String hash) {
+        Assert.assertNotNull(record);
+        
+        Assert.assertEquals(hash, record.getServiceRecordID());
+        
+        CustomerBean customer = record.getCustomer();
+        Assert.assertNotNull(customer);
+        
+        Assert.assertEquals(name, customer.getCustomerName());
+        Assert.assertEquals(id, customer.getCustomerID());
+    }
+    
     private static CustomerBean createCustomerBean(XmlService xmlService, String companyName, long id) {
         CustomerBean retVal = xmlService.createBean(CustomerBean.class);
         
@@ -165,7 +211,6 @@ public class PBufParserTest {
         CustomerBean acmeBean = createCustomerBean(xmlService, ACME, ACME_ID);
         CustomerBean bjsBean = createCustomerBean(xmlService, BJS, BJS_ID);
         CustomerBean costcoBean = createCustomerBean(xmlService, COSTCO, COSTCO_ID);
-        
         
         ServiceRecordBean acmeRecord = createServiceRecordBean(xmlService, acmeBean, ACME_HASH);
         ServiceRecordBean bjsRecord = createServiceRecordBean(xmlService, bjsBean, BJS_HASH);
