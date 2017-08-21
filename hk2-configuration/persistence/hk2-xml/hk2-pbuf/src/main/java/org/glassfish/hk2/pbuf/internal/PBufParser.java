@@ -42,8 +42,11 @@ package org.glassfish.hk2.pbuf.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Named;
@@ -55,6 +58,8 @@ import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.internal.ChildDataModel;
+import org.glassfish.hk2.xml.internal.ChildDescriptor;
+import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.spi.Model;
@@ -111,7 +116,8 @@ public class PBufParser implements XmlServiceParser {
         ModelImpl model = rootBean._getModel();
         
         try {
-          convertAllModels(model);
+          List<Descriptors.FileDescriptor> protoFiles = new LinkedList<Descriptors.FileDescriptor>();
+          convertAllModels(model, protoFiles);
         }
         catch (IOException ioe) {
             throw ioe;
@@ -135,10 +141,6 @@ public class PBufParser implements XmlServiceParser {
         Map<String, Object> blm = bean._getBeanLikeMap();
         ModelImpl model = bean._getModel();
         
-        for (ParentedModel pModel : model.getAllChildren()) {
-            throw new AssertionError("Child beans are not yet implemented: " + pModel);
-        }
-        
         Class<?> originalAsClass = model.getOriginalInterfaceAsClass();
         String originalInterface = model.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
@@ -150,34 +152,84 @@ public class PBufParser implements XmlServiceParser {
         
         DynamicMessage.Builder retValBuilder = DynamicMessage.newBuilder(descriptor);
         
-        for (Map.Entry<QName, ChildDataModel> nonChildPropertyEntries : model.getNonChildProperties().entrySet()) {
-            QName qname = nonChildPropertyEntries.getKey();
+        for (Map.Entry<QName, ChildDescriptor> allEntry : model.getAllChildrenDescriptors().entrySet()) {
+            QName qname = allEntry.getKey();
+            ChildDescriptor childDescriptor = allEntry.getValue();
+            
             String localPart = qname.getLocalPart();
-            
-            Object value = blm.get(localPart);
-            
             Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(localPart);
             if (fieldDescriptor == null) {
                 throw new IOException("Unknown field " + localPart + " in " + bean);
             }
             
-            retValBuilder.setField(fieldDescriptor, value);
+            ChildDataModel childDataModel = childDescriptor.getChildDataModel();
+            if (childDataModel != null) {
+              Object value = blm.get(localPart);
+              retValBuilder.setField(fieldDescriptor, value);
+            }
+            else {
+                ParentedModel parentedModel = childDescriptor.getParentedModel();
+                
+                switch(parentedModel.getChildType()) {
+                case DIRECT:
+                    Object directValue = blm.get(localPart);
+                    if (directValue != null) {
+                        DynamicMessage subMessage = internalMarshal((XmlHk2ConfigurationBean) directValue);
+                        
+                        retValBuilder.setField(fieldDescriptor, subMessage);
+                    }
+                    break;
+                case LIST:
+                    Object listValue = blm.get(localPart);
+                    if (listValue != null) {
+                        List<XmlHk2ConfigurationBean> asList = (List<XmlHk2ConfigurationBean>) listValue;
+                        
+                        for (XmlHk2ConfigurationBean child : asList) {
+                            DynamicMessage subMessage = internalMarshal(child);
+                            
+                            retValBuilder.addRepeatedField(fieldDescriptor, subMessage);
+                        }
+                    }
+                    break;
+                case ARRAY:
+                    Object arrayValue = blm.get(localPart);
+                    if (arrayValue != null) {
+                        int count = Array.getLength(arrayValue);
+                        
+                        for (int lcv = 0; lcv < count; lcv++) {
+                            XmlHk2ConfigurationBean child = (XmlHk2ConfigurationBean) Array.get(arrayValue, lcv);
+                            
+                            DynamicMessage subMessage = internalMarshal(child);
+                            
+                            retValBuilder.addRepeatedField(fieldDescriptor, subMessage);
+                        }
+                    }
+                    break;
+                default:
+                    throw new AssertionError("Unknown child type: " + parentedModel.getChildType());
+                    
+                }
+                
+            }
+            
         }
         
         return retValBuilder.build();
     }
     
-    private synchronized void convertAllModels(ModelImpl model) throws Exception {
+    private synchronized void convertAllModels(ModelImpl model, List<Descriptors.FileDescriptor> protoFiles) throws Exception {
         Class<?> modelClass = model.getOriginalInterfaceAsClass();
         if (allProtos.containsKey(modelClass)) return;
         
         for (ParentedModel pModel : model.getAllChildren()) {
-            convertAllModels(pModel.getChildModel());
+            convertAllModels(pModel.getChildModel(), protoFiles);
         }
         
         if (allProtos.containsKey(modelClass)) return;
         
-        Descriptors.Descriptor converted = convertModelToDescriptor(model);
+        Descriptors.Descriptor converted = convertModelToDescriptor(model, protoFiles);
+        
+        protoFiles.add(converted.getFile());
         
         allProtos.put(modelClass, converted);
     }
@@ -205,32 +257,52 @@ public class PBufParser implements XmlServiceParser {
         return dotDelimitedName.substring(index + 1);
     }
     
-    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model) throws Exception {
-        Map<QName, ChildDataModel> nonChildren = model.getNonChildProperties();
-        
-        String originalInterface = model.getOriginalInterface();
+    private static String getProtoNameFromModel(ModelImpl mi) {
+        String originalInterface = mi.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
+        return protoName;
+    }
+    
+    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model, List<Descriptors.FileDescriptor> knownFiles) throws Exception {
+        Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
+        
+        String protoName = getProtoNameFromModel(model);
         
         DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
         builder.setName(protoName);
         
         int number = 1;
-        for(Map.Entry<QName, ChildDataModel> entry : nonChildren.entrySet()) {
-            ChildDataModel dataModel = entry.getValue();
-            
+        for(Map.Entry<QName, ChildDescriptor> entry : allChildren.entrySet()) {
             String localPart = entry.getKey().getLocalPart();
+            ChildDescriptor childDescriptor = entry.getValue();
             
             DescriptorProtos.FieldDescriptorProto.Builder fBuilder =
                     DescriptorProtos.FieldDescriptorProto.newBuilder().setName(localPart);
             fBuilder.setNumber(number);
             number++;
             
-            if (entry.getValue().getDefaultAsString() != null) {
-                fBuilder.setDefaultValue(entry.getValue().getDefaultAsString());
-            }
+            ChildDataModel dataModel = childDescriptor.getChildDataModel();
+            if (dataModel != null) {
+              if (dataModel.getDefaultAsString() != null) {
+                  fBuilder.setDefaultValue(dataModel.getDefaultAsString());
+              }
             
-            DescriptorProtos.FieldDescriptorProto.Type fieldType = convertChildDataModelToType(dataModel);
-            fBuilder.setType(fieldType);
+              DescriptorProtos.FieldDescriptorProto.Type fieldType = convertChildDataModelToType(dataModel);
+              fBuilder.setType(fieldType);
+            }
+            else {
+                ParentedModel pm = childDescriptor.getParentedModel();
+                
+                ModelImpl childModel = pm.getChildModel();
+                String childTypeName = getProtoNameFromModel(childModel);
+                
+                fBuilder.setTypeName(childTypeName);
+                
+                ChildType childType = pm.getChildType();
+                if (childType.equals(ChildType.ARRAY) || childType.equals(ChildType.LIST)) {
+                    fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED);
+                }
+            }
             
             builder.addField(fBuilder.build());
         }
@@ -242,7 +314,8 @@ public class PBufParser implements XmlServiceParser {
         
         DescriptorProtos.FileDescriptorProto fProto = fileBuilder.build();
         
-        Descriptors.FileDescriptor fDesc = Descriptors.FileDescriptor.buildFrom(fProto, new FileDescriptor[0]);
+        Descriptors.FileDescriptor fDesc = Descriptors.FileDescriptor.buildFrom(fProto,
+                knownFiles.toArray(new Descriptors.FileDescriptor[knownFiles.size()]));
         
         Descriptors.Descriptor fD = fDesc.findMessageTypeByName(protoName);
         

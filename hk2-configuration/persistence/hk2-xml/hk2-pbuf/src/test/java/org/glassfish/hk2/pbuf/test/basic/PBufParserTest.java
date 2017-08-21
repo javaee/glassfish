@@ -117,7 +117,7 @@ public class PBufParserTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMarshalStructuredBean() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         
@@ -136,7 +136,6 @@ public class PBufParserTest {
         
         byte[] asBytes = baos.toByteArray();
         Assert.assertTrue(asBytes.length > 0);
-        
     }
     
     private static CustomerBean createCustomerBean(XmlService xmlService, String companyName, long id) {
