@@ -69,7 +69,7 @@ OPTIONS
        --installdir
            The absolute path to the parent of the base installation directory
            where the GlassFish Server software is installed on each host, for
-           example, /export/glassfish5/.
+           example, /export/glassfish3/.
 
            The user that is running this subcommand must have write access to
            the specified directory. Otherwise, an error occurs.
@@ -154,20 +154,20 @@ EXAMPLES
            sj02.example.com.
 
            The software is uninstalled even if a user-defined node resides on
-           the host. The entire content of the /export/glassfish5 directory is
+           the host. The entire content of the /export/glassfish3 directory is
            removed.
 
            Some lines of output are omitted from this example for readability.
 
-               asadmin> uninstall-node --force --installdir /export/glassfish5 sj02.example.com
+               asadmin> uninstall-node --force --installdir /export/glassfish3 sj02.example.com
                Successfully connected to gfuser@sj02.example.com using keyfile /home/gfuser
                /.ssh/id_rsa
-               Force removing file /export/glassfish5/mq/lib/help/en/add_overrides.htm
-               Force removing file /export/glassfish5/mq/lib/help/en/add_connfact.htm
+               Force removing file /export/glassfish3/mq/lib/help/en/add_overrides.htm
+               Force removing file /export/glassfish3/mq/lib/help/en/add_connfact.htm
                ...
-               Force removing directory /export/glassfish5/glassfish/lib/appclient
-               Force removing directory /export/glassfish5/glassfish/lib
-               Force removing directory /export/glassfish5/glassfish
+               Force removing directory /export/glassfish3/glassfish/lib/appclient
+               Force removing directory /export/glassfish3/glassfish/lib
+               Force removing directory /export/glassfish3/glassfish
                Command uninstall-node executed successfully.
 
 EXIT STATUS
@@ -183,4 +183,4 @@ SEE ALSO
 
        asadmin(1M)
 
-Java EE 8                         09 Aug 2017                 uninstall-node(1)
+Java EE 8                         5 Jan 2012                 uninstall-node(1)

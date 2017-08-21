@@ -199,16 +199,16 @@ EXAMPLES
                the details:
                ID of the service: domain1
                Display Name of the service:domain1 GlassFish Server
-               Domain Directory: C:\glassfish5\glassfish\domains\domain1
-               Configuration file for Windows Services Wrapper: C:\glassfish5\glassfish\domains\
+               Domain Directory: C:\glassfish3\glassfish\domains\domain1
+               Configuration file for Windows Services Wrapper: C:\glassfish3\glassfish\domains\
                domain1\bin\domain1Service.xml
                The service can be controlled using the Windows Services Manager or you can use the
                Windows Services Wrapper instead:
-               Start Command:  C:\glassfish5\glassfish\domains\domain1\bin\domain1Service.exe  start
-               Stop Command:   C:\glassfish5\glassfish\domains\domain1\bin\domain1Service.exe  stop
-               Uninstall Command:  C:\glassfish5\glassfish\domains\domain1\bin\domain1Service.exe
+               Start Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe  start
+               Stop Command:   C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe  stop
+               Uninstall Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe
                uninstall
-               Install Command:  C:\glassfish5\glassfish\domains\domain1\bin\domain1Service.exe
+               Install Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe
                install
 
                This message is also available in a file named PlatformServices.log in the domain's
@@ -234,7 +234,7 @@ EXAMPLES
                * /etc/init.d/GlassFish_domain1 restart
 
                For your convenience this message has also been saved to this file:
-               /export/glassfish5/glassfish/domains/domain1/PlatformServices.log
+               /export/glassfish3/glassfish/domains/domain1/PlatformServices.log
                Command create-service executed successfully.
 
        Example 3, Creating a Service on an Oracle Solaris System
@@ -246,9 +246,9 @@ EXAMPLES
                Name of the service:application/GlassFish/domain1
                Type of the service:Domain
                Configuration location of the service:/home/gfuser/glassfish-installations
-               /glassfish5/glassfish/domains
+               /glassfish3/glassfish/domains
                Manifest file location on the system:/var/svc/manifest/application
-               /GlassFish/domain1_home_gfuser_glassfish-installations_glassfish5
+               /GlassFish/domain1_home_gfuser_glassfish-installations_glassfish3
                _glassfish_domains/Domain-service-smf.xml.
                You have created the service but you need to start it yourself.
                Here are the most typical Solaris commands of interest:
@@ -278,4 +278,4 @@ SEE ALSO
 
        Microsoft .NET Framework (http://www.microsoft.com/net/)
 
-Java EE 8                         09 Aug 2017                 create-service(1)
+Java EE 8                         8 Dec 2011                 create-service(1)
