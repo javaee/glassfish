@@ -524,9 +524,11 @@ class TransactionState {
                         AdminUtil.incrementCommitedTransactionCount();
                         break ;
 		    */
-		    case STATE_ROLLING_BACK :
+		            case STATE_ROLLING_BACK :
                         AdminUtil.incrementUnpreparedAbortedTransactionCount();
                         break;
+                    default:
+                            break;
                 }
             }
 
@@ -668,6 +670,8 @@ class TransactionState {
                         break;
                     case STATE_ROLLED_BACK :
                         failurePoint = FailureInducer.COMPLETING;
+                    default:
+                        break;
                 }
                 FailureInducer.waitForFailure(this.globalTID, failurePoint);
             }

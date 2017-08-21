@@ -49,23 +49,32 @@ Prerequites: User must specify CTS_REMOTE_QUEUE_URL before running this script.
              This URL must point to the upstream hudson job of CTS Remote Queue.
 
 Usage:
- 1. ctsrq.sh -l  --->  List all the available CTS test identifiers 
+ 1. ctsrq.sh -l  --->  List all the available CTS test identifiers
                        (both top-level and inner-level) without running them
  2. ctsrq.sh -s  --->  List all the available top-level CTS test identifiers
                        without running them
  3. ctsrq.sh -i  --->  List the inner-level CTS test identifiers for a given
                        top-level CTS test identifier without running them
- 4. ctsrq.sh -b <Glassfish_Branch> -a [-e "<email-id1> <email-id2> .."] 
+ 4. ctsrq.sh -b <Glassfish_Branch> -a [-e "<email-id1> <email-id2> .."]
                  --->  Run all the available top-level CTS test identifiers
-                       against the specified Glassfish branch and email the
-                       results to the specified email-ids
- 5. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>" 
-                                  [-e "email-id1 email-id2 .."] 
+                       against the specified local Glassfish branch and email
+		       the results to the specified email-ids
+ 5. ctsrq.sh -b <Glassfish_Branch> -t "<test_id1> <test_id2> <test_id3>"
+                                  [-e "email-id1 email-id2 .."]
                  --->  Run the specified CTS test identifiers against the
-                       specified Glassfish branch and email the results to the
-                       specified email-ids. Note that double quotes are 
+                       specified local Glassfish branch and email the results
+		       to the specified email-ids. Note that double quotes are
                        necessary if providing multiple test-ids.
- 6. ctsrq.sh [-h]--->  Show this message
+ 6. ctsrq.sh -b <Glassfish_Branch> -a|-t
+	                     -c "</net/<Host_name>/<cts_bundle_location>/*.zip"
+		 --->  Run the specified CTS test identifiers against specified
+		       branch using the locally built CTS bundle. Note that CTS
+		       bundle location should be network accessible.
+ 7. ctsrq.sh -u <glassfish binary url>  -a|-t
+		 --->  For running all tests or specified tests with GlassFish
+		       binary provided in the http url. Note that -u option
+		       works with -a and -t options as well.
+ 8. ctsrq.sh [-h]--->  Show this message
 EOF
 )
 
@@ -84,17 +93,19 @@ main() {
     [[ $# -eq 0 ]] && { echo -e "${USAGE}"; exit 0; }
 
     valid_test_ids=`list_test_ids`
-
+    cts_bundle_location="remote"
     # Process the input arguments
-    while getopts ":b:t:i:e:alsh" opt; do
+    while getopts ":b:t:i:e:c:u:alsh" opt; do
         case "$opt" in
             b) gfs_branch=$OPTARG;;
             t) test_ids=($OPTARG);;
+	    c) cts_bundle_location=$OPTARG;;
             a) test_ids=(`list_top_level_test_ids`);;
             l) print_test_ids "${valid_test_ids}";;
             s) print_test_ids "$(list_top_level_test_ids)";;
             i) print_test_ids "$(list_inner_level_test_ids $OPTARG)";;
             e) email_ids=$OPTARG;;
+	    u) gfs_url=$OPTARG;;
             h) echo -e "${USAGE}"; exit 0;;
            \?) echo "Invalid option -$OPTARG is specified"; exit 1;;
             :) case "$OPTARG" in
@@ -108,7 +119,7 @@ main() {
 
     shift "$((OPTIND-1))"
 
-    [[ -n "${gfs_branch}" ]] || { echo "Branch must be specified using -b option"; exit 1; }
+    [[ -n "${gfs_branch}" ]] || [[ -n "${gfs_url}" ]] || { echo "Branch or glassfish binary url must be specified"; exit 1; }
     [[ -n "${test_ids}" ]] || { echo "Test ids must be specified using -t option"; exit 1; }
 
     validate_given_test_ids ${test_ids[@]}
@@ -119,7 +130,7 @@ main() {
     # Generate a unique id for the job which will be used for identifying the job id later
 	unique_id=$RANDOM
 
-    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}"
+    params="BRANCH=${gfs_branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}&UNIQUE_ID=${unique_id}&EMAIL_IDS=${email_ids_encoded}&CTS_BUNDLE_LOCATION=${cts_bundle_location}&GLASSFISH_URL=${gfs_url}"
     last_build=`get_last_build_number`        
 
     # Trigger the build

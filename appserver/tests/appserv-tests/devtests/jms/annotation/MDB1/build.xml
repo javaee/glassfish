@@ -71,7 +71,7 @@
     <target name="build" depends="compile">
         <antcall target="build-ear-common">
             <param name="ejbjar.classes" value="**/MySessionBean*.class, **/*MessageBean.class" />
-            <param name="appclientjar.classes" value="**/*Client.class,**/MySessionBean*.class" />
+            <param name="appclientjar.classes" value="**/*Client.class,**/MySessionBeanRemote.class" />
         </antcall>
     </target>
 

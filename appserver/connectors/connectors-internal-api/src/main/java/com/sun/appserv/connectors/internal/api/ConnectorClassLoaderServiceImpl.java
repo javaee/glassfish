@@ -101,7 +101,7 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
                 if (globalConnectorCL == null) {
                     //[parent is assumed to be common-class-loader in ConnectorClassLoaderUtil.createRARClassLoader() also]
                     final ClassLoader parent = getCommonClassLoader();
-                    globalConnectorCL = AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+                    DelegatingClassLoader gcc = AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
                         public DelegatingClassLoader run() {
                             DelegatingClassLoader dcl = new DelegatingClassLoader(parent);
                             for (DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()) {
@@ -112,8 +112,9 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
                     });
 
                     for (DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()) {
-                        globalConnectorCL.addDelegate(cf);
+                        gcc.addDelegate(cf);
                     }
+                    globalConnectorCL = gcc;
                 }
             }
         }

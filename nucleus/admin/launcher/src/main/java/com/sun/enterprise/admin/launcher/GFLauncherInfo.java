@@ -244,15 +244,12 @@ public class GFLauncherInfo {
     }
 
     public List<String> getArgsAsList() throws GFLauncherException {
-        Map<String, String> map = getArgs();
-        Set<String> keys = map.keySet();
+        Iterator<Map.Entry<String, String>> map = getArgs().entrySet().iterator();
         List<String> argList = new ArrayList<String>();
-        
-        int i = 0;
-
-        for (String key : keys) {
-            argList.add(key);
-            argList.add(map.get(key));
+        while (map.hasNext()) {
+            Map.Entry<String, String> entry = map.next();
+            argList.add(entry.getKey());
+            argList.add(entry.getValue());
         }
         return argList;
     }

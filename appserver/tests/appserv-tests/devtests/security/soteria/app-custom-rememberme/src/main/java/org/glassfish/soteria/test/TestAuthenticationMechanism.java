@@ -43,7 +43,7 @@ package org.glassfish.soteria.test;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.security.auth.message.AuthException;
+import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.AuthenticationStatus;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
@@ -59,7 +59,8 @@ import static javax.security.enterprise.identitystore.CredentialValidationResult
 
 @RememberMe(
     cookieMaxAgeSeconds = 3600,
-    isRememberMeExpression ="self.isRememberMe(httpMessageContext)"
+    cookieSecureOnly = false,
+    isRememberMeExpression ="#{self.isRememberMe(httpMessageContext)}"
 )
 @RequestScoped
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
@@ -68,7 +69,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
     private IdentityStoreHandler identityStoreHandler;
 
     @Override
-    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthException {
+    public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
 
         request.setAttribute("authentication-mechanism-called", "true");
         
@@ -94,7 +95,7 @@ public class TestAuthenticationMechanism implements HttpAuthenticationMechanism 
                 return httpMessageContext.notifyContainerAboutLogin(
                     result.getCallerPrincipal(), result.getCallerGroups());
             } else {
-                return httpMessageContext.responseUnAuthorized();
+                return httpMessageContext.responseUnauthorized();
             }
         } 
 

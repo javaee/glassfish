@@ -170,9 +170,17 @@ public class WeldUtils {
             throws IOException {
         boolean result = false;
 
-        // Archives with extensions are not candidates for implicit bean discovery
+         //refer CDI 2.0 spec section 12.1
+        // Archives with extensions and no beans.xml file are not candidates for implicit bean discovery
         if (!archive.exists(META_INF_SERVICES_EXTENSION)) {
           result = isImplicitBeanArchive(context, archive.getURI());
+        } else {
+        	
+        	if (archive.exists(META_INF_BEANS_XML)) {
+        		
+        		result = isImplicitBeanArchive(context, archive.getURI());
+        	}
+        	
         }
 
         return result;

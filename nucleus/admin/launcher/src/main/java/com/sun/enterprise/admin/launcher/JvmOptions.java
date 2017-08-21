@@ -97,46 +97,49 @@ class JvmOptions {
 
     List<String> toStringArray() {
         List<String> ss = new ArrayList<String>();
-
-        Set<String> keys = xxProps.keySet();
-        for (String name : keys) {
-            String value = xxProps.get(name);
+        Iterator<Map.Entry<String, String>> entryIterator = xxProps.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            String value = entry.getValue();
             if (value != null) {
-                ss.add("-XX" + name + "=" + value);
+                ss.add("-XX" + entry.getKey() + "=" + value);
             }
             else {
-                ss.add("-XX" + name);
+                ss.add("-XX" + entry.getKey());
+            }
+        }
+        entryIterator = xProps.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            String value = entry.getValue();
+            if (value != null) {
+                ss.add("-X" + entry.getKey() + "=" + value);
+            }
+            else {
+                ss.add("-X" + entry.getKey());
             }
         }
 
-        keys = xProps.keySet();
-        for (String name : keys) {
-            String value = xProps.get(name);
+        entryIterator = plainProps.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            String value = entry.getValue();
             if (value != null) {
-                ss.add("-X" + name + "=" + value);
+                ss.add("-" + entry.getKey() + "=" + value);
             }
             else {
-                ss.add("-X" + name);
+                ss.add("-" + entry.getKey());
             }
         }
-        keys = plainProps.keySet();
-        for (String name : keys) {
-            String value = plainProps.get(name);
+        entryIterator = sysProps.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            String value = entry.getValue();
             if (value != null) {
-                ss.add("-" + name + "=" + value);
+                ss.add("-D" + entry.getKey() + "=" + value);
             }
             else {
-                ss.add("-" + name);
-            }
-        }
-        keys = sysProps.keySet();
-        for (String name : keys) {
-            String value = sysProps.get(name);
-            if (value != null) {
-                ss.add("-D" + name + "=" + value);
-            }
-            else {
-                ss.add("-D" + name);
+                ss.add("-D" + entry.getKey());
             }
         }
         return postProcessOrdering(ss);

@@ -478,8 +478,11 @@ public final class MessageBeanContainer extends BaseContainer implements
             beforeMessageDelivery(method, MessageDeliveryType.Timer,
                     false, null);
 
-            prepareEjbTimeoutParams((EjbInvocation) invocationManager.getCurrentInvocation(),
-                    timerState, timerService);
+            ComponentInvocation componentInvocation = invocationManager.getCurrentInvocation();
+            if (componentInvocation instanceof EjbInvocation) {
+                prepareEjbTimeoutParams((EjbInvocation) componentInvocation,
+                        timerState, timerService);
+            }
 
             // Method arguments had been set already
             deliverMessage(null);

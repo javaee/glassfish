@@ -161,18 +161,22 @@ public class StatusGenerator extends AbstractResource {
         status.append("\n------------------------");
         status.append("Commands to Resources Mapping Usage in REST Admin:\n");
 
-        for (String ss : commandsToResources.keySet()) {
-            if (hasTargetParam(ss)) {
-                status.append(ss + "   :::target:::   " + commandsToResources.get(ss) + "\n");
+        Iterator<Map.Entry<String, String>> entryIterator = commandsToResources.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            if (hasTargetParam(entry.getKey())) {
+                status.append(entry.getKey() + "   :::target:::   " + entry.getValue() + "\n");
             } else {
-                status.append(ss + "      :::      " + commandsToResources.get(ss) + "\n");
+                status.append(entry.getKey() + "      :::      " + entry.getValue() + "\n");
             }
-
         }
         status.append("\n------------------------");
         status.append("Resources with Delete Commands in REST Admin (not counting RESTREDIRECT:\n");
-        for (String ss : resourcesToDeleteCommands.keySet()) {
-            status.append(ss + "      :::      " + resourcesToDeleteCommands.get(ss) + "\n");
+
+        entryIterator = resourcesToDeleteCommands.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            status.append(entry.getKey() + "      :::      " + entry.getValue() + "\n");
         }
 
         FileOutputStream f = null;
@@ -244,18 +248,22 @@ public class StatusGenerator extends AbstractResource {
                 .append("<table border=\"1\" style=\"border-collapse: collapse\">\n")
                 .append("<tr><th>Command</th><th>Target</th><th>Resource</th></tr>\n");
 
-        for (String ss : commandsToResources.keySet()) {
-            status.append("<tr><td>").append(ss).append("</td><td>")
-                    .append(hasTargetParam(ss) ? "target" : "").append("</td><td>")
-                    .append(commandsToResources.get(ss)).append("</td></tr>\n");
+        Iterator<Map.Entry<String, String>> entryIterator = commandsToResources.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            status.append("<tr><td>").append(entry.getKey()).append("</td><td>")
+                    .append(hasTargetParam(entry.getKey()) ? "target" : "").append("</td><td>")
+                    .append(entry.getValue()).append("</td></tr>\n");
         }
         status.append("</table>\n<hr/>\n")
                 .append("<h4>Resources with Delete Commands in REST Admin (not counting RESTREDIRECT)</h4>\n")
                 .append("<table border=\"1\" style=\"border-collapse: collapse\">\n")
                 .append("<tr><th>Resource</th><th>Delete Command</th></tr>\n");
-        for (String ss : resourcesToDeleteCommands.keySet()) {
-            status.append("<tr><td>").append(ss)
-                    .append("</td><td>").append(resourcesToDeleteCommands.get(ss)).append("</td></tr>\n");
+        entryIterator = resourcesToDeleteCommands.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            status.append("<tr><td>").append(entry.getKey())
+                    .append("</td><td>").append(entry.getValue()).append("</td></tr>\n");
         }
         status.append("</table>");
 

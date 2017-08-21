@@ -674,7 +674,7 @@ public class DOLUtils {
                 sb.append(schema);
             }
             String clientSchemaLocation = sb.toString();
-            if (clientSchemaLocation!=null && clientSchemaLocation.length()!=0) {
+            if (clientSchemaLocation.length()!=0) {
                 if (o instanceof RootDeploymentDescriptor) {
                     ((RootDeploymentDescriptor) o).setSchemaLocation(clientSchemaLocation);
                 }

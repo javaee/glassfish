@@ -677,6 +677,7 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
     }
 
     /* Equality on name. */
+    @Override
     public boolean equals(Object object) {
         if (object instanceof ServiceReferenceDescriptor) {
             ServiceReferenceDescriptor thatReference = 

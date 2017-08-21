@@ -89,7 +89,6 @@ public final class ContainerTransaction extends Descriptor {
 	boolean isValidAttribute = (NOT_SUPPORTED.equals(transactionAttribute)
 	    || SUPPORTS.equals(transactionAttribute)
 		|| REQUIRED.equals(transactionAttribute)
-		    || REQUIRED.equals(transactionAttribute)
 			|| REQUIRES_NEW.equals(transactionAttribute)
 			    || MANDATORY.equals(transactionAttribute)
 				|| NEVER.equals(transactionAttribute) );

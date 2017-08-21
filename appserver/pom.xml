@@ -69,10 +69,9 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.10</woodstock.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
-        <javax.interceptor-api.version>1.2</javax.interceptor-api.version>
+        <javax.interceptor-api.version>1.2.1</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
         <javax.transaction-api.version>1.2.1</javax.transaction-api.version>
-        <jaxws-api.version>2.3.0</jaxws-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <cdi-api.version>2.0</cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
@@ -81,9 +80,9 @@
         <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
-        <javax.validation-api.version>2.0.0.CR3</javax.validation-api.version>
-        <javax.security.enterprise-api.version>1.0-b06</javax.security.enterprise-api.version>
-        <javax.security.enterprise.version>1.0-b07</javax.security.enterprise.version>
+        <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
+        <javax.security.enterprise-api.version>1.0-b12</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0-b13</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -104,21 +103,20 @@
         <jsftemplating.version>2.1.2</jsftemplating.version>
         <uc-pkg-client.version>1.122-57.2889</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
-        <webservices.version>2.4.0-b170703.2107</webservices.version>
-        <jsr181-api.version>1.0-MR1</jsr181-api.version>
+        <webservices.version>2.4.0</webservices.version>
         <woodstox.version>4.4.1</woodstox.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
-        <jaxb.version>2.3.0-b170624.2321</jaxb.version>
+        <jaxb.version>2.3.0</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
-        <eclipselink.version>2.7.0-RC1</eclipselink.version>
-        <javax-persistence-api.version>2.2.0-RC1</javax-persistence-api.version>
+        <eclipselink.version>2.7.0-RC3</eclipselink.version>
+        <javax-persistence-api.version>2.2.0-RC3</javax-persistence-api.version>
         <dbschema.version>3.1.1</dbschema.version>
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
         <schema2beans.version>3.1.1</schema2beans.version>
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
-        <mq.version>5.1.1-b05</mq.version>
-        <javadb.version>10.10.2.0</javadb.version>
+        <mq.version>5.1.1-b06</mq.version>
+        <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
@@ -134,7 +132,6 @@
         <javax.batch-api.version>1.0.1</javax.batch-api.version>
         <com.ibm.jbatch.container.version>1.0.2</com.ibm.jbatch.container.version>
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
-        <javax.xml.soap-api.version>1.3.7</javax.xml.soap-api.version>
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
@@ -497,7 +494,7 @@
                             </artifact>
                             <nonFinal>false</nonFinal>
                             <jarType>api</jarType>
-                            <specVersion>1.0-b06</specVersion>
+                            <specVersion>${javax.security.enterprise-api.version}</specVersion>
                             <specImplVersion>${javax.security.enterprise.version}</specImplVersion>
                             <apiPackage>javax.security.enterprise</apiPackage>
                             <implNamespace>org.glassfish.soteria</implNamespace>
@@ -557,11 +554,6 @@
                 <version>${javax.xml.rpc-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.ws</groupId>
-                <artifactId>jaxws-api</artifactId>   
-                <version>${jaxws-api.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.faces</groupId>
                 <artifactId>javax.faces-api</artifactId>
                 <version>${javax.faces-api.version}</version>
@@ -575,11 +567,6 @@
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>${javax.inject.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.jws</groupId>
-                <artifactId>jsr181-api</artifactId>
-                <version>${jsr181-api.version}</version>
             </dependency>
 	    <dependency>
 		<groupId>javax.resource</groupId>
@@ -808,7 +795,7 @@
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>1.3.2</version>
+                <version>1.3.3</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.messaging.mq</groupId>
@@ -865,11 +852,6 @@
 				<artifactId>yasson</artifactId>
 				<version>${yasson.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>javax.xml.soap</groupId>
-                <artifactId>javax.xml.soap-api</artifactId>
-                <version>${javax.xml.soap-api.version}</version>
-            </dependency>
             <dependency>
                 <groupId>javax.management.j2ee</groupId>
                 <artifactId>javax.management.j2ee-api</artifactId>
@@ -977,64 +959,9 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-common-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-cluster-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-corba-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-ejb-lite-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-ejb-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jca-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jdbc-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-common-full-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jms-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
                 <artifactId>console-jruby-plugin-help</artifactId>
                 <version>${v3-docs.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-jts-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.help</groupId>
-                <artifactId>console-web-plugin-help</artifactId>
-                <version>${v3-docs.version}</version>
-            </dependency>            
             <dependency>
                 <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
                 <artifactId>console-common-help-l10n</artifactId>
@@ -1146,6 +1073,12 @@
                 <artifactId>javax.security.enterprise-api</artifactId>
                 <version>${javax.security.enterprise-api.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>derby-distribution</artifactId>
+                <version>${derby.version}</version>
+                <type>zip</type>
+           </dependency>
       </dependencies>
     </dependencyManagement>
 
