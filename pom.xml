@@ -490,6 +490,7 @@
                           <exclude>.class</exclude>
                           <exclude>.json</exclude>
                           <exclude>.txt</exclude>
+                          <exclude>.pbuf</exclude>
                         </exclude>
                     </configuration>
                 </plugin>
