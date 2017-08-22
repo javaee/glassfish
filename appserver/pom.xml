@@ -82,7 +82,7 @@
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
         <javax.security.enterprise-api.version>1.0-b12</javax.security.enterprise-api.version>
-        <javax.security.enterprise.version>1.0-b11</javax.security.enterprise.version>
+        <javax.security.enterprise.version>1.0-b13</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -115,7 +115,7 @@
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
         <schema2beans.version>3.1.1</schema2beans.version>
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
-        <mq.version>5.1.1-b05</mq.version>
+        <mq.version>5.1.1-b06</mq.version>
         <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>3.0.0.Final</weld.version>
