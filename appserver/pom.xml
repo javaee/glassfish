@@ -136,7 +136,7 @@
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
 	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
-        <libpam4j.version>1.8</libpam4j.version>
+        <libpam4j.version>1.9</libpam4j.version>
     </properties>
 
     <modules>
