@@ -178,8 +178,6 @@
         <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
-        <copyright.year.old>2013</copyright.year.old>
-        <copyright.year.new>2017</copyright.year.new>
     </properties>
 
     <modules>
@@ -1273,38 +1271,7 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>change-helppages-copyright</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.google.code.maven-replacer-plugin</groupId>
-                        <artifactId>replacer</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>replace</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <basedir>${basedir}</basedir>
-                            <includes>
-                                <include>../appserver/admingui/**/*.html</include>
-                            </includes>
-                            <replacements>
-                                <replacement>
-                                    <token>${copyright.year.old}</token>
-                                    <value>${copyright.year.new}</value>
-                                </replacement>
-                            </replacements>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
+        
     </profiles>
 
     <dependencies>
