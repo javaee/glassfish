@@ -44,24 +44,29 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildDescriptor;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
@@ -76,6 +81,9 @@ import com.google.protobuf.DynamicMessage;
 @Named(PBufUtilities.PBUF_SERVICE_NAME)
 public class PBufParser implements XmlServiceParser {
     private final HashMap<Class<?>, Descriptors.Descriptor> allProtos = new HashMap<Class<?>, Descriptors.Descriptor>();
+    
+    @Inject @Named(PBufUtilities.PBUF_SERVICE_NAME)
+    private IterableProvider<XmlService> xmlService;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(org.glassfish.hk2.xml.spi.Model, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
@@ -83,7 +91,13 @@ public class PBufParser implements XmlServiceParser {
     @Override
     public <T> T parseRoot(Model rootModel, URI location, Listener listener)
             throws Exception {
-        throw new AssertionError("not yet implemented");
+        InputStream is = location.toURL().openStream();
+        try {
+            return parseRoot(rootModel, is, listener);
+        }
+        finally {
+            is.close();
+        }
     }
 
     /* (non-Javadoc)
@@ -92,7 +106,25 @@ public class PBufParser implements XmlServiceParser {
     @Override
     public <T> T parseRoot(Model rootModel, InputStream input,
             Listener listener) throws Exception {
-        throw new AssertionError("not yet implemented");
+        try {
+            List<Descriptors.FileDescriptor> protoFiles = new LinkedList<Descriptors.FileDescriptor>();
+            convertAllModels((ModelImpl) rootModel, protoFiles);
+        }
+        catch (IOException ioe) {
+            throw ioe;
+        }
+        catch (Exception e) {
+            throw new IOException(e);
+        }
+        
+        DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, input);
+        
+        XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
+                null,
+                message,
+                listener);
+        
+        return (T) retVal;
     }
 
     /* (non-Javadoc)
@@ -135,6 +167,122 @@ public class PBufParser implements XmlServiceParser {
         finally {
             cos.flush();
         }
+    }
+    
+    private XmlHk2ConfigurationBean parseDynamicMessage(ModelImpl model,
+            XmlHk2ConfigurationBean parent,
+            DynamicMessage message,
+            Listener listener) throws IOException {
+        BaseHK2JAXBBean bean = (BaseHK2JAXBBean) xmlService.get().createBean(model.getOriginalInterfaceAsClass());
+        
+        Descriptors.Descriptor descriptor = message.getDescriptorForType();
+        
+        listener.beforeUnmarshal(bean, parent);
+        
+        for(Map.Entry<QName, ChildDescriptor> entry : model.getAllChildrenDescriptors().entrySet()) {
+            QName qname = entry.getKey();
+            ChildDescriptor childDescriptor = entry.getValue();
+            
+            String localPart = qname.getLocalPart();
+            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(localPart);
+            if (fieldDescriptor == null) {
+                throw new IOException("Unknown field " + localPart + " in " + bean);
+            }
+            
+            Object value = message.getField(fieldDescriptor);
+            if (value == null) continue;
+            
+            ChildDataModel childDataModel = childDescriptor.getChildDataModel();
+            if (childDataModel != null) {
+                bean._setProperty(qname, value);
+            }
+            else {
+                ParentedModel parentedNode = childDescriptor.getParentedModel();
+                
+                DynamicMessage dynamicChild = null;
+                XmlHk2ConfigurationBean child = null;
+                int repeatedFieldCount = 0;
+                
+                switch (parentedNode.getChildType()) {
+                case DIRECT:
+                    if (!(value instanceof DynamicMessage)) {
+                        throw new AssertionError("Do not know how to handle a non-dynamic direct message " + value);
+                    }
+                    dynamicChild = (DynamicMessage) value;
+                    
+                    child = parseDynamicMessage(parentedNode.getChildModel(),
+                            bean,
+                            dynamicChild,
+                            listener);
+                    
+                    bean._setProperty(qname, child);
+                    break;
+                case LIST:
+                    repeatedFieldCount = message.getRepeatedFieldCount(fieldDescriptor);
+                    ArrayList<XmlHk2ConfigurationBean> list = new ArrayList<XmlHk2ConfigurationBean>(repeatedFieldCount);
+                    
+                    for (int lcv = 0; lcv < repeatedFieldCount; lcv++) {
+                        Object childBean = message.getRepeatedField(fieldDescriptor, lcv);
+                        if (!(childBean instanceof DynamicMessage)) {
+                            throw new AssertionError("Do not know how to handle a non-dynamic list message " + childBean);
+                        }
+                        dynamicChild = (DynamicMessage) childBean;
+                        
+                        child = parseDynamicMessage(parentedNode.getChildModel(),
+                                bean,
+                                dynamicChild,
+                                listener);
+                        
+                        list.add(child);
+                    }
+                    
+                    bean._setProperty(qname, list);
+                    break;
+                case ARRAY:
+                    ModelImpl childModel = parentedNode.getChildModel();
+                    repeatedFieldCount = message.getRepeatedFieldCount(fieldDescriptor);
+                    Object array = Array.newInstance(childModel.getOriginalInterfaceAsClass(), repeatedFieldCount);
+                    
+                    for (int lcv = 0; lcv < repeatedFieldCount; lcv++) {
+                        Object childBean = message.getRepeatedField(fieldDescriptor, lcv);
+                        if (!(childBean instanceof DynamicMessage)) {
+                            throw new AssertionError("Do not know how to handle a non-dynamic array message " + childBean);
+                        }
+                        dynamicChild = (DynamicMessage) childBean;
+                        
+                        child = parseDynamicMessage(parentedNode.getChildModel(),
+                                bean,
+                                dynamicChild,
+                                listener);
+                        
+                        Array.set(array, lcv, child);
+                    }
+                    
+                    bean._setProperty(qname, array);
+                    break;
+                default:
+                    throw new IOException("Unknown child type: " + parentedNode.getChildType());
+                }
+            }
+        }
+        
+        listener.afterUnmarshal(bean, parent);
+        
+        return bean;
+    }
+    
+    private synchronized DynamicMessage internalUnmarshal(ModelImpl model, InputStream is) throws Exception {
+        Class<?> originalAsClass = model.getOriginalInterfaceAsClass();
+        String originalInterface = model.getOriginalInterface();
+        String protoName = getSimpleName(originalInterface);
+        
+        Descriptors.Descriptor descriptor = allProtos.get(originalAsClass);
+        if (descriptor == null) {
+            throw new IOException("Unknown model: " + originalInterface + " with protoName=" + protoName);
+        }
+        
+        DynamicMessage retVal = DynamicMessage.parseFrom(descriptor, is);
+        return retVal;
     }
     
     private synchronized <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {

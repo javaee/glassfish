@@ -43,6 +43,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
@@ -55,6 +56,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record-block")
+@XmlType(propOrder={ "serviceRecord" })
 public interface ServiceRecordBlockBean {
     @XmlElement(name="serviceRecord")
     @PluralOf("ServiceRecord")

@@ -145,7 +145,7 @@ public class PBufParserTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testUnmarshalStructuredBean() throws Exception {
         ClassLoader cl = getClass().getClassLoader();
         URI standardPbufURI = cl.getResource("standard.pbuf").toURI();

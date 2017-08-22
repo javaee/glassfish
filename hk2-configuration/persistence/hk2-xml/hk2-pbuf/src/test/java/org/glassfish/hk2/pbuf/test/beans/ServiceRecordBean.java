@@ -42,6 +42,7 @@ package org.glassfish.hk2.pbuf.test.beans;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
@@ -53,6 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record")
+@XmlType(propOrder={ "serviceID", "customer" })
 public interface ServiceRecordBean {
     @XmlElement(name="serviceID", required=true)
     @XmlID
