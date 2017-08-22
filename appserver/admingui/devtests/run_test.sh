@@ -103,6 +103,6 @@ case $OPT in
   list_test_ids )
     list_test_ids;;
   run_test_id )
-    trap post_test_run EXIT
+    trap post_test_run SIGTERM SIGABRT EXIT
     run_test_id $TEST_ID ;;
 esac
