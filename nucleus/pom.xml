@@ -1274,7 +1274,7 @@
             </build>
         </profile>
         <profile>
-            <id>edit-helpPages-copyrightYear</id>
+            <id>change-helppages-copyright</id>
             <build>
                 <plugins>
                     <plugin>
