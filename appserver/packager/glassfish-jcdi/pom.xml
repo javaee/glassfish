@@ -104,9 +104,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-   	    <groupId>org.glassfish.hk2.external</groupId>
+   	    <groupId>org.glassfish.main.external</groupId>
     	    <artifactId>bean-validator-cdi</artifactId>
-	    <version>${bean.validator.cdi.version}</version>
+	    <version>${project.version}</version>
     	</dependency>
 	<dependency>
             <groupId>javax.enterprise</groupId>
