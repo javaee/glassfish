@@ -2365,7 +2365,7 @@ public class Utilities {
         
         String repPropNamespace = xmlNameMap.getNamespaceMap(variable);
         String repPropName = xmlNameMap.getNameMap(variable);
-        
+        boolean required = xmlNameMap.isRequired(variable);
         
         QName representedProperty;
         if (repPropName == null) {
@@ -2401,7 +2401,8 @@ public class Utilities {
                 format,
                 listParameterizedType,
                 xmlWrapperTag,
-                adapter);
+                adapter,
+                required);
     }
     
     private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {

@@ -100,6 +100,11 @@ public interface MethodInformationI {
      * @return true if this is a reference method
      */
     public boolean isReference();
+    
+    /**
+     * @return true if this is a required field
+     */
+    public boolean isRequired();
 
     /**
      * @return The decapitilized version of the property name

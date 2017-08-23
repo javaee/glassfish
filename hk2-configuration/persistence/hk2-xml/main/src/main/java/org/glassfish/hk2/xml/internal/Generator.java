@@ -562,6 +562,8 @@ public class Generator {
             
             if (getterOrSetter) {
                 List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty().getLocalPart());
+                boolean required = mi.isRequired();
+                
                 if ((childType != null) || (aliases != null)) {
                     if (!isReference) {
                         AliasType aType = (aliases == null) ? AliasType.NORMAL : AliasType.HAS_ALIASES ;
@@ -579,7 +581,8 @@ public class Generator {
                                 mi.getDefaultValue(),
                                 aType,
                                 mi.getWrapperTag(),
-                                adapterClass);
+                                adapterClass,
+                                required);
                         }
                         else {
                             compiledModel.addNonChild(
@@ -591,7 +594,8 @@ public class Generator {
                                     false,
                                     Format.ELEMENT,
                                     aType,
-                                    null);
+                                    null,
+                                    required);
                         }
                         
                         if (aliases != null) {
@@ -608,7 +612,8 @@ public class Generator {
                                         alias.getDefaultValue(),
                                         AliasType.IS_ALIAS,
                                         mi.getWrapperTag(),
-                                        adapterClass);
+                                        adapterClass,
+                                        required);
                                 }
                                 else {
                                     compiledModel.addNonChild(
@@ -620,7 +625,8 @@ public class Generator {
                                             false,
                                             Format.ELEMENT,
                                             AliasType.IS_ALIAS,
-                                            alias.getAlias());
+                                            alias.getAlias(),
+                                            required);
                                 }
                             }
                         }
@@ -635,7 +641,9 @@ public class Generator {
                                 listPType,
                                 true,
                                 mi.getFormat(),
-                                AliasType.NORMAL, null);
+                                AliasType.NORMAL,
+                                null,
+                                required);
                     }
                 }
                 else {
@@ -648,7 +656,8 @@ public class Generator {
                             false,
                             mi.getFormat(),
                             AliasType.NORMAL,
-                            null);
+                            null,
+                            required);
                 }
             }
             
@@ -852,7 +861,8 @@ public class Generator {
                         asParameter(parentedModel.getGivenDefault()) + "," +
                         asParameter(parentedModel.getAliasType()) + "," +
                         asParameter(parentedModel.getXmlWrapperTag()) + "," +
-                        asParameter(parentedModel.getAdapter()) + ");\n");
+                        asParameter(parentedModel.getAdapter()) + "," +
+                        asBoolean(parentedModel.isRequired()) + ");\n");
             }
             else {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
@@ -866,7 +876,8 @@ public class Generator {
                         asBoolean(childDataModel.isReference()) + "," +
                         asParameter(childDataModel.getFormat()) + "," +
                         asParameter(childDataModel.getAliasType()) + "," +
-                        asParameter(childDataModel.getXmlAlias()) + ");\n");
+                        asParameter(childDataModel.getXmlAlias()) +"," +
+                        asBoolean(childDataModel.isRequired()) + ");\n");
             }
         }
         

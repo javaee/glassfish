@@ -152,8 +152,18 @@ public class ModelImpl implements Model {
             String givenDefault,
             AliasType aliased,
             String childWrapperTag,
-            String adapter) {
-        ParentedModel pm = new ParentedModel(childInterface, namespace, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag, adapter);
+            String adapter,
+            boolean required) {
+        ParentedModel pm = new ParentedModel(childInterface,
+                namespace,
+                xmlTag,
+                xmlAlias,
+                childType,
+                givenDefault,
+                aliased,
+                childWrapperTag,
+                adapter,
+                required);
         childrenByName.put(QNameUtilities.createQName(namespace, xmlTag), pm);
         allChildren.put(QNameUtilities.createQName(namespace, xmlTag), new ChildDescriptor(pm));
     }
@@ -166,7 +176,8 @@ public class ModelImpl implements Model {
             boolean isReference,
             Format format,
             AliasType aliasType,
-            String aliasOf) {
+            String aliasOf,
+            boolean required) {
         String namespace = QNameUtilities.getNamespace(qName);
         String xmlTag = qName.getLocalPart();
         
@@ -178,7 +189,8 @@ public class ModelImpl implements Model {
                 isReference,
                 format,
                 aliasType,
-                aliasOf);
+                aliasOf,
+                required);
     }
     
     public void addNonChild(
@@ -190,8 +202,9 @@ public class ModelImpl implements Model {
             boolean isReference,
             Format format,
             AliasType aliasType,
-            String aliasOf) {
-        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, format, aliasType, aliasOf);
+            String aliasOf,
+            boolean required) {
+        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, format, aliasType, aliasOf, required);
         nonChildProperty.put(QNameUtilities.createQName(namespace, xmlTag), cdm);
         allChildren.put(QNameUtilities.createQName(namespace, xmlTag), new ChildDescriptor(cdm));
         if (Format.VALUE.equals(format)) {

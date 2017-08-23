@@ -44,7 +44,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
-import org.glassfish.hk2.xml.internal.alt.AltClass;
 
 /**
  * This contains the model for children who have a specific
@@ -71,6 +70,7 @@ public class ParentedModel implements Serializable {
     private String givenDefault;
     private AliasType aliased;
     private String adapterClassName;
+    private boolean required;
     
     /** Set at runtime */
     private ClassLoader myLoader;
@@ -90,7 +90,8 @@ public class ParentedModel implements Serializable {
             String givenDefault,
             AliasType aliased,
             String childXmlWrapperTag,
-            String adapterClassName) {
+            String adapterClassName,
+            boolean required) {
         this.childInterface = childInterface;
         this.childXmlNamespace = childXmlNamespace;
         this.childXmlTag = childXmlTag;
@@ -100,6 +101,7 @@ public class ParentedModel implements Serializable {
         this.aliased = aliased;
         this.childXmlWrapperTag = childXmlWrapperTag;
         this.adapterClassName = adapterClassName;
+        this.required = required;
     }
     
     public String getChildInterface() {
@@ -132,6 +134,10 @@ public class ParentedModel implements Serializable {
     
     public String getAdapter() {
         return adapterClassName;
+    }
+    
+    public boolean isRequired() {
+        return required;
     }
     
     @SuppressWarnings("unchecked")

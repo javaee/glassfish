@@ -116,6 +116,11 @@ public class NameInformation {
         return referenceSet.contains(variableName);
     }
     
+    public boolean isRequired(String variableName) {
+        if (variableName == null || valueData == null) return false;
+        return valueData.isRequired();
+    }
+    
     public Format getFormat(String variableName) {
         if (variableName == null) return Format.ATTRIBUTE;
         if ((valueData != null) && valueData.getName().equals(variableName)) return Format.VALUE;

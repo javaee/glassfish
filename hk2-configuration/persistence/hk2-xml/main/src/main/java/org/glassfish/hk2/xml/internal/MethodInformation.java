@@ -125,6 +125,8 @@ public class MethodInformation implements MethodInformationI {
     
     private final AdapterInformation adapterInfo;
     
+    private final boolean required;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -139,7 +141,8 @@ public class MethodInformation implements MethodInformationI {
             Format format,
             AltClass listParameterizedType,
             String xmlWrapperTag,
-            AdapterInformation adapterInfo) {
+            AdapterInformation adapterInfo,
+            boolean required) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -155,6 +158,7 @@ public class MethodInformation implements MethodInformationI {
         this.listParameterizedType = listParameterizedType;
         this.xmlWrapperTag = xmlWrapperTag;
         this.adapterInfo = adapterInfo;
+        this.required = required;
     }
     
     /* (non-Javadoc)
@@ -237,6 +241,11 @@ public class MethodInformation implements MethodInformationI {
         return isReference;
     }
     
+    @Override
+    public boolean isRequired() {
+        return required;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.MethodInformationI#getDecapitalizedMethodProperty()
      */
@@ -285,6 +294,7 @@ public class MethodInformation implements MethodInformationI {
           "listParameterizedType=" + listParameterizedType + "," +
           "xmlWrapperTag=" + xmlWrapperTag + "," +
           "adapterInfo=" + adapterInfo + "," +
+          "required=" + required + "," +
           System.identityHashCode(this) + ")";
     }
 }

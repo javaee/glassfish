@@ -187,7 +187,7 @@ public class GeneratorUtilities {
                     
                 String defaultValue = Generator.JAXB_DEFAULT_DEFAULT;
                     
-                xmlNameMap.put(setterVariable, new XmlElementData("", setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
+                xmlNameMap.put(setterVariable, new XmlElementData("", setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName, false));
                     
                 String aliasName = setterVariable;
                     
@@ -200,6 +200,7 @@ public class GeneratorUtilities {
                     
                     String allXmlElementNamespace = allXmlElement.getStringValue("namespace");
                     String allXmlElementName = allXmlElement.getStringValue("name");
+                    boolean allXmlElementRequired = allXmlElement.getBooleanValue("required");
                     AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
                     String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
                     boolean allXmlElementTypeInterface = (allXmlElementType == null) ? true : allXmlElementType.isInterface();
@@ -216,7 +217,8 @@ public class GeneratorUtilities {
                                 Format.ELEMENT,
                                 allXmlElementTypeName,
                                 allXmlElementTypeInterface,
-                                xmlElementWrapperName));
+                                xmlElementWrapperName,
+                                allXmlElementRequired));
                     }
                 }
             }
@@ -230,6 +232,7 @@ public class GeneratorUtilities {
                 
                 String namespace = xmlElement.getStringValue("namespace");
                 String name = xmlElement.getStringValue("name");
+                boolean required = xmlElement.getBooleanValue("required");
                     
                 if (Generator.JAXB_DEFAULT_STRING.equals(name)) {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -240,7 +243,8 @@ public class GeneratorUtilities {
                             Format.ELEMENT,
                             null,
                             true,
-                            xmlElementWrapperName));
+                            xmlElementWrapperName,
+                            required));
                 }
                 else {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -251,12 +255,14 @@ public class GeneratorUtilities {
                             Format.ELEMENT,
                             null,
                             true,
-                            xmlElementWrapperName));
+                            xmlElementWrapperName,
+                            required));
                 }
             }
             else if (xmlAttribute != null) {
                 String namespace = xmlAttribute.getStringValue("namespace");
                 String name = xmlAttribute.getStringValue("name");
+                boolean required = xmlAttribute.getBooleanValue("required");
                 
                 if (Generator.JAXB_DEFAULT_STRING.equals(name)) {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -267,7 +273,8 @@ public class GeneratorUtilities {
                             Format.ATTRIBUTE,
                             null,
                             true,
-                            xmlElementWrapperName));
+                            xmlElementWrapperName,
+                            required));
                 }
                 else {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -278,7 +285,8 @@ public class GeneratorUtilities {
                             Format.ATTRIBUTE,
                             null,
                             true,
-                            xmlElementWrapperName));
+                            xmlElementWrapperName,
+                            required));
                 }
             }
             else if (xmlValue != null) {
@@ -294,7 +302,8 @@ public class GeneratorUtilities {
                         Format.VALUE,
                         null,
                         false,
-                        xmlElementWrapperName);
+                        xmlElementWrapperName,
+                        true);
                 xmlNameMap.put(setterVariable, valueData);
             }
             else if (xmlAnyAttribute != null) {
@@ -310,7 +319,8 @@ public class GeneratorUtilities {
                         Format.ATTRIBUTE,
                         null,
                         false,
-                        xmlElementWrapperName);
+                        xmlElementWrapperName,
+                        false);
                 xmlNameMap.put(setterVariable, xmlAnyAttributeData);       
             }
             else {
