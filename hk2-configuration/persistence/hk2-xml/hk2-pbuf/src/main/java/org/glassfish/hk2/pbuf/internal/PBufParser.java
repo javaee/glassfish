@@ -419,15 +419,22 @@ public class PBufParser implements XmlServiceParser {
         DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
         builder.setName(protoName);
         
+        QName keyProperty = model.getKeyProperty();
+        
         int number = 1;
         for(Map.Entry<QName, ChildDescriptor> entry : allChildren.entrySet()) {
-            String localPart = entry.getKey().getLocalPart();
+            QName entryKey = entry.getKey();
+            String localPart = entryKey.getLocalPart();
             ChildDescriptor childDescriptor = entry.getValue();
             
             DescriptorProtos.FieldDescriptorProto.Builder fBuilder =
                     DescriptorProtos.FieldDescriptorProto.newBuilder().setName(localPart);
             fBuilder.setNumber(number);
             number++;
+            
+            if (keyProperty != null && keyProperty.equals(entryKey)) {
+                fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED);
+            }
             
             ChildDataModel dataModel = childDescriptor.getChildDataModel();
             if (dataModel != null) {
