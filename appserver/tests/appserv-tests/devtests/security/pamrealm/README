@@ -11,3 +11,5 @@ with password 'password'.
 If such a user does not exist, please create the user using the Unix command - 'useradd -p password unixuser' or the GUI, as applicable.
 
 If a different Unix user/password is used for testing, please modify build.properties and sun-web.xml to reflect the unix username.
+
+Note: The newly added user must have the sudoers privilege to get the test working.

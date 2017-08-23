@@ -77,6 +77,7 @@ public final class WebContainerListener
 
     static {
         // preInvoke events
+        beforeEvents.add(ContainerEvent.BEFORE_CONTEXT_INITIALIZER_ON_STARTUP);
         beforeEvents.add(ContainerEvent.BEFORE_CONTEXT_INITIALIZED);
         beforeEvents.add(ContainerEvent.BEFORE_CONTEXT_DESTROYED);
         beforeEvents.add(ContainerEvent.BEFORE_CONTEXT_ATTRIBUTE_ADDED);
@@ -105,6 +106,7 @@ public final class WebContainerListener
         beforeEvents.add(ContainerEvent.BEFORE_LOGOUT);
 
         // postInvoke events
+        afterEvents.add(ContainerEvent.AFTER_CONTEXT_INITIALIZER_ON_STARTUP);
         afterEvents.add(ContainerEvent.AFTER_CONTEXT_INITIALIZED);
         afterEvents.add(ContainerEvent.AFTER_CONTEXT_DESTROYED);
         afterEvents.add(ContainerEvent.AFTER_CONTEXT_ATTRIBUTE_ADDED);
