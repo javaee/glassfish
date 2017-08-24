@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.pbuf.test.basic;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
@@ -50,6 +51,7 @@ import org.glassfish.hk2.pbuf.test.beans.CustomerBean;
 import org.glassfish.hk2.pbuf.test.beans.RootOnlyBean;
 import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBean;
 import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBlockBean;
+import org.glassfish.hk2.pbuf.test.beans.TypeBean;
 import org.glassfish.hk2.pbuf.test.utilities.Utilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -158,6 +160,67 @@ public class PBufParserTest {
         XmlRootHandle<ServiceRecordBlockBean> handle = xmlService.unmarshal(standardPbufURI, ServiceRecordBlockBean.class);
         
         validateStandardBean(handle);
+    }
+    
+    /**
+     * Tests all the native types of pbuf
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testTypes() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<TypeBean> handle = xmlService.createEmptyHandle(TypeBean.class);
+        handle.addRoot();
+        
+        TypeBean root = handle.getRoot();
+        
+        root.setIType(13);
+        root.setJType(14L);
+        root.setZType(true);
+        root.setBType((byte) 15);
+        root.setCType('E');
+        root.setSType((short) 16);
+        root.setFType((float) 17.0);
+        root.setDType(18.0);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        Assert.assertTrue(asBytes.length > 0);
+        
+        XmlRootHandle<TypeBean> readHandle;
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(asBytes);
+        try {
+            readHandle = xmlService.unmarshal(bais, TypeBean.class);
+        }
+        finally {
+            bais.close();
+        }
+        
+        TypeBean typeRoot = readHandle.getRoot();
+        
+        Assert.assertEquals(13, typeRoot.getIType());
+        Assert.assertEquals(14L, typeRoot.getJType());
+        Assert.assertEquals(true, typeRoot.getZType());
+        Assert.assertEquals((byte) 15, typeRoot.getBType());
+        Assert.assertEquals('E', typeRoot.getCType());
+        Assert.assertEquals((short) 16, typeRoot.getSType());
+        Assert.assertTrue(new Float(17.0).equals(typeRoot.getFType()));
+        Assert.assertTrue(new Double(18.0).equals(typeRoot.getDType()));
+        
     }
     
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle) {
