@@ -40,33 +40,26 @@
 
 package org.glassfish.soteria.test;
 
+import static java.util.Arrays.asList;
+import static javax.security.enterprise.identitystore.CredentialValidationResult.INVALID_RESULT;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import java.util.HashSet;
 
-@RequestScoped
-@Named
-public class RememberMeConfigBean {
+import javax.enterprise.context.ApplicationScoped;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
 
-    private int maxAgeSeconds = 500;
-    private String cookieName = "GLASSFISHCOOKIE";
-    private boolean secureOnly = false;
-    private boolean httpOnly = true;
+@ApplicationScoped
+public class TestIdentityStore implements IdentityStore {
 
-    public int getMaxAgeSeconds() {
-        return maxAgeSeconds;
+    public CredentialValidationResult validate(UsernamePasswordCredential usernamePasswordCredential) {
+
+        if (usernamePasswordCredential.compareTo("reza", "secret1")) {
+            return new CredentialValidationResult("reza", new HashSet<>(asList("foo", "bar")));
+        }
+
+        return INVALID_RESULT;
     }
 
-    public String getCookieName() {
-        return cookieName;
-    }
-
-    public boolean isSecureOnly() {
-        return secureOnly;
-    }
-
-    public boolean isHttpOnly() {
-        return httpOnly;
-    }
 }
-

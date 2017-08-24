@@ -40,33 +40,27 @@
 
 package org.glassfish.soteria.test;
 
-
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.security.enterprise.authentication.mechanism.http.*;
 
-@RequestScoped
-@Named
-public class RememberMeConfigBean {
+@FormAuthenticationMechanismDefinition(
+        loginToContinue = @LoginToContinue(
+                loginPage="${appConfig.getLoginPage()}",
+                errorPage="#{appConfig.getErrorPage()}"
+        )
+)
 
-    private int maxAgeSeconds = 500;
-    private String cookieName = "GLASSFISHCOOKIE";
-    private boolean secureOnly = false;
-    private boolean httpOnly = true;
-
-    public int getMaxAgeSeconds() {
-        return maxAgeSeconds;
+@ApplicationScoped
+@Named("appConfig")
+public class ApplicationConfig {
+    public String getLoginPage(){
+        return login_page;
     }
+    private String login_page = "/login-servlet";
+    private String error_page = "/login-error-servlet";
 
-    public String getCookieName() {
-        return cookieName;
-    }
-
-    public boolean isSecureOnly() {
-        return secureOnly;
-    }
-
-    public boolean isHttpOnly() {
-        return httpOnly;
+    public String getErrorPage() {
+        return error_page;
     }
 }
-
