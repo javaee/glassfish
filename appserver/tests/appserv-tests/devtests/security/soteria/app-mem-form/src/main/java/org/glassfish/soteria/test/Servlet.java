@@ -50,11 +50,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.security.enterprise.authentication.mechanism.http.*;
 
 /**
  * Test Servlet that prints out the name of the authenticated caller and whether
  * this caller is in any of the roles {foo, bar, kaz}
  */
+
+@FormAuthenticationMechanismDefinition(
+        loginToContinue = @LoginToContinue(
+                loginPage="${appConfig.getLoginPage()}",
+                errorPage="#{appConfig.getErrorPage()}"
+        )
+)
 @WebServlet("/servlet")
 @DeclareRoles({ "foo", "bar", "kaz" })
 @ServletSecurity(@HttpConstraint(rolesAllowed = "foo"))

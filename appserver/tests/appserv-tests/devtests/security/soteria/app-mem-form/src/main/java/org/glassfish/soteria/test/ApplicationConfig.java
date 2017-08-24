@@ -42,14 +42,7 @@ package org.glassfish.soteria.test;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
-import javax.security.enterprise.authentication.mechanism.http.*;
 
-@FormAuthenticationMechanismDefinition(
-        loginToContinue = @LoginToContinue(
-                loginPage="${appConfig.getLoginPage()}",
-                errorPage="#{appConfig.getErrorPage()}"
-        )
-)
 
 @ApplicationScoped
 @Named("appConfig")
