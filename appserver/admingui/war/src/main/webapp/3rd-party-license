@@ -222,7 +222,7 @@ This Academic Free License (the "License") applies to any original work of
 authorship (the "Original Work") whose owner (the "Licensor") has placed the
 following notice immediately following the copyright notice for the Original Work:
 
-    Licensed under the Academic Free License version 2.1
+    Licensed under the Academic Free License version 2.1 
 
 1) Grant of Copyright License. Licensor hereby grants You a world-wide,
 royalty-free, non-exclusive, perpetual, sublicenseable license to do the following:
@@ -231,7 +231,7 @@ royalty-free, non-exclusive, perpetual, sublicenseable license to do the followi
     * to prepare derivative works ("Derivative Works") based upon the Original Work;
     * to distribute copies of the Original Work and Derivative Works to the public;
     * to perform the Original Work publicly; and
-    * to display the Original Work publicly.
+    * to display the Original Work publicly. 
 
 2) Grant of Patent License. Licensor hereby grants You a world-wide,
 royalty-free, non-exclusive, perpetual, sublicenseable license, under patent
@@ -545,7 +545,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The MIT License
 
-Copyright (c)
+Copyright (c)  
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -568,7 +568,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  Use of any of this software is governed by the terms of the license below:
 
 Copyright (c) 2007 John Resig, http://jquery.com/
-2
+2	
 3	Permission is hereby granted, free of charge, to any person obtaining
 4	a copy of this software and associated documentation files (the
 5	"Software"), to deal in the Software without restriction, including
@@ -576,10 +576,10 @@ Copyright (c) 2007 John Resig, http://jquery.com/
 7	distribute, sublicense, and/or sell copies of the Software, and to
 8	permit persons to whom the Software is furnished to do so, subject to
 9	the following conditions:
-10
+10	
 11	The above copyright notice and this permission notice shall be
 12	included in all copies or substantial portions of the Software.
-13
+13	
 14	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 15	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 16	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -776,7 +776,7 @@ Library.
       In addition, mere aggregation of another work not based on the Library
 with the Library (or with a work based on the Library) on a volume of a storage
 or distribution medium does not bring the other work under the scope of this
-License.
+License. 
 
 3. You may opt to apply the terms of the ordinary GNU General Public License
 instead of this License to a given copy of the Library. To do this, you must
@@ -869,7 +869,7 @@ for a charge no more than the cost of performing this distribution.
 designated place, offer equivalent access to copy the above specified materials
 from the same place.
     * e) Verify that the user has already received a copy of these materials or
-that you have already sent this user a copy.
+that you have already sent this user a copy. 
 
 For an executable, the required form of the "work that uses the Library" must
 include any data and utility programs needed for reproducing the executable from
@@ -896,7 +896,7 @@ the Library, uncombined with any other library facilities. This must be
 distributed under the terms of the Sections above.
     * b) Give prominent notice with the combined library of the fact that part
 of it is a work based on the Library, and explaining where to find the
-accompanying uncombined form of the same work.
+accompanying uncombined form of the same work. 
 
 8. You may not copy, modify, sublicense, link with, or distribute the Library
 except as expressly provided under this License. Any attempt otherwise to copy,
@@ -1059,7 +1059,7 @@ Updated: $Date: 2005/05/05 19:37:12 $ $Author: novalis $
  Use of any of this software is governed by the terms of the license below:
 
 Copyright (c) 2007 John Resig, http://jquery.com/
-2
+2	
 3	Permission is hereby granted, free of charge, to any person obtaining
 4	a copy of this software and associated documentation files (the
 5	"Software"), to deal in the Software without restriction, including
@@ -1067,10 +1067,10 @@ Copyright (c) 2007 John Resig, http://jquery.com/
 7	distribute, sublicense, and/or sell copies of the Software, and to
 8	permit persons to whom the Software is furnished to do so, subject to
 9	the following conditions:
-10
+10	
 11	The above copyright notice and this permission notice shall be
 12	included in all copies or substantial portions of the Software.
-13
+13	
 14	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 15	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 16	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -1097,7 +1097,7 @@ $$ Project Woodstock
 
 %% The following software may be included in this product: Velocity
  Use of any of this software is governed by the terms of the license below:
-
+ 
  				Apache License
    			Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -1324,9 +1324,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SOFTWARE. 
 
-
+  
 %% The following software may be included in this product: Dojo
 
 # Larry Rosen has ceased to use or recommend any version
@@ -1470,7 +1470,7 @@ to make it enforceable.
 
 14) Definition of "You" in This License. "You" throughout this License,
 whether in upper or lower case, means an individual or a legal entity
-exercising rights under, and complying with all of the terms of, this License.
+exercising rights under, and complying with all of the terms of, this License. 
 
 For legal entities, "You" includes any entity that controls, is controlled
 by, or is under common control with you. For purposes of this definition,
@@ -1492,14 +1492,14 @@ permission of its copyright owner.
 %% The following software may be included in this product: Prototype
 
 1 	Copyright (c) 2005 Sam Stephenson
-2
+2 	
 3 	Permission is hereby granted, free of charge, to any person obtaining a copy
 4 	of this software and associated documentation files (the "Software"), to deal
 5 	in the Software without restriction, including without limitation the rights
 6 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 7 	copies of the Software, and to permit persons to whom the Software is
 8 	furnished to do so, subject to the following conditions:
-9
+9 	
 10 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 11 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 12 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -1536,13 +1536,13 @@ thereof with code not governed by the terms of this License.
 
 1.7. License means this document.
 
-1.8. Licensable means having the right to grant, to the maximum extent possible,
+1.8. Licensable means having the right to grant, to the maximum extent possible, 
 whether at the time of the initial grant or subsequently acquired, any and all
 of the rights conveyed herein.
 
 1.9. Modifications means the Source Code and Executable form of any of the following:
 A. Any file that results from an addition to, deletion from or modification of the
-contents of a file containing Original Software or previous Modifications;
+contents of a file containing Original Software or previous Modifications; 
 B. Any new file that contains any part of the Original Software or previous Modification;
 or C. Any new file that is contributed or otherwise made available under the terms
 of this License.
