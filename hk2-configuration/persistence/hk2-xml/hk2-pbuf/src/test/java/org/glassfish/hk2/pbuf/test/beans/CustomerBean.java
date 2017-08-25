@@ -52,7 +52,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlType(propOrder={ "name", "id" })
+@XmlType(propOrder={ "CustomerID", "CustomerName" })
 public interface CustomerBean {
     @XmlElement(name="name", required=true)
     @XmlID
