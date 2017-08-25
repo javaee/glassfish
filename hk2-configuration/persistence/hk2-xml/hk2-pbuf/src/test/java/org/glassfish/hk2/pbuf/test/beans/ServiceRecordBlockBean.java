@@ -56,7 +56,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record-block")
-@XmlType(propOrder={ "serviceRecord" })
+@XmlType(propOrder={ "serviceRecords" })
 public interface ServiceRecordBlockBean {
     @XmlElement(name="serviceRecord")
     @PluralOf("ServiceRecord")

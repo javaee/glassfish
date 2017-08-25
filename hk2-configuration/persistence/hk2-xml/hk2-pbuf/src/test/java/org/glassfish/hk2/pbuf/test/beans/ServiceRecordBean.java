@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record")
-@XmlType(propOrder={ "serviceID", "customer" })
+@XmlType(propOrder={ "ServiceRecordID", "Customer" })
 public interface ServiceRecordBean {
     @XmlElement(name="serviceID", required=true)
     @XmlID
