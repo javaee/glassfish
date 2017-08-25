@@ -489,7 +489,7 @@ public class PBufParser implements XmlServiceParser {
                 ParentedModel pm = childDescriptor.getParentedModel();
                 
                 ModelImpl childModel = pm.getChildModel();
-                String childTypeName = childModel.getOriginalInterface();// getProtoNameFromModel(childModel);
+                String childTypeName = childModel.getOriginalInterface();
                 
                 fBuilder.setTypeName(childTypeName);
                 
