@@ -103,6 +103,7 @@ public class PBufParser implements XmlServiceParser {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(org.glassfish.hk2.xml.spi.Model, java.io.InputStream, javax.xml.bind.Unmarshaller.Listener)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T parseRoot(Model rootModel, InputStream input,
             Listener listener) throws Exception {
@@ -289,6 +290,7 @@ public class PBufParser implements XmlServiceParser {
     
     
     
+    @SuppressWarnings("unchecked")
     private synchronized <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {
         Map<String, Object> blm = bean._getBeanLikeMap();
         ModelImpl model = bean._getModel();
@@ -429,16 +431,30 @@ public class PBufParser implements XmlServiceParser {
         return dotDelimitedName.substring(index + 1);
     }
     
+    private static String getPackageName(String dotDelimitedName) {
+        int index = dotDelimitedName.lastIndexOf('.');
+        if (index < 0) return null;
+        
+        return dotDelimitedName.substring(0, index);
+    }
+    
     private static String getProtoNameFromModel(ModelImpl mi) {
         String originalInterface = mi.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
         return protoName;
     }
     
+    private static String getPackageNameFromModel(ModelImpl mi) {
+        String originalInterface = mi.getOriginalInterface();
+        String packageName = getPackageName(originalInterface);
+        return packageName;
+    }
+    
     private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model, List<Descriptors.FileDescriptor> knownFiles) throws Exception {
         Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
         
         String protoName = getProtoNameFromModel(model);
+        String packageName = getPackageNameFromModel(model);
         
         DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
         builder.setName(protoName);
@@ -473,7 +489,7 @@ public class PBufParser implements XmlServiceParser {
                 ParentedModel pm = childDescriptor.getParentedModel();
                 
                 ModelImpl childModel = pm.getChildModel();
-                String childTypeName = getProtoNameFromModel(childModel);
+                String childTypeName = childModel.getOriginalInterface();// getProtoNameFromModel(childModel);
                 
                 fBuilder.setTypeName(childTypeName);
                 
@@ -490,6 +506,9 @@ public class PBufParser implements XmlServiceParser {
         
         DescriptorProtos.FileDescriptorProto.Builder fileBuilder = DescriptorProtos.FileDescriptorProto.newBuilder();
         fileBuilder.addMessageType(proto);
+        if (packageName != null) {
+          fileBuilder.setPackage(packageName);
+        }
         
         DescriptorProtos.FileDescriptorProto fProto = fileBuilder.build();
         

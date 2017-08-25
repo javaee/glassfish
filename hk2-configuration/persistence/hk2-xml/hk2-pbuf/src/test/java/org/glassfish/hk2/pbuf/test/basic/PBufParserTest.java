@@ -220,7 +220,41 @@ public class PBufParserTest {
         Assert.assertEquals((short) 16, typeRoot.getSType());
         Assert.assertTrue(new Float(17.0).equals(typeRoot.getFType()));
         Assert.assertTrue(new Double(18.0).equals(typeRoot.getDType()));
+    }
+    
+    /**
+     * Tests that when the simple names are the same but the
+     * packages are different everything still works
+     */
+    @Test
+    public void testPackages() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
         
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<org.glassfish.hk2.pbuf.test.beans.FooBean> handle = getFooRoot(xmlService);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(asBytes);
+        XmlRootHandle<org.glassfish.hk2.pbuf.test.beans.FooBean> uHandle = null;
+        try {
+            uHandle = xmlService.unmarshal(bais, org.glassfish.hk2.pbuf.test.beans.FooBean.class);
+        }
+        finally {
+            bais.close();
+        }
+        
+        validateFooBean(uHandle);
     }
     
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle) {
@@ -233,6 +267,25 @@ public class PBufParserTest {
         validateServiceRecordBean(records.get(0), ACME, ACME_ID, ACME_HASH);
         validateServiceRecordBean(records.get(1), BJS, BJS_ID, BJS_HASH);
         validateServiceRecordBean(records.get(2), COSTCO, COSTCO_ID, COSTCO_HASH);
+    }
+    
+    private static void validateFooBean(XmlRootHandle<org.glassfish.hk2.pbuf.test.beans.FooBean> handle) {
+        org.glassfish.hk2.pbuf.test.beans.FooBean root = handle.getRoot();
+        Assert.assertNotNull(root);
+        
+        org.glassfish.hk2.pbuf.test.beans2.FooBean foo2s[] = root.getFoo2();
+        Assert.assertEquals(3, foo2s.length);
+        
+        Assert.assertEquals(ACME, foo2s[0].getName());
+        Assert.assertEquals(BJS, foo2s[1].getName());
+        Assert.assertEquals(COSTCO, foo2s[2].getName());
+        
+        List<org.glassfish.hk2.pbuf.test.beans3.FooBean> foo3s = root.getFoo3();
+        Assert.assertEquals(3, foo3s.size());
+        
+        Assert.assertEquals(ACME_ID, foo3s.get(0).getID());
+        Assert.assertEquals(BJS_ID, foo3s.get(1).getID());
+        Assert.assertEquals(COSTCO_ID, foo3s.get(2).getID());
     }
     
     private static void validateServiceRecordBean(ServiceRecordBean record, String name, long id, String hash) {
@@ -263,6 +316,46 @@ public class PBufParserTest {
         retVal.setCustomer(customer);
         
         return retVal;
+    }
+    
+    private static org.glassfish.hk2.pbuf.test.beans2.FooBean createFoo2(XmlService xmlService, String name) {
+        org.glassfish.hk2.pbuf.test.beans2.FooBean retVal = xmlService.createBean(org.glassfish.hk2.pbuf.test.beans2.FooBean.class);
+        retVal.setName(name);
+        
+        return retVal;
+    }
+    
+    private static org.glassfish.hk2.pbuf.test.beans3.FooBean createFoo3(XmlService xmlService, long id) {
+        org.glassfish.hk2.pbuf.test.beans3.FooBean retVal = xmlService.createBean(org.glassfish.hk2.pbuf.test.beans3.FooBean.class);
+        retVal.setID(id);
+        
+        return retVal;
+    }
+    
+    private static XmlRootHandle<org.glassfish.hk2.pbuf.test.beans.FooBean> getFooRoot(XmlService xmlService) {
+        XmlRootHandle<org.glassfish.hk2.pbuf.test.beans.FooBean> handle =
+                xmlService.createEmptyHandle(org.glassfish.hk2.pbuf.test.beans.FooBean.class);
+        handle.addRoot();
+        
+        org.glassfish.hk2.pbuf.test.beans.FooBean root = handle.getRoot();
+        
+        org.glassfish.hk2.pbuf.test.beans2.FooBean acmeBean = createFoo2(xmlService, ACME);
+        org.glassfish.hk2.pbuf.test.beans2.FooBean bjsBean = createFoo2(xmlService, BJS);
+        org.glassfish.hk2.pbuf.test.beans2.FooBean costcoBean = createFoo2(xmlService, COSTCO);
+        
+        root.addFoo2(acmeBean);
+        root.addFoo2(bjsBean);
+        root.addFoo2(costcoBean);
+        
+        org.glassfish.hk2.pbuf.test.beans3.FooBean acmeIDBean = createFoo3(xmlService, ACME_ID);
+        org.glassfish.hk2.pbuf.test.beans3.FooBean bjsIDBean = createFoo3(xmlService, BJS_ID);
+        org.glassfish.hk2.pbuf.test.beans3.FooBean costcoIDBean = createFoo3(xmlService, COSTCO_ID);
+        
+        root.addFoo3(acmeIDBean);
+        root.addFoo3(bjsIDBean);
+        root.addFoo3(costcoIDBean);
+        
+        return handle;
     }
     
     private static XmlRootHandle<ServiceRecordBlockBean> getStandardTestBlock(XmlService xmlService) {
