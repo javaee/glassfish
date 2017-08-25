@@ -53,14 +53,14 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @XmlRootElement(name="typeBean")
-@XmlType(propOrder={ "int"
-        , "long"
-        , "boolean"
-        , "byte"
-        , "char"
-        , "short"
-        , "float"
-        , "double"})
+@XmlType(propOrder={ "IType"
+        , "JType"
+        , "ZType"
+        , "BType"
+        , "CType"
+        , "SType"
+        , "FType"
+        , "DType"})
 public interface TypeBean {
     @XmlElement(name="int")
     public int getIType();

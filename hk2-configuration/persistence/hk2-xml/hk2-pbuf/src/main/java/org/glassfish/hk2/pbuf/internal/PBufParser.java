@@ -71,10 +71,10 @@ import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.DynamicMessage;
 
 @Singleton
@@ -194,6 +194,8 @@ public class PBufParser implements XmlServiceParser {
             
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
             if (childDataModel != null) {
+                value = convertFieldForUnmarshal(value, childDataModel);
+                
                 bean._setProperty(qname, value);
             }
             else {
@@ -285,6 +287,8 @@ public class PBufParser implements XmlServiceParser {
         return retVal;
     }
     
+    
+    
     private synchronized <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {
         Map<String, Object> blm = bean._getBeanLikeMap();
         ModelImpl model = bean._getModel();
@@ -313,7 +317,9 @@ public class PBufParser implements XmlServiceParser {
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
             if (childDataModel != null) {
               Object value = blm.get(localPart);
-              retValBuilder.setField(fieldDescriptor, value);
+              Object convertedValue = convertFieldForMarshal(value);
+              
+              retValBuilder.setField(fieldDescriptor, convertedValue);
             }
             else {
                 ParentedModel parentedModel = childDescriptor.getParentedModel();
@@ -393,6 +399,24 @@ public class PBufParser implements XmlServiceParser {
         }
         if (childClass.equals(long.class) || childClass.equals(Long.class)) {
             return DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT64;
+        }
+        if (childClass.equals(boolean.class) || childClass.equals(Boolean.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL;
+        }
+        if (childClass.equals(double.class) || childClass.equals(Double.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE;
+        }
+        if (childClass.equals(float.class) || childClass.equals(Float.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_FLOAT;
+        }
+        if (childClass.equals(byte.class) || childClass.equals(Byte.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES;
+        }
+        if (childClass.equals(char.class) || childClass.equals(Character.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
+        }
+        if (childClass.equals(short.class) || childClass.equals(Short.class)) {
+            return DescriptorProtos.FieldDescriptorProto.Type.TYPE_INT32;
         }
         
         throw new AssertionError("Unknown type to convert " + childClass.getName());
@@ -475,5 +499,54 @@ public class PBufParser implements XmlServiceParser {
         Descriptors.Descriptor fD = fDesc.findMessageTypeByName(protoName);
         
         return fD;
+    }
+    
+    private static Object convertFieldForMarshal(Object field) {
+        if (field == null) return null;
+        
+        if (field instanceof Short) {
+            Short s = (Short) field;
+            return new Integer(s.intValue());
+        }
+        if (field instanceof Character) {
+            Character c = (Character) field;
+            return new String(c.toString());
+        }
+        if (field instanceof Byte) {
+            Byte b = (Byte) field;
+            byte retVal[] = new byte[1];
+            retVal[0] = b.byteValue();
+            return retVal;
+        }
+        
+        return field;
+    }
+    
+    private static Object convertFieldForUnmarshal(Object field, ChildDataModel expected) {
+        if (field == null) return null;
+        
+        Class<?> expectedType = expected.getChildTypeAsClass();
+        
+        if (expectedType.equals(short.class) || expectedType.equals(Short.class)) {
+            Integer i = (Integer) field;
+            return i.shortValue();
+        }
+        
+        if (expectedType.equals(char.class) || expectedType.equals(Character.class)) {
+            String s = (String) field;
+            return s.charAt(0);
+        }
+        
+        if (expectedType.equals(byte.class) || expectedType.equals(Byte.class)) {
+            ByteString b = (ByteString) field;
+            return b.byteAt(0);
+        }
+        
+        return field;
+    }
+    
+    @Override
+    public String toString() {
+        return "PBufParser(" + System.identityHashCode(this) + ")";
     }
 }

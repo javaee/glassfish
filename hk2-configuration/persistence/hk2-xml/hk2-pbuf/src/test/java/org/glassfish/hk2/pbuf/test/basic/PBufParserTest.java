@@ -168,7 +168,7 @@ public class PBufParserTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testTypes() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         
