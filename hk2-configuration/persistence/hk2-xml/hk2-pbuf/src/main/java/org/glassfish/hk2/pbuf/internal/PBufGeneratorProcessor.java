@@ -55,10 +55,9 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -243,6 +242,62 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         return null;
     }
     
+    private static String getPBufType(ExecutableElement method, TypeMirror mirror) {
+        TypeKind kind = mirror.getKind();
+        
+        switch(kind) {
+        case BOOLEAN:
+            return "bool";
+        case BYTE:
+        case SHORT:
+        case INT:
+            return "int32";
+        case LONG:
+            return "int64";
+        case CHAR:
+            return "string";
+        case FLOAT:
+            return "float";
+        case DOUBLE:
+            return "double";
+        case DECLARED:
+        case ARRAY:
+            // TODO: Really?
+            return "string";
+        default:
+            throw new AssertionError("Unknown getter has a unknown return type: " + kind + " for method " + method +
+                    " and mirror " + mirror);
+        }
+    }
+    
+    private static String getPBufType(ExecutableElement method) {
+        String methodName = Utilities.convertNameToString(method.getSimpleName());
+        
+        if (methodName.startsWith("set")) {
+            List<? extends VariableElement> parameters = method.getParameters();
+            if (parameters.size() != 1) {
+                throw new AssertionError("Unknown setter has more than one input parameter: " + methodName);
+            }
+            
+            TypeMirror asType = parameters.get(0).asType();
+            
+            return getPBufType(method, asType);
+        }
+        
+        if (methodName.startsWith("get")) {
+            TypeMirror type = method.getReturnType();
+            
+            if (type == null) {
+                throw new AssertionError("Unknown getter does not have a return type: " + methodName);
+            }
+            
+            return getPBufType(method, type);
+        }
+        
+        throw new AssertionError("Cannot determing type as XmlElement not on a get or set method " + methodName);
+        
+    }
+    
     private static XmlElementInfo getXmlElementName(ExecutableElement method, Elements elements) {
         List<? extends AnnotationMirror> annotationMirrors = elements.getAllAnnotationMirrors(method);
         for (AnnotationMirror mirror : annotationMirrors) {
@@ -255,6 +310,8 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             
             String mirrorTypeName = Utilities.convertNameToString(te.getQualifiedName());
             if (mirrorTypeName.equals(XmlElement.class.getName()) || mirrorTypeName.equals(XmlAttribute.class.getName())) {
+                String type = getPBufType(method);
+                
                 // It has the XmlElement on it, now get the actual name
                 Map<? extends ExecutableElement,? extends AnnotationValue> values =
                         elements.getElementValuesWithDefaults(mirror);
@@ -282,8 +339,8 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                 av = values.get(foundRequiredExecutable);
                 boolean requiredValue = (Boolean) av.getValue();
                 
-                // TODO: Obviously
-                return new XmlElementInfo(nameValue, requiredValue, "string");
+                
+                return new XmlElementInfo(nameValue, requiredValue, type);
             }
         }
         
