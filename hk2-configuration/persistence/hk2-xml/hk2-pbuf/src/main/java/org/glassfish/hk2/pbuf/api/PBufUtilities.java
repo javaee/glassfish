@@ -48,6 +48,11 @@ public class PBufUtilities {
     /** The name of the XmlService that uses PBuf as its encoding/decoding format */
     public final static String PBUF_SERVICE_NAME = "PBufXmlParser";
     
+    /**
+     * Idempotently enables the PBuf parser in the given ServiceLocator.
+     * 
+     * @param locator The non-null locator to enable the XmlParser
+     */
     public static void enablePBufService(ServiceLocator locator) {
         ServiceLocatorUtilities.addClasses(locator, true, PBufParser.class);
         
