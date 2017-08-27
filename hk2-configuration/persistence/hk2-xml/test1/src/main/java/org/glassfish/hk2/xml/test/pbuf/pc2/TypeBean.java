@@ -60,7 +60,7 @@ import org.jvnet.hk2.annotations.Contract;
         , "SType"
         , "FType"
         , "DType"
-        , "String"})
+        , "string"})
 @GenerateProto
 public interface TypeBean {
     @XmlElement(name="int")

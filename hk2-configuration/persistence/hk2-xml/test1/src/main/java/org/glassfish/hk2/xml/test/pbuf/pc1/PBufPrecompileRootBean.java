@@ -58,7 +58,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="root")
-@XmlType(propOrder={ "Name", "IType", "RemoteTypes", "LocalTypes" })
+@XmlType(propOrder={ "name", "IType", "remoteTypes", "localTypes" })
 @GenerateProto
 public interface PBufPrecompileRootBean {
     @XmlElement

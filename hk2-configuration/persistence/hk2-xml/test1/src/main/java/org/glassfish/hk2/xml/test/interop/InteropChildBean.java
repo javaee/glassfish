@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlType(propOrder={ "Name", "HouseNumber" })
+@XmlType(propOrder={ "name", "houseNumber" })
 @GenerateProto
 public interface InteropChildBean {
     @XmlElement(name="name", required=true)

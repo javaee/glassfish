@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.pbuf.internal;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -345,6 +346,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                     String methodName = Utilities.convertNameToString(method.getSimpleName());
                     
                     nameValue = methodName.substring(3);
+                    nameValue = Introspector.decapitalize(nameValue);
                 }
                 else {
                     nameValue = sValue;
@@ -355,6 +357,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                 
                 String methodName = Utilities.convertNameToString(method.getSimpleName());
                 String sortField = methodName.substring(3);
+                sortField = Introspector.decapitalize(sortField);
                 
                 return new XmlElementInfo(nameValue, requiredValue, type, sortField);
             }
@@ -431,6 +434,8 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             TypeElement clazz,
             List<? extends Element> allMethods,
             Elements elements) throws IOException {
+        String clazzName = Utilities.convertNameToString(clazz.getQualifiedName());
+        
         boolean atLeastOne = false;
         
         List<XmlElementInfo> retVal = new ArrayList<XmlElementInfo>(allMethods.size());
@@ -471,7 +476,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         
         String propOrder[] = xmlType.propOrder();
         
-        ElementOrderer comparator = new ElementOrderer(propOrder);
+        ElementOrderer comparator = new ElementOrderer(propOrder, clazzName);
         
         TreeSet<XmlElementInfo> sortedMap = new TreeSet<XmlElementInfo>(comparator);
         
@@ -560,8 +565,11 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
     
     private final static class ElementOrderer implements Comparator<XmlElementInfo> {
         private final Map<String, Integer> sorter = new HashMap<String, Integer>();
+        private final String clazzName;
         
-        private ElementOrderer(String order[]) {
+        private ElementOrderer(String order[], String clazzName) {
+            this.clazzName = clazzName;
+            
             for (int lcv = 0; lcv < order.length; lcv++) {
                 sorter.put(order[lcv], lcv);
             }
@@ -577,12 +585,12 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             
             if (!sorter.containsKey(o1SortField)) {
                 throw new AssertionError("XmlType must contain all XmlElement and XmlAttribute names, the name " + o1SortField +
-                        " was not found in XmlType");
+                        " was not found in XmlType on " + clazzName);
             }
             
             if (!sorter.containsKey(o2SortField)) {
                 throw new AssertionError("XmlType must contain all XmlElement and XmlAttribute names, the name " + o1SortField +
-                        " was not found in XmlType");
+                        " was not found in XmlType on " + clazzName);
             }
             
             int o1Spot = sorter.get(o1SortField);

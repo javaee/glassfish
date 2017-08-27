@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,10 @@
  * holder.
  */
 package org.glassfish.hk2.xml.test1.utilities;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -96,6 +100,19 @@ public class Utilities {
         PBufUtilities.enablePBufService(retVal);
         
         return retVal;
+    }
+    
+    public static void writeBytesToFile(String fileName, byte writeMe[]) throws IOException {
+        File f = new File(fileName);
+        
+        FileOutputStream fos = new FileOutputStream(f);
+        try {
+            fos.write(writeMe);
+        }
+        finally {
+            fos.close();
+        }
+        
     }
 
 }

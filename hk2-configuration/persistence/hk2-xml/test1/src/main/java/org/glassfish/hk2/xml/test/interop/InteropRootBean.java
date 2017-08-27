@@ -64,7 +64,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlType(propOrder={ "Children" })
+@XmlType(propOrder={ "children" })
 @XmlRootElement(name="interop")
 @GenerateProto
 public interface InteropRootBean {
