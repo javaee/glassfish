@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.pbuf.test.beans;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -60,7 +58,7 @@ import org.jvnet.hk2.annotations.Contract;
         , "CType"
         , "SType"
         , "FType"
-        , "DType"})
+        , "DType" })
 public interface TypeBean {
     @XmlElement(name="int")
     public int getIType();
@@ -93,5 +91,7 @@ public interface TypeBean {
     @XmlElement(name="double")
     public double getDType();
     public void setDType(double i);
+    
+    
 
 }

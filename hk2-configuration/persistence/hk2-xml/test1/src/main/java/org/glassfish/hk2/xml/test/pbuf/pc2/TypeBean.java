@@ -37,36 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.pbuf;
+package org.glassfish.hk2.xml.test.pbuf.pc2;
 
-import java.net.URL;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
+import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public class PBufPreCompileTest {
-    private final static String[] PROTO_RESOURCES = {
-            "org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileChild.proto"
-            , "org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileRootBean.proto"
-            , "org/glassfish/hk2/xml/test/pbuf/pc2/PBufPrecompileChild2.proto"
-            , "org/glassfish/hk2/xml/test/pbuf/pc2/TypeBean.proto"
-    };
+@Contract
+@Hk2XmlPreGenerate
+@XmlType(propOrder={ "IType"
+        , "JType"
+        , "ZType"
+        , "BType"
+        , "CType"
+        , "SType"
+        , "FType"
+        , "DType"
+        , "String"})
+@GenerateProto
+public interface TypeBean {
+    @XmlElement(name="int")
+    public int getIType();
+    public void setIType(int i);
     
-    /**
-     * Tests that the expected files are generate and put into the resulting jar file
-     */
-    @Test
-    public void testPrecompileHappens() {
-        ClassLoader loader = getClass().getClassLoader();
-        
-        for (String protoResource : PROTO_RESOURCES) {
-            URL url = loader.getResource(protoResource);
-            Assert.assertNotNull("Could not find " + protoResource, url);
-        }
-    }
+    @XmlElement(name="long")
+    public long getJType();
+    public void setJType(long i);
+    
+    @XmlElement(name="boolean")
+    public boolean getZType();
+    public void setZType(boolean i);
+    
+    @XmlElement(name="byte")
+    public byte getBType();
+    public void setBType(byte i);
+    
+    @XmlElement(name="char")
+    public char getCType();
+    public void setCType(char i);
+    
+    @XmlElement(name="short")
+    public short getSType();
+    public void setSType(short i);
+    
+    @XmlElement(name="float")
+    public float getFType();
+    public void setFType(float i);
+    
+    @XmlElement(name="double")
+    public double getDType();
+    public void setDType(double i);
+    
+    @XmlElement(name="string", required=true)
+    public String getString();
+    public void setString(String string);
 
 }
