@@ -42,9 +42,12 @@ package org.glassfish.hk2.pbuf.internal;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -346,8 +349,10 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                 av = values.get(foundRequiredExecutable);
                 boolean requiredValue = (Boolean) av.getValue();
                 
+                String methodName = Utilities.convertNameToString(method.getSimpleName());
+                String sortField = methodName.substring(3);
                 
-                return new XmlElementInfo(nameValue, requiredValue, type);
+                return new XmlElementInfo(nameValue, requiredValue, type, sortField);
             }
         }
         
@@ -455,7 +460,24 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             writeBlankLine(writer);
         }
         
-        return retVal;
+        XmlType xmlType = clazz.getAnnotation(XmlType.class);
+        if (xmlType == null) {
+            return retVal;
+        }
+        
+        String propOrder[] = xmlType.propOrder();
+        
+        ElementOrderer comparator = new ElementOrderer(propOrder);
+        
+        TreeSet<XmlElementInfo> sortedMap = new TreeSet<XmlElementInfo>(comparator);
+        
+        sortedMap.addAll(retVal);
+        
+        List<XmlElementInfo> sortedRetVal = new ArrayList<XmlElementInfo>(retVal.size());
+        
+        sortedRetVal.addAll(sortedMap);
+        
+        return sortedRetVal;
     }
     
     private final static class XmlElementInfo {
@@ -463,11 +485,13 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         private final boolean required;
         private final String type;
         private ChildInfo childInfo;
+        private final String sortField;
         
-        private XmlElementInfo(String name, boolean required, String type) {
+        private XmlElementInfo(String name, boolean required, String type, String sortField) {
             this.name = name;
             this.required = required;
             this.type = type;
+            this.sortField = sortField;
         }
         
         private String getName() {
@@ -489,6 +513,27 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         private ChildInfo getChildInfo() {
             return childInfo;
         }
+        
+        private String getSortField() {
+            return sortField;
+        }
+        
+        @Override
+        public int hashCode() {
+            return sortField.hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof XmlElementInfo)) {
+                return false;
+            }
+            
+            XmlElementInfo other = (XmlElementInfo) o;
+            
+            return other.sortField.equals(sortField);
+        }
     }
     
     private final static class ChildInfo {
@@ -506,6 +551,40 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         
         private boolean isRepeated() {
             return repeated;
+        }
+    }
+    
+    private final static class ElementOrderer implements Comparator<XmlElementInfo> {
+        private final Map<String, Integer> sorter = new HashMap<String, Integer>();
+        
+        private ElementOrderer(String order[]) {
+            for (int lcv = 0; lcv < order.length; lcv++) {
+                sorter.put(order[lcv], lcv);
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(XmlElementInfo o1, XmlElementInfo o2) {
+            String o1SortField = o1.getSortField();
+            String o2SortField = o2.getSortField();
+            
+            if (!sorter.containsKey(o1SortField)) {
+                throw new AssertionError("XmlType must contain all XmlElement and XmlAttribute names, the name " + o1SortField +
+                        " was not found in XmlType");
+            }
+            
+            if (!sorter.containsKey(o2SortField)) {
+                throw new AssertionError("XmlType must contain all XmlElement and XmlAttribute names, the name " + o1SortField +
+                        " was not found in XmlType");
+            }
+            
+            int o1Spot = sorter.get(o1SortField);
+            int o2Spot = sorter.get(o2SortField);
+            
+            return o1Spot - o2Spot;
         }
     }
 
