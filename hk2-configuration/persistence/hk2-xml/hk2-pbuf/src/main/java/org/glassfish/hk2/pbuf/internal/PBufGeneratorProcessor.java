@@ -218,10 +218,6 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         writeTab(writer);
         
         if (info.getChildInfo() == null) {
-            if (info.isRequired()) {
-                writer.write("required ");
-            }
-            
             writer.write(info.getType() + " " + info.getName() + " = " + number);
         }
         else {
@@ -332,7 +328,6 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                         elements.getElementValuesWithDefaults(mirror);
                 
                 ExecutableElement foundNameExecutable = getFieldFromAnnotation(te, "name");
-                ExecutableElement foundRequiredExecutable = getFieldFromAnnotation(te, "required");
                 
                 AnnotationValue av = values.get(foundNameExecutable);
                 if (av == null) {
@@ -352,14 +347,11 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                     nameValue = sValue;
                 }
                 
-                av = values.get(foundRequiredExecutable);
-                boolean requiredValue = (Boolean) av.getValue();
-                
                 String methodName = Utilities.convertNameToString(method.getSimpleName());
                 String sortField = methodName.substring(3);
                 sortField = Introspector.decapitalize(sortField);
                 
-                return new XmlElementInfo(nameValue, requiredValue, type, sortField);
+                return new XmlElementInfo(nameValue, type, sortField);
             }
         }
         
@@ -491,24 +483,18 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
     
     private final static class XmlElementInfo {
         private final String name;
-        private final boolean required;
         private final String type;
         private ChildInfo childInfo;
         private final String sortField;
         
-        private XmlElementInfo(String name, boolean required, String type, String sortField) {
+        private XmlElementInfo(String name, String type, String sortField) {
             this.name = name;
-            this.required = required;
             this.type = type;
             this.sortField = sortField;
         }
         
         private String getName() {
             return name;
-        }
-        
-        private boolean isRequired() {
-            return required;
         }
         
         private String getType() {
