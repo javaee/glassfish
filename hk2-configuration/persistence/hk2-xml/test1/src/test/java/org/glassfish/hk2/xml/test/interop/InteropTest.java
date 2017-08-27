@@ -65,6 +65,7 @@ import org.junit.Test;
 public class InteropTest {
     private final static String STANDARD_XML = "standard.xml";
     private final static String STANDARD_PBUF = "standard.pbuf";
+    private final static String STANDARD_JSON = "standard.json";
     
     private final static String ALICE = "Alice";
     private final static int ALICE_ADDRESS = 100;
@@ -143,6 +144,153 @@ public class InteropTest {
         byte benchmark[] = readURLCompletely(pbufURL);
         
         Assert.assertTrue(Arrays.equals(asBytes, benchmark));
+    }
+    
+    /**
+     * Reads an JSON file, spits out pbuf
+     */
+    @Test
+    public void testJson2PBuf() throws Exception {
+        ServiceLocator locator = Utilities.createInteropLocator();
+        
+        XmlService jsonXmlService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
+        Assert.assertNotNull(jsonXmlService);
+        
+        XmlService pbufXmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(pbufXmlService);
+        
+        ClassLoader loader = getClass().getClassLoader();
+        URL url = loader.getResource(STANDARD_JSON);
+        
+        XmlRootHandle<InteropRootBean> xmlHandle = jsonXmlService.unmarshal(url.toURI(), InteropRootBean.class);
+        validateStandardBean(xmlHandle);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            pbufXmlService.marshal(baos, xmlHandle);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte asBytes[] = baos.toByteArray();
+        
+        URL pbufURL = loader.getResource(STANDARD_PBUF);
+        
+        byte benchmark[] = readURLCompletely(pbufURL);
+        
+        Assert.assertTrue(Arrays.equals(asBytes, benchmark));
+    }
+    
+    /**
+     * Reads an JSON file, spits out Xml
+     */
+    @Test
+    public void testJson2Xml() throws Exception {
+        ServiceLocator locator = Utilities.createInteropLocator();
+        
+        XmlService jsonXmlService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
+        Assert.assertNotNull(jsonXmlService);
+        
+        XmlService xmlXmlService = locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE);
+        Assert.assertNotNull(xmlXmlService);
+        
+        ClassLoader loader = getClass().getClassLoader();
+        URL url = loader.getResource(STANDARD_JSON);
+        
+        XmlRootHandle<InteropRootBean> xmlHandle = jsonXmlService.unmarshal(url.toURI(), InteropRootBean.class);
+        validateStandardBean(xmlHandle);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            xmlXmlService.marshal(baos, xmlHandle);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte asBytes[] = baos.toByteArray();
+        String asString = new String(asBytes);
+        
+        Assert.assertTrue(asString.contains("<houseNumber>100</houseNumber>"));
+        Assert.assertTrue(asString.contains("<houseNumber>200</houseNumber>"));
+        
+        Assert.assertTrue(asString.contains("<name>Alice</name>"));
+        Assert.assertTrue(asString.contains("<name>Bob</name>"));
+    }
+    
+    /**
+     * Reads a pbuf file, spits out Xml
+     */
+    @Test
+    public void testPbuf2Xml() throws Exception {
+        ServiceLocator locator = Utilities.createInteropLocator();
+        
+        XmlService pbufXmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(pbufXmlService);
+        
+        XmlService xmlXmlService = locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE);
+        Assert.assertNotNull(xmlXmlService);
+        
+        ClassLoader loader = getClass().getClassLoader();
+        URL url = loader.getResource(STANDARD_PBUF);
+        
+        XmlRootHandle<InteropRootBean> xmlHandle = pbufXmlService.unmarshal(url.toURI(), InteropRootBean.class);
+        validateStandardBean(xmlHandle);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            xmlXmlService.marshal(baos, xmlHandle);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte asBytes[] = baos.toByteArray();
+        String asString = new String(asBytes);
+        
+        Assert.assertTrue(asString.contains("<houseNumber>100</houseNumber>"));
+        Assert.assertTrue(asString.contains("<houseNumber>200</houseNumber>"));
+        
+        Assert.assertTrue(asString.contains("<name>Alice</name>"));
+        Assert.assertTrue(asString.contains("<name>Bob</name>"));
+    }
+    
+    /**
+     * Reads a pbuf file, spits out JSON
+     */
+    @Test
+    public void testPbuf2Json() throws Exception {
+        ServiceLocator locator = Utilities.createInteropLocator();
+        
+        XmlService pbufXmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(pbufXmlService);
+        
+        XmlService jsonXmlService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
+        Assert.assertNotNull(jsonXmlService);
+        
+        ClassLoader loader = getClass().getClassLoader();
+        URL url = loader.getResource(STANDARD_PBUF);
+        
+        XmlRootHandle<InteropRootBean> xmlHandle = pbufXmlService.unmarshal(url.toURI(), InteropRootBean.class);
+        validateStandardBean(xmlHandle);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            jsonXmlService.marshal(baos, xmlHandle);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte asBytes[] = baos.toByteArray();
+        String asString = new String(asBytes);
+        
+        Assert.assertTrue(asString.contains("\"name\":\"Alice\""));
+        Assert.assertTrue(asString.contains("\"name\":\"Bob\""));
+        
+        Assert.assertTrue(asString.contains("\"houseNumber\":100"));
+        Assert.assertTrue(asString.contains("\"houseNumber\":200"));
     }
     
     private static byte[] readURLCompletely(URL url) throws IOException {
