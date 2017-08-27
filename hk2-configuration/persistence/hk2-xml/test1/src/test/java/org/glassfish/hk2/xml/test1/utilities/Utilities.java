@@ -42,6 +42,8 @@ package org.glassfish.hk2.xml.test1.utilities;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
+import org.glassfish.hk2.json.api.JsonUtilities;
+import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlServiceUtilities;
 import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
@@ -79,6 +81,19 @@ public class Utilities {
         ServiceLocatorUtilities.addClasses(retVal, classes);
         
         XmlServiceUtilities.enableDomXmlService(retVal);
+        
+        return retVal;
+    }
+    
+    public static ServiceLocator createInteropLocator(Class<?>...classes) {
+        ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(null, null, GENERATOR);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        
+        XmlServiceUtilities.enableDomXmlService(retVal);
+        XmlServiceUtilities.enableXmlService(retVal);
+        JsonUtilities.enableJsonService(retVal);
+        PBufUtilities.enablePBufService(retVal);
         
         return retVal;
     }

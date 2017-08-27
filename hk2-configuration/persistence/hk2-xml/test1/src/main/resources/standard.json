@@ -1,0 +1,12 @@
+{
+    "child":[
+        {
+            "houseNumber":100,
+            "name":"Alice"
+        },
+        {
+            "houseNumber":200,
+            "name":"Bob"
+        }
+    ]
+}
