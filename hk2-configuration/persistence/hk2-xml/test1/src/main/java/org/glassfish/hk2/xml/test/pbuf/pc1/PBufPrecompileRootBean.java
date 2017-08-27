@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.glassfish.hk2.pbuf.api.annotations.PbufGenerate;
+import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.test.pbuf.pc2.PBufPrecompileChild2;
 import org.jvnet.hk2.annotations.Contract;
@@ -59,7 +59,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Hk2XmlPreGenerate
 @XmlRootElement(name="root")
 @XmlType(propOrder={ "Name", "IType", "RemoteTypes", "LocalTypes" })
-@PbufGenerate
+@GenerateProto
 public interface PBufPrecompileRootBean {
     @XmlElement
     public String getName();

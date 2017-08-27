@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.glassfish.hk2.pbuf.api.annotations.PbufGenerate;
+import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlType(propOrder={ "JType", "SType" })
-@PbufGenerate
+@GenerateProto
 public interface PBufPrecompileChild {
     @XmlElement(name="jtype")
     public void setJType(long jtype);

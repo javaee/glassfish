@@ -81,7 +81,7 @@ import org.glassfish.hk2.xml.internal.Utilities;
  * @author jwells
  *
  */
-@SupportedAnnotationTypes("org.glassfish.hk2.pbuf.api.annotations.PbufGenerate")
+@SupportedAnnotationTypes("org.glassfish.hk2.pbuf.api.annotations.GenerateProto")
 public class PBufGeneratorProcessor extends AbstractProcessor {
     /**
      * Gets rid of warnings and this code should work with all source versions
