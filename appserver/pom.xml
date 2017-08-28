@@ -81,8 +81,8 @@
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
-        <javax.security.enterprise-api.version>1.0-b12</javax.security.enterprise-api.version>
-        <javax.security.enterprise.version>1.0-b15</javax.security.enterprise.version>
+        <javax.security.enterprise-api.version>1.0</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
