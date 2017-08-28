@@ -73,7 +73,7 @@ public class BaseSeleniumTestClass {
     public SpecificTestRule specificTestRule = new SpecificTestRule();
     public static final boolean IS_SECURE_ADMIN_ENABLED = Boolean.parseBoolean(System.getProperty("secureAdmin"));
     protected static final int TIMEOUT = 90;
-    protected static final int BUTTON_TIMEOUT = 750;
+    protected static final int BUTTON_TIMEOUT = 100;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     protected static Selenium selenium;
     protected static WebDriver driver;
