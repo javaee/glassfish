@@ -81,8 +81,8 @@
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
-        <javax.security.enterprise-api.version>1.0-b12</javax.security.enterprise-api.version>
-        <javax.security.enterprise.version>1.0-b13</javax.security.enterprise.version>
+        <javax.security.enterprise-api.version>1.0</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -109,8 +109,8 @@
         <jaxb.version>2.3.0</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
-        <eclipselink.version>2.7.0-RC3</eclipselink.version>
-        <javax-persistence-api.version>2.2.0-RC3</javax-persistence-api.version>
+        <eclipselink.version>2.7.0</eclipselink.version>
+        <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
         <dbschema.version>3.1.1</dbschema.version>
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
         <schema2beans.version>3.1.1</schema2beans.version>
@@ -134,8 +134,8 @@
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
-	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
-	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <libpam4j.version>1.9</libpam4j.version>
     </properties>
 
     <modules>
@@ -1078,6 +1078,11 @@
                 <artifactId>derby-distribution</artifactId>
                 <version>${derby.version}</version>
                 <type>zip</type>
+           </dependency>
+           <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>libpam4j</artifactId>
+                <version>${libpam4j.version}</version>
            </dependency>
       </dependencies>
     </dependencyManagement>
