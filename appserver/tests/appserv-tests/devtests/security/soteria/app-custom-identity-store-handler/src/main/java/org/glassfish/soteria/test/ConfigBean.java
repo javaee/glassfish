@@ -39,65 +39,53 @@
  */
 package org.glassfish.soteria.test;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
-import static org.glassfish.soteria.Utils.unmodifiableSet;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.security.enterprise.identitystore.CredentialValidationResult;
-import javax.security.enterprise.identitystore.IdentityStore;
-import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition;
-import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope;
 import javax.security.enterprise.identitystore.IdentityStore.ValidationType;
-import static javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope.SUBTREE;
+import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
 
-/**
- *
- */
-@LdapIdentityStoreDefinition(
-        url = "ldap://localhost:33389/",
-        callerBaseDn = "ou=caller,dc=jsr375,dc=net",
-        callerSearchScope = LdapSearchScope.SUBTREE,
-        groupSearchBase = "ou=group,dc=jsr375,dc=net",
-        useForExpression = "#{'VALIDATE'}",
-        groupSearchScopeExpression = "${configBean.searchScopeOneLevel}"
-)
-@ApplicationScoped
-public class GroupProviderIdentityStore implements IdentityStore {
+import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope;
+import static javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope.ONE_LEVEL;
+import static javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope.SUBTREE;
 
-    private Map<String, Set<String>> groupsPerCaller;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
-    @PostConstruct
-    public void init() {
-        groupsPerCaller = new HashMap<>();
+@RequestScoped
+@Named
+public class ConfigBean {
+  private int priority300=300;
+  private int priority100=100;
+  private ValidationType[] useforBoth = {ValidationType.VALIDATE, ValidationType.PROVIDE_GROUPS};
+  private ValidationType[] useforValidate = {ValidationType.VALIDATE};
+  private ValidationType[] useforProvideGroup = {ValidationType.PROVIDE_GROUPS};
+  private LdapSearchScope searchScopeOneLevel = ONE_LEVEL;
+  private LdapSearchScope searchScopeSubTree = SUBTREE;
 
-        groupsPerCaller.put("rudy", new HashSet<>(asList("foo", "bar")));
-        groupsPerCaller.put("will", new HashSet<>(asList("foo", "bar", "baz")));
-        groupsPerCaller.put("arjan", new HashSet<>(asList("foo", "baz")));
-        groupsPerCaller.put("reza", new HashSet<>(asList("baz")));
+  public int getPriority300(){
+    return priority300;
+  }
 
-    }
+  public int getPriority100(){
+    return priority100;
+  }
 
-    @Override
-    public Set<String> getCallerGroups(CredentialValidationResult validationResult) {
-        Set<String> result = groupsPerCaller.get(validationResult.getCallerPrincipal().getName());
-        if (result == null) {
-            result = emptySet();
-        }
+  public ValidationType[] getUseforBoth(){
+    return useforBoth;
+  }
 
-        return result;
-    }
+  public ValidationType[] getUseforValidate(){
+    return useforValidate;
+  }
 
-    @Override
-    public Set<ValidationType> validationTypes() {
-        return unmodifiableSet(PROVIDE_GROUPS);
-    }
+  public ValidationType[] getUseforProvideGroup(){
+    return useforProvideGroup;
+  }
+
+  public LdapSearchScope getSearchScopeOneLevel(){
+    return ONE_LEVEL;
+  }
+
+  public LdapSearchScope getSearchScopeSubTree(){
+    return SUBTREE;
+  }
 }
