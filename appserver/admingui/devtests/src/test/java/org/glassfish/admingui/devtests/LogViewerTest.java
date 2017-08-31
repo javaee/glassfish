@@ -57,7 +57,7 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     	try {
 	        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
 	        pressButton("propertyForm:propertyContentPage:logViewer");
-	        waitForPopUp("LogViewerWindow", "999999");
+	        waitForPopUp("LogViewerWindow", "120000");
 	        selectWindow("LogViewerWindow");
 	        assertTrue(isTextPresent(TRIGGER_LV));
     	} finally {
@@ -71,7 +71,7 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     	try {
 		    clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
 		    pressButton("propertyForm:propertyContentPage:logViewerRaw");
-		    waitForPopUp("LogViewerWindow", "999999");
+		    waitForPopUp("LogViewerWindow", "120000");
 		    selectWindow("LogViewerWindow");
 		    assertTrue(isTextPresent(TRIGGER_IV));
     	} finally {
