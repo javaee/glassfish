@@ -137,11 +137,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>javax.management.j2ee</groupId>
             <artifactId>javax.management.j2ee-api</artifactId>
             <optional>true</optional>
