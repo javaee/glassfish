@@ -40,6 +40,9 @@
 
 package com.sun.enterprise.server.logging.logviewer.backend;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
@@ -86,83 +89,95 @@ public class LogFilterForInstance {
 
         if (node.getType().equals("SSH")) {
 
-            sshL.init(node, logger);
-
-            SFTPClient sftpClient = sshL.getSFTPClient();
-
-            File logFileDirectoryOnServer = makingDirectory(domainRoot + File.separator + "logs"
-                    + File.separator + instanceName);
-
-            boolean noFileFound = true;
-
-            String loggingDir = getLoggingDirectoryForNode(instanceLogFileName, node, sNode, instanceName);
-
             try {
-                Vector instanceLogFileNames = sftpClient.ls(loggingDir);
+                sshL.init(node, logger);
 
-                for (int i = 0; i < instanceLogFileNames.size(); i++) {
-                    SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
-                    String fileName = file.filename;
-                    // code to remove . and .. file which is return from sftpclient ls method
-                    if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
-                            && fileName.contains(".log") && !fileName.contains(".log.")) {
-                        noFileFound = false;
-                        break;
+                SFTPClient sftpClient = sshL.getSFTPClient();
+
+                File logFileDirectoryOnServer = makingDirectory(domainRoot + File.separator + "logs"
+                        + File.separator + instanceName);
+
+                boolean noFileFound = true;
+
+                String loggingDir = getLoggingDirectoryForNode(instanceLogFileName, node, sNode, instanceName);
+
+                try {
+                    Vector instanceLogFileNames = sftpClient.getSftpChannel().ls(loggingDir);
+
+                    for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                        SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                        String fileName = file.filename;
+                        // code to remove . and .. file which is return from sftpclient ls method
+                        if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                                && fileName.contains(".log") && !fileName.contains(".log.")) {
+                            noFileFound = false;
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // if directory doesn't present or missing on remote machine. It happens due to bug 16451
+                    noFileFound = true;
+                }
+
+                if (noFileFound) {
+                    // this loop is used when user has changed value for server.log but not restarted the server.
+                    loggingDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileName, node, sNode, instanceName);
+                }
+
+                String loggingFile = loggingDir + File.separator + logFileName;
+                if (!sftpClient.exists(loggingFile)) {
+                    loggingFile = loggingDir + File.separator + "server.log";
+                } else if (!sftpClient.exists(loggingFile)) {
+                    loggingFile = instanceLogFileName;
+                }
+
+                // creating local file name on DAS
+                long instanceLogFileSize = 0;
+                instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator
+                        + loggingFile.substring(loggingFile.lastIndexOf(File.separator), loggingFile.length()));
+
+                // getting size of the file on DAS
+                if (instanceLogFile.exists())
+                    instanceLogFileSize = instanceLogFile.length();
+
+                SftpATTRS sftpFileAttributes = sftpClient._stat(loggingFile);
+
+                // getting size of the file on instance machine
+                long fileSizeOnNode = sftpFileAttributes.getSize();
+
+                // if differ both size then downloading
+                if (instanceLogFileSize != fileSizeOnNode) {
+                    BufferedInputStream in = null;
+                    FileOutputStream file = null;
+                    BufferedOutputStream out = null;
+                    try {
+                        InputStream inputStream = sftpClient.getSftpChannel().get(loggingFile);
+                        in = new BufferedInputStream(inputStream);
+                        file = new FileOutputStream(instanceLogFile);
+                        out = new BufferedOutputStream(file);
+                        int i;
+                        while ((i = in.read()) != -1) {
+                            out.write(i);
+                        }
+                        out.flush();
+                    } finally {
+                        if (out != null) try {
+                            out.close();
+                        } catch (IOException ex) {
+                        }
+                        if (in != null) try {
+                            in.close();
+                        } catch (IOException ex) {
+                        }
                     }
                 }
-            } catch (Exception e) {
-                // if directory doesn't present or missing on remote machine. It happens due to bug 16451
-                noFileFound = true;
+
+                sftpClient.close();
+            } catch (JSchException ex) {
+                throw new IOException("Unable to download instance log file from SSH Node", ex);
+            } catch (SftpException ex) {
+                throw new IOException("Unable to download instance log file from SSH Node", ex);
             }
-
-            if (noFileFound) {
-                // this loop is used when user has changed value for server.log but not restarted the server.
-                loggingDir = getLoggingDirectoryForNodeWhenNoFilesFound(instanceLogFileName, node, sNode, instanceName);
-            }
-
-            String loggingFile = loggingDir + File.separator + logFileName;
-            if (!sftpClient.exists(loggingFile)) {
-                loggingFile = loggingDir + File.separator + "server.log";
-            } else if (!sftpClient.exists(loggingFile)) {
-                loggingFile = instanceLogFileName;
-            }
-
-            // creating local file name on DAS
-            long instanceLogFileSize = 0;
-            instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator
-                    + loggingFile.substring(loggingFile.lastIndexOf(File.separator), loggingFile.length()));
-
-            // getting size of the file on DAS
-            if (instanceLogFile.exists())
-                instanceLogFileSize = instanceLogFile.length();
-
-            SFTPv3FileAttributes sftPv3FileAttributes = sftpClient._stat(loggingFile);
-
-            // getting size of the file on instance machine
-            long fileSizeOnNode = sftPv3FileAttributes.size;
-
-            // if differ both size then downloading
-            if (instanceLogFileSize != fileSizeOnNode) {
-                BufferedInputStream in = null;
-                FileOutputStream file = null;
-                BufferedOutputStream out = null;
-                try {
-                InputStream inputStream = sftpClient.read(loggingFile);
-                in = new BufferedInputStream(inputStream);
-                file = new FileOutputStream(instanceLogFile);
-                out = new BufferedOutputStream(file);
-                int i;
-                while ((i = in.read()) != -1) {
-                    out.write(i);
-                }
-                out.flush();
-                } finally {
-                    if (out != null) try { out.close(); } catch (IOException ex) {}
-                    if (in != null) try { in.close(); } catch (IOException ex) {}
-                }
-            }
-
-            sftpClient.close();
         } else if (node.getType().equals("DCOM")) {
 
             File logFileDirectoryOnServer = makingDirectory(domainRoot + File.separator + "logs"

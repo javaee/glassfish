@@ -40,6 +40,9 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.util.cluster.RemoteType;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.cluster.windows.process.WindowsException;
@@ -313,8 +316,8 @@ public abstract class SecureAdminBootstrapHelper {
          * @param milliseconds normal Java time (in milliseconds)
          * @return
          */
-        Long secondsSince_01_Jan_1970(final long milliseconds) {
-            return milliseconds / 1000;
+        int secondsSince_01_Jan_1970(final long milliseconds) {
+            return (int) (milliseconds) / 1000;
         }
     }
 
@@ -337,7 +340,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient = launcher.getSFTPClient();
             }
-            catch (IOException ex) {
+            catch (JSchException ex) {
                 throw new BootstrapException(launcher, ex);
             }
         }
@@ -349,9 +352,9 @@ public abstract class SecureAdminBootstrapHelper {
                     remoteDir);
             Integer instanceDirPermissions;
             try {
-                instanceDirPermissions = ftpClient.lstat(remoteNodeDir).permissions;
+                instanceDirPermissions = ftpClient.getSftpChannel().lstat(remoteNodeDir).getPermissions();
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteNodeDir, ex);
             }
             logger.log(Level.FINE, "Creating remote bootstrap directory "
@@ -360,7 +363,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient.mkdirs(remoteDir, instanceDirPermissions);
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteDir, ex);
             }
         }
@@ -407,9 +410,11 @@ public abstract class SecureAdminBootstrapHelper {
             /*
              * Times over ssh are expressed as seconds since 01 Jan 1970.
              */
-            final SFTPv3FileAttributes attrs = ftpClient.stat(path);
-            attrs.mtime = secondsSince_01_Jan_1970(when);
-            ftpClient.setstat(path, attrs);
+            try {
+                ftpClient.getSftpChannel().setMtime(path, secondsSince_01_Jan_1970(when));
+            } catch (SftpException e) {
+                throw new IOException(e);
+            }
         }
     }
 

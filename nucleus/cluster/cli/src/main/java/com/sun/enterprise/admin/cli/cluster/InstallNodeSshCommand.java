@@ -41,6 +41,8 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import java.util.logging.Level;
+
+import com.jcraft.jsch.JSchException;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.trilead.ssh2.SCPClient;
@@ -128,10 +130,13 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
         catch (CommandException ex) {
             throw ex;
         }
-        catch (IOException ex) {
+        catch (JSchException ex) {
             throw new CommandException(ex);
         }
         catch (InterruptedException ex) {
+            throw new CommandException(ex);
+        }
+        catch (IOException ex) {
             throw new CommandException(ex);
         }
     }
@@ -378,6 +383,9 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
                 sftpClient.close();
             }
             catch (IOException ex) {
+                throw new CommandException(ex);
+            }
+            catch (JSchException ex) {
                 throw new CommandException(ex);
             }
             catch (InterruptedException ex) {
