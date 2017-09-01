@@ -72,9 +72,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.glassfish.docs</groupId>
-                                    <artifactId>basedocs</artifactId>
-                                    <version>${v3-docs.version}</version>
+                                    <groupId>org.glassfish.main</groupId>
+                                    <artifactId>docs</artifactId>
+                                    <version>${project.version}</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
                                     <includes>glassfish/lib/templates/**</includes>
