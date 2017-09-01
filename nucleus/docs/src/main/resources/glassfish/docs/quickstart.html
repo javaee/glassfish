@@ -1,47 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html lang="en">
-<!--
+<!--DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+Copyright 2010, 2017 Oracle and/or its affiliates. All rights reserved.
 
-    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
-
-    The contents of this file are subject to the terms of either the GNU
-    General Public License Version 2 only ("GPL") or the Common Development
-    and Distribution License("CDDL") (collectively, the "License").  You
-    may not use this file except in compliance with the License.  You can
-    obtain a copy of the License at
-    https://oss.oracle.com/licenses/CDDL+GPL-1.1
-    or LICENSE.txt.  See the License for the specific
-    language governing permissions and limitations under the License.
-
-    When distributing the software, include this License Header Notice in each
-    file and include the License file at LICENSE.txt.
-
-    GPL Classpath Exception:
-    Oracle designates this particular file as subject to the "Classpath"
-    exception as provided by Oracle in the GPL Version 2 section of the License
-    file that accompanied this code.
-
-    Modifications:
-    If applicable, add the following below the License Header, with the fields
-    enclosed by brackets [] replaced by your own identifying information:
-    "Portions Copyright [year] [name of copyright owner]"
-
-    Contributor(s):
-    If you wish your version of this file to be governed by only the CDDL or
-    only the GPL Version 2, indicate your decision by adding "[Contributor]
-    elects to include this software in this distribution under the [CDDL or GPL
-    Version 2] license."  If you don't indicate a single choice of license, a
-    recipient has the option to distribute your version of this file under
-    either the CDDL, the GPL Version 2 or to extend the choice of license to
-    its licensees as provided above.  However, if you add GPL Version 2 code
-    and therefore, elected the GPL Version 2 license, then the option applies
-    only if the new code is made subject to such option by the copyright
-    holder.
-
--->
-
+Use is subject to License Terms-->
 <head>
 <style type="text/css">
 	body{margin-top:0}
@@ -59,7 +22,7 @@
 	a:visited{color:#917E9C}
 	a:hover {text-decoration:underline}
 </style>
-<title>GlassFish Server 4.1 Quick Start Guide</title>
+<title>GlassFish Server 5.0 Quick Start Guide</title>
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
 link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
@@ -69,17 +32,16 @@ cellspacing="4" cellpadding="2">
 <td align="right" valign="top"> <a href="http://www.oracle.com">oracle.com</a> </td>
 </tr>
 <tr>
-<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 4.1</b></font></td>
+<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 5.0</b></font></td>
 </tr>
 </tbody>
 </table><div class="maincontent">
-<a name="aboaa"></a><h1>GlassFish Server 4.1 Quick Start Guide</h1>
-<p>GlassFish Server provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 4.1 provides the following:</p>
+<a name="aboaa"></a><h1>GlassFish Server 5.0 Quick Start Guide</h1>
+<p>GlassFish Server provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 5.0 provides the following:</p>
 <ul>
 <li><p>A lightweight and extensible core based on OSGi Alliance standards</p></li>
 <li><p>A web container</p></li>
 <li><p>An easy-to-use Administration Console for configuration and management</p></li>
-<li><p>Update Tool connectivity for updates and add-on components</p></li>
 </ul>
 <p>The following topics are addressed here:</p>
 <ul>
@@ -90,20 +52,20 @@ cellspacing="4" cellpadding="2">
 <li><p><a href="#gglmh">Starting and Stopping the Database Server</a></p></li>
 <li><p><a href="#ggllq">Starting the Administration Console</a></p></li>
 <li><p><a href="#geyvr">Deploying and Undeploying Applications</a></p></li>
-<li><p><a href="#ghgqg">Removing GlassFish Server 4.1 Software</a></p></li>
+<li><p><a href="#ghgqg">Removing GlassFish Server 5.0 Software</a></p></li>
 <li><p><a href="#ggkzh">For More Information</a></p></li>
 </ul>
 <a id="ghgpe" name="ghgpe"></a><a id="GSQSG00030" name="GSQSG00030"></a>
 <h2>About This Quick Start Guide</h2>
 <p>This <i>Quick Start Guide</i> demonstrates key features of GlassFish Server and enables you to quickly learn the basics. Step-by-step procedures introduce you to product features and enable you to use them immediately.</p>
-<p>This guide assumes that you have already obtained and installed the GlassFish Server 4.1 software. For more information about installing GlassFish Server 4.1, see the <a href="http://glassfish.java.net/docs/4.0/installation-guide.pdf"><cite>Installation Guide</cite></a>.</p>
+<p>This guide assumes that you have already obtained and installed the GlassFish Server 5.0 software. For more information about installing GlassFish Server 5.0, see the <a href="https://javaee.github.io/glassfish/documentation"><cite>Installation Guide</cite></a>.</p>
 <p>Instructions and examples in this guide that apply to all supported operating systems use the forward slash character (<code>/</code>) as path separators in all file names and commands. Ensure that you use the correct character for the system on which GlassFish Server is installed. For example:</p>
 <ul>
 <li><p><b>UNIX, Linux, or Mac OS X systems:</b> <i>as-install</i><code>/bin/asadmin</code></p></li>
 <li><p><b>Windows systems:</b> <i>as-install</i><code>\bin\asadmin</code></p></li>
 </ul>
 <p>This guide provides basic information only. For comprehensive information about GlassFish Server and other entities mentioned in this guide, see <a href="#ggkzh">For More Information</a>.</p>
-<p>To review additional details about this release before you begin using the software, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 4.1 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 4.1 software.</p>
+<p>To review additional details about this release before you begin using the software, see the <a href="https://javaee.github.io/glassfish/documentation"><cite>Release Notes</cite></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 5.0 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 5.0 software.</p>
 
 
 <a id="ghpfg" name="ghpfg"></a><a id="GSQSG00031" name="GSQSG00031"></a>
@@ -135,9 +97,9 @@ cellspacing="4" cellpadding="2">
 </td>
 <td align="left" headers="r2c1-t2 r1c3-t2">
 <p>Installations on the Oracle Solaris operating system, Linux operating system, and Mac OS operating system:</p>
-<p><i>user's-home-directory</i><code>/glassfish4/glassfish</code></p>
+<p><i>user's-home-directory</i><code>/glassfish5/glassfish</code></p>
 <p>Installations on the Windows operating system:</p>
-<p><i>SystemDrive</i><code>:\glassfish4\glassfish</code></p>
+<p><i>SystemDrive</i><code>:\glassfish5\glassfish</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
@@ -149,19 +111,19 @@ cellspacing="4" cellpadding="2">
 </td>
 <td align="left" headers="r3c1-t2 r1c3-t2">
 <p>Installations on the Oracle Solaris operating system, Linux operating system, and Mac operating system:</p>
-<p><i>user's-home-directory</i><code>/glassfish4</code></p>
+<p><i>user's-home-directory</i><code>/glassfish5</code></p>
 <p>Installations on the Windows operating system:</p>
-<p><i>SystemDrive</i><code>:\glassfish4</code></p>
+<p><i>SystemDrive</i><code>:\glassfish5</code></p>
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r4c1-t2" headers="r1c1-t2">
+<td align="left" id="r5.0-t2" headers="r1c1-t2">
 <p><i>domain-root-dir</i></p>
 <br /></td>
-<td align="left" headers="r4c1-t2 r1c2-t2">
+<td align="left" headers="r5.0-t2 r1c2-t2">
 <p>Represents the directory in which a domain is created by default.</p>
 </td>
-<td align="left" headers="r4c1-t2 r1c3-t2">
+<td align="left" headers="r5.0-t2 r1c3-t2">
 <p><i>as-install</i><code>/domains/</code></p>
 </td>
 </tr>
@@ -227,10 +189,10 @@ cellspacing="4" cellpadding="2">
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r4c1-t3" headers="r1c1-t3">
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00263"><code>asadmin</code>(1M)</a> command-line utility</p>
+<td align="left" id="r5.0-t3" headers="r1c1-t3">
+<p><code>asadmin</code> command-line utility</p>
 </td>
-<td align="left" headers="r4c1-t3 r1c2-t3">
+<td align="left" headers="r5.0-t3 r1c2-t3">
 <p><i>as-install</i><code>/bin</code></p>
 </td>
 </tr>
@@ -307,10 +269,10 @@ cellspacing="4" cellpadding="2">
 </td>
 </tr>
 <tr align="left" valign="top">
-<td align="left" id="r14c1-t3" headers="r1c1-t3">
+<td align="left" id="r15.0-t3" headers="r1c1-t3">
 <p>IIOP/SSL port with mutual authentication</p>
 </td>
-<td align="left" headers="r14c1-t3 r1c2-t3">
+<td align="left" headers="r15.0-t3 r1c2-t3">
 <p><code>3920</code></p>
 </td>
 </tr>
@@ -322,7 +284,7 @@ cellspacing="4" cellpadding="2">
 <a id="gglog" name="gglog"></a><a id="GSQSG00033" name="GSQSG00033"></a>
 
 <h2>Starting and Stopping the Default Domain</h2>
-<p>When you install GlassFish Server, a default domain named <code>domain1</code> is created. The following procedures describe how to start and stop <code>domain1</code> when it is the only domain. For information about starting and stopping a domain when there are multiple domains, see <i>Administering Domains</i> in  <a href="https://glassfish.java.net/docs/4.0/administration-guide.pdf"><i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<p>When you install GlassFish Server, a default domain named <code>domain1</code> is created. The following procedures describe how to start and stop <code>domain1</code> when it is the only domain. For information about starting and stopping a domain when there are multiple domains, see <i>Administering Domains</i> in <a href="https://javaee.github.io/glassfish/documentation"><i>Oracle GlassFish Server Administration Guide</i></a>.</p>
 <a id="ggmpd" name="ggmpd"></a><a id="GSQSG00005" name="GSQSG00005"></a>
 
 <h3>To Start the Default Domain</h3>
@@ -361,8 +323,8 @@ cellspacing="4" cellpadding="2">
 <h2>Starting and Stopping the Database Server</h2>
 <p>A database server is not started by default when you start the GlassFish Server domain. If your applications require a database back end, you must start and stop the database server manually.</p>
 <p>The following procedures describe how to start and stop the Java DB server that is bundled with GlassFish Server. For information about starting and stopping other database servers, see the documentation for your specific product.</p>
-<p>For the list of database products supported in this release, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>.</p>
-<p>For more information about database connectivity, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00015"><i>Administering Database Connectivity,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<p>For the list of database products supported in this release, see the <a href="https://javaee.github.io/glassfish/documentation"><cite>Release Notes</cite></a>.</p>
+<p>For more information about database connectivity, see <i>Administering Database Connectivity,</i> in <a href="https://javaee.github.io/glassfish/documentation"><i>Oracle GlassFish Server Administration Guide</i></a>.</p>
 <a id="ggncr" name="ggncr"></a><a id="GSQSG00007" name="GSQSG00007"></a>
 
 <h3>To Start the Java DB Server</h3>
@@ -428,7 +390,7 @@ cellspacing="4" cellpadding="2">
 
 <h3>To Obtain the Sample Application</h3>
 <ol>
-<li><p>Download a copy of the <code>hello.war</code> sample application from <code><a href="http://glassfish.java.net/downloads/quickstart/hello.war">http://glassfish.java.net/downloads/quickstart/hello.war</a></code>.</p></li>
+<li><p>Download a copy of the <code>hello.war</code> sample application from <code><a href="https://javaee.github.io/glassfish/downloads/quickstart/hello.war">https://javaee.github.io/glassfish/downloads/quickstart/hello.war</a></code>.</p></li>
 <li><p>Save the <code>hello.war</code> file in the directory of your choice.</p>
 <p>This directory is referred to as <i>sample-dir</i>.</p></li>
 </ol>
@@ -472,8 +434,7 @@ Hi, my name is Duke. What's yours?
 </ol>
 <a id="sthref10" name="sthref10"></a>
 <h6>See Also</h6>
-<p>For more information about the <code>deploy</code> subcommand, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00114"><code>deploy</code>(1)</a>.</p>
-<p>For more information about deploying applications from the command line, see <a href="https://glassfish.java.net/docs/4.0/application-deployment-guide.pdf"><i>GlassFish Server Application Deployment Guide</i></a>.</p>
+<p>For more information about deploying applications from the command line, see <a href="https://javaee.github.io/glassfish/documentation"><i>GlassFish Server Application Deployment Guide</i></a>.</p>
 
 
 <a id="ggnco" name="ggnco"></a><a id="GSQSG00012" name="GSQSG00012"></a>
@@ -498,9 +459,6 @@ Hi, my name is Duke. What's yours?
 <b><i>as-install</i>/bin/asadmin undeploy hello</b>
 </pre>
 <a id="sthref11" name="sthref11"></a>
-<h6>See Also</h6>
-<p>For more information about the <code>undeploy</code> subcommand, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00244"><code>undeploy</code>(1)</a>.</p>
-
 
 
 <a id="gkpau" name="gkpau"></a><a id="GSQSG00045" name="GSQSG00045"></a>
@@ -642,12 +600,11 @@ Hi, my name is Duke. What's yours?
 
 <a id="ghgqg" name="ghgqg"></a><a id="GSQSG00039" name="GSQSG00039"></a>
 
-<h2>Removing GlassFish Server 4.1 Software</h2>
+<h2>Removing GlassFish Server 5.0 Software</h2>
 <p>Before removing the GlassFish Server software, stop the following processes:</p>
 <ul>
 <li><p>All domains and other related processes</p></li>
 <li><p>Command prompts that use the installation directory or its subdirectories</p></li>
-<li><p>The Update Tool notifier process if present</p></li>
 <li><p>Any applications that use files that are part of the Java Platform, Standard Edition (Java SE)</p></li>
 </ul>
 <p>You can then remove the <i>as-install-parent directory</i> </p>
@@ -657,52 +614,48 @@ Hi, my name is Duke. What's yours?
 <a id="ggkzh" name="ggkzh"></a><a id="GSQSG00040" name="GSQSG00040"></a>
 
 <h2>For More Information</h2>
-<p>Additional resources are available to help you learn more about GlassFish Server 4.1 and related technologies.</p>
+<p>Additional resources are available to help you learn more about GlassFish Server 5.0 and related technologies.</p>
 <p>The following resources are described here:</p>
 <ul>
 <li><p><a href="#ghhir">Product Documentation</a></p></li>
-<li><p><a href="#ghhis">GlassFish Communities</a></p></li>
+<li><p><a href="#ghhis">GlassFish Community</a></p></li>
 <li><p><a href="#giyjo">Tutorials</a></p></li>
-<li><p><a href="#gintm">Java EE 7 Samples</a></p></li>
+<li><p><a href="#gintm">Java EE 8 Samples</a></p></li>
 </ul>
 <a id="ghhir" name="ghhir"></a><a id="GSQSG00050" name="GSQSG00050"></a>
 
 <h3>Product Documentation</h3>
 <p>Comprehensive product documentation is available and includes the following.</p>
 <ul>
-<li><p><a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p></li>
-<li><p>The <a href="http://glassfish.java.net/docs/index.html">GlassFish Product Documentation</a> page: Collection of guides that document GlassFish Server Open Source Edition features and functions.</p></li>
-<li><p><a href="http://wikis.oracle.com/display/GlassFish/Screencasts+and+Other+Videos">GlassFish Server Screencasts</a>: Collection of video recordings that demonstrate various features and provide examples for working with GlassFish Server and related technologies.</p></li>
-<li><p><a href="http://wikis.oracle.com/display/GlassFish/GlassFishFAQIndex">GlassFish Server FAQs</a>: Frequently asked questions covering a variety of GlassFish Server topics.</p></li>
+<li><p><a href="https://javaee.github.io/glassfish/documentation"><cite>Release Notes</cite></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p></li>
+<li><p>The <a href="https://javaee.github.io/glassfish/documentation">GlassFish Product Documentation</a> page: Collection of guides that document GlassFish Server Open Source Edition features and functions.</p></li>
 </ul>
 
 
 <a id="ghhis" name="ghhis"></a><a id="GSQSG00051" name="GSQSG00051"></a>
 
-<h3>GlassFish Communities</h3>
-<p>The following resources will help you connect with other users, learn more about GlassFish Server, and get help if needed.</p>
+<h3>GlassFish Community</h3>
 <ul>
-<li><p><a href="http://www.java.net/forums/glassfish/glassfish">GlassFish Forum</a>: Public online discussion forum that provides community support and tips for working with GlassFish Server.</p></li>
-<li><p><a href="http://wikis.oracle.com/display/GlassFish">GlassFish Wiki</a>: Community site that provides a wide range of information related to GlassFish Server.</p></li>
+<li><p><a href="https://javaee.groups.io/g/glassfish/">GlassFish Forum</a>: Public online discussion forum that provides community support and tips for working with GlassFish Server.</p></li>
 </ul>
 
 
 <a id="giyjo" name="giyjo"></a><a id="GSQSG00052" name="GSQSG00052"></a>
 
 <h3>Tutorials</h3>
-<p>The following tutorials provide working examples and detailed instructions for creating enterprise applications for the Java EE 7 platform.</p>
+<p>The following tutorials provide working examples and detailed instructions for creating enterprise applications for the Java EE 8 platform.</p>
 <ul>
-<li><p><a href="http://docs.oracle.com/javaee/7/firstcup/doc/">Your First Cup: An Introduction to the Java EE Platform</a>: Provides a short tutorial for beginning Java EE programmers that shows how to develop a simple enterprise application from scratch. The sample application consists of four main components: a JAX-RS RESTful web service, an enterprise bean, a Java Persistence API entity, and a web application created with JavaServer Faces Facelets technology.</p></li>
-<li><p><a href="http://docs.oracle.com/javaee/7/tutorial/doc/">The Java EE 7 Tutorial</a>: Provides a beginner's guide to developing enterprise applications for GlassFish Server. The tutorial includes working examples and instructions for creating applications with Java EE 7 technologies, including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services, Enterprise JavaBeans, Java Persistence API, Contexts and Dependency Injection for the Java EE platform, and more. The document is also available through Update Tool.</p></li>
+<li><p><a href="https://javaee.github.io/firstcup">Your First Cup: An Introduction to the Java EE Platform</a>: Provides a short tutorial for beginning Java EE programmers that shows how to develop a simple enterprise application from scratch. The sample application consists of four main components: a JAX-RS RESTful web service, an enterprise bean, a Java Persistence API entity, and a web application created with JavaServer Faces Facelets technology.</p></li>
+<li><p><a href="https://javaee.github.io/tutorial">The Java EE 8 Tutorial</a>: Provides a beginner's guide to developing enterprise applications for GlassFish Server. The tutorial includes working examples and instructions for creating applications with Java EE 8 technologies, including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services, Enterprise JavaBeans, Java Persistence API, Contexts and Dependency Injection for the Java EE platform, and more.</p></li>
 </ul>
 
 
 <a id="gintm" name="gintm"></a><a id="GSQSG00053" name="GSQSG00053"></a>
 
-<h3>Java EE 7 Samples</h3>
-<p>The sample applications demonstrate Java EE technologies. The samples are available through Update Tool and also as part of the Java EE 7 SDK distributions. The SDK distributions are available from the <a href="http://www.oracle.com/technetwork/java/javaee/downloads/index.html">Java EE SDK downloads page</a>.</p>
+<h3>Java EE 8 Samples</h3>
+<p>The sample applications demonstrate Java EE technologies. The samples are part of the Java EE 8 SDK distributions. The SDK distributions are available from the <a href="http://www.oracle.com/technetwork/java/javaee/downloads/index.html">Java EE SDK downloads page</a>.</p>
 </div> <hr style="width: 80%; height: 2px;"> <p
 class="copy"><a href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
-Copyright &copy; 2010, 2014 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
+Copyright &copy; 2010, 2017 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="./copyright.html">Legal Notices</a></p></body></html>
