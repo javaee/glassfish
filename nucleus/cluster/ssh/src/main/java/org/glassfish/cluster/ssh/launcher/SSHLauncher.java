@@ -53,7 +53,6 @@ import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.universal.process.ProcessUtils;
 
 import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.KnownHosts;
 import com.trilead.ssh2.SCPClient;
 import com.jcraft.jsch.*;
 import netscape.javascript.JSException;
@@ -652,30 +651,36 @@ public class SSHLauncher {
         boolean validInstallDir = false;
         init(userName, host,  port, password, keyFile, keyPassPhrase, logger);
 
-        openConnection();
-        logger.fine("Connection settings valid");
-        String testPath = installDir;
-        if (StringUtils.ok(testPath)) {
-            // Validate if installDir exists
-            SFTPClient sftpClient = new SFTPClient(session);
-            if (sftpClient.exists(testPath)) {
-                // installDir exists. Now check for landmark if provided
-                if (StringUtils.ok(landmarkPath)) {                    
-                    testPath = installDir + "/" + landmarkPath;
+        try {
+            openConnection();
+            logger.fine("Connection settings valid");
+            String testPath = installDir;
+            if (StringUtils.ok(testPath)) {
+                // Validate if installDir exists
+                SFTPClient sftpClient = new SFTPClient(session);
+                if (sftpClient.exists(testPath)) {
+                    // installDir exists. Now check for landmark if provided
+                    if (StringUtils.ok(landmarkPath)) {
+                        testPath = installDir + "/" + landmarkPath;
+                    }
+                    validInstallDir = sftpClient.exists(testPath);
+                } else {
+                    validInstallDir = false;
                 }
-                validInstallDir = sftpClient.exists(testPath);
-            } else {
-                validInstallDir = false;
-            }
-            SSHUtil.unregister(session);
-            session = null;
+                SSHUtil.unregister(session);
+                session = null;
 
-            if (!validInstallDir) {
-                String msg = "Invalid install directory: could not find " +
-                        testPath + " on " + host;
-                throw new FileNotFoundException(msg);
+                if (!validInstallDir) {
+                    String msg = "Invalid install directory: could not find " +
+                            testPath + " on " + host;
+                    throw new FileNotFoundException(msg);
+                }
+                logger.fine("Node home validated");
             }
-            logger.fine("Node home validated");
+        } catch (JSchException ex) {
+            throw new IOException(ex);
+        } catch (SftpException ex) {
+            throw new IOException(ex);
         }
     }
 
@@ -692,11 +697,6 @@ public class SSHLauncher {
     public SFTPClient getSFTPClient() throws JSchException {
         openConnection();
         return new SFTPClient(session);
-    }
-
-    public SCPClient getSCPClient() throws JSchException {
-        openConnection();
-        return new SCPClient(connection);
     }
 
     public String expandPasswordAlias(String alias) {

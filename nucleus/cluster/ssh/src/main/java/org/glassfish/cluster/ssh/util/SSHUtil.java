@@ -41,7 +41,6 @@
 package org.glassfish.cluster.ssh.util;
 
 import com.jcraft.jsch.Session;
-import com.trilead.ssh2.Connection;
 
 import java.util.ArrayList;
 import java.util.Arrays;

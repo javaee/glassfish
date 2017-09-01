@@ -41,7 +41,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.util.cluster.RemoteType;
 import com.sun.enterprise.config.serverbeans.Node;
@@ -49,7 +48,6 @@ import com.sun.enterprise.util.cluster.windows.process.WindowsException;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFile;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFileSystem;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -98,7 +96,7 @@ public abstract class SecureAdminBootstrapHelper {
      * @param node Node from the domain configuration for the target node
      * @param logger
      * @return the remote helper
-     * @throws IOException
+     * @throws BootstrapException
      */
     public static SecureAdminBootstrapHelper getRemoteHelper(
             final ServiceLocator habitat,
