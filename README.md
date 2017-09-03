@@ -1,12 +1,12 @@
 # About
 
-GlassFish is the Open Source Java EE Reference Implementation; as such, we weclome external contributions. Make sure to read our [Pull Request acceptance workflow](pr_workflow).
+GlassFish is the Open Source Java EE Reference Implementation; as such, we welcome external contributions. Make sure to read our [Pull Request acceptance workflow](pr_workflow).
 
 # Latest News
 
 ## Aug 11, 2017 - Java.Net Mailing Lists Archive ##
 
-The Java.Net Mailing Lists Archive a can now be consulted [here](http://download.oracle.com/javaee-archive/).
+The Java.Net Mailing Lists Archive can now be consulted [here](http://download.oracle.com/javaee-archive/).
 
 ## Aug 10, 2017 - GF 5 Promoted Builds 19 ##
 
