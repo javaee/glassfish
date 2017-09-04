@@ -501,8 +501,11 @@ public class BaseSeleniumTestClass {
     }
 
     protected void sleep(int millis) {
+        final Object LOCK = new Object();
         try {
-            Thread.sleep(millis);
+            synchronize (LOCK) {
+                LOCK.wait(millis);
+            }
         } catch (InterruptedException e) {
         }
     }
