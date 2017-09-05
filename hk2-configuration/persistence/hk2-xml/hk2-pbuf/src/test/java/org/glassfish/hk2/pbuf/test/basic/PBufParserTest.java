@@ -260,6 +260,8 @@ public class PBufParserTest {
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle) {
         ServiceRecordBlockBean root = handle.getRoot();
         Assert.assertNotNull(root);
+        Assert.assertNull(root.getNotSet());
+        Assert.assertEquals(0, root.getNotSetInt());
         
         List<ServiceRecordBean> records = root.getServiceRecords();
         Assert.assertEquals(3, records.size());

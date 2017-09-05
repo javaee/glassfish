@@ -56,7 +56,9 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record-block")
-@XmlType(propOrder={ "serviceRecords" })
+@XmlType(propOrder={ "serviceRecords"
+        , "notSet"
+        , "notSetInt" })
 public interface ServiceRecordBlockBean {
     @XmlElement(name="serviceRecord")
     @PluralOf("ServiceRecord")
@@ -65,5 +67,11 @@ public interface ServiceRecordBlockBean {
     public ServiceRecordBean removeServiceRecord(ServiceRecordBean record);
     public ServiceRecordBean lookupServiceRecord(String id);
     public void setServiceRecords(List<ServiceRecordBean> records);
+    
+    @XmlElement(name="notSet")
+    public String getNotSet();
+    
+    @XmlElement
+    public int getNotSetInt();
 
 }

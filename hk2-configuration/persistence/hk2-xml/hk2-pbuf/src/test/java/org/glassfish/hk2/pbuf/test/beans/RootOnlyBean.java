@@ -51,7 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @XmlRootElement(name="root-only")
-@XmlType(propOrder={ "Name", "Address" })
+@XmlType(propOrder={ "name", "address", "notSet", "notSetLong" })
 public interface RootOnlyBean {
     @XmlElement(name="name", defaultValue="bob")
     public String getName();
@@ -60,5 +60,13 @@ public interface RootOnlyBean {
     @XmlElement(name="address")
     public String getAddress();
     public void setAddress(String address);
+    
+    @XmlElement(name="notSet")
+    public String getNotSet();
+    public void setNotSet(String notSet);
+    
+    @XmlElement(name="notSetLong")
+    public long getNotSetLong();
+    public void setNotSetLong(long notSet);
 
 }

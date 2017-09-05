@@ -321,7 +321,9 @@ public class PBufParser implements XmlServiceParser {
               Object value = blm.get(localPart);
               Object convertedValue = convertFieldForMarshal(value);
               
-              retValBuilder.setField(fieldDescriptor, convertedValue);
+              if (value != null) {
+                  retValBuilder.setField(fieldDescriptor, convertedValue);
+              }
             }
             else {
                 ParentedModel parentedModel = childDescriptor.getParentedModel();
@@ -559,6 +561,13 @@ public class PBufParser implements XmlServiceParser {
         if (expectedType.equals(byte.class) || expectedType.equals(Byte.class)) {
             ByteString b = (ByteString) field;
             return b.byteAt(0);
+        }
+        
+        if (String.class.equals(expectedType) && ((String) field).isEmpty()) {
+            // PBuf returns empty string for null.  There is no way to
+            // tell the difference, so we are just converting empty
+            // string back null
+            return null;
         }
         
         return field;
