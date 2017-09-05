@@ -40,42 +40,27 @@
 
 package org.glassfish.cluster.ssh.launcher;
 
-import com.trilead.ssh2.ChannelCondition;
-import com.trilead.ssh2.Session;
-import java.io.*;
-
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.io.FileUtils;
-
+import com.jcraft.jsch.*;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.SshAuth;
+import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.universal.process.ProcessUtils;
-
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.SCPClient;
-import com.jcraft.jsch.*;
-import netscape.javascript.JSException;
-import org.glassfish.api.admin.AuthenticationException;
-import org.glassfish.internal.api.RelativePathResolver;
-import org.glassfish.cluster.ssh.util.HostVerifier;
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.glassfish.cluster.ssh.util.SSHUtil;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.jvnet.hk2.annotations.Service;
 
-import org.glassfish.hk2.api.PerLookup;
-import com.sun.enterprise.config.serverbeans.SshConnector;
-import com.sun.enterprise.config.serverbeans.SshAuth;
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.util.ExceptionUtil;
-import org.glassfish.cluster.ssh.sftp.SFTPClient;
-
-import java.io.OutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,7 +103,7 @@ public class SSHLauncher {
      * The connection object that represents the connection to the host
      * via ssh
      */
-    private com.jcraft.jsch.Session session;
+    private Session session;
 
     private String authType;
 
@@ -224,6 +209,7 @@ public class SSHLauncher {
      *
      */
     private void openConnection() throws JSchException {
+        assert session == null;
         JSch jsch = new JSch();
         // TODO: Logger?
         // jsch.setLogger(logger);
@@ -488,100 +474,54 @@ public class SSHLauncher {
         }
 
         openConnection();
-//        final Session sess = connection.openSession();
-//
-//        int status = exec(sess, command, os, listInputStream(stdinLines));
 
-        // XXX: Should we close connection after each command or cache it
-        // and re-use it?
+        int status = exec(command, os, listInputStream(stdinLines));
+
         SSHUtil.unregister(session);
         session = null;
-//        return status;
+        return status;
     }
 
     /**
-     * Executes a command on the remote system via ssh without normalizing
-     * the command line
+     * To be called for after opening the connection using openConnection()
      *
-     * @param command    the command to execute
-     * @param os         stream to receive the output from the command
-     * @param stdinLines optional data to be sent to the process's System.in
-     *                   stream; null if no input should be sent
-     * @param env        list of environment variables to set before executing the command. each array cell is like varname=varvalue. This only supports on csh, t-csh and bash
+     * @param command
+     * @param os
+     * @param is
      * @return
+     * @throws JSchException
      * @throws IOException
      * @throws InterruptedException
      */
-    public int runCommandAsIs(List<String> command, OutputStream os,
-                              List<String> stdinLines, String[] env) throws JSchException, IOException,
-            InterruptedException {
-        return runCommandAsIs(commandListToQuotedString(command), os, stdinLines, env);
-    }
-
-    private int runCommandAsIs(String command, OutputStream os,
-                               List<String> stdinLines, String[] env) throws JSchException, IOException,
-            InterruptedException {
-        if (logger.isLoggable(Level.FINER)) {
-            logger.finer("Running command " + command + " on host: " + this.host);
-        }
-
-        openConnection();
-//        StringBuffer buff = new StringBuffer();
-//        if (env != null) {
-//            Session tempSession = connection.openSession();
-//            OutputStream ous = new ByteArrayOutputStream();
-//            exec(tempSession, "ps -p $$ | tail -1 | awk '{print $NF}'", ous, null);
-//            String prefix;
-//            if (ous.toString().contains("csh")) {
-//                logger.fine("CSH shell");
-//                prefix = "setenv";
-//            } else {
-//                logger.fine("BASH shell");
-//                prefix = "export";
-//            }
-//            for (String st : env) {
-//                String cmd = prefix + " " + st;
-//                buff.append(cmd).append(";");
-//            }
-//        }
-//        buff.append(command);
-//        final Session sess = connection.openSession();
-//        int status = exec(sess, buff.toString(), os, listInputStream(stdinLines));
-
-        // XXX: Should we close connection after each command or cache it
-        // and re-use it?
-        SSHUtil.unregister(session);
-        session = null;
-//        return status;
-    }
-
-    private int exec(final Session session, final String command, final OutputStream os,
+    private int exec(final String command, final OutputStream os,
                      final InputStream is)
-            throws IOException, InterruptedException {
+            throws JSchException, IOException, InterruptedException {
+        ChannelExec execChannel = (ChannelExec) session.openChannel("exec");
         try {
-            session.execCommand(command);
-            PumpThread t1 = new PumpThread(session.getStdout(), os);
+            execChannel.setInputStream(is);
+            execChannel.setCommand(command);
+            InputStream in = execChannel.getInputStream();
+            execChannel.connect();
+            PumpThread t1 = new PumpThread(in, os);
             t1.start();
-            PumpThread t2 = new PumpThread(session.getStderr(), os);
+            PumpThread t2 = new PumpThread(execChannel.getErrStream(), os);
             t2.start();
-            final OutputStream stdin = session.getStdin();
-            if (is != null) {
-                final PumpThread inputPump = new PumpThread(is,
-                        stdin);
-                inputPump.run();
-            }
-            stdin.close();
+
             t1.join();
             t2.join();
 
-            // wait for some time since the delivery of the exit status often gets delayed
-            session.waitForCondition(ChannelCondition.EXIT_STATUS,3000);
-            Integer r = session.getExitStatus();
-            if(r!=null) return r.intValue();
-            return -1;
+            return execChannel.getExitStatus();
         } finally {
-            session.close();
+            execChannel.disconnect();
         }
+    }
+
+    /**
+     * To be called for after opening the connection using openConnection()
+     */
+    private int exec(final String command, final OutputStream os)
+            throws JSchException, IOException, InterruptedException {
+        return exec(command, os, null);
     }
 
     private InputStream listInputStream(final List<String> stdinLines) throws IOException {
@@ -769,7 +709,7 @@ public class SSHLauncher {
         if (key.exists()) {
             if (checkConnection()) {
                 throw new IOException("SSH public key authentication is already configured for " + userName + "@" + node);
-            }            
+            }
         } else {
             if (generateKey) {
                 if(!generateKeyPair()) {
@@ -784,86 +724,105 @@ public class SSHLauncher {
         if (passwd == null) {
             throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password in a password file and pass it through --passwordfile option.");
         }
-        connection = new Connection(node, port);
-        connection.connect();
-        connected = connection.authenticateWithPassword(userName, passwd);
+        try {
+            JSch jsch = new JSch();
+            Session s1 = jsch.getSession(userName, host, port);
+            s1.setPassword(password);
+            s1.connect();
 
-        if(!connected) {
-            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
-        }
-        
-        //We open up a second connection for scp and exec. For some reason, a hang
-        //is seen in MKS if we try to do everything using the same connection.
-        Connection conn = new Connection(node, port);
-        conn.connect();
-        boolean ret = conn.authenticateWithPassword(userName, passwd);
-        
-        if (!ret) {
-            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
-        }
-        //initiate scp client
-        SCPClient scp = new SCPClient(conn);
-        SFTPClient sftp = new SFTPClient(session);
-
-        if (key.exists()) {
-
-            //fixes .ssh file mode
-            setupSSHDir();
-
-            if (pubKeyFile == null) {
-                pubKeyFile = keyFile + ".pub";
+            if (!s1.isConnected()) {
+                throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
             }
 
-            File pubKey = new File(pubKeyFile);
-            if(!pubKey.exists()) {
-                throw new IOException("Public key file " + pubKeyFile + " does not exist.");
-            }
+            //We open up a second connection for scp and exec. For some reason, a hang
+            //is seen in MKS if we try to do everything using the same connection.
+            Session s2 = jsch.getSession(userName, host, port);
+            s2.setPassword(password);
+            s2.connect();
+            this.session = s2;
 
-            try {
-                if(!sftp.exists(SSH_DIR)) {
-                    if(logger.isLoggable(Level.FINE)) {
-                        logger.fine(SSH_DIR + " does not exist");
+            if (!s2.isConnected()) {
+                throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
+            }
+            SFTPClient sftp = new SFTPClient(s1);
+
+            if (key.exists()) {
+
+                //fixes .ssh file mode
+                setupSSHDir();
+
+                if (pubKeyFile == null) {
+                    pubKeyFile = keyFile + ".pub";
+                }
+
+                File pubKey = new File(pubKeyFile);
+                if (!pubKey.exists()) {
+                    throw new IOException("Public key file " + pubKeyFile + " does not exist.");
+                }
+
+                try {
+                    if (!sftp.exists(SSH_DIR)) {
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine(SSH_DIR + " does not exist");
+                        }
+                        sftp.getSftpChannel().cd(".");
+                        sftp.getSftpChannel().mkdir(".ssh");
+                        sftp.getSftpChannel().chmod(0700, ".ssh");
                     }
-                    sftp.mkdirs(".ssh", 0700);
+                } catch (Exception e) {
+                    if (logger.isLoggable(Level.FINER)) {
+                        e.printStackTrace();
+                    }
+                    throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
                 }
-            } catch (Exception e) {
-                if(logger.isLoggable(Level.FINER)) {
-                    e.printStackTrace();
+
+                //copy over the public key to remote host
+                //scp.put(pubKey.getAbsolutePath(), "key.tmp", ".ssh", "0600");
+                try {
+                    sftp.getSftpChannel().cd(".ssh");
+                    OutputStream outputStream = sftp.getSftpChannel().put("key.tmp");
+                    Files.copy(pubKey.toPath(), outputStream);
+                    sftp.chmod("key.tmp", 0600);
+                } catch (SftpException ex) {
+                    throw new IOException("Unable to copy the public key", ex);
                 }
-                throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
-            }
 
-            //copy over the public key to remote host
-            scp.put(pubKey.getAbsolutePath(), "key.tmp", ".ssh", "0600");            
+                //append the public key file contents to authorized_keys file on remote host
+                String mergeCommand = "cd .ssh; cat key.tmp >> " + AUTH_KEY_FILE;
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.finer("mergeCommand = " + mergeCommand);
+                }
+                if (exec(mergeCommand, new ByteArrayOutputStream()) != 0) {
+                    throw new IOException("Failed to propogate the public key " + pubKeyFile + " to " + host);
+                }
+                logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
 
-            //append the public key file contents to authorized_keys file on remote host
-            String mergeCommand = "cd .ssh; cat key.tmp >> " + AUTH_KEY_FILE;
-            if(logger.isLoggable(Level.FINER)) {
-                logger.finer("mergeCommand = " + mergeCommand);
-            }
-            if(conn.exec(mergeCommand, new ByteArrayOutputStream())!=0) {
-                throw new IOException("Failed to propogate the public key " + pubKeyFile + " to " + host);
-            }
-            logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
+                //remove the public key file on remote host
+                if (exec("rm .ssh/key.tmp", new ByteArrayOutputStream()) != 0) {
+                    logger.warning("WARNING: Failed to remove the public key file key.tmp on remote host " + host);
+                }
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.finer("Removed the temporary key file on remote host");
+                }
 
-            //remove the public key file on remote host
-            if(conn.exec("rm .ssh/key.tmp", new ByteArrayOutputStream())!=0) {
-                logger.warning("WARNING: Failed to remove the public key file key.tmp on remote host " + host);
+                //Lets fix all the permissions
+                //On MKS, chmod doesn't work as expected. StrictMode needs to be disabled
+                //for connection to go through
+                logger.info("Fixing file permissions for home(755), .ssh(700) and authorized_keys file(644)");
+                try {
+                    sftp.getSftpChannel().cd(".");
+                    sftp.chmod(".", 0755);
+                    sftp.chmod(SSH_DIR, 0700);
+                    sftp.chmod(SSH_DIR + AUTH_KEY_FILE, 0644);
+                } catch (SftpException ex) {
+                    throw new IOException("Unable to fix file permissions", ex);
+                }
+                //release the connections
+                sftp.close();
+                s2.disconnect();
             }
-            if(logger.isLoggable(Level.FINER)) {
-                logger.finer("Removed the temporary key file on remote host");
-            }
-            
-            //Lets fix all the permissions
-            //On MKS, chmod doesn't work as expected. StrictMode needs to be disabled
-            //for connection to go through
-            logger.info("Fixing file permissions for home(755), .ssh(700) and authorized_keys file(644)");
-            sftp.chmod(".", 0755);
-            sftp.chmod(SSH_DIR, 0700);
-            sftp.chmod(SSH_DIR + AUTH_KEY_FILE, 0644);
-            //release the connections
-            sftp.close();
-            conn.close();
+        } catch (JSchException ex) {
+            throw new IOException(ex);
         }
     }
 
@@ -887,29 +846,34 @@ public class SSHLauncher {
      */
     public boolean checkConnection() {
         boolean status = false;
-        Connection c = null;
-        c = new Connection(host, port);
+        JSch jsch = new JSch();
+        Session sess = null;
+
         try {
-            c.connect();
             File f = new File(keyFile);
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("Checking connection...");
             }
-            status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
+            jsch.addIdentity(f.getAbsolutePath(), rawKeyPassPhrase);
+            sess = jsch.getSession(userName, host, port);
+            sess.connect();
+            status = sess.isConnected();
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
             }
-        } catch(IOException ioe) {
-            Throwable t = ioe.getCause();
+        }
+        catch (JSchException ex) {
+            Throwable t = ex.getCause();
             if (t != null) {
                 String msg = t.getMessage();
                 logger.warning("Failed to connect or authenticate: " + msg);
             }
             if (logger.isLoggable(Level.FINER)) {
-                logger.log(Level.FINER, "Failed to connect or autheticate: ", ioe);
+                logger.log(Level.FINER, "Failed to connect or autheticate: ", ex);
             }
         } finally {
-            c.close();
+            if (sess != null)
+                sess.disconnect();
         }
         return status;
     }
@@ -920,28 +884,35 @@ public class SSHLauncher {
      */
     public boolean checkPasswordAuth() {
         boolean status = false;
-        Connection c = null;
+        JSch jsch = new JSch();
+        Session sess = null;
+
         try {
-            c = new Connection(host, port);
-            c.connect();
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("Checking connection...");
             }
-            status = c.authenticateWithPassword(userName, password);
+            sess = jsch.getSession(userName, host, port);
+            sess.setPassword(password);
+            sess.connect();
+            status = sess.isConnected();
             if (status) {
                 if (logger.isLoggable(Level.FINER)) {
                     logger.finer("Successfully connected to " + userName + "@" + host + " using password authentication");
                 }
             }
-        } catch(IOException ioe) {
-            //logger.printExceptionStackTrace(ioe);
+        }
+        catch (JSchException ex) {
+            Throwable t = ex.getCause();
+            if (t != null) {
+                String msg = t.getMessage();
+                logger.warning("Failed to connect or authenticate: " + msg);
+            }
             if (logger.isLoggable(Level.FINER)) {
-                ioe.printStackTrace();
+                logger.log(Level.FINER, "Failed to connect or autheticate: ", ex);
             }
         } finally {
-            if ( c!= null) {
-                c.close();
-            }
+            if (sess != null)
+                sess.disconnect();
         }
         return status;
     }

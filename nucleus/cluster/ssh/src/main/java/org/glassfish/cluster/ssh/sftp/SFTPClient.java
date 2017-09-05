@@ -115,7 +115,6 @@ public class SFTPClient {
 
     /**
      * Creates a new file and writes to it.
-     */
     public OutputStream writeToFile(String path) throws IOException {
         path =normalizePath(path);
         final SFTPv3FileHandle h = createFile(path);
@@ -171,6 +170,8 @@ public class SFTPClient {
             }
         };
     }
+     */
+
 
     public void chmod(String path, int permissions) throws SftpException {
         path = normalizePath(path);

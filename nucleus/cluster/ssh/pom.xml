@@ -72,11 +72,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>trilead-ssh2</artifactId>
-            <version>${trilead-ssh2.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.54</version>

@@ -375,16 +375,11 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         void writeToFile(final String path, final InputStream content) throws IOException {
-            final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
-            int bytesRead;
-            final byte[] buffer = new byte[1024];
             try {
-                while ((bytesRead = content.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
+                ftpClient.getSftpChannel().put(content, path);
             }
-            finally {
-                os.close();
+            catch (SftpException ex) {
+                throw new IOException(ex);
             }
         }
         /* bnevins -- this method had to be made abstract ONLY because of the

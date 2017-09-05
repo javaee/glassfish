@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.jcraft.jsch.JSchException;
 import org.glassfish.common.util.admin.AsadminInput;
 import org.glassfish.api.admin.SSHCommandExecutionException;
 import com.sun.enterprise.config.serverbeans.Node;
@@ -128,7 +129,7 @@ public class NodeRunnerSsh  {
             output.append(outStream.toString());
             return commandStatus;
 
-        }catch (IOException ex) {
+        }catch (JSchException | IOException ex) {
             String m1 = " Command execution failed. " +ex.getMessage();
             String m2 = "";
             Throwable e2 = ex.getCause();

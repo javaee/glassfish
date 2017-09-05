@@ -244,7 +244,7 @@ public class ModuleMap {
                 put("org.glassfish.main.external.ldapbp-repackaged", 186);
                 put("org.glassfish.main.external.libpam4j-repackaged", 187);
                 put("org.glassfish.main.external.schema2beans-repackaged", 188);
-                put("org.glassfish.main.external.trilead-ssh2-repackaged", 189);
+                //put("org.glassfish.main.external.trilead-ssh2-repackaged", 189);
                 put("org.glassfish.main.extras.grizzly-container", 190);
                 put("org.glassfish.main.extras.osgi-container", 191);
                 put("org.glassfish.main.flashlight.flashlight-extra-jdk-packages", 192);
