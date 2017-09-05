@@ -60,6 +60,9 @@ public class Utilities {
         
         PBufUtilities.enablePBufService(retVal);
         
+        // Twice tests idempotence
+        PBufUtilities.enablePBufService(retVal);
+        
         return retVal;
     }
 

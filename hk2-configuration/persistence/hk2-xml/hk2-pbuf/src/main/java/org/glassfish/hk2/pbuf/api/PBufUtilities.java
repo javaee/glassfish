@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.pbuf.api;
 
+import org.glassfish.hk2.api.DuplicateServiceException;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.internal.PBufParser;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -48,13 +50,30 @@ public class PBufUtilities {
     /** The name of the XmlService that uses PBuf as its encoding/decoding format */
     public final static String PBUF_SERVICE_NAME = "PBufXmlParser";
     
+    private static boolean isDup(MultiException me) {
+        if (me == null) return false;
+        
+        for (Throwable th : me.getErrors()) {
+            if (th instanceof DuplicateServiceException) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * Idempotently enables the PBuf parser in the given ServiceLocator.
      * 
      * @param locator The non-null locator to enable the XmlParser
      */
     public static void enablePBufService(ServiceLocator locator) {
-        ServiceLocatorUtilities.addClasses(locator, true, PBufParser.class);
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, PBufParser.class);
+        }
+        catch (MultiException me) {
+            if (!isDup(me)) throw me;
+        }
         
         XmlServiceUtilities.enableXmlService(locator);
     }
