@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>viewAction (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/viewAction.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="viewAction.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							viewAction</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+            This action component specifies
+            an application-specific command (or action), using an EL
+            method expression, to be invoked during one of the JSF
+            lifecycle phases, by default Invoke Application.
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Component summary table, listing component information">
+<caption>
+<span>Component Information</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Info</th><th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rowColor">
+<td class="colFirst">Component Type</td><td class="colLast"><code>javax.faces.ViewAction</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Handler Class</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst">Renderer Type</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Description</td><td class="colLast"><i>None</i></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="action" class="rowColor">
+<td class="colFirst"><a href="#action"><code>action</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.MethodExpression</code>
+<br>(<i>signature must match </i><code>public 
+                java.lang.Object action()
+            </code>)
+					</td><td class="colLast">
+
+                MethodExpression representing the application action
+            to invoke when this component is activated by the user. The
+            expression must evaluate to a public method that takes no
+            parameters, and returns an Object (the toString() of which
+            is called to derive the logical outcome) which is passed to
+            the NavigationHandler for this application.
+
+            </td>
+</tr>
+<tr id="actionListener" class="altColor">
+<td class="colFirst"><a href="#actionListener"><code>actionListener</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.MethodExpression</code>
+<br>(<i>signature must match </i><code>public void
+                actionListener(javax.faces.event.ActionEvent)
+            </code>)
+					</td><td class="colLast">
+            <p>
+                
+                MethodExpression representing an action listener method that
+                will be notified when this component is activated by the user.
+                The expression must evaluate to a public method that takes an
+                ActionEvent parameter, with a return type of void, <span
+                class="changed_added_2_0">or to a public method that takes no
+                arguments with a return type of void.  In the latter case, the
+                method has no way of easily knowing where the event came from,
+                but this can be useful in cases where a notification is needed
+                that "some action happened".</span>
+                
+                </p>
+            </td>
+</tr>
+<tr id="immediate" class="rowColor">
+<td class="colFirst"><a href="#immediate"><code>immediate</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                Flag indicating that, if this component is activated
+                by the user, notifications should be delivered to
+                interested listeners and actions immediately (that is,
+                during Apply Request Values phase) rather than waiting
+                until Invoke Application phase.
+            </td>
+</tr>
+<tr id="onPostback" class="altColor">
+<td class="colFirst"><a href="#onPostback"><code>onPostback</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                View actions are most commonly used on the initial
+            view request.  Therefore, view actions do not operate on
+            postback, by default.  This attribute enables a view action
+            to operate on postback.
+            </td>
+</tr>
+<tr id="phase" class="rowColor">
+<td class="colFirst"><a href="#phase"><code>phase</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                Specifies the phase in which the action invocation
+                should occur using the name of the phase constant in the
+                PhaseId class (the case does not matter). The value must
+                be one of APPLY_REQUEST_VALUES, PROCESS_VALIDATIONS,
+                UPDATE_MODEL_VALUES, or INVOKE_APPLICATION. The default
+                is INVOKE_APPLICATION.
+            </td>
+</tr>
+<tr id="rendered" class="altColor">
+<td class="colFirst"><a href="#rendered"><code>rendered</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                Like all children of <f:metadata>,
+            a view action has no visual representation in the view.
+            This attribute has exactly the same effect on a view action
+            as the rendered attribute has on a visual
+            component.  Specifically, if the value of this attribute
+            evaluates to false the component has no
+            effect.
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/viewAction.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="viewAction.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

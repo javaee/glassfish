@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Head
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Head
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Head
+</H2>
+<HR />
+<P>
+
+<p><span class="changed_modified_2_0_rev_a
+changed_modified_2_1 changed_modified_2_2">Render</span> the markup for a
+<code>&lt;head&gt;</code> element.</p>
+
+<div class="changed_added_2_0">
+
+      <p>Decode Behavior</p>
+
+      <ul>
+
+<p>No action is required during decode for this renderer.</p>
+
+</ul>
+
+      <p>Encode Behavior</p>
+
+      <ul>
+
+<p>Render the starting <code>&lt;head&gt;</code> element tag.  Any
+attributes declared on the element must be conveyed unmodified to
+the rendered output.  <span class="changed_modified_2_0_rev_a">At some
+point before rendering the closing <code>&lt;/head&gt;</code> element
+tag</span>, render any resources that have been targeted for this "head"
+element:
+      <ul>
+      <li>Obtain a <code>UIViewRoot</code> instance.</li>
+      <li>Obtain a <code>List</code> of component resources targeted for
+      this "head" element with a call to <code>UIViewRoot.getComponentResources()</code>
+      with the <code>String "head"</code> as the argument.</li>
+      <li>Iterate over the returned <code>List</code> of <code>UIComponent</code> instances
+      and call <code>encodeAll</code> on each <code>UIComponent</code> instance. 
+
+<p>Any attributes declared on the element must be conveyed
+unmodified to the rendered output.</p>
+
+      </ul>
+
+<div class="changed_modified_2_0_rev_a">
+
+      <p>Note that due to the cascading nature of CSS files, the order
+      in which these files have been added to the view must be preserved
+      when rendering the references to the files within the
+      <code>&lt;head&gt;</code> element.  Also, the end result of the
+      rendered <code>&lt;head&gt;</code> section must be that any CSS
+      files referenced due to previous calls to
+      <code>addComponentResource()</code> do not adversely interfere
+      with any CSS files manually placed in this section by the page
+      author.</p>
+
+      <p>Render the ending <code>&lt;/head&gt;</code> element tag.</p>
+
+</div>
+
+</div></P>
+<P>This renderer is not responsible for rendering its children.</P><HR />
+<a NAME="attributes"><!-- --></a>
+
+<h3>Note:</h3>
+
+<p>Attributes with a <code class="changed_modified_2_2">ignored-by-renderer</code> value of
+<code>true</code> are not interpreted by the renderer and are conveyed
+straight to the rendered markup, without checking for validity.  Attributes with a
+<code class="changed_modified_2_2">ignored-by-renderer</code> value of <code>false</code> are interpreted
+by the renderer, and may or may not be checked for validity by the renderer.</p>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<td COLSPAN="5"><font SIZE="+2">
+<b>Attributes</b></font></td>
+</tr>
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<th><b>attribute-name</b></th>
+<th><b class="changed_modified_2_2">ignored-by-renderer</b></th>
+<th><b>attribute-class</b></th>
+<th><b>description</b></th>
+<th><b>default-value</b></th>
+</tr>
+	    
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;dir
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Direction indication for text that does not inherit directionality.
+          Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
+          These attributes are case sensitive when rendering to XHTML, so
+          care must be taken to have the correct case.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;id
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td> <p class="changed_added_2_2">The
+        component identifier for this component.  This value must be
+        unique within the closest parent component that is a naming
+        container.</p> </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;lang
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Code describing the language used in the generated markup
+          for this component.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;xmlns
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_1">
+           An XML Namespace to be passed through to the rendered element
+           </div></td>
+<td>undefined<td>
+</tr>
+</table>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

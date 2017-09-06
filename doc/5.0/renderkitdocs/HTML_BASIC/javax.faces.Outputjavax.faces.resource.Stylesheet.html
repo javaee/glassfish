@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.resource.Stylesheet
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.resource.Stylesheet
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.resource.Stylesheet
+</H2>
+<HR />
+<P>
+
+<p><span class="changed_modified_2_0 changed_modified_2_0_rev_a
+changed_modified_2_1 changed_modified_2_2">Render</span> the markup for a
+<code>&lt;link&gt;</code> element that renders the style
+<code>Resource</code> specified by the optional <code>name</code> and
+<code>library</code> attributes.</p>
+
+      <p class="changed_modified_2_0">Decode Behavior</p>
+
+      <ul class="changed_modified_2_0">
+
+<p>No action is required during decode for this renderer.</p>
+
+</ul>
+
+      <p class="changed_modified_2_0">Encode Behavior</p>
+
+      <ul class="changed_modified_2_0">
+
+       <p>Use the algorithm <em>Common Encode Behavior</em> for
+       <code>encodeBegin()</code>, <code>encodeChildren()</code> and
+       <code>getRendersChildren()</code>.</p>
+
+        <p>For <code>encodeEnd()</code>, use the algorithm <a
+        href="javax.faces.Outputjavax.faces.resource.Script.html#ResourceCommonGetResource">Common
+        Algorithm for Obtaining A Resource to Render</a> to obtain a
+        reference to the <code>Resource</code> to be encoded.</p>
+
+<p>Output a <code>&lt;link&gt;</code> element.  Use the result from
+calling <code>resource.getRequestPath()</code> as the value of the
+"href" attribute, the result from calling
+<code>resource.getContentType()</code> as the value of the "type"
+attribute, and the literal string "stylesheet" as the value of the "rel"
+attribute.  <span class="changed_modified_2_2">If this tag has a "media"
+attribute, use its value as the value of the "media" attribute.
+Otherwise, do not render a media attribute.</span></p>
+
+
+<p>The implementation of this renderer must have a <a target="_"
+href="../../javadocs/javax/faces/event/ListenerFor.html"><code>@ListenerFor</code></a>
+annotation attached to it, at the class level, declaring <a target="_"
+href="../../javadocs/javax/faces/event/PostAddToViewEvent.html"><code>PostAddToViewEvent.class</code></a>
+as the value of the <code>systemEventClass</code> attribute.  The presence of
+this annotation on a renderer implies the renderer implements <a target="_"
+href="../../javadocs/javax/faces/event/ComponentSystemEventListener.html"><code>ComponentSystemEventListener</code></a>,
+which this renderer must do.  The implementation of
+<code>processEvent()</code> must extract the <code>UIComponent</code>
+from the argument event pass it to <a target="_"
+href="../../javadocs/javax/faces/component/UIViewRoot.html#addComponentResource(javax.faces.context.FacesContext,%20javax.faces.component.UIComponent,%20java.lang.String)"><code>UIViewRoot.addComponentResource()</code></a>, specifying
+the literal string "<code>head</code>" as the last argument.</p>
+
+<p>The stylsheet renderer must ensure that any stylesheets are included in the &lt;head&gt; of the document. 
+</p>
+
+</ul>
+
+</P>
+<P>This renderer is responsible for rendering its children.</P><HR />
+<a NAME="attributes"><!-- --></a>
+
+<h3>Note:</h3>
+
+<p>Attributes with a <code class="changed_modified_2_2">ignored-by-renderer</code> value of
+<code>true</code> are not interpreted by the renderer and are conveyed
+straight to the rendered markup, without checking for validity.  Attributes with a
+<code class="changed_modified_2_2">ignored-by-renderer</code> value of <code>false</code> are interpreted
+by the renderer, and may or may not be checked for validity by the renderer.</p>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<td COLSPAN="5"><font SIZE="+2">
+<b>Attributes</b></font></td>
+</tr>
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<th><b>attribute-name</b></th>
+<th><b class="changed_modified_2_2">ignored-by-renderer</b></th>
+<th><b>attribute-class</b></th>
+<th><b>description</b></th>
+<th><b>default-value</b></th>
+</tr>
+	    
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;library
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_0"><p>The <em>libraryName</em> for this resource.</p></div></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;media
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_1"><p>The
+                    <em>media</em> type for this stylesheet.  For
+                    example, <em>media="screen"</em> would cause the
+                    resource to be rendered with the <em>media</em>
+                    attribute of the <em>link</em> set to
+                    <em>screen</em>.</p></div></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;name
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_0"><p>The
+                <em>resourceName</em> for this resource.</p></div>
+                <div class="changed_modified_2_1">
+                 <p>
+                  This attribute is required if the stylesheet is NOT inline.
+                 </p>
+                </div>
+                </td>
+<td>undefined<td>
+</tr>
+</table>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

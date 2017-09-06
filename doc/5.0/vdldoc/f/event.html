@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>event (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/event.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="event.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							event</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+            <p class="changed_added_2_0">Allow JSF page authors to
+            install <code>ComponentSystemEventListener</code>
+            instances
+            on a component in a page.</p>
+
+            <div class="changed_added_2_0">
+
+            <p></p>
+
+            </div>
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="listener" class="rowColor">
+<td class="colFirst"><a href="#listener"><code>listener</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.MethodExpression</code>
+<br>(<i>signature must match </i><code>public void
+                listener(javax.faces.event.ComponentSystemEvent event) throws
+                javax.faces.event.AbortProcessingException
+            </code>)
+					</td><td class="colLast">
+
+              <p class="changed_modified_2_0_rev_a">The expression must
+              evaluate to a public method that takes a
+              <code>ComponentSystemEvent</code> parameter, with a return
+              type of void, or to a public method that takes no
+              arguments with a return type of void. In the latter case,
+              the method has no way of easily knowing where the event
+              came from, but this can be useful in cases where a
+              notification is needed that "an event happened".</p>
+            </td>
+</tr>
+<tr id="type" class="altColor">
+<td class="colFirst"><a href="#type"><code>type</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_0">Name of the event for which
+                to install a listener.  The following table lists the
+                valid values for this attribute, and the corresponding
+                event type for which the listener action is
+                registered.</p>
+
+<table border="1">
+<tr>
+
+<th>value for "<code><span
+class="changed_modified_2_0_rev_a">type</span></code>" tag
+attribute</th>
+
+<th>Type of event sent to listener method
+</th>
+
+</tr>
+
+<tr>
+
+<td>preRenderComponent
+</td>
+
+<td>javax.faces.event.PreRenderComponentEvent
+</td>
+
+</tr>
+
+<tr>
+
+<td>preRenderView
+</td>
+
+<td>javax.faces.event.PreRenderViewEvent
+</td>
+
+</tr>
+
+<tr>
+
+<td><span class="changed_modified_2_0_rev_a">postAddToView</span>
+</td>
+
+<td>javax.faces.event.PostAddToViewEvent
+</td>
+
+</tr>
+
+<tr>
+
+<td>preValidate
+</td>
+
+<td>javax.faces.event.PreValidateEvent
+</td>
+
+</tr>
+
+<tr>
+
+<td>postValidate
+</td>
+
+<td>javax.faces.event.PostValidateEvent
+</td>
+
+</tr>
+
+</table>
+
+<div class="changed_added_2_0">
+
+<p>In addition to these values, the fully qualified class name of any
+java class that extends
+<code>javax.faces.event.ComponentSystemEvent</code> may be used as the
+value of the "type" attribute.</p>
+
+<p>Also, the <code>@javax.faces.event.NamedEvent</code> annotation may
+be attached to any java class that extends
+<code>javax.faces.event.ComponentSystemEvent</code>.  This enables that
+event to be referenced from this attribute, as descibed in the javadocs
+for <code>@NamedEvent</code>.</p>
+
+</div>
+
+
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/event.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="event.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

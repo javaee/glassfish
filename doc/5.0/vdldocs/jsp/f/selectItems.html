@@ -1,0 +1,164 @@
+<html xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>selectItems
+          (JSF 2.3 View Declaration Language: JSP Variant)
+        </title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" href="../stylesheet.css" title="Style">
+</head>
+<script>
+            function asd()
+            {
+            parent.document.title="selectItems (JSF 2.3 View Declaration Language: JSP Variant)";
+            }
+          </script>
+<body bgcolor="white" onload="asd();">
+<a name="navbar_top"></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td COLSPAN="3" BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><a NAME="navbar_top_firstrow"></a>
+<table BORDER="0" CELLPADDING="0" CELLSPACING="3">
+<tr ALIGN="center" VALIGN="top">
+<td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a href="../overview-summary.html"><font CLASS="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td><td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a href="tld-summary.html"><font CLASS="NavBarFont1"><b>Library</b></font></a>&nbsp;</td><td BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<font CLASS="NavBarFont1Rev">&nbsp;Tag&nbsp;</font>&nbsp;</td><td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a HREF="../help-doc.html"><font CLASS="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+</tr>
+</table>
+</td><td ALIGN="right" VALIGN="top" ROWSPAN="3"><em></em></td>
+</tr>
+<tr>
+<td BGCOLOR="white" CLASS="NavBarCell2"><font SIZE="-2"></font></td><td BGCOLOR="white" CLASS="NavBarCell2"><font SIZE="-2">
+                &nbsp;<a HREF="../index.html" TARGET="_top"><b>FRAMES</b></a>&nbsp;
+                &nbsp;<a href="selectItems.html" target="_top"><b>NO FRAMES</b></a>&nbsp;
+                <script></script>
+<noscript>
+<a HREF="../alltags-noframe.html" TARGET=""><b>All Tags</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<hr>
+<h2>
+<font size="-1">f</font>
+<br>
+            Tag selectItems</h2>
+<hr><p><span class="changed_modified_2_0 changed_modified_2_2">Add</span> a child UISelectItems component to the UIComponent associated with the closest parent UIComponent custom action.</p> <p class="changed_modified_2_0">When iterating over the select items, <code>toString()</code> must be called on the string rendered attribute values.</p> <p class="changed_added_2_0">Version 2 of the specification introduces several new attributes, described below. These are: var, itemValue, itemLabel, itemDescription, itemDisabled, and itemLabelEscaped.</p><br>
+<p></p>
+<hr>
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+<td colspan="2"><font size="+2"><b>Tag Information</b></font></td>
+</tr>
+<tr>
+<td>Tag Class</td><td>com.sun.faces.taglib.jsf_core.SelectItemsTag</td>
+</tr>
+<tr>
+<td>TagExtraInfo Class</td><td><i>None</i></td>
+</tr>
+<tr>
+<td>Body Content</td><td>empty</td>
+</tr>
+<tr>
+<td>Display Name</td><td><i>None</i></td>
+</tr>
+</table>
+<br>
+<p></p>
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+<td colspan="5"><font size="+2"><b>Attributes</b></font></td>
+</tr>
+<tr>
+<td><b>Name</b></td><td><b>Required</b></td><td><b>Request-time</b></td><td><b>Type</b></td><td><b>Description</b></td>
+</tr>
+<tr valign="top">
+<td>binding</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>javax.faces.component.UIComponent</code>)
+                    </td><td>Value binding expression to a backing bean property bound to the component instance for the UIComponent created by this custom action.</td>
+</tr>
+<tr valign="top">
+<td>id</td><td>false</td><td>true</td><td><code>java.lang.String</code></td><td>Component identifier of the UISelectItems component to be created.</td>
+</tr>
+<tr valign="top">
+<td>value</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+                    </td><td><p>Value expression pointing at <span class="changed_modified_2_0">any <code>Collection</code> or array.</span> The member elements may be instances of <code>SelectItem</code> <span class="changed_added_2_0">or any Java Object. In the case where the member elements are plain Java Objects, several additional attributes must be used by the page author to correctly identify the data to the enclosing <code>UISelectOne</code> or <code>UISelectMany</code> component, as shown in the following example.</span> <div class="syntax"><div class="html4strict" style="font-family: monospace;"><ol><li class="li1"><div class="de1"><span class="sc2">&lt;h:selectOneListbox <span class="kw3">size</span>=<span class="st0">&quot;1&quot;</span> <span class="kw3">id</span>=<span class="st0">&quot;escape02&quot;</span> <span class="kw3">value</span>=<span class="st0">&quot;#{select05NoSelection.initialCollectionValues}&quot;</span><span class="kw2">&gt;</span></span></div></li> <li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;f:selectItems <span class="kw3">value</span>=<span class="st0">&quot;#{select05NoSelection.hobbitList}&quot;</span></div></li> <li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;var=<span class="st0">&quot;n&quot;</span></div></li> <li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemValue=<span class="st0">&quot;#{n.id}&quot;</span></div></li> <li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemLabel=<span class="st0">&quot;#{n.bio}&quot;</span></div></li> <li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemDescription=<span class="st0">&quot;#{n.description}&quot;</span></div></li> <li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemDisabled=<span class="st0">&quot;#{n.disabled}&quot;</span></div></li> <li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemLabelEscaped=<span class="st0">&quot;true&quot;</span></div></li> <li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;noSelectionValue=<span class="st0">&quot;#{select05NoSelection.hobbitList[0]}&quot;</span>/<span class="kw2">&gt;</span></span></div></li> <li class="li2"><div class="de2"><span class="sc2"><span class="kw2">&lt;</span>/h:selectOneListbox&gt;</span> </div></li></ol></div></div> <p class="changed_added_2_0">In the preceding example, the <code>value</code> attribute on line 1 points to a <code>Collection&lt;HobbitBean&gt;</code>. <code>HobbitBean</code> is just a regular Java Object (POJO) that conforms to JavaBeans naming conventions for its properties. The <code>value</code> attribute on line 2 points to a <code>List&lt;HobbitBean&gt;</code>, though it could just as well point to a <code>Collection</code>, array, or <code>javax.faces.model.DataModel</code>. The attributes on lines 3 through 9, inclusive, leverage the fact that the value is a collection of POJOs. </p> </p></td>
+</tr>
+<tr valign="top">
+<td>var</td><td>false</td><td>false</td><td><code>java.lang.String</code></td><td><p class="changed_added_2_0">Expose the value from the <code>value</code> attribute under this request scoped key so that it may be referred to in EL for the value of other attributes.</p></td>
+</tr>
+<tr valign="top">
+<td>itemValue</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+                    </td><td><p class="changed_added_2_0"><span class="changed_modified_2_2">This attribute lets you refer to a property of the current member of the collection referenced by the "value" attribute, using the value of the "var" attribute as the base. For example, #{n.id}.</span></p></td>
+</tr>
+<tr valign="top">
+<td>itemLabel</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+                    </td><td><p class="changed_added_2_0">evaluates to a String that will serve as the label to be shown for the item.</p></td>
+</tr>
+<tr valign="top">
+<td>itemDescription</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+                    </td><td><p class="changed_added_2_0">evaluates to a String that will serve as the description to be shown for the item.</p></td>
+</tr>
+<tr valign="top">
+<td>itemDisabled</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+                    </td><td><p class="changed_added_2_0">evaluates to a boolean that will determine if the item value is selectable or not.</p></td>
+</tr>
+<tr valign="top">
+<td>itemLabelEscaped</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+                    </td><td><p class="changed_added_2_0">evaluates to a boolean that will determine if the rendered markup for the item receives normal JSF HTML escaping or not.</p></td>
+</tr>
+<tr valign="top">
+<td>noSelectionOption</td><td>false</td><td>false</td><td><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+                    </td><td><p class="changed_added_2_0">Is either an EL expression pointing to the element in the value collection whose value should be marked as a &#8220;no selection&#8221; item, or a literal string that exactly matches the value of the item in the collection that must be marked as the &#8220;no selection&#8221; item. If the user selects such an item <strong>and</strong> the field is marked as required, then it will not pass validation.</p></td>
+</tr>
+</table>
+<br>
+<p></p>
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+<td colspan="5"><font size="+2"><b>Variables</b></font></td>
+</tr>
+<td colspan="2"><i>No Variables Defined.</i></td>
+</table>
+<br>
+<p></p>
+<a name="navbar_bottom"></a>
+<table border="0" width="100%" cellpadding="1" cellspacing="0">
+<tr>
+<td COLSPAN="3" BGCOLOR="#EEEEFF" CLASS="NavBarCell1"><a NAME="navbar_bottom_firstrow"></a>
+<table BORDER="0" CELLPADDING="0" CELLSPACING="3">
+<tr ALIGN="center" VALIGN="top">
+<td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a href="../overview-summary.html"><font CLASS="NavBarFont1"><b>Overview</b></font></a>&nbsp;</td><td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a href="tld-summary.html"><font CLASS="NavBarFont1"><b>Library</b></font></a>&nbsp;</td><td BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<font CLASS="NavBarFont1Rev">&nbsp;Tag&nbsp;</font>&nbsp;</td><td BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    &nbsp;<a HREF="../help-doc.html"><font CLASS="NavBarFont1"><b>Help</b></font></a>&nbsp;</td>
+</tr>
+</table>
+</td><td ALIGN="right" VALIGN="top" ROWSPAN="3"><em></em></td>
+</tr>
+<tr>
+<td BGCOLOR="white" CLASS="NavBarCell2"><font SIZE="-2"></font></td><td BGCOLOR="white" CLASS="NavBarCell2"><font SIZE="-2">
+                &nbsp;<a HREF="../index.html" TARGET="_top"><b>FRAMES</b></a>&nbsp;
+                &nbsp;<a href="selectItems.html" target="_top"><b>NO FRAMES</b></a>&nbsp;
+                <script></script>
+<noscript>
+<a HREF="../alltags-noframe.html" TARGET=""><b>All Tags</b></a>
+</noscript>
+</font></td>
+</tr>
+</table>
+<hr>
+<small><i>
+            Output Generated by 
+            <a href="" target="_blank">Tag Library Documentation Generator</a>.
+            Java, JSP, and JavaServer Pages are trademarks or 
+            registered trademarks of Sun Microsystems, Inc. in the US and other
+            countries.  Copyright 2017, Oracle America, Inc.
+            4150 Network Circle
+            Santa Clara, CA 95054, U.S.A.
+            All Rights Reserved. 
+            </i></small>
+</body>
+</html>

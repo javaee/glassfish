@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Doctype
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Doctype
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.Doctype
+</H2>
+<HR />
+<P><div class="changed_added_2_1">
+
+<p><span class="changed_added_2_1 changed_modified_2_2">Render</span> the markup for
+a <code>&lt;!DOCTYPE&gt;</code> declaration.</p>
+
+      <p>Decode Behavior</p>
+
+      <ul>
+
+<p>No action is required during decode for this renderer.</p>
+
+</ul>
+
+      <p>Encode Behavior</p>
+
+<p>Output an XML Doctype using the provided attributes.  Output the
+literal text <code>&lt;!DOCTYPE</code>. The "rootElement" attribute is
+required and must be rendered next.  If the "public" attribute is
+defined, render the literal text <code>PUBLIC</code> then render the
+value of the attribute inside double quotes.  If the "system" attribute
+is defined, render it next, inside double quotes.  Close the doctype
+declaration with the literal text <code>&gt;</code>.</p>
+
+<div class="changed_added_2_2">
+
+<p>No relocation occurs with the output of this component. It is
+rendered at whatever position in the view hierarchy it happens to be
+encountered when traversing the view to render. Therefore, this
+component must be located in the view hierarchy at the correct location
+so that the final rendered markup has it in the proper place with
+respect to the user agent that consumes the rendered markup. In practice
+this means in front of the &lt;html&gt; or &lt;h:html&gt; element.
+Furthermore, if multiple &lt;h:doctype&gt; components exist,
+<strong>all</strong> of them will be rendered.</p>
+
+<p>If this component is present in a view, any DOCTYPE that would
+otherwise have been rendered by virtue of being present in the VDL page
+must be ignored.</p>
+
+</div>
+
+
+</div></P>
+<P>This renderer is not responsible for rendering its children.</P><HR />
+<a NAME="attributes"><!-- --></a>
+
+<h3>Note:</h3>
+
+<p>Attributes with a <code class="changed_modified_2_2">ignored-by-renderer</code> value of
+<code>true</code> are not interpreted by the renderer and are conveyed
+straight to the rendered markup, without checking for validity.  Attributes with a
+<code class="changed_modified_2_2">ignored-by-renderer</code> value of <code>false</code> are interpreted
+by the renderer, and may or may not be checked for validity by the renderer.</p>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<td COLSPAN="5"><font SIZE="+2">
+<b>Attributes</b></font></td>
+</tr>
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<th><b>attribute-name</b></th>
+<th><b class="changed_modified_2_2">ignored-by-renderer</b></th>
+<th><b>attribute-class</b></th>
+<th><b>description</b></th>
+<th><b>default-value</b></th>
+</tr>
+	    
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;public
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_1">
+           Will be output as the public part of the DOCTYPE
+           </div></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;rootElement
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_1">
+           The root XML element
+           </div></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;system
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td><div class="changed_added_2_1">
+           Will be output as the system part of the DOCTYPE
+           </div></td>
+<td>undefined<td>
+</tr>
+</table>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

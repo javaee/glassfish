@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>composition (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?ui/composition.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="composition.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">ui</h1>
+<h2 class="title">
+							Tag
+							composition</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+<div class="changed_added_2_0">
+  <p>
+
+<span class="changed_modified_2_2">Defines</span> a composition that
+optionally uses a template, as outlined in the description of the ui tag
+library. Multiple compositions can use the same template, thus
+encapsulating and reusing layout. JSF disregards everything outside of
+the composition, which lets developers embed compositions in well-formed
+XHTML pages that can be viewed in an XHTML viewer, such as Dreamweaver
+or a browser, without including extraneous elements such as
+<code>head</code> and <code>body</code>.
+
+  </p>
+	<div class="syntax"><div class="html4strict" style="font-family: monospace;"><ol><li class="li1"><div class="de1"><span class="sc0">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;</div></li>
+
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;</span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li2"><div class="de2"><span class="sc3"><span class="re1">&lt;html</span> <span class="re0">xmlns</span>=<span class="st0">&quot;http://www.w3.org/1999/xhtml&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp;xmlns:<span class="re0">ui</span>=<span class="st0">&quot;http://xmlns.jcp.org/jsf/facelets&quot;</span><span class="re2">&gt;</span></span></div></li>
+
+<li class="li2"><div class="de2">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sc3"><span class="re1">&lt;body<span class="re2">&gt;</span></span></span></div></li>
+<li class="li2"><div class="de2">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; THIS LINE, AND EVERYTHING ABOVE IT IS DISREGARDED BY JSF</div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;ui</span>:composition <span class="re0">template</span>=<span class="st0">&quot;/layout.xhtml&quot;</span><span class="re2">&gt;</span></span></div></li>
+
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;ui</span>:define <span class="re0">name</span>=<span class="st0">&quot;title&quot;</span><span class="re2">&gt;</span></span>#{msgs.contactsWindowTitle}<span class="sc3"><span class="re1">&lt;/ui</span>:define<span class="re2">&gt;</span></span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;ui</span>:define <span class="re0">name</span>=<span class="st0">&quot;heading&quot;</span><span class="re2">&gt;</span></span>#{msgs.contactsHeading}<span class="sc3"><span class="re1">&lt;/ui</span>:define<span class="re2">&gt;</span></span></div></li>
+
+<li class="li2"><div class="de2">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;ui</span>:define <span class="re0">name</span>=<span class="st0">&quot;content&quot;</span><span class="re2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;ui</span>:include <span class="re0">src</span>=<span class="st0">&quot;contactsTable.xhtml&quot;</span> <span class="re2">/&gt;</span></span></div></li>
+
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;/ui</span>:define<span class="re2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; <span class="sc3"><span class="re1">&lt;/ui</span>:composition<span class="re2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; THIS LINE, AND EVERYTHING BELOW IT IS DISREGARDED BY JSF</div></li>
+
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc3"><span class="re1">&lt;/body<span class="re2">&gt;</span></span></span></div></li>
+<li class="li1"><div class="de1"><span class="sc3"><span class="re1">&lt;/html<span class="re2">&gt;</span></span></span> </div></li></ol></div></div>
+
+</div>
+      
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="template" class="rowColor">
+<td class="colFirst"><a href="#template"><code>template</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+<div class="changed_added_2_0">
+  <p>
+
+<span class="changed_modified_2_2">A</span> URI that points to a
+template, also known as a layout, that inserts pieces of the page
+defined in the composition. <span class="changed_added_2_2">If the URI
+cannot be resolved a <code>TagAttributeException</code> must be thrown,
+including accurate location information to help the page author resolve
+the problem.  When the template is intended to come from a resource
+library contract, the value of this attribute must be an absolute path
+starting with "/".</span>
+
+  </p>
+</div>
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?ui/composition.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="composition.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

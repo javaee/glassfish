@@ -1,0 +1,346 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ui
+					(
+
+        &lt;div class="changed_added_2_0"&gt;
+
+        &lt;p&gt;&lt;span class="changed_modified_2_3"&gt;The&lt;/span&gt; tags in this
+        library add templating &amp;mdash; a powerful view composition
+        technique &amp;mdash; to JSF.  Templating is so useful that there
+        are entire frameworks, such as Tiles and SiteMesh, that are
+        built around the concept of templating. So what is templating,
+        how can you benefit from it, and how does this tag library
+        implement it?  &lt;/p&gt;
+
+        &lt;p&gt;If you've used JSP before, you've probably used &lt;code&gt;jsp:include&lt;/code&gt;.
+        The prototypical example for
+        &lt;code&gt;jsp:include&lt;/code&gt; is a header on each page in a web
+        application. One JSP page, say header.jsp,
+        encapsulates the header content, and the header is included by each
+        page. You &lt;em&gt;encapsulate and reuse
+        content&lt;/em&gt;, so that changes to one file, header.jsp, affect the
+        header on every page.
+        &lt;/p&gt;
+
+        &lt;p&gt;This tab library contains a tag &amp;mdash;&lt;code&gt;ui:include&lt;/code&gt; &amp;mdash;
+        that's analagous to &lt;code&gt;jsp:include&lt;/code&gt;,
+        but encapsulating and reusing content is only half the templating story,
+        because templating also lets you
+        &lt;em&gt;encapsulate and reuse &lt;b&gt;layout&lt;/b&gt;&lt;/em&gt;.
+        You define a single &lt;em&gt;template&lt;/em&gt; (meaning layout), and
+        you reuse
+        that template with multiple &lt;em&gt;compositions&lt;/em&gt;. So now
+        you can control the layout of many pages with a single
+        template (layout). Let's take a look at an example.
+        &lt;/p&gt;
+
+        &lt;h3&gt;A Templating Example&lt;/h3&gt;
+
+        &lt;p&gt;
+        First, we define a template:
+        &lt;/p&gt;
+        &lt;div class="syntax"&gt;&lt;div class="html4strict"
+        style="font-family: monospace;"&gt;&lt;ol&gt;&lt;li class="li1"&gt;&lt;div
+        class="de1"&gt;&lt;span class="sc0"&gt;&amp;lt;!DOCTYPE html PUBLIC
+        &amp;quot;-//W3C//DTD XHTML 1.0 Transitional//EN&amp;quot;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&amp;quot;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;html&lt;/span&gt; &lt;span class="re0"&gt;xmlns&lt;/span&gt;=&lt;span
+        class="st0"&gt;&amp;quot;http://www.w3.org/1999/xhtml&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &amp;nbsp; &amp;nbsp; xmlns:&lt;span class="re0"&gt;ui&lt;/span&gt;=&lt;span
+        class="st0"&gt;&amp;quot;http://xmlns.jcp.org/jsf/facelets&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;head&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;link&lt;/span&gt;
+        &lt;span class="re0"&gt;href&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;styles.css&amp;quot;&lt;/span&gt;
+        &lt;span class="re0"&gt;rel&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;stylesheet&amp;quot;&lt;/span&gt;
+        &lt;span class="re0"&gt;type&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;text/css&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;title&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:insert
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;title&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;Default Title&lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:insert&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;/title&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/head&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:debug&lt;span
+        class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;div&lt;/span&gt;
+        &lt;span class="re0"&gt;class&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;heading&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:insert
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;heading&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/div&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;div&lt;/span&gt;
+        &lt;span class="re0"&gt;class&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:insert
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/div&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;/html&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;p&gt;
+        In the preceeding listing, we've defined a layout, also known as a
+        template. That template uses the
+        &lt;code&gt;ui:insert&lt;/code&gt; tag to insert pieces of a page &amp;mdash; namely,
+        title, heading, and content &amp;mdash;
+        defined in a &lt;em&gt;composition&lt;/em&gt;. Notice that on line 8, we
+        define a default title, in case one isn't provided
+        by the composition. Also note that on line 12 we have the &lt;code&gt;ui:debug&lt;/code&gt;
+        tag, which lets the user activate
+        a popup window with debugging information by typing CTRL + Shift + d.
+        &lt;/p&gt;
+
+        &lt;p&gt;
+        The title, heading, and content pieces of the page referenced in the
+        template are defined in a separate XHTML
+        file in a composition, like this:
+        &lt;/p&gt;
+
+        &lt;div class="syntax"&gt;&lt;div class="html4strict"
+        style="font-family: monospace;"&gt;&lt;ol&gt;&lt;li class="li1"&gt;&lt;div
+        class="de1"&gt;&lt;span class="sc0"&gt;&amp;lt;!DOCTYPE html PUBLIC
+        &amp;quot;-//W3C//DTD XHTML 1.0 Transitional//EN&amp;quot;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &amp;quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&amp;quot;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;html&lt;/span&gt; &lt;span class="re0"&gt;xmlns&lt;/span&gt;=&lt;span
+        class="st0"&gt;&amp;quot;http://www.w3.org/1999/xhtml&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp;xmlns:&lt;span
+        class="re0"&gt;ui&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;http://xmlns.jcp.org/jsf/facelets&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:composition
+        &lt;span class="re0"&gt;template&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;/layout.xhtml&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;title&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;A List of Contacts&lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;heading&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;Contacts&lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:include
+        &lt;span class="re0"&gt;src&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;contactsTable.xhtml&amp;quot;&lt;/span&gt;
+        &lt;span class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:composition&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;/html&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;p&gt;
+        At runtime, JSF synthesizes the two previous XHTML pages to create a
+        single JSF view by inserting the
+        pieces defined in the composition into the template (that template is
+        layout.xhtml, which is the first
+        listing above). JSF also disregards everything outside of the &lt;code&gt;composition&lt;/code&gt;
+        tag so that we don't
+        wind up with two &lt;code&gt;body&lt;/code&gt; elements in the view.
+        Also, note that we use the &lt;code&gt;ui:include&lt;/code&gt;
+        tag on line 14 to include content (which happens to be a table) from
+        another XHTML page, so that we can reuse
+        that table in other views.
+        &lt;/p&gt;
+
+        &lt;p&gt;
+        So why do we have two XHTML pages to define a single view? Why not
+        simply take the pieces and manually insert
+        them into the layout so that we have only a single XHTML page? The
+        answer is simple: we have separated layout
+        from the content so that we can &lt;em&gt;reuse that layout&lt;/em&gt;
+        among multiple compositions. For example, now we can
+        define another composition that uses the same layout:
+        &lt;/p&gt;
+
+        &lt;div class="syntax"&gt;&lt;div class="html4strict"
+        style="font-family: monospace;"&gt;&lt;ol&gt;&lt;li class="li1"&gt;&lt;div
+        class="de1"&gt;&lt;span class="sc0"&gt;&amp;lt;!DOCTYPE html PUBLIC
+        &amp;quot;-//W3C//DTD XHTML 1.0 Transitional//EN&amp;quot;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &amp;quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&amp;quot;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;html&lt;/span&gt; &lt;span class="re0"&gt;xmlns&lt;/span&gt;=&lt;span
+        class="st0"&gt;&amp;quot;http://www.w3.org/1999/xhtml&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        xmlns:&lt;span class="re0"&gt;ui&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;http://xmlns.jcp.org/jsf/facelets&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:composition
+        &lt;span class="re0"&gt;template&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;/layout.xhtml&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;title&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;Create a Contact&lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;heading&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;Create Contact&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:define
+        &lt;span class="re0"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &amp;nbsp; &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;ui&lt;/span&gt;:include
+        &lt;span class="re0"&gt;src&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;createContactForm.xhtml&amp;quot;&lt;/span&gt;&lt;span
+        class="re2"&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;
+        &lt;span class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:define&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/ui&lt;/span&gt;:composition&lt;span
+        class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span
+        class="sc3"&gt;&lt;span class="re1"&gt;&amp;lt;/body&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc3"&gt;&lt;span
+        class="re1"&gt;&amp;lt;/html&lt;span class="re2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+        &lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;p&gt;
+        By encapsulating the layout, we can reuse that layout among multiple
+        compositions. Just like
+        &lt;code&gt;ui:include&lt;/code&gt; lets us encapsulate and reuse
+        conent, JSF compositions let us encapsulate and reuse
+        layout, so that changes to a single layout can affect multiple views.
+        Fundamentally, that's what this
+        tag library is all about.
+        &lt;/p&gt;
+
+        &lt;/div&gt;
+        &lt;pre&gt;
+
+)
+				</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<h1 class="bar">
+<a href="tld-summary.html" target="tagFrame">ui</a>
+</h1>
+<div class="indexContainer">
+<h2 title="Tags">Tags</h2>
+<ul title="Tags">
+<li>
+<a href="component.html" target="tagFrame">ui:component</a>
+</li>
+<li>
+<a href="composition.html" target="tagFrame">ui:composition</a>
+</li>
+<li>
+<a href="debug.html" target="tagFrame">ui:debug</a>
+</li>
+<li>
+<a href="define.html" target="tagFrame">ui:define</a>
+</li>
+<li>
+<a href="decorate.html" target="tagFrame">ui:decorate</a>
+</li>
+<li>
+<a href="fragment.html" target="tagFrame">ui:fragment</a>
+</li>
+<li>
+<a href="include.html" target="tagFrame">ui:include</a>
+</li>
+<li>
+<a href="insert.html" target="tagFrame">ui:insert</a>
+</li>
+<li>
+<a href="param.html" target="tagFrame">ui:param</a>
+</li>
+<li>
+<a href="repeat.html" target="tagFrame">ui:repeat</a>
+</li>
+<li>
+<a href="remove.html" target="tagFrame">ui:remove</a>
+</li>
+</ul>
+</div>
+</body>
+</html>

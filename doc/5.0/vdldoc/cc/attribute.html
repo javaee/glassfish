@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>attribute (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?cc/attribute.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="attribute.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">cc</h1>
+<h2 class="title">
+							Tag
+							attribute</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+            
+<div class="changed_added_2_0">
+<p><span class="changed_modified_2_0_rev_a changed_modified_2_1">Declares</span> an attribute that may be given to an instance of the
+<em>composite component</em> tag for this composite component.  There
+may be zero or many of these inside of the
+<code>&lt;composite:interface</code>&gt; section.  This element may be
+nested within other <code>&lt;composite:attribute&gt;</code> elements to
+convey a usage contract that includes nested properties.</p>
+
+<p>Please see <a href="tld-summary.html#composite_example">summary
+page</a> for a usage example.</p>
+
+            <p>The <em>top level component</em> in which this element is
+            ultimately nested must be a <code>NamingContainer</code>.
+            There are certain component properties that must not be
+            exposed using this element.  The motivation for this
+            restriction is that the mapping of markup attributes to
+            component properties/attributes does not allow for these
+            attributes to be set.  The following properties must not be
+            exposed using this element.</p>
+
+  	<ul>
+  	  <li><p>binding</p></li>
+  	  <li><p>id</p></li>
+  	  <li><p>inView</p></li>
+  	  <li><p>parent</p></li>
+  	  <li><p>rendered</p></li>
+  	  <li><p>rendererType</p></li>
+  	  <li><p>transient</p></li>
+ 	</ul>
+
+</div>
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="default" class="rowColor">
+<td class="colFirst"><a href="#default"><code>default</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>If this attribute is not required, and a
+                value is not supplied by the page author, use this as
+                the default value.</p></div>
+
+            </td>
+</tr>
+<tr id="displayName" class="altColor">
+<td class="colFirst"><a href="#displayName"><code>displayName</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>The name to display in a tool palette
+                containing this component.  The value of this attribute will be set as
+                the value for this property on the <em>composite
+                component bean descriptor</em>.</p></div>
+
+            </td>
+</tr>
+<tr id="expert" class="rowColor">
+<td class="colFirst"><a href="#expert"><code>expert</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>Is this component only for expert users?
+                The value of this attribute will be set as the value for
+                this property on the <em>composite component bean
+                descriptor</em>.</p></div>
+
+            </td>
+</tr>
+<tr id="hidden" class="altColor">
+<td class="colFirst"><a href="#hidden"><code>hidden</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+                
+                    <div class="changed_modified_2_3 changed_added_2_0_rev_a">
+                        <p>The "hidden" flag is used to identify features that are intended only
+                        for tool use, and which should not be exposed to humans. The value of
+                        this attribute will be set as the value for this property on the
+                        <em>composite component bean descriptor</em>.</p>
+                    </div>
+                
+            </td>
+</tr>
+<tr id="method-signature" class="rowColor">
+<td class="colFirst"><a href="#method-signature"><code>method-signature</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>Declares that this attribute must be a <code>MethodExpression</code>
+whose method signature is described by the value of this attribute.  The
+signature must be described using fully qualified class names wherever a
+type is required.  This attribute is mutually exclusive with the "type"
+attribute.  If both attributes are present, the "method-signature"
+attribute is ignored.</p> 
+
+	    <p>Provides the signature of the Java method.  The syntax of
+	    the method-signature element is as follows (taken from
+	    function-signature in web-jsptaglibrary_2_1.xsd):</p>
+
+		<p>MethodSignature ::= ReturnType S MethodName S?
+				      '(' S? Parameters? S? ')'</p>
+
+                <p>ReturnType        ::= Type</p>
+
+		<p>MethodName        ::= Identifier</p>
+
+		<p>Parameters        ::=   Parameter
+				      | ( Parameter S? ',' S? Parameters )</p>
+
+                <p>Parameter         ::= Type</p>
+
+		<p>Where:</p>
+
+<ul>
+
+ 		    <li><p>Type is a basic type or a fully qualified
+		      Java class name (including package name),
+		      as per the 'Type' production in the Java
+		      Language Specification, Second Edition,
+		      Chapter 18.</p></li>
+
+                    <li><p>Identifier is a Java identifier, as per
+		      the 'Identifier' production in the Java
+		      Language Specification, Second
+		      Edition, Chapter 18.</p></li>
+
+</ul>
+
+	    <p>Example:</p>
+
+	    <p><code>java.lang.String nickName( java.lang.String, int )</code></p>
+</div>
+
+            </td>
+</tr>
+<tr id="name" class="altColor">
+<td class="colFirst"><a href="#name"><code>name</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>The name of the attribute as it must appear on the <em>composite
+component tag</em> in the <em>using page</em>.  If the value of the
+<em>name</em> attribute is equal to (without the quotes)
+&#8220;action&#8221;, &#8220;actionListener&#8221;,
+&#8220;validator&#8221;, or &#8220;valueChangeListener&#8221;, the
+action described in <a target="_"
+href="../../../javadocs/javax/faces/application/ViewHandler.html#retargetMethodExpressions(javax.faces.context.FacesContext,%20javax.faces.component.UIComponent)">ViewHandler.retargetMethodExpressions()</a>
+must be taken to handle the attribute.  In these cases, the
+<code>method-signature</code> attribute, if present, must be ignored as
+its value is derived as described in
+<code>retargetMethodExpressions()</code>.</div>
+
+            </td>
+</tr>
+<tr id="preferred" class="rowColor">
+<td class="colFirst"><a href="#preferred"><code>preferred</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>Is this a "preferred" component.  The value
+                of this attribute will be set as the value for this
+                property on the <em>composite component bean
+                descriptor</em>.</p></div>
+
+            </td>
+</tr>
+<tr id="required" class="altColor">
+<td class="colFirst"><a href="#required"><code>required</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>True if the page author must supply a value
+                for this attribute.  The default value is false.</p></div>
+
+            </td>
+</tr>
+<tr id="shortDescription" class="rowColor">
+<td class="colFirst"><a href="#shortDescription"><code>shortDescription</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>A short description of the purpose of this
+                component.  The value of this attribute will be set as
+                the value for this property on the <em>composite
+                component bean descriptor</em>.</p></div>
+
+            </td>
+</tr>
+<tr id="
+                targetAttributeName
+            " class="altColor">
+<td class="colFirst"><a href="#%0A                targetAttributeName%0A            "><code>
+                targetAttributeName
+            </code></a></td><td class="colOne"><code>
+                false
+            </code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>
+              java.lang.String
+            </code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_1">
+<p>This attribute allows the name of the attribute exposed to the using
+page to differ from the one actually used in the implementation.  For
+example, consider a composite component that contains two buttons, one
+that means "submit" and one that means "cancel".  It is natural to want
+to declare two composite component attributes to allow these buttons to
+be customized, for example, "submitAction" and "cancelAction".  For both
+of these buttons, the method expression should be retargeted to the
+inner button's "action" attribute.  This scenario would be expressed as
+follows.</p> 
+
+<code>
+&lt;cc:interface&gt;<br />
+&nbsp;&nbsp;&lt;cc:attribute name="submitAction" targetAttributeName="action"<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method-signature="java.lang.Object action()"/&gt;<br />
+&nbsp;&nbsp;&lt;cc:attribute name="cancelAction" targetAttributeName="action"<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method-signature="java.lang.Object action()"/&gt;<br />
+&nbsp;&nbsp;&lt;cc:actionSource name="submitAction"/&gt;<br />
+&nbsp;&nbsp;&lt;cc:actionSource name="cancelAction"/&gt;  <br />
+&lt;/cc:interface&gt;<br />
+&lt;cc:implementation&gt;<br />
+&nbsp;&nbsp;&lt;h:commandButton id="submitAction" value="submit" /&gt;<br />
+&nbsp;&nbsp;&lt;h:commandButton id="cancelAction" value="cancel" /&gt;<br />
+&lt;/cc:implementation&gt;<br />
+</code>
+
+</div>
+
+            </td>
+</tr>
+<tr id="targets" class="rowColor">
+<td class="colFirst"><a href="#targets"><code>targets</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+<div class="changed_added_2_0">
+
+<p>If this element has a <code>method-signature</code> attribute, the
+value of the <code>targets</code> attribute must be interpreted as a
+space (not tab) separated list of client ids (relative to the <em>top
+level component</em>) of components within the
+<code>&lt;composite:implementation&gt;</code> section.  Space is used as
+the delimiter for compatibility with the IDREFS and NMTOKENS data types
+from the XML Schema.  Each entry in the list must be interpreted as the
+id of an inner component to which the <code>MethodExpression</code> from
+the <em>composite component tag</em> in the <em>using page</em> must be
+applied.  If this element has a <code>method-signature</code> attribute,
+but no <code>targets</code> attribute, the value of the
+<code>name</code> attribute is used as the single entry in the list.  If
+the value of the <code>name</code> attribute is <strong>not</strong> one
+of the special values listed in the description of the <code>name
+attribute</code>, <code>targets</code> (or its derived value) need not
+correspond to the id of an inner component.</p>
+
+</div></td>
+</tr>
+<tr id="type" class="altColor">
+<td class="colFirst"><a href="#type"><code>type</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0">
+                <p>Declares that this attribute must be a <code>ValueExpression</code>
+                whose expected type is given by the value of this attribute. If
+                not
+                specified, and no "method-signature" attribute is present,
+                <code>java.lang.Object</code> is assumed. This
+                attribute is mutually
+                exclusive with the "method-signature" attribute. If both attributes are
+                present, the
+                "method-signature" attribute is ignored. </p> </div>
+
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?cc/attribute.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="attribute.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - jsf.push</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+        /*background: url(expert-draft-bg.png); */
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #000000;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #000000;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #000000 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #000000 solid;
+	border-right: 1px #000000 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #000000 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+
+/* Change bars from http://www.geocities.com/hentaihelper/2atimlin.htm */
+
+/* put a red "change" bar in the left margin			*/
+/*
+   .changed_added_2_0 { cursor: url(changed_added_2_0_cursor.png), auto;
+                 background: url(changed_added_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_0 { cursor: url(changed_modified_2_0_cursor.png), auto;
+                 background: url(changed_modified_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_0 { cursor: url(changed_deleted_2_0_cursor.png), auto;
+                 background: url(changed_deleted_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_0_rev_a { cursor: url(changed_added_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_added_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_0_rev_a { cursor: url(changed_modified_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_modified_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_0_rev_a { cursor: url(changed_deleted_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_deleted_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_1 { cursor: url(changed_added_2_1_cursor.cur), auto;
+                 background: url(changed_added_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_1 { cursor: url(changed_modified_2_1_cursor.cur), auto;
+                 background: url(changed_modified_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_1 { cursor: url(changed_deleted_2_1_cursor.cur), auto;
+                 background: url(changed_deleted_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+
+   .changed_added_2_2 { cursor: url(changed_added_2_2_cursor.cur), auto;
+                 background: url(changed_added_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_2 { cursor: url(changed_modified_2_2_cursor.cur), auto;
+                 background: url(changed_modified_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_2 { cursor: url(changed_deleted_2_2_cursor.cur), auto;
+                 background: url(changed_deleted_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_3 { cursor: url(changed_added_2_3_cursor.cur), auto;
+                 background: url(changed_added_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_3 { cursor: url(changed_modified_2_3_cursor.cur), auto;
+                 background: url(changed_modified_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_3 { cursor: url(changed_deleted_2_3_cursor.cur), auto;
+                 background: url(changed_deleted_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+*/
+
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/jsf.html">jsf</a></li>
+	
+	<li><a href="../symbols/jsf.ajax.html">jsf.ajax</a></li>
+	
+	<li><a href="../symbols/jsf.push.html">jsf.push</a></li>
+	
+	<li><a href="../symbols/jsf.util.html">jsf.util</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Namespace jsf.push
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+			
+				
+<p class="changed_added_2_3">
+The Push functionality.
+</p>
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ejburns_Documents_JavaEE_workareas_mojarra-github_jsf-demo_jsf-api_src_main_resources_jsf.js.html">jsf.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jsf.push.">
+				<caption>Namespace Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/jsf.push.html#constructor">jsf.push</a></b>
+							</div>
+							<div class="description"><p class="changed_added_2_3">
+The Push functionality.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class jsf.push.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.push.<b><a href="../symbols/jsf.push.html#.close">close</a></b>(clientId)
+								</div>
+								<div class="description">Close the websocket on the given client identifier.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.push.<b><a href="../symbols/jsf.push.html#.init">init</a></b>(clientId, url, channel, onopen, onmessage, onclose, behaviors, autoconnect)
+								</div>
+								<div class="description">Initialize a websocket on the given client identifier.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.push.<b><a href="../symbols/jsf.push.html#.open">open</a></b>(clientId)
+								</div>
+								<div class="description">Open the websocket on the given client identifier.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Namespace Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>jsf.push</b>
+				</div>
+				
+				<div class="description">
+					<p class="changed_added_2_3">
+The Push functionality.
+</p>
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name=".close"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.push.</span><b>close</b>(clientId)
+					
+					</div>
+					<div class="description">
+						Close the websocket on the given client identifier.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>clientId</b>
+									
+								</dt>
+								<dd>The client identifier of the websocket.</dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Error}</span>  <b></b>
+								</dt>
+								<dd>When client identifier is unknown. You may need to initialize it first via <code>init()</code> function.</dd>
+							
+							</dl>
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".init"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.push.</span><b>init</b>(clientId, url, channel, onopen, onmessage, onclose, behaviors, autoconnect)
+					
+					</div>
+					<div class="description">
+						Initialize a websocket on the given client identifier. When connected, it will stay open and reconnect as
+long as URL is valid and <code>jsf.push.close()</code> hasn't explicitly been called on the same client
+identifier.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>clientId</b>
+									
+								</dt>
+								<dd>The client identifier of the websocket.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>url</b>
+									
+								</dt>
+								<dd>The URL of the websocket. All open websockets on the same URL will receive the
+same push notification from the server.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>channel</b>
+									
+								</dt>
+								<dd>The channel name of the websocket.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function}</span> <b>onopen</b>
+									
+								</dt>
+								<dd>The JavaScript event handler function that is invoked when the websocket is opened.
+The function will be invoked with one argument: the client identifier.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function}</span> <b>onmessage</b>
+									
+								</dt>
+								<dd>The JavaScript event handler function that is invoked when a message is received from
+the server. The function will be invoked with three arguments: the push message, the client identifier and
+the raw <code>MessageEvent</code> itself.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function}</span> <b>onclose</b>
+									
+								</dt>
+								<dd>The JavaScript event handler function that is invoked when the websocket is closed.
+The function will be invoked with three arguments: the close reason code, the client identifier and the raw
+<code>CloseEvent</code> itself. Note that this will also be invoked on errors and that you can inspect the
+close reason code if an error occurred and which one (i.e. when the code is not 1000). See also
+<a href="http://tools.ietf.org/html/rfc6455#section-7.4.1">RFC 6455 section 7.4.1</a> and
+<a href="http://docs.oracle.com/javaee/7/api/javax/websocket/CloseReason.CloseCodes.html">CloseCodes</a> API
+for an elaborate list.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>behaviors</b>
+									
+								</dt>
+								<dd>Client behavior functions to be invoked when specific message is received.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{boolean}</span> <b>autoconnect</b>
+									
+								</dt>
+								<dd>Whether or not to automatically connect the socket. Defaults to <code>false</code>.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".open"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.push.</span><b>open</b>(clientId)
+					
+					</div>
+					<div class="description">
+						Open the websocket on the given client identifier.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>clientId</b>
+									
+								</dt>
+								<dd>The client identifier of the websocket.</dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Error}</span>  <b></b>
+								</dt>
+								<dd>When client identifier is unknown. You may need to initialize it first via <code>init()</code> function.</dd>
+							
+							</dl>
+						
+						
+						
+						
+
+					
+				
+			
+			
+			<hr />
+		</div>
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.0.2 on Tue Sep 05 2017 18:26:11 GMT-0400 (EDT)
+		</div>
+	</body>
+</html>

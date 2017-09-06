@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Command <font size="-1">renderer-type:</font> javax.faces.Script
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Command <font size="-1">renderer-type:</font> javax.faces.Script
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Command <font size="-1">renderer-type:</font> javax.faces.Script
+</H2>
+<HR />
+<P>
+
+  <div class="changed_added_2_3">
+                    <p>
+                        Render a JavaScript function that invokes <code>jsf.ajax.request()</code> function.
+                    </p>
+    
+                    <h3>Encode Behavior</h3>
+                    <p>
+                        Render an HTML <code>script</code> element. If the value of the "name" attribute does not contain a
+                        period <code>.</code> indicating a namespaced function name, then render JavaScript <code>var</code>
+                        keyword, followed by a space character. Render the value of the "name" attribute, followed by 
+                        JavaScript assignment operator. Render JavaScript function which invokes <code>jsf.ajax.request()</code>
+                        with data provided by <code>execute</code>, <code>render</code>, <code>onbegin</code>,
+                        <code>oncomplete</code>, <code>onsuccess</code> and <code>onerror</code> arguments, if any. 
+                    </p>
+                    <p>
+                        If the component being rendered has any <code>UIParameter</code> children, each one of them must be
+                        encoded into <code>params</code> object of the <code>options</code> object of the <code>jsf.ajax.request()</code>
+                        function.
+                    </p>
+                    <p>
+                        If the rendered JavaScript function is invoked with an object argument, each property must be
+                        encoded into <code>params</code> object of the <code>options</code> object of the <code>jsf.ajax.request()</code>
+                        function. This will override any property with the same key.
+                    </p>
+    
+                    <h3>Decode Behavior</h3>
+                    <p>
+                        Obtain the <code>Map</code> from the "requestParameterMap" property of the <code>ExternalContext</code>.
+                        If the value in the <code>Map</code> for the value of the "javax.faces.source" equals to the "clientId" property of the component,
+                        create a <code>javax.faces.event.ActionEvent</code> around the component, and pass it to the <code>queueEvent()</code> method of the component,
+                        which must be an instance of <code>UICommand</code>.
+                        </p>
+</div>                        
+                </P>
+<P>This renderer is not responsible for rendering its children.</P><HR />
+<a NAME="attributes"><!-- --></a>
+
+<h3>Note:</h3>
+
+<p>Attributes with a <code class="changed_modified_2_2">ignored-by-renderer</code> value of
+<code>true</code> are not interpreted by the renderer and are conveyed
+straight to the rendered markup, without checking for validity.  Attributes with a
+<code class="changed_modified_2_2">ignored-by-renderer</code> value of <code>false</code> are interpreted
+by the renderer, and may or may not be checked for validity by the renderer.</p>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<td COLSPAN="5"><font SIZE="+2">
+<b>Attributes</b></font></td>
+</tr>
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<th><b>attribute-name</b></th>
+<th><b class="changed_modified_2_2">ignored-by-renderer</b></th>
+<th><b>attribute-class</b></th>
+<th><b>description</b></th>
+<th><b>default-value</b></th>
+</tr>
+	    
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;autorun
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>boolean</code></td>
+<td>
+            Whether to execute declared JavaScript function during <code>load</code> event of the <code>window</code>.
+            Defaults to <code>false</code>.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;execute
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+            This is a space separated list of client identifiers of components
+            that will participate in the "execute" portion of the Request Processing Lifecycle.
+            If a literal is specified the identifiers must be space delimited.
+            Any of the keywords "@this", "@form", "@all", "@none" may be specified in the identifier list.
+            If not specified, the default value of "@this" is assumed. 
+            For example, <code>@this clientIdOne clientIdTwo</code>.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;name
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+            Name of JavaScript function to be declared, e.g. <code>name="functionName"</code>.
+            This can be a namespaced function name, e.g. <code>name="ez.functionName"</code>.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onerror
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+            The name of the JavaScript function that will handle errors.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onevent
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+            The name of the JavaScript function that will handle UI events.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;render
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+            This is a space separated list of client identifiers of components
+            that will participate in the "render" portion of the Request Processing Lifecycle.
+            If a literal is specified the identifiers must be space delimited.
+            Any of the keywords "@this", "@form", "@all", "@none" may be specified in the identifier list.
+            If not specified, the default value of "@none" is assumed.
+            For example, <code>@this clientIdOne clientIdTwo</code>.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;resetValues
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.Boolean</code></td>
+<td>
+            Reset specific input values.
+            Interpret the value of the <code>render</code> attribute as a space separated list of client identifiers
+            suitable for passing directly to <code>UIViewRoot.resetValues()</code>.
+            The implementation must cause an <code>ActionListener</code> to be attached to the <code>ActionSource</code>
+            component in which this tag is nested that calls <code>UIViewRoot.resetValues()</code> passing the value
+            of the <code>render</code> attribute as the argument.
+        </td>
+<td>undefined<td>
+</tr>
+</table>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

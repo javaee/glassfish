@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>selectItems (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/selectItems.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="selectItems.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							selectItems</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+            <p><span class="changed_modified_2_0">Add</span> a
+            child UISelectItems component to the UIComponent associated
+            with the closed parent UIComponent custom action.</p>
+
+            <p class="changed_modified_2_0">When iterating over the
+            select items, <code>toString()</code> must be called on
+            the
+            string rendered attribute values.</p>
+
+            <p class="changed_added_2_0">Version 2 of the specification
+            introduces
+            several new attributes, described below. These are: var, itemValue,
+            itemLabel, itemDescription, itemDisabled, and itemLabelEscaped.</p>
+
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Component summary table, listing component information">
+<caption>
+<span>Component Information</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Info</th><th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rowColor">
+<td class="colFirst">Component Type</td><td class="colLast"><code>javax.faces.SelectItems</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Handler Class</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst">Renderer Type</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Description</td><td class="colLast"><i>None</i></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="binding" class="rowColor">
+<td class="colFirst"><a href="#binding"><code>binding</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>javax.faces.component.UIComponent</code>)
+					</td><td class="colLast">
+                <p>Value binding expression to a backing bean
+                property bound to the component instance for
+                the UIComponent created by this custom action.</p>
+            </td>
+</tr>
+<tr id="id" class="altColor">
+<td class="colFirst"><a href="#id"><code>id</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                Component identifier of the UISelectItems
+                component to be created.
+            </td>
+</tr>
+<tr id="itemDescription" class="rowColor">
+<td class="colFirst"><a href="#itemDescription"><code>itemDescription</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+
+                <p class="changed_added_2_0">evaluates to a String that
+                will
+                serve as the description to be shown for the item.</p>
+
+            </td>
+</tr>
+<tr id="itemDisabled" class="altColor">
+<td class="colFirst"><a href="#itemDisabled"><code>itemDisabled</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_0">evaluates to a boolean that
+                will
+                determine if the item value is selectable or not.</p>
+
+            </td>
+</tr>
+<tr id="itemLabel" class="rowColor">
+<td class="colFirst"><a href="#itemLabel"><code>itemLabel</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_0">evaluates to a String that
+                will
+                serve as the label to be shown for the item.</p>
+
+            </td>
+</tr>
+<tr id="itemLabelEscaped" class="altColor">
+<td class="colFirst"><a href="#itemLabelEscaped"><code>itemLabelEscaped</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+
+<p class="changed_added_2_0">evaluates to a boolean that will
+determine if the rendered markup for the item receives normal JSF HTML
+escaping or not.  <span class="changed_added_2_2">If not specified, the
+runtime must behave as if the value were <code>true</code>.</span></p>
+
+            </td>
+</tr>
+<tr id="itemValue" class="rowColor">
+<td class="colFirst"><a href="#itemValue"><code>itemValue</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+					</td><td class="colLast">
+
+            <p class="changed_added_2_0"><span
+            class="changed_modified_2_2">This attribute lets you refer
+            to a property of the current member of the collection
+            referenced by the "value" attribute, using the value of the
+            "var" attribute as the base.  For example,
+            #{n.id}.</span></p>
+
+            </td>
+</tr>
+<tr id="noSelectionValue" class="altColor">
+<td class="colFirst"><a href="#noSelectionValue"><code>noSelectionValue</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+
+            <p class="changed_added_2_0"><span
+            class="changed_modified_2_0_rev_a">Is</span> either an EL
+            expression pointing to the element in the value collection
+            whose value should be marked as a &#8220;no selection&#8221;
+            item, or a literal string that exactly matches the value of
+            the item in the collection that must be marked as the
+            &#8220;no selection&#8221; item.  If the user selects such
+            an item <strong>and</strong> the field is marked as
+            required, then it will not pass validation.</p>
+
+
+            </td>
+</tr>
+<tr id="value" class="rowColor">
+<td class="colFirst"><a href="#value"><code>value</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+					</td><td class="colLast">
+
+                <p>Value expression pointing at <span
+                class="changed_modified_2_0">any <code>Collection</code>
+                or array.</span> The member elements may be instances of
+                <code>SelectItem</code> <span
+                class="changed_added_2_0">or any Java Object.  In the
+                case where the member elements are plain Java Objects,
+                several additional attributes must be used by the page
+                author to correctly identify the data to the enclosing
+                <code>UISelectOne</code> or <code>UISelectMany</code>
+                component, as shown in the following example.</span>
+
+<div class="syntax"><div class="html4strict" style="font-family: monospace;"><ol><li class="li1"><div class="de1"><span class="sc2">&lt;h:selectOneListbox <span class="kw3">size</span>=<span class="st0">&quot;1&quot;</span> <span class="kw3">id</span>=<span class="st0">&quot;escape02&quot;</span> <span class="kw3">value</span>=<span class="st0">&quot;#{select05NoSelection.initialCollectionValues}&quot;</span><span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;f:selectItems <span class="kw3">value</span>=<span class="st0">&quot;#{select05NoSelection.hobbitList}&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;var=<span class="st0">&quot;n&quot;</span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemValue=<span class="st0">&quot;#{n.id}&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemLabel=<span class="st0">&quot;#{n.bio}&quot;</span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemDescription=<span class="st0">&quot;#{n.description}&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemDisabled=<span class="st0">&quot;#{n.disabled}&quot;</span></div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;itemLabelEscaped=<span class="st0">&quot;true&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;noSelectionValue=<span class="st0">&quot;#{select05NoSelection.hobbitList[0]}&quot;</span>/<span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2"><span class="sc2"><span class="kw2">&lt;</span>/h:selectOneListbox&gt;</span> </div></li></ol></div></div>
+
+<p class="changed_added_2_0">In the preceding example, the
+<code>value</code> attribute on line 1 points to a
+<code>Collection&lt;HobbitBean&gt;</code>.  <code>HobbitBean</code> is
+just a regular Java Object (POJO) that conforms to JavaBeans naming
+conventions for its properties.  The <code>value</code> attribute on
+line 2 points to a <code>List&lt;HobbitBean&gt;</code>, though it could
+just as well point to a <code>Collection</code>, array, or
+<code>javax.faces.model.DataModel</code>.  The attributes on lines 3
+through 9, inclusive, leverage the fact that the value is a collection
+of POJOs.
+</p>
+
+
+</p>
+
+
+
+            </td>
+</tr>
+<tr id="var" class="altColor">
+<td class="colFirst"><a href="#var"><code>var</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+
+                <p class="changed_added_2_0">Expose the value from the
+                <code>value</code> attribute under this request
+                scoped key so that it
+                may be referred to in EL for the value of other attributes.</p>
+
+
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/selectItems.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="selectItems.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

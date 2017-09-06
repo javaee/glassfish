@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.CompositeFacet
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.CompositeFacet
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Output <font size="-1">renderer-type:</font> javax.faces.CompositeFacet
+</H2>
+<HR />
+<P><div class="changed_added_2_0">
+
+<p><span class="changed_modified_2_0_rev_a">Renders</span> a facet at
+this particular point in the composite component VDL page.</p>
+
+      <p>Decode Behavior</p>
+
+      <ul>
+
+<p>No action is required during decode for this renderer.</p>
+
+</ul>
+
+      <p>Encode Behavior</p>
+
+<p><code>encodeBegin()</code> and <code>encodeEnd()</code> must take no
+action for this renderer.  Due to the specification of the
+<code>&lt;composite:insertChildren&gt;</code> tag handler, the component
+passed to the <code>encodeChildern()</code> method of this renderer will
+be the component with <code>component-family</code>
+<code>javax.faces.Output</code> and <code>renderer-type</code> equal to
+the one for this renderer.  The implementation of
+<code><span class="changed_modified_2_0_rev_a">encodeChildren()</span></code>, must obtain the component attribute value
+under the key given by the value of the symbolic constant
+<code>UIComponent.FACETS_KEY</code> from the attributes map of the
+argument component.  If not found, throw <code>IOException</code>.  This
+value is referred to as "facetName" for discission.  Find the closest
+ancestor composite component in which the argument component is nested.
+If no such component can be found, thow <code>IOException</code>.
+Otherwise, get the facet whose name is "facetName".  If found call
+<code>encodeAll()</code> on the facet.</p>
+
+
+
+</div></P>
+<P>This renderer is not responsible for rendering its children.</P><p>This renderer-type has no attributes</p>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

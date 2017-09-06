@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>view (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/view.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="view.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							view</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+            <p><span class="changed_modified_2_0_rev_a
+            changed_modified_2_2">Container</span> for all JavaServer
+            Faces core and custom component actions used on a
+            page.</p>        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Component summary table, listing component information">
+<caption>
+<span>Component Information</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Info</th><th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rowColor">
+<td class="colFirst">Component Type</td><td class="colLast"><code>javax.faces.ViewRoot</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Handler Class</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst">Renderer Type</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Description</td><td class="colLast"><i>None</i></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="afterPhase" class="rowColor">
+<td class="colFirst"><a href="#afterPhase"><code>afterPhase</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.MethodExpression</code>
+<br>(<i>signature must match </i><code>void afterPhase(javax.faces.event.PhaseEvent)
+            </code>)
+					</td><td class="colLast">
+
+                <p>MethodBinding pointing to a method that takes a
+                javax.faces.event.PhaseEvent and returns void. This
+                method will be called after every phase except for
+                restore view on an initial request.</p>
+
+            </td>
+</tr>
+<tr id="beforePhase" class="altColor">
+<td class="colFirst"><a href="#beforePhase"><code>beforePhase</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.MethodExpression</code>
+<br>(<i>signature must match </i><code>void beforePhase(javax.faces.event.PhaseEvent)
+            </code>)
+					</td><td class="colLast">
+
+                <p>MethodBinding pointing to a method that takes a
+                javax.faces.event.PhaseEvent and returns void. This method
+                will be called before every phase except for restore view.</p>
+
+            </td>
+</tr>
+<tr id="contentType" class="rowColor">
+<td class="colFirst"><a href="#contentType"><code>contentType</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_modified_2_0_rev_a">Specifies the
+                content-type of the response.</p>
+            </td>
+</tr>
+<tr id="contracts" class="altColor">
+<td class="colFirst"><a href="#contracts"><code>contracts</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+          
+          <p class="changed_added_2_2 changed_modified_2_3">A comma separated list of
+          resource library contracts that may be used from within
+          the Facelets chain.  If this attribute is present, it
+          must only be on the outer-most file in the chain of
+          files that started ultimately with a call to
+          <code>ViewDeclarationLanguage.createView()</code>.  Any
+          use of this attribute on a non-outer-most file is undefined.</p>
+          
+          <p class="changed_added_2_2">If this attribute exists on the tag,
+          empty or not, the tag handler must create a
+          <code>List&lt;String&gt;</code> for the value of the attribute and
+          unconditionally call
+          <code>FacesContext.setRresourceLibraryContracts()</code> passing
+          that list value.</p>
+          
+          </td>
+</tr>
+<tr id="encoding" class="rowColor">
+<td class="colFirst"><a href="#encoding"><code>encoding</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+             <p class="changed_modified_2_0_rev_a">Specifies the
+            character encoding that should be used for the
+            response.</p>
+            </td>
+</tr>
+<tr id="locale" class="altColor">
+<td class="colFirst"><a href="#locale"><code>locale</code></a></td><td class="colOne"><code>
+							false
+						</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+					</td><td class="colLast">
+                <p>Locale to use for localizing this page. Expressions
+                must evaluate to a java.util.Locale or to a String
+                that is converted to a Locale.</p>
+            </td>
+</tr>
+<tr id="renderKitId" class="rowColor">
+<td class="colFirst"><a href="#renderKitId"><code>renderKitId</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                Identifier for the RenderKit to use for
+                rendering this page.
+            </td>
+</tr>
+<tr id="transient" class="altColor">
+<td class="colFirst"><a href="#transient"><code>transient</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_2">If
+                <code>true</code>, this view must not participate in
+                state saving or restoring.  Note that transient views
+                may not be used with <code>@ViewScoped</code> managed
+                beans.  The implementation must call
+                <code>setTransient()</code> on the
+                <code>UIViewRoot</code>, passing the value of the
+                attribute as specified in the markup.</p>
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/view.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="view.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

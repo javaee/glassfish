@@ -1,0 +1,613 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>
+<font size="-1">component-family:</font> javax.faces.Data <font size="-1">renderer-type:</font> javax.faces.Table
+</title>
+<link REL ="stylesheet" TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+</head>
+<script>
+function asd()
+{
+  parent.document.title=<font size="-1">component-family:</font> javax.faces.Data <font size="-1">renderer-type:</font> javax.faces.Table
+}
+</SCRIPT>
+<body BGCOLOR="white" onload="asd();">
+
+<H2><font size="-1">HTML_BASIC render-kit</font>
+<br />
+<font size="-1">component-family:</font> javax.faces.Data <font size="-1">renderer-type:</font> javax.faces.Table
+</H2>
+<HR />
+<P>
+
+      <p><span class="changed_modified_2_0_rev_a
+      changed_modified_2_3">Renders</span> an HTML "table" element
+      compliant with the HTML 401 specification.  Render the "caption"
+      facet, if present, inside a "caption" element immediately below
+      the "table" element.  If the "captionClass" attribute is
+      specified, render its value as the value of the "class" attribute
+      on the "caption" element.  If the "captionStyle" attribute is
+      specified, render its value as the value of the "style" attribute
+      on the "caption" element.</p> <p>Please consult the javadoc for
+      <code>UIData</code> to supplement this specification.  If the
+      "styleClass" attribute is specified, render its value as the value
+      of the "class" attribute on the "table" element.  Any
+      ignored-by-renderer attributes are also rendered on the "table"
+      element.  </p>
+
+     <p>Column Groups</p>
+
+     <ul>
+
+       <p>If the <code>UIData</code> component has a "colgroups" facet,
+       render its contents.  Consistent with the rules of facets in
+       general, this facet must have only one child.  In general, this
+       will be a <code>panel group</code> component that will contain
+       <code>colgroup</code> and <code>col</code> elements per the HTML
+       Table specification.  Use of column grouping can improve
+       accessibility.  This facet must be rendered before the table
+       header and footer.</p>
+
+     </ul>
+
+     <p>Rendering the header</p>
+
+     <ul>
+
+      <p>If the <code>UIData</code> component has a "header" facet, or
+      any of the child <code>UIColumn</code> components has a "header"
+      facet, render a "thead" element.  If the <code>UIData</code>
+      component has a "header" facet, encode its contents inside of "tr"
+      and "th" elements, respectively.  Output the value of the
+      "headerClass" attribute of the <code>UIData</code> component, if
+      present, as the value of the "class" attribute on the "th".
+      Output the number of child <code>UIColumn</code> components of the
+      <code>UIData</code> component as the value of the "colspan"
+      attribute on the "th".  Output "colgroup" as the value of the
+      "scope" attribute on the "th" element. </p>
+
+      <p>If any of the child <code>UIColumn</code> components has a
+      "header" facet render a "tr" element.  For each
+      <code>UIColumn</code> that actually has a "header" facet, render
+      it inside of a "th" element.  Columns that don't have a "header"
+      facet cause an empty "th" element to be rendered.  Output the 
+      value of the "headerClass" attribute of the <code>UIColumn</code>
+      component, if present, as the value of the "class" attribute on
+      the "th".  If the "headerClass" attribute of the <code>UIColumn</code>
+      component is not present, output the value of the "headerClass" 
+      attribute of the <code>UIData</code> component, if present, as
+      the value of the "class" attribute on the "th".  Output "col" as
+      the value of the "scope" attribute on the "th" element.
+      </p>
+
+      <p>Close out the "thead" element.</p>
+
+      </ul>
+
+      <p>Rendering the footer</p>
+
+      <ul>
+
+      <div class="changed_modified_2_0_rev_a">
+      <p>If the <code>UIData</code> component has a "footer" facet, or
+      any of the child <code>UIColumn</code> components has a "footer"
+      facet, render a "tfoot" element.  If the <code>UIData</code>
+      component has "footer" facets, encode the contents inside of a "tr"
+      element. </p>
+
+      <p>If any of the child <code>UIColumn</code> components has a
+      "footer" facet render a "td" element.  For each 
+      <code>UIColumn</code> that actually has a "footer" facet, render
+      it inside of a "td" element.  Columns that don't have a "footer"
+      facet cause an empty "td" element to be rendered.  Output the
+      value of the "footerClass" attribute of the <code>UIColumn</code>
+      component, if present, as the value of the "class" attribute on
+      the "td".  If the "footerClass" attribute of the <code>UIColumn</code>
+      component is not present, output the value of the "footerClass"
+      attribute of the <code>UIData</code> component, if present, as
+      the value of the "class" attribute on the "td".</p>
+
+      <p>If the <code>UIData</code> component has a "footer" facet,
+      encode its contents inside of "tr" and "td" elements, respectively.
+      Output the value of the "footerClass" attribute of the 
+      <code>UIData</code> component, if present, as the value of the 
+      "class" attribute on the "td".  Output the number of child 
+      <code>UIColumn</code> components of the <code>UIData</code> 
+      component as the value of the "colspan" attribute on the "td". </p>
+
+      <p>Close out the "tfoot" element.</p>
+      </div>
+
+      </ul>
+
+      <p>Rendering the table body</p>
+
+      <ul>
+
+      <p>Look at the value of the "bodyrows" attribute.  If present,
+      this must be a comma separated list of integers.  Each entry in
+      this list is the row index of the row before which a "tbody"
+      element should be rendered.</p>
+
+      <p>If there was no "bodyrows" attribute, or it was empty, render a
+      "tbody" element.  Keep track of the result of the "rows" property
+      on the <code>UIData</code> component.  Keep track of the number of
+      rows we have rendered so far.  Iterate through the rows.  Set the
+      "rowIndex" property of the <code>UIData</code> component to be
+      correct as we iterate through the rows.  Stop rendering children
+      and close out the "tbody" element if the "rowAvailable" property
+      of the <code>UIData</code> returned false.  If the current row
+      index is contained in the "bodyrows" attribute, check if a "tbody"
+      start element was rendered that needs to be closed, and if so,
+      close the "tbody" element.  Then render a "tbody" element start.
+      Otherwise, do not render a "tbody" element.</p>
+
+      <p>Output a "tr" element.  Output the value of the "rowClasses"
+      per the attribute description below, or rowClass.  For each
+      <code>UIColumn</code> child, if the column component has a
+      "rowHeader" attribute with a value of "true", output a "th"
+      element with a "scope" attribute with the value of "row".
+      Otherwise, if the column component has no "rowHeader" attribute,
+      or its value is false, output a "td" element.  In either case
+      attach the value of the "columnClasses" attribute of the
+      <code>UIData</code> component per the attribute description below.
+      Recursively encode each child of each <code>UIColumn</code> child.
+      Close out the "td" or "th" element.  When done with the row, close
+      out the "tr" element.  When done with all the rows, close out the
+      "tbody" element.</p>
+
+      </ul>
+
+     <p>When done rendering all the rows, set the "rowIndex" property of
+     the <code>UIData</code> to -1, and close out the "table"
+     element.</p>
+            </P>
+<P>This renderer is responsible for rendering its children.</P><HR />
+<a NAME="attributes"><!-- --></a>
+
+<h3>Note:</h3>
+
+<p>Attributes with a <code class="changed_modified_2_2">ignored-by-renderer</code> value of
+<code>true</code> are not interpreted by the renderer and are conveyed
+straight to the rendered markup, without checking for validity.  Attributes with a
+<code class="changed_modified_2_2">ignored-by-renderer</code> value of <code>false</code> are interpreted
+by the renderer, and may or may not be checked for validity by the renderer.</p>
+
+<table BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<td COLSPAN="5"><font SIZE="+2">
+<b>Attributes</b></font></td>
+</tr>
+<tr BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<th><b>attribute-name</b></th>
+<th><b class="changed_modified_2_2">ignored-by-renderer</b></th>
+<th><b>attribute-class</b></th>
+<th><b>description</b></th>
+<th><b>default-value</b></th>
+</tr>
+	    
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;bgcolor
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Name or code of the background color for this table.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;bodyrows
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Comma separated list of row indices for which a new
+          "tbody" element should be started (and any
+          previously opened one should be ended).
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;border
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>int</code></td>
+<td>
+          Width (in pixels) of the border to be drawn
+          around this table.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;captionClass
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Space-separated list of CSS style class(es) that will be
+          applied to any caption generated for this table.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;captionStyle
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          CSS style(s) to be applied when this caption is rendered.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;cellpadding
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Definition of how much space the user agent should
+          leave between the border of each cell and its contents.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;cellspacing
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Definition of how much space the user agent should
+          leave between the left side of the table and the
+          leftmost column, the top of the table and the top of
+          the top side of the topmost row, and so on for the
+          right and bottom of the table.  It also specifies
+          the amount of space to leave between cells.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;columnClasses
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Comma-delimited list of CSS style classes that will be applied
+          to the columns of this table.  A space separated list of
+          classes may also be specified for any individual column.  If
+          the number of elements in this list is less than the number of
+          actual column children of the UIData, no "class"
+          attribute is output for each column greater than the number of
+          elements in the list.  If the number of elements in the list
+          is greater than the number of actual column children of the
+          UIData, the elements at the posisiton in the list
+          after the last column are ignored.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;dir
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Direction indication for text that does not inherit directionality.
+          Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
+          These attributes are case sensitive when rendering to XHTML, so
+          care must be taken to have the correct case.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;footerClass
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Space-separated list of CSS style class(es) that will be
+          applied to any footer generated for this table.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;frame
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Code specifying which sides of the frame surrounding
+          this table will be visible.  Valid values are:
+          none (no sides, default value); above (top side only);
+          below (bottom side only); hsides (top and bottom sides
+          only); vsides (right and left sides only); lhs (left
+          hand side only); rhs (right hand side only); box
+          (all four sides); and border (all four sides).
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;headerClass
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Space-separated list of CSS style class(es) that will be
+          applied to any header generated for this table.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;lang
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Code describing the language used in the generated markup
+          for this component.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onclick
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          clicked over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;ondblclick
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          double clicked over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onkeydown
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a key is
+          pressed down over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onkeypress
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a key is
+          pressed and released over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onkeyup
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a key is
+          released over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onmousedown
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          pressed down over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onmousemove
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          moved within this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onmouseout
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          moved away from this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onmouseover
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          moved onto this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;onmouseup
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Javascript code executed when a pointer button is
+          released over this element.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;role
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          <p class="changed_added_2_2">Per the WAI-ARIA spec and its
+          relationship to HTML5 (Section title ARIA Role Attriubute),
+          every HTML element may have a "role" attribute whose value
+          must be passed through unmodified on the element on which it
+          is declared in the final rendered markup.  The attribute, if
+          specified, must have a value that is a string literal that is,
+          or an EL Expression that evaluates to, a set of
+          space-separated tokens representing the various WAI-ARIA roles
+          that the element belongs to.
+          </p>
+
+          <p class="changed_added_2_2">It is the page author's
+          responsibility to ensure that the user agent is capable of
+          correctly interpreting the value of this attribute.</p></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;rowClass
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+
+          <div class="changed_added_2_3">
+
+          <p>Assigns one or more space-separated CSS class names to each
+          "tr"</p>
+
+          </div>
+
+          </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;rowClasses
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Comma-delimited list of CSS style classes that will be applied
+          to the rows of this table.  A space separated list of classes
+          may also be specified for any individual row.  Thes styles are
+          applied, in turn, to each row in the table.  For example, if
+          the list has two elements, the first style class in the list
+          is applied to the first row, the second to the second row, the
+          first to the third row, the second to the fourth row, etc.  In
+          other words, we keep iterating through the list until we reach
+          the end, and then we start at the beginning again.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;rowStatePreserved
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>boolean</code></td>
+<td><span class="changed_added_2_1">Boolean flag directing how the per-row component state should be handled.</span></td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;rules
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Code specifying which rules will appear between cells
+          within this table.  Valid values are:  none (no rules,
+          default value); groups (between row groups); rows
+          (between rows only); cols (between columns only); and
+          all (between all rows and columns).
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;style
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          CSS style(s) to be applied when this component is rendered.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;styleClass
+</td>
+<td ALIGN="right" VALIGN="top">false</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Space-separated list of CSS style class(es) to be applied when
+          this element is rendered.  This value must be passed through
+          as the "class" attribute on generated markup.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;summary
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Summary of this table's purpose and structure, for
+          user agents rendering to non-visual media such as
+          speech and Braille.
+        </td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;title
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Advisory title information about markup elements generated
+          for this component.</td>
+<td>undefined<td>
+</tr>
+<tr BGCOLOR="white" CLASS="TableRowColor">
+<td ALIGN="right" VALIGN="top" WIDTH="1%"><code>
+&nbsp;width
+</td>
+<td ALIGN="right" VALIGN="top">true</td>
+<td><code>java.lang.String</code></td>
+<td>
+          Width of the entire table, for visual user agents.
+        </td>
+<td>undefined<td>
+</tr>
+</table>
+<hr>
+Copyright (c) 2003-2017 Oracle America, Inc. All Rights Reserved.
+</body>
+</html>

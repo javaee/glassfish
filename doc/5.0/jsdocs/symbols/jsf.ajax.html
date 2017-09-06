@@ -1,0 +1,1151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - jsf.ajax</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 800px;
+        /*background: url(expert-draft-bg.png); */
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #000000;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 160px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 190px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #000000;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #000000 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #000000 solid;
+	border-right: 1px #000000 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #000000 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+
+/* Change bars from http://www.geocities.com/hentaihelper/2atimlin.htm */
+
+/* put a red "change" bar in the left margin			*/
+/*
+   .changed_added_2_0 { cursor: url(changed_added_2_0_cursor.png), auto;
+                 background: url(changed_added_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_0 { cursor: url(changed_modified_2_0_cursor.png), auto;
+                 background: url(changed_modified_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_0 { cursor: url(changed_deleted_2_0_cursor.png), auto;
+                 background: url(changed_deleted_2_0.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_0_rev_a { cursor: url(changed_added_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_added_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_0_rev_a { cursor: url(changed_modified_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_modified_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_0_rev_a { cursor: url(changed_deleted_2_0_rev_a_cursor.cur), auto;
+                 background: url(changed_deleted_2_0_rev_a.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_1 { cursor: url(changed_added_2_1_cursor.cur), auto;
+                 background: url(changed_added_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_1 { cursor: url(changed_modified_2_1_cursor.cur), auto;
+                 background: url(changed_modified_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_1 { cursor: url(changed_deleted_2_1_cursor.cur), auto;
+                 background: url(changed_deleted_2_1.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+
+   .changed_added_2_2 { cursor: url(changed_added_2_2_cursor.cur), auto;
+                 background: url(changed_added_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_2 { cursor: url(changed_modified_2_2_cursor.cur), auto;
+                 background: url(changed_modified_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_2 { cursor: url(changed_deleted_2_2_cursor.cur), auto;
+                 background: url(changed_deleted_2_2.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+   .changed_added_2_3 { cursor: url(changed_added_2_3_cursor.cur), auto;
+                 background: url(changed_added_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:green }
+
+   .changed_modified_2_3 { cursor: url(changed_modified_2_3_cursor.cur), auto;
+                 background: url(changed_modified_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:orange }
+
+   .changed_deleted_2_3 { cursor: url(changed_deleted_2_3_cursor.cur), auto;
+                 background: url(changed_deleted_2_3.png); 
+                 padding-left:0.2em; border-left:solid;
+                 border-left-width:thin; border-right:none;
+                 border-top:none; border-bottom:none; border-color:red;
+                 text-decoration: line-through; }
+
+                        */
+
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/jsf.html">jsf</a></li>
+	
+	<li><a href="../symbols/jsf.ajax.html">jsf.ajax</a></li>
+	
+	<li><a href="../symbols/jsf.push.html">jsf.push</a></li>
+	
+	<li><a href="../symbols/jsf.util.html">jsf.util</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Namespace jsf.ajax
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+			
+				
+<span class="changed_modified_2_2 changed_modified_2_3">The namespace for Ajax
+functionality.</span>
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ejburns_Documents_JavaEE_workareas_mojarra-github_jsf-demo_jsf-api_src_main_resources_jsf.js.html">jsf.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jsf.ajax.">
+				<caption>Namespace Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/jsf.ajax.html#constructor">jsf.ajax</a></b>
+							</div>
+							<div class="description"><span class="changed_modified_2_2 changed_modified_2_3">The namespace for Ajax
+functionality.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class jsf.ajax.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.ajax.<b><a href="../symbols/jsf.ajax.html#.addOnError">addOnError</a></b>(callback)
+								</div>
+								<div class="description">Register a callback for error handling.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.ajax.<b><a href="../symbols/jsf.ajax.html#.addOnEvent">addOnEvent</a></b>(callback)
+								</div>
+								<div class="description">Register a callback for event handling.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.ajax.<b><a href="../symbols/jsf.ajax.html#.request">request</a></b>(source, event, options)
+								</div>
+								<div class="description"><p><span class="changed_modified_2_2">Send</span> an
+asynchronous Ajax req uest to the server.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">jsf.ajax.<b><a href="../symbols/jsf.ajax.html#.response">response</a></b>(request, context)
+								</div>
+								<div class="description"><p><span class="changed_modified_2_2">Receive</span> an Ajax response 
+from the server.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Namespace Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>jsf.ajax</b>
+				</div>
+				
+				<div class="description">
+					<span class="changed_modified_2_2 changed_modified_2_3">The namespace for Ajax
+functionality.</span>
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name=".addOnError"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.ajax.</span><b>addOnError</b>(callback)
+					
+					</div>
+					<div class="description">
+						Register a callback for error handling.
+<p><b>Usage:</b></p>
+<pre><code>
+jsf.ajax.addOnError(handleError);
+...
+var handleError = function handleError(data) {
+...
+}
+</pre></code>
+<p><b>Implementation Requirements:</b></p>
+This function must accept a reference to an existing JavaScript function.
+The JavaScript function reference must be added to a list of callbacks, making it possible
+to register more than one callback by invoking <code>jsf.ajax.addOnError</code>
+more than once.  This function must throw an error if the <code>callback</code>
+argument is not a function.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>callback</b>
+									
+								</dt>
+								<dd>a reference to a function to call on an error</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".addOnEvent"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.ajax.</span><b>addOnEvent</b>(callback)
+					
+					</div>
+					<div class="description">
+						Register a callback for event handling.
+<p><b>Usage:</b></p>
+<pre><code>
+jsf.ajax.addOnEvent(statusUpdate);
+...
+var statusUpdate = function statusUpdate(data) {
+...
+}
+</pre></code>
+<p><b>Implementation Requirements:</b></p>
+This function must accept a reference to an existing JavaScript function.
+The JavaScript function reference must be added to a list of callbacks, making it possible
+to register more than one callback by invoking <code>jsf.ajax.addOnEvent</code>
+more than once.  This function must throw an error if the <code>callback</code>
+argument is not a function.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>callback</b>
+									
+								</dt>
+								<dd>a reference to a function to call on an event</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".request"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.ajax.</span><b>request</b>(source, event, options)
+					
+					</div>
+					<div class="description">
+						<p><span class="changed_modified_2_2">Send</span> an
+asynchronous Ajax req uest to the server.
+<p><b>Usage:</b></p>
+<pre><code>
+Example showing all optional arguments:
+
+&lt;commandButton id="button1" value="submit"
+    onclick="jsf.ajax.request(this,event,
+      {execute:'button1',render:'status',onevent: handleEvent,onerror: handleError});return false;"/&gt;
+&lt;/commandButton/&gt;
+</pre></code>
+<p><b>Implementation Requirements:</b></p>
+This function must:
+<ul>
+<li>Be used within the context of a <code>form</code><span class="changed_added_2_3">,
+else throw an error</span>.</li>
+<li>Capture the element that triggered this Ajax request
+(from the <code>source</code> argument, also known as the
+<code>source</code> element.</li>
+<li>If the <code>source</code> element is <code>null</code> or
+<code>undefined</code> throw an error.</li>
+<li>If the <code>source</code> argument is not a <code>string</code> or
+DOM element object, throw an error.</li>
+<li>If the <code>source</code> argument is a <code>string</code>, find the
+DOM element for that <code>string</code> identifier.
+<li>If the DOM element could not be determined, throw an error.</li>
+<li class="changed_added_2_3">If the <code>javax.faces.ViewState</code> 
+element could not be found, throw an error.</li>
+<li class="changed_added_2_3">If the ID of the <code>javax.faces.ViewState</code> 
+element has a <code>&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt;&lt;SEP&gt;</code>
+prefix, where &lt;SEP&gt; is the currently configured
+<code>UINamingContainer.getSeparatorChar()</code> and
+&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; is the return from
+<code>UIViewRoot.getContainerClientId()</code> on the
+view from whence this state originated, then remember it as <i>namespace prefix</i>.
+This is needed during encoding of the set of post data arguments.</li>
+<li>If the <code>onerror</code> and <code>onevent</code> arguments are set,
+they must be functions, or throw an error.
+<li>Determine the <code>source</code> element's <code>form</code>
+element.</li>
+<li>Get the <code>form</code> view state by calling
+<a href="../symbols/jsf.html#.getViewState">jsf.getViewState</a> passing the
+<code>form</code> element as the argument.</li>
+<li>Collect post data arguments for the Ajax request.
+<ul>
+<li>The following name/value pairs are required post data arguments:
+<table border="1">
+<tr>
+<th>name</th>
+<th>value</th>
+</tr>
+<tr>
+<td><code>javax.faces.ViewState</code></td>
+<td><code>Contents of javax.faces.ViewState hidden field.  This is included when
+<a href="../symbols/jsf.html#.getViewState">jsf.getViewState</a> is used.</code></td>
+</tr>
+<tr>
+<td><code>javax.faces.partial.ajax</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>javax.faces.source</code></td>
+<td><code>The identifier of the element that triggered this request.</code></td>
+</tr>
+<tr class="changed_added_2_2">
+<td><code>javax.faces.ClientWindow</code></td>
+<td><code>Call jsf.getClientWindow(), passing the current
+form.  If the return is non-null, it must be set as the
+value of this name/value pair, otherwise, a name/value
+pair for client window must not be sent.</code></td>
+</tr>
+</table>
+</li>
+</ul>
+</li>
+<li>Collect optional post data arguments for the Ajax request.
+<ul>
+<li>Determine additional arguments (if any) from the <code>options</code>
+argument. If <code>options.execute</code> exists:
+<ul>
+<li>If the keyword <code>@none</code> is present, do not create and send
+the post data argument <code>javax.faces.partial.execute</code>.</li>
+<li>If the keyword <code>@all</code> is present, create the post data argument with
+the name <code>javax.faces.partial.execute</code> and the value <code>@all</code>.</li>
+<li>Otherwise, there are specific identifiers that need to be sent.  Create the post
+data argument with the name <code>javax.faces.partial.execute</code> and the value as a
+space delimited <code>string</code> of client identifiers.</li>
+</ul>
+</li>
+<li>If <code>options.execute</code> does not exist, create the post data argument with the
+name <code>javax.faces.partial.execute</code> and the value as the identifier of the
+element that caused this request.</li>
+<li>If <code>options.render</code> exists:
+<ul>
+<li>If the keyword <code>@none</code> is present, do not create and send
+the post data argument <code>javax.faces.partial.render</code>.</li>
+<li>If the keyword <code>@all</code> is present, create the post data argument with
+the name <code>javax.faces.partial.render</code> and the value <code>@all</code>.</li>
+<li>Otherwise, there are specific identifiers that need to be sent.  Create the post
+data argument with the name <code>javax.faces.partial.render</code> and the value as a
+space delimited <code>string</code> of client identifiers.</li>
+</ul>
+<li>If <code>options.render</code> does not exist do not create and send the
+post data argument <code>javax.faces.partial.render</code>.</li>
+<li class="changed_added_2_2">If
+<code>options.delay</code> exists let it be the value
+<em>delay</em>, for this discussion.  If
+<code>options.delay</code> does not exist, or is the
+literal string <code>'none'</code>, without the quotes,
+no delay is used.  If less than <em>delay</em>
+milliseconds elapses between calls to <em>request()</em>
+only the most recent one is sent and all other requests
+are discarded.</li>
+<li class="changed_added_2_2">If
+<code>options.resetValues</code> exists and its value is
+<code>true</code>, ensure a post data argument with the
+name <code>javax.faces.partial.resetValues</code> and the
+value <code>true</code> is sent in addition to the other
+post data arguments.  This will cause
+<code>UIViewRoot.resetValues()</code> to be called,
+passing the value of the "render" attribute.  Note: do
+not use any of the <code>@</code> keywords such as
+<code>@form</code> or <code>@this</code> with this option
+because <code>UIViewRoot.resetValues()</code> does not
+descend into the children of the listed components.</li>
+<li>Determine additional arguments (if any) from the <code>event</code>
+argument.  The following name/value pairs may be used from the
+<code>event</code> object:
+<ul>
+<li><code>target</code> - the ID of the element that triggered the event.</li>
+<li><code>captured</code> - the ID of the element that captured the event.</li>
+<li><code>type</code> - the type of event (ex: onkeypress)</li>
+<li><code>alt</code> - <code>true</code> if ALT key was pressed.</li>
+<li><code>ctrl</code> - <code>true</code> if CTRL key was pressed.</li>
+<li><code>shift</code> - <code>true</code> if SHIFT key was pressed. </li>
+<li><code>meta</code> - <code>true</code> if META key was pressed. </li>
+<li><code>right</code> - <code>true</code> if right mouse button
+was pressed. </li>
+<li><code>left</code> - <code>true</code> if left mouse button
+was pressed. </li>
+<li><code>keycode</code> - the key code.
+</ul>
+</li>
+</ul>
+</li>
+<li>Encode the set of post data arguments. <span class="changed_added_2_3">
+If the <code>javax.faces.ViewState</code> element has a namespace prefix, then
+make sure that all post data arguments are prefixed with this namespace prefix.
+</span></li>
+<li>Join the encoded view state with the encoded set of post data arguments
+to form the <code>query string</code> that will be sent to the server.</li>
+<li>Create a request <code>context</code> object and set the properties:
+<ul><li><code>source</code> (the source DOM element for this request)</li>
+<li><code>onerror</code> (the error handler for this request)</li>
+<li><code>onevent</code> (the event handler for this request)</li></ul>
+The request context will be used during error/event handling.</li>
+<li>Send a <code>begin</code> event following the procedure as outlined
+in the Chapter 13 "Sending Events" section of the spec prose document <a
+ href="../../javadocs/overview-summary.html#prose_document">linked in the
+ overview summary</a></li>
+<li>Set the request header with the name: <code>Faces-Request</code> and the
+value: <code>partial/ajax</code>.</li>
+<li>Determine the <code>posting URL</code> as follows: If the hidden field
+<code>javax.faces.encodedURL</code> is present in the submitting form, use its
+value as the <code>posting URL</code>.  Otherwise, use the <code>action</code>
+property of the <code>form</code> element as the <code>URL</code>.</li>
+<li> 
+<p><span class="changed_modified_2_2">Determine whether
+or not the submitting form is using 
+<code>multipart/form-data</code> as its
+<code>enctype</code> attribute.  If not, send the request
+as an <code>asynchronous POST</code> using the
+<code>posting URL</code> that was determined in the
+previous step.</span> <span
+class="changed_added_2_2">Otherwise, send the request
+using a multi-part capable transport layer, such as a
+hidden inline frame.  Note that using a hidden inline
+frame does <strong>not</strong> use
+<code>XMLHttpRequest</code>, but the request must be sent
+with all the parameters that a JSF
+<code>XMLHttpRequest</code> would have been sent with.
+In this way, the server side processing of the request
+will be identical whether or the request is multipart or
+not.</span></p>
+<div class="changed_added_2_2">
+<p>The <code>begin</code>, <code>complete</code>, and
+<code>success</code> events must be emulated when using
+the multipart transport.  This allows any listeners to
+behave uniformly regardless of the multipart or
+<code>XMLHttpRequest</code> nature of the transport.</p>
+</div></li>
+</ul>
+Form serialization should occur just before the request is sent to minimize 
+the amount of time between the creation of the serialized form data and the 
+sending of the serialized form data (in the case of long requests in the queue).
+Before the request is sent it must be put into a queue to ensure requests
+are sent in the same order as when they were initiated.  The request callback function
+must examine the queue and determine the next request to be sent.  The behavior of the
+request callback function must be as follows:
+<ul>
+<li>If the request completed successfully invoke <a href="../symbols/jsf.ajax.html#.response">jsf.ajax.response</a>
+passing the <code>request</code> object.</li>
+<li>If the request did not complete successfully, notify the client.</li>
+<li>Regardless of the outcome of the request (success or error) every request in the
+queue must be handled.  Examine the status of each request in the queue starting from
+the request that has been in the queue the longest.  If the status of the request is
+<code>complete</code> (readyState 4), dequeue the request (remove it from the queue).
+If the request has not been sent (readyState 0), send the request.  Requests that are
+taken off the queue and sent should not be put back on the queue.</li>
+</ul>
+
+</p>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>source</b>
+									
+								</dt>
+								<dd>The DOM element that triggered this Ajax request, or an id string of the
+element to use as the triggering element.</dd>
+							
+								<dt>
+									<b>event</b>
+									
+								</dt>
+								<dd>The DOM event that triggered this Ajax request.  The
+<code>event</code> argument is optional.</dd>
+							
+								<dt>
+									<b>options</b>
+									
+								</dt>
+								<dd>The set of available options that can be sent as
+request parameters to control client and/or server side
+request processing. Acceptable name/value pair options are:
+<table border="1">
+<tr>
+<th>name</th>
+<th>value</th>
+</tr>
+<tr>
+<td><code>execute</code></td>
+<td><code>space seperated list of client identifiers</code></td>
+</tr>
+<tr>
+<td><code>render</code></td>
+<td><code>space seperated list of client identifiers</code></td>
+</tr>
+<tr>
+<td><code>onevent</code></td>
+<td><code>function to callback for event</code></td>
+</tr>
+<tr>
+<td><code>onerror</code></td>
+<td><code>function to callback for error</code></td>
+</tr>
+<tr>
+<td><code>params</code></td>
+<td><code>object containing parameters to include in the request</code></td>
+</tr>
+<tr class="changed_added_2_2">
+<td><code>delay</code></td>
+<td>If less than <em>delay</em> milliseconds elapses
+between calls to <em>request()</em> only the most recent
+one is sent and all other requests are discarded. If the
+value of <em>delay</em> is the literal string
+<code>'none'</code> without the quotes, or no delay is
+specified, no delay is used. </td>
+</tr>
+<tr class="changed_added_2_2">
+<td><code>resetValues</code></td>
+<td>If true, ensure a post data argument with the name
+javax.faces.partial.resetValues and the value true is
+sent in addition to the other post data arguments. This
+will cause UIViewRoot.resetValues() to be called, passing
+the value of the "render" attribute. Note: do not use any
+of the @ keywords such as @form or @this with this option
+because UIViewRoot.resetValues() does not descend into
+the children of the listed components.</td>
+</tr>
+</table>
+The <code>options</code> argument is optional.</dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									 <b></b>
+								</dt>
+								<dd>Error if first required argument
+<code>element</code> is not specified, or if one or more
+of the components in the <code>options.execute</code>
+list is a file upload component, but the form's enctype
+is not set to <code>multipart/form-data</code></dd>
+							
+							</dl>
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".response"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">jsf.ajax.</span><b>response</b>(request, context)
+					
+					</div>
+					<div class="description">
+						<p><span class="changed_modified_2_2">Receive</span> an Ajax response 
+from the server.
+<p><b>Usage:</b></p>
+<pre><code>
+jsf.ajax.response(request, context);
+</pre></code>
+<p><b>Implementation Requirements:</b></p>
+This function must evaluate the markup returned in the
+<code>request.responseXML</code> object and perform the following action:
+<ul>
+<p>If there is no XML response returned, signal an <code>emptyResponse</code>
+error. If the XML response does not follow the format as outlined
+in Appendix A of the spec prose document <a
+ href="../../javadocs/overview-summary.html#prose_document">linked in the
+ overview summary</a> signal a <code>malformedError</code> error.  Refer to
+section "Signaling Errors" in Chapter 13 of the spec prose document <a
+ href="../../javadocs/overview-summary.html#prose_document">linked in the
+ overview summary</a>.</p>
+<p>If the response was successfully processed, send a <code>success</code>
+event as outlined in Chapter 13 "Sending Events" section of the spec prose
+document <a
+href="../../javadocs/overview-summary.html#prose_document">linked in the
+overview summary</a>.</p>
+<p><i>Update Element Processing</i></p>
+The <code>update</code> element is used to update a single DOM element.  The
+"id" attribute of the <code>update</code> element refers to the DOM element that
+will be updated.  The contents of the <code>CDATA</code> section is the data that 
+will be used when updating the contents of the DOM element as specified by the
+<code>&lt;update&gt;</code> element identifier.
+<li>If an <code>&lt;update&gt;</code> element is found in the response
+with the identifier <code>javax.faces.ViewRoot</code>:
+<pre><code>&lt;update id="javax.faces.ViewRoot"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+Update the entire DOM replacing the appropriate <code>head</code> and/or
+<code>body</code> sections with the content from the response.</li>
+<li class="changed_modified_2_2">If an
+<code>&lt;update&gt;</code> element is found in the 
+response with an identifier containing
+<code>javax.faces.ViewState</code>:
+<pre><code>&lt;update id="&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt;&lt;SEP&gt;javax.faces.ViewState&lt;SEP&gt;&lt;UNIQUE_PER_VIEW_NUMBER&gt;"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+locate and update the submitting form's
+<code>javax.faces.ViewState</code> value with the
+<code>CDATA</code> contents from the response.
+&lt;SEP&gt; is the currently configured
+<code>UINamingContainer.getSeparatorChar()</code>.
+&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; is the return from
+<code>UIViewRoot.getContainerClientId()</code> on the
+view from whence this state originated.
+&lt;UNIQUE_PER_VIEW_NUMBER&gt; is a number that must be
+unique within this view, but must not be included in the
+view state.  This requirement is simply to satisfy XML
+correctness in parity with what is done in the
+corresponding non-partial JSF view.  Locate and update
+the <code>javax.faces.ViewState</code> value for all
+JSF forms covered in the <code>render</code> target
+list whose ID starts with the same 
+&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; value.</li>
+<li class="changed_added_2_2">If an
+<code>update</code> element is found in the response with
+an identifier containing
+<code>javax.faces.ClientWindow</code>:
+<pre><code>&lt;update id="&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt;&lt;SEP&gt;javax.faces.ClientWindow&lt;SEP&gt;&lt;UNIQUE_PER_VIEW_NUMBER&gt;"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+locate and update the submitting form's
+<code>javax.faces.ClientWindow</code> value with the
+<code>CDATA</code> contents from the response.
+&lt;SEP&gt; is the currently configured
+<code>UINamingContainer.getSeparatorChar()</code>.
+&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; is the return from
+<code>UIViewRoot.getContainerClientId()</code> on the
+view from whence this state originated.             
+&lt;UNIQUE_PER_VIEW_NUMBER&gt; is a number that must be
+unique within this view, but must not be included in the
+view state.  This requirement is simply to satisfy XML
+correctness in parity with what is done in the
+corresponding non-partial JSF view.  Locate and update
+the <code>javax.faces.ClientWindow</code> value for all
+JSF forms covered in the <code>render</code> target
+list whose ID starts with the same 
+&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; value.</li>
+<li class="changed_added_2_3">If an <code>update</code> element is found in the response with the
+identifier <code>javax.faces.Resource</code>:
+<pre><code>&lt;update id="javax.faces.Resource"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+append any element found in the <code>CDATA</code> contents which is absent in the document to the
+document's <code>head</code> section.
+</li>
+<li>If an <code>update</code> element is found in the response with the identifier
+<code>javax.faces.ViewHead</code>:
+<pre><code>&lt;update id="javax.faces.ViewHead"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+update the document's <code>head</code> section with the <code>CDATA</code>
+contents from the response.</li>
+<li>If an <code>update</code> element is found in the response with the identifier
+<code>javax.faces.ViewBody</code>:
+<pre><code>&lt;update id="javax.faces.ViewBody"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+update the document's <code>body</code> section with the <code>CDATA</code>
+contents from the response.</li>
+<li>For any other <code>&lt;update&gt;</code> element:
+<pre><code>&lt;update id="update id"&gt;
+   &lt;![CDATA[...]]&gt;
+&lt;/update&gt;</code></pre>
+Find the DOM element with the identifier that matches the
+<code>&lt;update&gt;</code> element identifier, and replace its contents with
+the <code>&lt;update&gt;</code> element's <code>CDATA</code> contents.</li>
+</li>
+<p><i>Insert Element Processing</i></p>
+<li>If an <code>&lt;insert&gt;</code> element is found in
+the response with a nested <code>&lt;before&gt;</code>
+element:
+<pre><code>&lt;insert&gt;
+    &lt;before id="before id"&gt;
+       &lt;![CDATA[...]]&gt;
+    &lt;/before&gt;
+&lt;/insert&gt;</code></pre>
+
+<ul>
+<li>Extract this <code>&lt;before&gt;</code> element's <code>CDATA</code> contents
+from the response.</li>
+<li>Find the DOM element whose identifier matches <code>before id</code> and insert
+the <code>&lt;before&gt;</code> element's <code>CDATA</code> content before
+the DOM element in the document.</li>
+</ul>
+</li>
+
+<li>If an <code>&lt;insert&gt;</code> element is found in 
+the response with a nested <code>&lt;after&gt;</code>
+element:
+
+<pre><code>&lt;insert&gt;
+    &lt;after id="after id"&gt;
+       &lt;![CDATA[...]]&gt;
+    &lt;/after&gt;
+&lt;/insert&gt;</code></pre>
+
+<ul>
+<li>Extract this <code>&lt;after&gt;</code> element's <code>CDATA</code> contents
+from the response.</li>
+<li>Find the DOM element whose identifier matches <code>after id</code> and insert
+the <code>&lt;after&gt;</code> element's <code>CDATA</code> content after
+the DOM element in the document.</li>
+</ul>
+</li>
+<p><i>Delete Element Processing</i></p>
+<li>If a <code>&lt;delete&gt;</code> element is found in the response:
+<pre><code>&lt;delete id="delete id"/&gt;</code></pre>
+Find the DOM element whose identifier matches <code>delete id</code> and remove it
+from the DOM.</li>
+<p><i>Element Attribute Update Processing</i></p>
+<li>If an <code>&lt;attributes&gt;</code> element is found in the response:
+<pre><code>&lt;attributes id="id of element with attribute"&gt;
+   &lt;attribute name="attribute name" value="attribute value"&gt;
+   ...
+&lt/attributes&gt;</code></pre>
+<ul>
+<li>Find the DOM element that matches the <code>&lt;attributes&gt;</code> identifier.</li>
+<li>For each nested <code>&lt;attribute&gt;</code> element in <code>&lt;attribute&gt;</code>,
+update the DOM element attribute value (whose name matches <code>attribute name</code>),
+with <code>attribute value</code>.</li>
+</ul>
+</li>
+<p><i>JavaScript Processing</i></p>
+<li>If an <code>&lt;eval&gt;</code> element is found in the response:
+<pre><code>&lt;eval&gt;
+   &lt;![CDATA[...JavaScript...]]&gt;
+&lt;/eval&gt;</code></pre>
+<ul>
+<li>Extract this <code>&lt;eval&gt;</code> element's <code>CDATA</code> contents
+from the response and execute it as if it were JavaScript code.</li>
+</ul>
+</li>
+<p><i>Redirect Processing</i></p>
+<li>If a <code>&lt;redirect&gt;</code> element is found in the response:
+<pre><code>&lt;redirect url="redirect url"/&gt;</code></pre>
+Cause a redirect to the url <code>redirect url</code>.</li>
+<p><i>Error Processing</i></p>
+<li>If an <code>&lt;error&gt;</code> element is found in the response:
+<pre><code>&lt;error&gt;
+   &lt;error-name&gt;..fully qualified class name string...&lt;error-name&gt;
+   &lt;error-message&gt;&lt;![CDATA[...]]&gt;&lt;error-message&gt;
+&lt;/error&gt;</code></pre>
+Extract this <code>&lt;error&gt;</code> element's <code>error-name</code> contents
+and the <code>error-message</code> contents. Signal a <code>serverError</code> passing
+the <code>errorName</code> and <code>errorMessage</code>.  Refer to
+section "Signaling Errors" in Chapter 13 of the spec prose document <a
+ href="../../javadocs/overview-summary.html#prose_document">linked in the
+ overview summary</a>.</li>
+<p><i>Extensions</i></p>
+<li>The <code>&lt;extensions&gt;</code> element provides a way for framework
+implementations to provide their own information.</li>
+<p><li>The implementation must check if &lt;script&gt; elements in the response can
+be automatically run, as some browsers support this feature and some do not.  
+If they can not be run, then scripts should be extracted from the response and
+run separately.</li></p> 
+</ul>
+
+</p>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>request</b>
+									
+								</dt>
+								<dd>The <code>XMLHttpRequest</code> instance that
+contains the status code and response message from the server.</dd>
+							
+								<dt>
+									<b>context</b>
+									
+								</dt>
+								<dd>An object containing the request context, including the following properties:
+the source element, per call onerror callback function, and per call onevent callback function.</dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									 <b></b>
+								</dt>
+								<dd>Error if request contains no data</dd>
+							
+							</dl>
+						
+						
+						
+						
+
+					
+				
+			
+			
+			<hr />
+		</div>
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.0.2 on Tue Sep 05 2017 18:26:11 GMT-0400 (EDT)
+		</div>
+	</body>
+</html>

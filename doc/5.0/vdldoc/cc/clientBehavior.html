@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>clientBehavior (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?cc/clientBehavior.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="clientBehavior.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">cc</h1>
+<h2 class="title">
+							Tag
+							clientBehavior</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+<div class="changed_added_2_1">
+<p>Declares that the composite component whose contract is declared by
+the <code>&lt;composite:interface&gt;</code> in which this element is
+nested exposes an implementation of <code>ClientBehaviorHolder</code>
+suitable for use as the target of <em>attached objects</em> in <em>the
+using page</em>.  Any attached objects suitable for implementations of
+<code>ClientBehaviorHolder</code> may be attached to the composite
+component.</p>
+</div>
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="default" class="rowColor">
+<td class="colFirst"><a href="#default"><code>default</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+
+<div class="changed_added_2_1">
+If the evaluated value of this attribute is <code>true</code>, the page
+author may omit the the "event" attribute when specifying the behavior
+in the using page.  This is analogous to "action" being the default
+event for <code>commandLink</code>.  The usage of this attribute assumes
+only one <code>clientBehavior</code> is declared in this composite
+component.  If more than one is specified, only the first one is used in
+the case of a using page with no event attribute.  </div>
+
+            </td>
+</tr>
+<tr id="event" class="altColor">
+<td class="colFirst"><a href="#event"><code>event</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+<div class="changed_added_2_1">
+<p>The evaluated value of this attribute will be passed as the first
+argument to the <code>addClientBehavior()</code> method on
+<code>ClientBehaviorHolder</code>.</p>              
+
+            </td>
+</tr>
+<tr id="name" class="rowColor">
+<td class="colFirst"><a href="#name"><code>name</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+<div class="changed_added_2_1">
+<p>
+  The value of this attribute maps back to the "for" attribute on an attachable object
+  nested within a composite component.   If the "targets" attribute is not specified,
+  this value also represents the component ID of the target component within the
+  that the <code>&lt;composite:implementation&gt;</code>
+  to which the ActionListener should be mapped. 
+</p>
+</div>
+            </td>
+</tr>
+<tr id="targets" class="altColor">
+<td class="colFirst"><a href="#targets"><code>targets</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+<div class="changed_added_2_1">
+<p>If present, this must be a space (not tab) separated list of client
+ids (relative to the <em>top level component</em>) of components within
+the <code>&lt;composite:implementation&gt;</code> section.  Space is
+used as the delimiter for compatibility with the IDREFS and NMTOKENS
+data types from the XML Schema.</p></div>
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?cc/clientBehavior.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="clientBehavior.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>cc
+					(
+
+&lt;/pre&gt;
+
+&lt;div class="changed_added_2_0"&gt;
+
+  &lt;p&gt;Describes the Facelets2 tag library used for declaring and defining
+  the usage contract for composite UI Components.  When authoring a
+  composite component, use of this tag library is largely optional,
+  though always recommended.  Declaring and defining a composite
+  component with this taglib provides valuable information about the
+  component that can be used by tools and users of the composite
+  component. In most cases, a composite component can be authored
+  without declaring and defining its usage contract with this taglib.
+  &lt;/p&gt;
+
+&lt;!--
+
+  PENDING: the limit of what one can do without declaring and defining a
+  usage contract must be cleary specified and documented.  PENDING: The
+  implementation team must help discover these limits.
+
+--&gt;
+
+&lt;h2&gt;Creating a Composite Component&lt;/h2&gt;
+
+  &lt;p&gt;A composite component is declared by creating a Facelets2 file
+  inside of a resource library.  (See section JSF.2.6 of the
+  specification prose document for more information about resource
+  libraries.)  A composite component must reside within a resource
+  library.  It is not possible to create a composite component without
+  putting it inside of a resource library.&lt;/p&gt;
+
+  &lt;p&gt;The default XML namespace URI of the taglib that contains the
+  composite component, for use in &lt;em&gt;the using page&lt;/em&gt;, is
+  &lt;code&gt;http://xmlns.jcp.org/jsf/composite/&amp;lt;composite-library-name&amp;gt;&lt;/code&gt;,
+  where &lt;code&gt;&amp;lt;composite-library-name&amp;gt;&lt;/code&gt; is the name of the
+  resource library.  For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&amp;lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" &lt;br /&gt;
+            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&amp;gt;&lt;br /&gt;
+&amp;lt;html xmlns="http://www.w3.org/1999/xhtml"&lt;br /&gt;
+      xmlns:h="http://xmlns.jcp.org/jsf/html"&lt;br /&gt;
+      xmlns:f="http://xmlns.jcp.org/jsf/core"&lt;br /&gt;
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"&lt;br /&gt;
+      xmlns:ez="&lt;i&gt;http://xmlns.jcp.org/jsf/composite/&lt;b&gt;ezcomp&lt;/b&gt;&lt;/i&gt;"&amp;gt;&lt;br /&gt;
+...&lt;br /&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This declares that any Facelets2 file in the resource
+library called &lt;code&gt;ezcomp&lt;/code&gt; can be used as a regular JSF UI
+component in a view with the above namespace declaration by using the
+"&lt;code&gt;ez&lt;/code&gt;" prefix.  For example, placing a file called
+&lt;code&gt;foo.xhtml&lt;/code&gt; in a resource library called &lt;code&gt;ezcomp&lt;/code&gt;
+would make that file accessible like this.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&amp;lt;ez:foo /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+
+  &lt;p&gt;The implementation must also support declaring the
+  namespace of the tag library in a JSF VDL tag library descriptor.
+  This descriptor file is optional and is useful for component vendors
+  that do not want to use the default XML namespace.  This version of
+  the proposal currently uses the facelet taglib descriptor syntax.  For
+  example: &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&amp;lt;facelet-taglib&amp;gt;&lt;br /&gt;
+    &amp;lt;namespace&amp;gt;http://domain.com/path&amp;lt;/namespace&amp;gt; &lt;br /&gt;
+    &amp;lt;composite-library-name&amp;gt;compositeTest&amp;lt;/composite-library-name&amp;gt; &lt;br /&gt;
+&amp;lt;/facelet-taglib&amp;gt; &lt;br /&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+  &lt;p&gt;Components from that taglibrary may be used in a using page by
+  declaring them in the XML namespace for that view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&amp;lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" &lt;br /&gt;
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&amp;gt;&lt;br /&gt;
+&amp;lt;html xmlns="http://www.w3.org/1999/xhtml"&lt;br /&gt;
+      xmlns:h="http://xmlns.jcp.org/jsf/html"&lt;br /&gt;
+      xmlns:f="http://xmlns.jcp.org/jsf/core"&lt;br /&gt;
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"&lt;br /&gt;
+      xmlns:ez="&lt;i&gt;&lt;b&gt;http://domain.com/path/namespace&lt;/b&gt;&lt;/i&gt;"&amp;gt;&lt;br /&gt;
+...&lt;br /&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+
+  &lt;p&gt;&lt;a name="composite_example"&gt;Below is an example of a fairly
+  involved composite component declaration.  Such a declaration might
+  appear in &lt;code&gt;foo.xhtml&lt;/code&gt;.&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class="syntax"&gt;&lt;div class="html4strict" style="font-family: monospace;"&gt;&lt;ol&gt;&lt;li class="li1"&gt;&lt;div class="de1"&gt;&lt;span class="sc2"&gt;&amp;lt;&lt;a href="interface.html"&gt;composite:interface&lt;/a&gt; &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;displayName=&lt;span class="st0"&gt;&amp;quot;Very Simple Login Panel&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;preferred=&lt;span class="st0"&gt;&amp;quot;true&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;expert=&lt;span class="st0"&gt;&amp;quot;false&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;shortDescription=&lt;span class="st0"&gt;&amp;quot;An illustration of the composite component feature&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;&lt;a href="attribute.html"&gt;composite:attribute&lt;/a&gt; &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;model&amp;quot;&lt;/span&gt; required=&lt;span class="st0"&gt;&amp;quot;true&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:attribute &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;loginAction&amp;quot;&lt;/span&gt; required=&lt;span class="st0"&gt;&amp;quot;true&amp;quot;&lt;/span&gt; method-signature=&lt;span class="st0"&gt;&amp;quot;java.lang.Object action()&amp;quot;&lt;/span&gt;/ &lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/composite:attribute&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:attribute &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;valueChangeListener&amp;quot;&lt;/span&gt; targets=&lt;span class="st0"&gt;&amp;quot;username&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:attribute &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;specialMethodExpression&amp;quot;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;method-signature=&lt;span class="st0"&gt;&amp;quot;com.foo.User validateCurrentUser()&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:attribute &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;loginButtonLabel&amp;quot;&lt;/span&gt; default=&lt;span class="st0"&gt;&amp;quot;Login&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;&lt;a href="editableValueHolder.html"&gt;composite:editableValueHolder&lt;/a&gt; &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;username&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:actionSource &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;loginEvent&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:actionSource &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;cancelEvent&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;composite:actionSource &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;allEvents&amp;quot;&lt;/span&gt; targets=&lt;span class="st0"&gt;&amp;quot;loginEvent cancelEvent&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/composite:interface&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&lt;span class="sc2"&gt;&amp;lt;&lt;a href="implementation.html"&gt;composite:implementation&lt;/a&gt; &lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;ui:decorate template=&lt;span class="st0"&gt;&amp;quot;fooTemplate.xhtml&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;ui:define &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;header&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;p&amp;gt;&lt;/span&gt;&lt;/span&gt;This is the login panel header&lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/ui:define&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;ui:define &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;body&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;span class="sc2"&gt;&amp;lt;h:inputText &lt;span class="kw3"&gt;id&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;username&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;h:commandButton &lt;span class="kw3"&gt;id&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;loginEvent&amp;quot;&lt;/span&gt; &lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;span class="kw3"&gt;value&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;#{cc.attrs.loginButtonLabel}&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/h:commandButton&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;h:commandButton &lt;span class="kw3"&gt;id&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;cancelEvent&amp;quot;&lt;/span&gt; &lt;span class="kw3"&gt;value&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;Cancel&amp;quot;&lt;/span&gt; &lt;span class="kw3"&gt;action&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;cancel&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/h:commandButton&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;special:validateUserButton &lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; validateUser=&lt;span class="st0"&gt;&amp;quot;#{cc.attrs.specialMethodExpression}&amp;quot;&lt;/span&gt; /&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/ui:define&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&amp;lt;ui:define &lt;span class="kw3"&gt;name&lt;/span&gt;=&lt;span class="st0"&gt;&amp;quot;footer&amp;quot;&lt;/span&gt;&lt;span class="kw2"&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;p&amp;gt;&lt;/span&gt;&lt;/span&gt;This is the login panel footer&lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/ui:define&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&amp;nbsp; &lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/ui:decorate&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li2"&gt;&lt;div class="de2"&gt;&amp;nbsp;&lt;/div&gt;&lt;/li&gt;
+&lt;li class="li1"&gt;&lt;div class="de1"&gt;&lt;span class="sc2"&gt;&lt;span class="kw2"&gt;&amp;lt;&lt;/span&gt;/composite:implementation&amp;gt;&lt;/span&gt; &lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The values for attributes in a composite component VDL file can be
+fully localized by putting them inside a ResourceBundle in the same
+directory as the VDL view and accessing them with the per-component
+resource bundle syntax.  Consider the file &lt;code&gt;foo.xhtml&lt;/code&gt;, in
+the resource library &lt;code&gt;ezcomp&lt;/code&gt;.  The
+&lt;code&gt;shortDescription&lt;/code&gt; element could be changed to be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&amp;lt;composite:interface shortDescription="#{cc.resourceBundleMap.shortDescription}" &amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this case, In the same &lt;code&gt;ezcomp&lt;/code&gt; directory as
+&lt;code&gt;foo.xhtml&lt;/code&gt;, there would be a &lt;code&gt;foo.properties&lt;/code&gt;
+file that would contain this entry:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+shortDescription=A really nifty login panel.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The normal localization rules for &lt;code&gt;ResourceBundle&lt;/code&gt; would
+apply.&lt;/p&gt;
+
+&lt;p&gt;Refer to the &lt;code&gt;composite&lt;/code&gt; tag for the details of defining the &lt;code&gt;interface&lt;/code&gt; and &lt;code&gt;implementation&lt;/code&gt; for composite components.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+&lt;pre&gt;
+
+)
+				</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<h1 class="bar">
+<a href="tld-summary.html" target="tagFrame">cc</a>
+</h1>
+<div class="indexContainer">
+<h2 title="Tags">Tags</h2>
+<ul title="Tags">
+<li>
+<a href="actionSource.html" target="tagFrame">cc:actionSource</a>
+</li>
+<li>
+<a href="attribute.html" target="tagFrame">cc:attribute</a>
+</li>
+<li>
+<a href="clientBehavior.html" target="tagFrame">cc:clientBehavior</a>
+</li>
+<li>
+<a href="editableValueHolder.html" target="tagFrame">cc:editableValueHolder</a>
+</li>
+<li>
+<a href="extension.html" target="tagFrame">cc:extension</a>
+</li>
+<li>
+<a href="facet.html" target="tagFrame">cc:facet</a>
+</li>
+<li>
+<a href="implementation.html" target="tagFrame">cc:implementation</a>
+</li>
+<li>
+<a href="insertChildren.html" target="tagFrame">cc:insertChildren</a>
+</li>
+<li>
+<a href="insertFacet.html" target="tagFrame">cc:insertFacet</a>
+</li>
+<li>
+<a href="interface.html" target="tagFrame">cc:interface</a>
+</li>
+<li>
+<a href="renderFacet.html" target="tagFrame">cc:renderFacet</a>
+</li>
+<li>
+<a href="valueHolder.html" target="tagFrame">cc:valueHolder</a>
+</li>
+</ul>
+</div>
+</body>
+</html>

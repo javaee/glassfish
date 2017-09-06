@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>repeat (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?ui/repeat.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="repeat.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">ui</h1>
+<h2 class="title">
+							Tag
+							repeat</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+        <div class="changed_added_2_0">
+	
+        <p><span class="changed_modified_2_2
+        changed_modified_2_3">Use</span> this tag as an alternative to
+        <code>h:dataTable</code> or <code>c:forEach</code>, especially
+        when you are using the <code>jsfc</code> feature of
+        Facelets. You can specify this component as the value of the
+        <code>jsfc</code> attribute, like this:
+        &lt;div... jsfc="ui:repeat" value="#{contacts}"
+        var="contact"&gt;...  </p> </div>
+        
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="begin" class="rowColor">
+<td class="colFirst"><a href="#begin"><code>begin</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>int</code>)
+					</td><td class="colLast">
+            
+                <div class="changed_modified_2_3">
+                    <p>
+                        If value specified: Iteration begins at the item located at the specified index.
+                        First item of the collection has index 0.
+                        If value not specified: Iteration begins with index set at the specified value.
+                    </p>
+                </div>
+            
+            </td>
+</tr>
+<tr id="end" class="altColor">
+<td class="colFirst"><a href="#end"><code>end</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>int</code>)
+					</td><td class="colLast">
+            
+                <div class="changed_modified_2_3">
+                    <p>
+                        If value specified: Iteration ends at the item located at the specified index (inclusive).
+                        If value not specified: Iteration ends when index reaches the specified value (inclusive).
+                    </p>
+                </div>
+            
+            </td>
+</tr>
+<tr id="offset" class="rowColor">
+<td class="colFirst"><a href="#offset"><code>offset</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>int</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0">
+
+                <p>Read-write property setting the offset from the
+                beginning of the
+                collection from which to start the iteration. If not set, this
+                offset
+                is not considered and iteration will start at the beginning of
+                the
+                collection.</p>
+
+                </div>
+
+            </td>
+</tr>
+<tr id="size" class="altColor">
+<td class="colFirst"><a href="#size"><code>size</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>int</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0">
+
+                <p>Read-write property setting the size of the collection
+                to iterate.
+                If this value is less than the actual size of the collection, a
+                <code>FacesException</code> must be thrown.</p>
+
+                </div>
+
+            </td>
+</tr>
+<tr id="step" class="rowColor">
+<td class="colFirst"><a href="#step"><code>step</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>int</code>)
+					</td><td class="colLast">
+
+                <div class="changed_added_2_0"><p>Iteration
+                will only process every step items of the collection,
+                starting with the first one.</p></div>
+
+            </td>
+</tr>
+<tr id="value" class="altColor">
+<td class="colFirst"><a href="#value"><code>value</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0 changed_modified_2_3">
+
+                <p>The name of a collection of items that this tag
+                iterates over. The
+                collection may be a <code>List</code>, <code>array</code>,
+                <code>java.sql.ResultSet</code>, <code>java.lang.Iterable</code>, 
+                <code>java.util.Map</code>, type for which a suitable 
+                <code>javax.faces.model.DataModel</code> has been registered via 
+                <code>javax.faces.model.FacesDataModel</code> 
+                or an individual java Object. If the
+                collection is null, this tag does nothing.</p>
+
+                </div>
+
+            </td>
+</tr>
+<tr id="var" class="rowColor">
+<td class="colFirst"><a href="#var"><code>var</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                
+                <div class="changed_added_2_0 changed_modified_2_3">
+                 <p>
+                  Name of the exported scoped variable for the current item of 
+                  the iteration. This scoped variable has nested visibility.
+                 </p>
+                </div>
+                
+            </td>
+</tr>
+<tr id="varStatus" class="altColor">
+<td class="colFirst"><a href="#varStatus"><code>varStatus</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                 
+                 <div class="changed_added_2_0">
+                  <p>
+                   Name of the exported request scoped variable for the status 
+                   of the iteration. The object the name points to is a POJO 
+                   with the following read-only JavaBeans properties. This 
+                   scoped variable has nested visibility.
+                  </p>
+                  <p><code>begin</code> of type Integer</p>
+                  <p><code>end</code> of type Integer</p>
+                  <p><code>index</code> of type int</p>
+                  <p><code>step</code> of type Integer</p>
+                  <p><code>even</code> of type boolean</p>
+                  <p><code>odd</code> of type boolean</p>
+                  <p><code>first</code> of type boolean</p>
+                  <p><code>last</code> of type boolean</p>
+                 </div>
+                
+            </td>
+</tr>
+<tr id="rendered" class="rowColor">
+<td class="colFirst"><a href="#rendered"><code>rendered</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+            
+                <div class="changed_added_2_3">
+                    <p>
+                        Controls whether the repeat component is rendered. 
+                        Valid values for this attribute are either the strings 
+                        "true" or "false" or an EL expression that evaluates to
+                         either "true" or "false".
+                    </p>
+                    <p>
+                        If this attribute's value is "false" or the value is an
+                        EL expression that evaluates to "false", the repeat 
+                        is not rendered in the page.
+                    </p>
+                </div>
+            
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?ui/repeat.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="repeat.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

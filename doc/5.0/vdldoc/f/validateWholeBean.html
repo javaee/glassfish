@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>validateWholeBean (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/validateWholeBean.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="validateWholeBean.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							validateWholeBean</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+            <p class="changed_added_2_3">Support multi-field validation
+            by enabling class-level bean validation on CDI based backing
+            beans.  This feature causes a temporary copy of the bean
+            referenced by the <code>value</code> attribute, for the sole
+            purpose of populating the bean with field values already
+            validated by <code>&lt;f:validateBean /&gt;</code> and then
+            performing class-level validation on the copy.  Regardless
+            of the result of the class-level validation, the copy is
+            discarded.  This feature must explicitly be enabled by
+            setting the application parameter specified in the javadoc
+            for the symbolic constant
+            <code>javax.faces.validator.BeanValidator.ENABLE_VALIDATE_WHOLE_BEAN_PARAM_NAME</code>.
+            If this parameter is not set, or is set to false, this tag
+            must be a no-op.  A non-normative example follows the
+            specification of the feature.</p>
+
+            <div class="changed_added_2_3">
+
+            <p>At a high level, the feature provides for
+            a <code>UIInput</code> subclass that maintains its own
+            special private <code>Validator</code> that uses information
+            from one or more <code>&lt;f:validateBean /&gt;</code>s to
+            perform class-level bean validation.  For discussion, this
+            special <code>Validator</code> is called
+            the <em>wholeBeanValidator</em>.</p>
+
+            <p>This tag must be backed by a <code>UIInput</code>
+            component with the following specializations.</p>
+
+            <ul>
+
+            <li><p>Override <code>getSubmittedValue()</code> to return a
+            non-null non empty String.  This
+            allows <code>UIInput.validate()</code> to
+            call <em>wholeBeanValidator.validate()</em>.</p></li>
+
+        <li><p>Override <code>setConverter()</code> to be a no-op.
+        It does not make sense to allow a converter to be
+        installed.</p></li>
+
+
+        <li><p>Override <code>addValidator()</code> to be a no-op
+        unless the argument is an instance
+        of <em>wholeBeanValidator</em>.  It does not make sense to
+        allow additional validators to be installed.</p></li>
+
+            <li><p>Override <code>validate()</code> to take the
+            following actions.</p>
+
+          <ul>
+                
+            <li><p>If the feature is not enabled, return
+            immediately.</p></li>
+
+            <li><p>If the <em>wholeBeanValidator</em> has not yet
+            been installed, instantiate and pass it to 
+                <code>this.addValidator()</code>.</p></li>
+
+            <li><p>Call <code>super.validate()</code>.</p></li>
+                
+          </ul>
+
+            </li>
+
+            </ul>
+
+            <p>The <em>wholeBeanValidator</em> must have
+            a <code>validate()</code> method that performs the following
+            actions.  Due to the above specification, this method will
+            only ever be passed the special <code>UIInput</code>
+            component.</p>
+            
+            <ul>
+
+            <p>Resolve the <code>value</code> of the component to
+            its <code>Object</code>.  Assume that
+            this <code>value</code> is the bean whose properties are
+            intended to be populated by components whose values are each
+            validated by <code>&lt;f:validateBean /&gt;</code> tags.
+            For discussion, this bean is called the <em>candidate
+            bean</em> and the properties and their respective values are
+            called the <em>candidate values</em>.  If the <em>candidate
+            bean</em> cannot be referenced, return immediately
+            from <code>validate()</code>.  Use the information recorded
+            by each of those <code>&lt;f:validateBean /&gt;</code> tags
+            to ensure that none of the <em>candidate values</em> are
+            invalid.  If any of them are invalid, return immediately
+            from <code>validate()</code>.  This ensures class-level
+            validation is only performed on an instance whose fields are
+            all individually valid.</p>
+
+            <p>Otherwise it can be assumed that all field-level
+            validations for this class-level validation have passed.</p>
+
+            <p>Class-level bean validation must operate on a
+            sufficiently populated bean instance.  This differs from JSF
+            field-level validation, which prevents beans from being
+            populated with invalid values.  To accomodate this
+            difference, the <em>candidate bean</em> must be copied,
+            populated with the already-validated <em>candidate
+            values</em>, and then subjected to class-level validation.
+            The copying must proceed in the following order.</p>
+
+            <ol>
+            
+        <li><p>Invoke the <code>newInstance()</code> method on the
+            bean's <code>Class</code>.  If this throws
+            any <code>Exception</code>, swallow it and
+            continue.</p></li>
+
+        <li><p>If the bean implements <code>Serializable</code>, use
+            that to copy the bean instance.</p></li>
+
+            <li><p>Otherwise, if the bean
+            implements <code>Cloneable</code>, clone the bean
+            instance.</p></li>
+
+        <li><p>Otherwise, if the bean has a copy constructor, use
+            that to copy the bean instance.</p></li>
+
+        <li><p>If none of these techniques yields a copy,
+            throw <code>FacesException</code>.</p></li>
+
+            </ol>
+
+            <p>Populate the copied bean with the <em>candidate
+            values</em>.</p>
+
+            <p>Obtain a reference to
+            a <code>javax.validation.Validator</code> instance using the
+            same steps described in the javadoc
+            for <code>javax.faces.validator.BeanValidator.validate()</code>.
+            Let the instance be called <em>beanValidator</em> for
+            discussion.</p>
+
+            <p>Obtain the value of the <code>validationGroups</code>
+            attribute using the same steps described in the javadoc
+            for <code>javax.faces.validator.BeanValidator.validate()</code>.
+            If this value is not present or not valid,
+            throw <code>FacesException</code>.</p>
+
+            <p>Call the <code>validate</code> method on
+            <em>beanValidator</em>, passing the populated copied bean
+            and the validation groups as arguments.  The copied bean can
+            be discarded at this point.</p>
+
+            <p>If the
+            returned <code>Set&lt;ConstraintViolation&gt;</code> is
+            non-empty, for each element in the <code>Set</code>, create
+            a <code>FacesMessage</code> where the summary and detail are
+            the return from
+            calling <code>ConstraintViolation.getMessage()</code>.
+            Capture all such <code>FacesMessage</code> instances into
+            a <code>Collection</code> and pass them
+            to <code>ValidatorException</code>.  Using information
+            recorded by the <code>&lt;f:validateBean /&gt;</code>
+            tag(s), call <code>setValid(false)</code> on all of the
+            components whose values contributed to this class-level
+            validation.  This is essential to prevent the invalid value
+            from being set into the model during the update model values
+            phase.  Finally, throw the exception.</p>
+
+            </ul>
+
+            <p>This tag must be placed in the component tree after all
+            of the fields that are to be included in the multi-field
+            validation.  If this precondition is not met, the results
+            of applying this tag are unspecified.</p>
+
+            <p>This tag must be used in concert
+            with <code>&lt;f:validateBean /&gt;</code> and Bean
+            Validation. Here is a brief example of the common case of
+            ensuring two password fields are individually valid and also
+            both the same.  The feature requires the use of
+            the <code>validationGroups</code> attribute on all of
+            the <code>&lt;f:validateBean /&gt;</code> tags and
+            the <code>&lt;f:validateWholeBean /&gt;</code> tag.</p>
+
+            <p>First, the <code>ConstraintValidator</code>
+            implementation.</p>
+
+<pre><code>
+public class PasswordValidator implements ConstraintValidator&lt;Password, PasswordHolder&gt; {
+
+  @Override
+  public void initialize(Password constraintAnnotation) { }
+
+  @Override
+  public boolean isValid(PasswordHolder value, ConstraintValidatorContext context) {
+    boolean result;
+    
+    result = value.getPassword1().equals(value.getPassword2());
+
+    return result;
+  }
+
+}
+</code></pre>
+
+            <p>Note that a <code>PasswordHolder</code> instance is
+            passed to the <code>isValid()</code> method.  This method
+            will only be called if the individual properties of
+            the <code>PasswordHolder</code> are valid.  This fact allows
+            the <code>isValid()</code> method to inspect the properties
+            and perform effective class-level validtion.</p>
+
+            <p>Next, the <code>Constraint</code>.</p>
+
+<pre><code>
+@Constraint(validatedBy=PasswordValidator.class)
+@Target(TYPE)
+@Retention(RUNTIME)
+@interface Password {
+
+    String message() default "Password fields must match";
+    Class[] groups() default {};
+    Class[] payload() default {};
+}
+</code></pre>
+
+            <p>Now the backing bean constrained by
+            this <code>Constraint</code>.  Note the use
+            of <code>groups</code>.  Note the fact that the bean
+            implements <code>Cloneable</code>.</p>
+
+<pre><code>
+@Named
+@RequestScoped
+@Password(groups = PasswordValidationGroup.class)
+public class BackingBean implements PasswordHolder, Cloneable {
+    
+    private String password1;
+    
+    private String password2;
+
+    public BackingBean() {
+        password1="";
+        password2="";
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        BackingBean other = (BackingBean) super.clone();
+        other.setPassword1(this.getPassword1());
+        other.setPassword2(this.getPassword2());
+        return other;
+    }
+    
+    @NotNull(groups=PasswordValidationGroup.class)
+    @Size(max=16, min=8, message="Password must be between 8 and 16 characters long",
+            groups = PasswordValidationGroup.class)
+    @Override
+    public String getPassword1() {
+        return password1;
+    }
+
+    public void setPassword1(String password1) {
+        this.password1 = password1;
+    }
+
+    @NotNull(groups=PasswordValidationGroup.class)
+    @Size(max=16, min=8, message="Password must be between 8 and 16 characters long",
+            groups = PasswordValidationGroup.class)
+    @Override
+    public String getPassword2() {
+        return password2;
+    }
+
+    public void setPassword2(String password2) {
+        this.password2 = password2;
+    }
+    
+}
+</code></pre>
+
+            <p>Finally, the Facelets view.</p>
+<pre><code>
+&lt;h:panelGrid columns="2"&gt;
+
+    &lt;h:outputText value="Password" /&gt;  
+    &lt;h:inputSecret id="password1" value='#{backingBean.password1}'&gt;
+        &lt;f:validateBean validationGroups="PasswordValidationGroup" /&gt;
+    &lt;/h:inputSecret&gt;
+    
+    &lt;h:outputText value="Password again" /&gt; 
+    &lt;h:inputSecret id="password2" value='#{backingBean.password2}'&gt;
+        &lt;f:validateBean validationGroups="PasswordValidationGroup" /&gt;
+    &lt;/h:inputSecret&gt;
+    
+&lt;/h:panelGrid&gt;
+
+&lt;f:validateWholeBean value='#{backingBean}' 
+   validationGroups="PasswordValidationGroup" /&gt;
+</code></pre>
+
+            </div>
+
+
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Component summary table, listing component information">
+<caption>
+<span>Component Information</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Info</th><th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rowColor">
+<td class="colFirst">Component Type</td><td class="colLast"><code>com.sun.faces.ext.validateWholeBean</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Handler Class</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst">Renderer Type</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Description</td><td class="colLast"><i>None</i></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="disabled" class="rowColor">
+<td class="colFirst"><a href="#disabled"><code>disabled</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_3">A boolean value enabling or
+                disabling this validation component.</p>
+
+
+            </td>
+</tr>
+<tr id="id" class="altColor">
+<td class="colFirst"><a href="#id"><code>id</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">Component identifier of the
+                UIInput component to be created.</p>
+            </td>
+</tr>
+<tr id="validationGroups" class="rowColor">
+<td class="colFirst"><a href="#validationGroups"><code>validationGroups</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_3">A comma-separated list of
+                validation groups. A validation group is a
+                fully-qualified class name.</p>
+
+            </td>
+</tr>
+<tr id="value" class="altColor">
+<td class="colFirst"><a href="#value"><code>value</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Object</code>)
+					</td><td class="colLast">
+
+                <p class="changed_added_2_3">A ValueExpression referencing the bean to be validated.</p>
+
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/validateWholeBean.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="validateWholeBean.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

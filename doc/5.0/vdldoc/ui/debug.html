@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>debug (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?ui/debug.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="debug.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">ui</h1>
+<h2 class="title">
+							Tag
+							debug</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+
+            <div class="changed_added_2_0 changed_modified_2_3">
+            <p>
+            When the <code>ui:debug</code> tag is placed in an XHTML
+            page, it creates a component and adds it to the
+            component tree. That debug component captures debugging information,
+            namely the current state of the component
+            tree and the scoped variables in the application, when the component
+            is rendered. If the user presses CTRL + SHIFT + d,
+            JSF opens a window that shows the debugging information captured by
+            the debug component.
+            </p>
+
+            <p>
+            Typically, the best place to put the <code>ui:debug</code>
+            tag is in an application's main template, which
+            lets developers enable or disable viewing of debugging information
+            in one central location. Additionally, page
+            authors can change the hotkey (which by default is CTRL + SHIFT + d,
+            where the d stands for debug) to CTRL + SHIFT + ?,
+            where ? represents the key specified as the value of the <code>hotkey</code>
+            attribute.
+            </p>
+
+            <p>
+            You can use the <code>rendered</code> attribute to
+            control whether the debug component is rendered.
+            Using an EL expression as the value for the <code>rendered</code>
+            attribute lets you control whether
+            debug output is enabled for multiple views based on a single bean
+            property.
+            </p>
+            
+            <p class="changed_added_2_3">
+              Note ui:debug only works when the ProjectStage is set to Development.
+            </p>
+            </div>
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="hotkey" class="rowColor">
+<td class="colFirst"><a href="#hotkey"><code>hotkey</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0">
+                <p>
+                Defines a single character, that, pressed in conjunction with
+                CTRL and SHIFT, will display the JSF debug window.
+                By default, the hotkey is 'd'. <em>The value for the
+                hotkey attribute cannot be an EL expression.</em>
+                </p>
+
+                </div>
+
+            </td>
+</tr>
+<tr id="rendered" class="altColor">
+<td class="colFirst"><a href="#rendered"><code>rendered</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+
+                <div class="changed_added_2_0">
+                <p>
+                Controls whether the debug component is rendered. Valid values
+                for this attribute are either the strings "true" or "false" or
+                an EL expression that evaluates to either "true" or "false".<p>If
+                this attribute's value is "false" or the value is an EL
+                expression that evaluates to "false", the debug component is not
+                rendered in the page, the hotkey attribute is disregarded, and
+                users cannot open the debugging information window with a
+                hotkey.</p>
+                </p>
+
+                </div>
+
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?ui/debug.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="debug.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>actionSource (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?cc/actionSource.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="actionSource.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">cc</h1>
+<h2 class="title">
+							Tag
+							actionSource</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+            
+<div class="changed_added_2_0">
+<p><span class="changed_modified_2_0_rev_a">Declares</span> that the
+composite component whose contract is declared by the
+<code>&lt;composite:interface&gt;</code> in which this element is nested
+exposes an implementation of <code>ActionSource2</code> suitable for use
+as the target of <em>attached objects</em> in <em>the using page</em>.
+Any attached objects suitable for implementations of
+<code>ActionSource2</code> may be attached to the composite component.
+Consider this excerpt from <em>the using page</em>:
+            </p>
+
+<div class="syntax"><div class="html4strict" style="font-family: monospace;"><ol><li class="li1"><div class="de1"><span class="sc2">&lt;ez:loginPanel <span class="kw3">id</span>=<span class="st0">&quot;loginPanel&quot;</span> model=<span class="st0">&quot;#{bean}&quot;</span><span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;f:valueChangeListener <span class="kw3">for</span>=<span class="st0">&quot;username&quot;</span></div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; binding=<span class="st0">&quot;#{bean.useridValueChangeListener}&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;f:actionListener <span class="kw3">for</span>=<span class="st0">&quot;loginEvent&quot;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; binding=<span class="st0">&quot;#{bean.loginEventListener}&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp;</div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sc2">&lt;f:actionListener <span class="kw3">for</span>=<span class="st0">&quot;cancelEvent&quot;</span> </div></li>
+<li class="li2"><div class="de2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; binding=<span class="st0">&quot;#{bean.cancelEventListener}&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li1"><div class="de1">&nbsp;</div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;f:actionListener <span class="kw3">for</span>=<span class="st0">&quot;allEvents&quot;</span> </div></li>
+<li class="li1"><div class="de1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; binding=<span class="st0">&quot;#{bean.allEventsListener}&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp;</div></li>
+<li class="li1"><div class="de1"><span class="sc2"><span class="kw2">&lt;</span>/ez:loginPanel&gt;</span> </div></li></ol></div></div>
+
+<p>The <code>&lt;f:actionListener&gt;</code> elements on lines 4, 7, and 10
+refer to the <em>attached objects</em> declared on lines 2, 3 and 4 below.</p>
+
+<div class="syntax"><div class="html4strict" style="font-family: monospace;"><ol><li class="li1"><div class="de1"><span class="sc2">&lt;composite:interface <span class="kw3">name</span>=<span class="st0">&quot;loginPanel&quot;</span><span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;composite:actionSource <span class="kw3">name</span>=<span class="st0">&quot;loginEvent&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li1"><div class="de1">&nbsp; <span class="sc2">&lt;composite:actionSource <span class="kw3">name</span>=<span class="st0">&quot;cancelEvent&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li2"><div class="de2">&nbsp; <span class="sc2">&lt;composite:actionSource <span class="kw3">name</span>=<span class="st0">&quot;allEvents&quot;</span> targets=<span class="st0">&quot;loginEvent cancelEvent&quot;</span> /<span class="kw2">&gt;</span></span></div></li>
+<li class="li1"><div class="de1"><span class="sc2"><span class="kw2">&lt;</span>/composite:interface&gt;</span> </div></li></ol></div></div>
+
+<p>Most of the concepts from example content from <a
+href="valueHolder.html"><code>&lt;composite:valueHolder&gt;</code></a>
+also applies in the case of
+<code>&lt;composite:actionSource&gt;</code>.</p>
+
+<p>Please see <code>&lt;<a
+href="interface.html">composite:interface</a>&gt;</code> for a usage
+example.</p>
+
+
+</div>
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="name" class="rowColor">
+<td class="colFirst"><a href="#name"><code>name</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p>
+  The value of this attribute maps back to the "for" attribute on an attachable object
+  nested within a composite component.   If the "targets" attribute is not specified,
+  this value also represents the component ID of the target component within the
+  that the <code>&lt;composite:implementation&gt;</code>
+  ActionListener should be mapped to. 
+</p>
+</div>
+
+            </td>
+</tr>
+<tr id="targets" class="altColor">
+<td class="colFirst"><a href="#targets"><code>targets</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+
+                
+<div class="changed_added_2_0">
+<p><span class="changed_modified_2_0_rev_a">If</span>  present, this must be a space (not tab) separated list of client
+ids (relative to the <em>top level component</em>) of components within
+the <code>&lt;composite:implementation&gt;</code> section.  Space is
+used as the delimiter for compatibility with the IDREFS and NMTOKENS
+data types from the XML Schema.</p></div>
+
+            </td>
+</tr>
+<tr id="hidden" class="rowColor">
+<td class="colFirst"><a href="#hidden"><code>hidden</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>boolean</code>)
+					</td><td class="colLast">
+                
+<div class="changed_added_2_0_rev_a">
+
+<p> The "hidden" flag is used to identify features that are intended only for tool use, and which should not be exposed to humans.</p>
+
+</div>
+                
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?cc/actionSource.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="actionSource.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

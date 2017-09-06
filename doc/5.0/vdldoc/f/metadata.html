@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>metadata (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/metadata.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="metadata.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							metadata</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+            <p class="changed_added_2_0">Declare the metadata
+            facet for this view. This must be a child of the
+            <code>&lt;f:view&gt;</code>. This tag
+            must reside within the top level XHTML file for the given
+            viewId<span class="changed_modified_2_0_rev_a">, or in a
+            template client, but</span> not in a template. The
+            implementation must insure that the direct child of the
+            facet is a <code>UIPanel</code>, even if there
+            is only one child of the facet. The implementation must set
+            the id of the <code>UIPanel</code> to be the
+            value of the
+            <code>UIViewRoot.METADATA_FACET_NAME</code>
+            symbolic constant.</p>
+
+            <div class="changed_added_2_0">
+
+            <p>The implementation must allow templating for this element
+            according
+            to the following pattern.</p>
+
+            <p>template client XHTML view, view01.xhtml</p>
+
+            </div>
+
+            <div class="html4strict" style="font-family: monospace;"><ol><li
+            class="li1"><div class="de1"><span class="sc2">&lt;ui:composition
+            template=<span class="st0">&quot;template.xhtml&quot;</span><span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            <span class="sc2">&lt;ui:define <span class="kw3">name</span>=<span
+            class="st0">&quot;metadata&quot;</span><span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            &nbsp; <span class="sc2">&lt;f:metadata&gt;</span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            &nbsp; &nbsp; <span class="sc2">&lt;f:viewParam
+            <span class="kw3">name</span>=<span class="st0">&quot;id&quot;</span>/<span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            &nbsp; <span class="sc2"><span class="kw2">&lt;</span>/f:metadata&gt;</span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            <span class="sc2"><span class="kw2">&lt;</span>/ui:define&gt;</span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            <span class="sc2">&lt;ui:define <span class="kw3">name</span>=<span
+            class="st0">&quot;content&quot;</span><span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            &nbsp; &nbsp; <span class="sc2"><span class="kw2">&lt;h1&gt;</span></span>The
+            big news stories of the day<span class="sc2"><span
+            class="kw2">&lt;/h1&gt;</span></span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            <span class="sc2"><span class="kw2">&lt;</span>/ui:define&gt;</span></div></li>
+            <li class="li2"><div class="de2"><span class="sc2"><span
+            class="kw2">&lt;</span>/ui:composition&gt;</span>
+            </div></li></ol></div></div>
+
+            <div class="changed_added_2_0">
+            <p>Note line 4. The page author must ensure that the
+            <code>&lt;f:metadata&gt;</code> element does not
+            appear on a template or
+            included page. It must reside on the root page that corresponds to
+            the
+            viewId.</p>
+
+            <p>The template page, template.xhtml</p>
+
+            </div>
+
+
+            <div class="html4strict" style="font-family: monospace;"><ol><li
+            class="li1"><div class="de1"><span class="sc2"><span
+            class="kw2">&lt;html</span> xmlns=<span class="st0">&quot;http://www.w3.org/1999/xhtml&quot;</span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            &nbsp; xmlns:ui=<span class="st0">&quot;http://xmlns.jcp.org/jsf/facelets&quot;</span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            &nbsp; xmlns:f=<span class="st0">&quot;http://xmlns.jcp.org/jsf/core&quot;</span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            &nbsp; xml:<span class="kw3">lang</span>=<span
+            class="st0">&quot;en&quot;</span> <span
+            class="kw3">lang</span>=<span class="st0">&quot;en&quot;</span><span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li1"><div class="de1">&nbsp;</div></li>
+            <li class="li2"><div class="de2"><span class="sc2"><span
+            class="kw2">&lt;body&gt;</span></span></div></li>
+            <li class="li1"><div class="de1"><span class="sc2">&lt;f:view&gt;</span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            </div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            &nbsp; &nbsp; <span class="sc2">&lt;ui:insert <span
+            class="kw3">name</span>=<span class="st0">&quot;metadata&quot;</span>/<span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;</div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            <span class="sc2"><span class="kw2">&lt;div</span>
+            <span class="kw3">id</span>=<span class="st0">&quot;container&quot;</span><span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li2"><div class="de2">&nbsp; &nbsp;
+            &nbsp; &nbsp; <span class="sc2">&lt;ui:insert <span
+            class="kw3">name</span>=<span class="st0">&quot;content&quot;</span>/<span
+            class="kw2">&gt;</span></span></div></li>
+            <li class="li1"><div class="de1">&nbsp; &nbsp;
+            <span class="sc2"><span class="kw2">&lt;/div&gt;</span></span></div></li>
+            <li class="li2"><div class="de2"><span class="sc2"><span
+            class="kw2">&lt;</span>/f:view&gt;</span></div></li>
+            <li class="li1"><div class="de1"><span class="sc2"><span
+            class="kw2">&lt;/body&gt;</span></span></div></li>
+            <li class="li2"><div class="de2"><span class="sc2"><span
+            class="kw2">&lt;/html&gt;</span></span> </div></li></ol></div></div>
+
+            <p>The page author is not <em>required</em> to use
+            templating, but if
+            they do, it must be done as shown above, (or with
+            <code>&lt;ui:include&gt;</code> in a similar
+            manner).</p>
+
+            </div>
+
+
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<td class="colOne" colspan="4"><i>No Attributes Defined.</i></td>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/metadata.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="metadata.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>

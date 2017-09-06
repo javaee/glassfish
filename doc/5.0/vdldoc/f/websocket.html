@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee" xmlns:vdldoc="http://vdldoc.omnifaces.org" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>websocket (JSF 2.3 View Declaration Language: Facelets Variant, generated with VDLDoc.)
+			</title>
+<meta name="keywords" content="$title">
+<link rel="stylesheet" type="text/css" title="Style" href="../jsf-api.css">
+</head>
+<body>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<div class="topNav">
+<a name="navbar_top"></a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_top" href="../index.html?f/websocket.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_top" href="websocket.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_top">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<div>
+<script type="text/javascript">
+								document.getElementById("alltags_navbar_top").style.display = (window == top) ? "block" : "none";
+							</script>
+</div>
+<a name="skip-navbar_top"></a>
+</div>
+<div class="header">
+<h1 title="Library" class="title">f</h1>
+<h2 class="title">
+							Tag
+							websocket</h2>
+</div>
+<div class="contentContainer">
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>Description:</dt>
+<dd>
+<div class="block">
+
+        <p class="changed_added_2_3">Registers a websocket push
+        connection in client side by rendering the necessary scripts.
+        Push messages can be sent from server side via
+        <code>javax.faces.push.PushContext</code> interface.  See also
+        <code>javax.faces.push.Push</code> API documentation for an
+        elaborate instruction on how to use
+        <code>&lt;f:websocket&gt;</code>.  </p>
+                
+        </div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Component summary table, listing component information">
+<caption>
+<span>Component Information</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Info</th><th class="colLast" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rowColor">
+<td class="colFirst">Component Type</td><td class="colLast"><code>javax.faces.Websocket</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Handler Class</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst">Renderer Type</td><td class="colLast"><i>None</i></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Description</td><td class="colLast"><i>None</i></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="summary">
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Attribute summary table, listing attribute information">
+<caption>
+<span>Attributes</span><span class="tabEnd">&nbsp;</span>
+</caption>
+<thead>
+<tr>
+<th class="colFirst">Name</th><th class="colOne">Required</th><th class="colOne">Type</th><th class="colLast">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr id="binding" class="rowColor">
+<td class="colFirst"><a href="#binding"><code>binding</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>javax.faces.component.UIComponent</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                	Value binding expression to a backing bean property bound to the component instance for the <code>UIComponent</code> created by this tag.
+                </p>
+            </td>
+</tr>
+<tr id="id" class="altColor">
+<td class="colFirst"><a href="#id"><code>id</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                	Component identifier of the <code>UIWebsocket</code> component to be created.
+                </p>
+            </td>
+</tr>
+<tr id="channel" class="rowColor">
+<td class="colFirst"><a href="#channel"><code>channel</code></a></td><td class="colOne"><code>true</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The name of the websocket channel.
+                    It may not be an EL expression and it may only contain alphanumeric characters, hyphens, underscores and periods.
+                    All open websockets on the same channel name will receive the same push notification from the server.
+                </p>
+            </td>
+</tr>
+<tr id="scope" class="altColor">
+<td class="colFirst"><a href="#scope"><code>scope</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The scope of the websocket channel.
+                    It may not be an EL expression and allowed values are <code>application</code>, <code>session</code> and <code>view</code>, case insensitive.
+                    When the value is <code>application</code>, then all channels with the same name throughout the application will receive the same push message.
+                    When the value is <code>session</code>, then only the channels with the same name in the current user session will receive the same push message.
+                    When the value is <code>view</code>, then only the channel in the current view will receive the push message.
+                    The default scope is <code>application</code>.
+                    When the <code>user</code> attribute is specified, then the default scope is <code>session</code>.
+                </p>
+            </td>
+</tr>
+<tr id="user" class="rowColor">
+<td class="colFirst"><a href="#user"><code>user</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.io.Serializable</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The user identifier of the websocket channel, so that user-targeted push messages can be sent.
+                    It must implement <code>Serializable</code> and preferably have low memory footprint.
+                    Suggestion: use <code>#{request.remoteUser}</code> or <code>#{someLoggedInUser.id}</code>.
+                    All open websockets on the same channel and user will receive the same push message from the server.
+                </p>
+            </td>
+</tr>
+<tr id="onopen" class="altColor">
+<td class="colFirst"><a href="#onopen"><code>onopen</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The JavaScript event handler function that is invoked when the websocket is opened.
+                    The function will be invoked with one argument: the channel name.
+                </p>
+            </td>
+</tr>
+<tr id="onmessage" class="rowColor">
+<td class="colFirst"><a href="#onmessage"><code>onmessage</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The JavaScript event handler function that is invoked when a push message is received from the server.
+                    The function will be invoked with three arguments: the push message, the channel name and the raw <code>MessageEvent</code> itself.
+                </p>
+            </td>
+</tr>
+<tr id="onclose" class="altColor">
+<td class="colFirst"><a href="#onclose"><code>onclose</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.String</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    The JavaScript event handler function that is invoked when the websocket is closed.
+                    The function will be invoked with three arguments: the close reason code, the channel name and the raw <code>CloseEvent</code> itself.
+                    Note that this will also be invoked on errors and that you can inspect the close reason code if an error occurred and which one (i.e. when the code is not 1000).
+                    See also 
+                    <a href="http://tools.ietf.org/html/rfc6455#section-7.4.1">RFC 6455 section 7.4.1</a> 
+                    and
+                    <a href="http://docs.oracle.com/javaee/7/api/javax/websocket/CloseReason.CloseCodes.html">CloseCodes</a>
+                    API for an elaborate list of all close codes.
+                </p>
+            </td>
+</tr>
+<tr id="connected" class="rowColor">
+<td class="colFirst"><a href="#connected"><code>connected</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    Whether to (auto)connect the websocket or not.
+                    Defaults to <code>true</code>.
+                    It's interpreted as a JavaScript instruction whether to open or close the websocket push connection.
+                    This attribute is implicitly re-evaluated on every ajax request by a <code>PreRenderViewEvent</code> listener on the <code>UIViewRoot</code>.
+                    You can also explicitly set it to <code>false</code> and then manually control in JavaScript by <code>jsf.push.open(clientId)</code> and <code>jsf.push.close(clientId)</code>.
+                </p>
+            </td>
+</tr>
+<tr id="rendered" class="altColor">
+<td class="colFirst"><a href="#rendered"><code>rendered</code></a></td><td class="colOne"><code>false</code></td><td class="colOne"><code>javax.el.ValueExpression</code>
+<br>(<i>must evaluate to </i><code>java.lang.Boolean</code>)
+					</td><td class="colLast">
+                <p class="changed_added_2_3">
+                    Whether to render the websocket scripts or not.
+                    Defaults to <code>true</code>.
+                    This attribute is implicitly re-evaluated on every ajax request by a <code>PreRenderViewEvent</code> listener on the <code>UIViewRoot</code>.
+                    If the value changes to <code>false</code> while the websocket is already opened, then the websocket will implicitly be closed.
+                </p>
+            </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bottomNav">
+<a name="navbar_bottom"></a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow"></a>
+<ul class="navList" title="Navigation">
+<li>
+<a href="../overview-summary.html">Overview</a>
+</li>
+<li>
+<a href="tld-summary.html">Library</a>
+</li>
+<li class="navBarCell1Rev">Tag</li>
+<li>
+<a href="../help-doc.html">Help</a>
+</li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li>
+<a target="_bottom" href="../index.html?f/websocket.html">
+									Frames
+								</a>
+</li>
+<li>
+<a target="_bottom" href="websocket.html">
+									No Frames
+								</a>
+</li>
+</ul>
+<ul class="navList" id="alltags_navbar_bottom">
+<li>
+<a href="../alltags-noframe.html">All Tags</a>
+</li>
+</ul>
+<script type="text/javascript">
+							document.getElementById("alltags_navbar_bottom").style.display = (window == top) ? "block" : "none";
+						</script><a name="skip-navbar_bottom"></a>
+</div>
+</body>
+</html>
