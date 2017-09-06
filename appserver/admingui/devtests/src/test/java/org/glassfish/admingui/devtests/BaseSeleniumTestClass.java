@@ -1216,8 +1216,7 @@ public class BaseSeleniumTestClass {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
             try {
                 String attr =
-                        elementFinder.findElement(By.id(buttonId), TIMEOUT) //                        driver.findElement(By.id(buttonId))
-                        .getAttribute("disabled"); // WebDriver-backed Selenium
+                        driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
                 return (Boolean.parseBoolean(attr) == desiredState);
             } catch (Exception ex) {
                 return false;
