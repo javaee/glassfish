@@ -316,10 +316,8 @@ public class NodeTest extends BaseSeleniumTestClass {
         waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
         assertTrue(isTextPresent("An error has occurred"));
 
-        //cleanup
-        reset();
-        clickAndWait(ID_STANDALONE_TREE_LINK, TRIGGER_INSTANCES_PAGE);
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+        StandaloneTest standaloneTest = new StandaloneTest();
+        standaloneTest.deleteAllStandaloneInstances();
 
         reset();
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
@@ -338,13 +336,7 @@ public class NodeTest extends BaseSeleniumTestClass {
     }
 
     private void createInstance(String instanceName, String nodeName){
-        clickAndWait(ID_STANDALONE_TREE_LINK, TRIGGER_INSTANCES_PAGE);
-        clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_INSTANCE_PAGE );
-        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", nodeName);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "default-config");
-        markCheckbox("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
-        assertTrue(tableContainsRow("propertyForm:instancesTable", "col1", instanceName));
+        StandaloneTest standaloneTest = new StandaloneTest();
+        standaloneTest.createStandAloneInstance(instanceName, nodeName);
     }
 }

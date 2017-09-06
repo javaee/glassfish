@@ -52,7 +52,7 @@ public class LogViewerTest extends BaseSeleniumTestClass {
 
 
     // basic sanity test for log viewer
-    @Test
+    //@Test
     public void testLogViewer() {
     	try {
 	        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
@@ -66,7 +66,8 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     }
 
     // basic sanity test for raw log viewer
-    @Test
+    //@Test
+    //@Test
     public void testRawLogViewer() {
     	try {
 		    clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
