@@ -58,7 +58,8 @@ import org.jvnet.hk2.annotations.Contract;
         , "CType"
         , "SType"
         , "FType"
-        , "DType" })
+        , "DType"
+        , "isType" })
 public interface TypeBean {
     @XmlElement(name="int")
     public int getIType();
@@ -71,6 +72,10 @@ public interface TypeBean {
     @XmlElement(name="boolean")
     public boolean getZType();
     public void setZType(boolean i);
+    
+    @XmlElement(name="isType")
+    public boolean isIsType();
+    public void setIsType(boolean isType);
     
     @XmlElement(name="byte")
     public byte getBType();

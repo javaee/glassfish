@@ -188,6 +188,7 @@ public class PBufParserTest {
         root.setSType((short) 16);
         root.setFType((float) 17.0);
         root.setDType(18.0);
+        root.setIsType(false);
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -220,6 +221,7 @@ public class PBufParserTest {
         Assert.assertEquals((short) 16, typeRoot.getSType());
         Assert.assertTrue(new Float(17.0).equals(typeRoot.getFType()));
         Assert.assertTrue(new Double(18.0).equals(typeRoot.getDType()));
+        Assert.assertFalse(typeRoot.isIsType());
     }
     
     /**

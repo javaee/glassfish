@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,6 +82,10 @@ import com.google.protobuf.DynamicMessage;
 @Named(PBufUtilities.PBUF_SERVICE_NAME)
 public class PBufParser implements XmlServiceParser {
     private final HashMap<Class<?>, Descriptors.Descriptor> allProtos = new HashMap<Class<?>, Descriptors.Descriptor>();
+    private final Object marshalLock = new Object();
+    private final Object unmarshalLock = new Object();
+    
+    private final WeakHashMap<OutputStream, CodedOutputStream> cosCache = new WeakHashMap<OutputStream, CodedOutputStream>();
     
     @Inject @Named(PBufUtilities.PBUF_SERVICE_NAME)
     private IterableProvider<XmlService> xmlService;
@@ -118,14 +123,16 @@ public class PBufParser implements XmlServiceParser {
             throw new IOException(e);
         }
         
-        DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, input);
+        synchronized (unmarshalLock) {
+            DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, input);
         
-        XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
+            XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
                 null,
                 message,
                 listener);
         
-        return (T) retVal;
+            return (T) retVal;
+        }
     }
 
     /* (non-Javadoc)
@@ -159,14 +166,20 @@ public class PBufParser implements XmlServiceParser {
             throw new IOException(e);
         }
         
-        DynamicMessage dynamicMessage = internalMarshal(rootBean);
-        CodedOutputStream cos = CodedOutputStream.newInstance(outputStream);
+        synchronized (marshalLock) {
+            DynamicMessage dynamicMessage = internalMarshal(rootBean);
+            CodedOutputStream cos = cosCache.get(outputStream);
+            if (cos == null) {
+                cos = CodedOutputStream.newInstance(outputStream);
+                cosCache.put(outputStream, cos);
+            }
         
-        try {
-          dynamicMessage.writeTo(cos);
-        }
-        finally {
-            cos.flush();
+            try {
+              dynamicMessage.writeTo(cos);
+            }
+            finally {
+                cos.flush();
+            }
         }
     }
     
@@ -274,12 +287,15 @@ public class PBufParser implements XmlServiceParser {
         return bean;
     }
     
-    private synchronized DynamicMessage internalUnmarshal(ModelImpl model, InputStream is) throws Exception {
+    private DynamicMessage internalUnmarshal(ModelImpl model, InputStream is) throws Exception {
         Class<?> originalAsClass = model.getOriginalInterfaceAsClass();
         String originalInterface = model.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
         
-        Descriptors.Descriptor descriptor = allProtos.get(originalAsClass);
+        Descriptors.Descriptor descriptor;
+        synchronized (allProtos) {
+            descriptor = allProtos.get(originalAsClass);
+        }
         if (descriptor == null) {
             throw new IOException("Unknown model: " + originalInterface + " with protoName=" + protoName);
         }
@@ -291,7 +307,7 @@ public class PBufParser implements XmlServiceParser {
     
     
     @SuppressWarnings("unchecked")
-    private synchronized <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {
+    private <T>  DynamicMessage internalMarshal(XmlHk2ConfigurationBean bean) throws IOException {
         Map<String, Object> blm = bean._getBeanLikeMap();
         ModelImpl model = bean._getModel();
         
@@ -299,7 +315,11 @@ public class PBufParser implements XmlServiceParser {
         String originalInterface = model.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
         
-        Descriptors.Descriptor descriptor = allProtos.get(originalAsClass);
+        Descriptors.Descriptor descriptor;
+        synchronized (allProtos) {
+            descriptor = allProtos.get(originalAsClass);
+        }
+        
         if (descriptor == null) {
             throw new IOException("Unknown model: " + originalInterface + " with protoName=" + protoName);
         }
@@ -375,21 +395,23 @@ public class PBufParser implements XmlServiceParser {
         return retValBuilder.build();
     }
     
-    private synchronized void convertAllModels(ModelImpl model, List<Descriptors.FileDescriptor> protoFiles) throws Exception {
-        Class<?> modelClass = model.getOriginalInterfaceAsClass();
-        if (allProtos.containsKey(modelClass)) return;
+    private void convertAllModels(ModelImpl model, List<Descriptors.FileDescriptor> protoFiles) throws Exception {
+        synchronized (allProtos) {
+            Class<?> modelClass = model.getOriginalInterfaceAsClass();
+            if (allProtos.containsKey(modelClass)) return;
         
-        for (ParentedModel pModel : model.getAllChildren()) {
-            convertAllModels(pModel.getChildModel(), protoFiles);
+            for (ParentedModel pModel : model.getAllChildren()) {
+                convertAllModels(pModel.getChildModel(), protoFiles);
+            }
+        
+            if (allProtos.containsKey(modelClass)) return;
+        
+            Descriptors.Descriptor converted = convertModelToDescriptor(model, protoFiles);
+        
+            protoFiles.add(converted.getFile());
+        
+            allProtos.put(modelClass, converted);
         }
-        
-        if (allProtos.containsKey(modelClass)) return;
-        
-        Descriptors.Descriptor converted = convertModelToDescriptor(model, protoFiles);
-        
-        protoFiles.add(converted.getFile());
-        
-        allProtos.put(modelClass, converted);
     }
     
     private static DescriptorProtos.FieldDescriptorProto.Type convertChildDataModelToType(ChildDataModel cdm) {

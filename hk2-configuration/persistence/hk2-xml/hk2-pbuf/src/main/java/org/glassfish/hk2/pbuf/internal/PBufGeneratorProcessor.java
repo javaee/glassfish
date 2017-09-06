@@ -251,6 +251,35 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         return null;
     }
     
+    private static String getDeclaredType(DeclaredType declaredType) {
+        TypeElement typeElement = (TypeElement) declaredType.asElement();
+        String fullName = Utilities.convertNameToString(typeElement.getQualifiedName());
+        
+        if (Boolean.class.getName().equals(fullName)) {
+            return "bool";
+        }
+        if (Byte.class.getName().equals(fullName) ||
+                Short.class.getName().equals(fullName) ||
+                Integer.class.getName().equals(fullName)) {
+            return "int32";
+        }
+        if (Long.class.getName().equals(fullName)) {
+            return "int64";
+        }
+        if (Character.class.getName().equals(fullName) ||
+                String.class.getName().equals(fullName)) {
+            return "string";
+        }
+        if (Float.class.getName().equals(fullName)) {
+            return "float";
+        }
+        if (Double.class.getName().equals(fullName)) {
+            return "double";
+        }
+        
+        return "string";
+    }
+    
     private static String getPBufType(ExecutableElement method, TypeMirror mirror) {
         TypeKind kind = mirror.getKind();
         
@@ -270,6 +299,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         case DOUBLE:
             return "double";
         case DECLARED:
+            return getDeclaredType((DeclaredType) mirror);
         case ARRAY:
             // TODO: Really?
             return "string";
@@ -279,10 +309,49 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         }
     }
     
+    private static boolean isSetter(ExecutableElement method) {
+        String methodName = Utilities.convertNameToString(method.getSimpleName());
+        if (methodName.startsWith("set") && methodName.length() > 3) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private static boolean isGetter(ExecutableElement method) {
+        String methodName = Utilities.convertNameToString(method.getSimpleName());
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            return true;
+        }
+        
+        if (!methodName.startsWith("is")) {
+            return false;
+        }
+        if (methodName.length() <= 2) {
+            return false;
+        }
+        
+        TypeMirror mirror = method.getReturnType();
+        if (mirror.getKind().equals(TypeKind.BOOLEAN)) {
+            return true;
+        }
+        if (mirror.getKind().equals(TypeKind.DECLARED)) {
+            DeclaredType declared = (DeclaredType) mirror;
+            TypeElement asElement = (TypeElement) declared.asElement();
+            
+            String elementName = Utilities.convertNameToString(asElement.getQualifiedName());
+            if (Boolean.class.getName().equals(elementName)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     private static String getPBufType(ExecutableElement method) {
         String methodName = Utilities.convertNameToString(method.getSimpleName());
         
-        if (methodName.startsWith("set")) {
+        if (isSetter(method)) {
             List<? extends VariableElement> parameters = method.getParameters();
             if (parameters.size() != 1) {
                 throw new AssertionError("Unknown setter has more than one input parameter: " + methodName);
@@ -294,7 +363,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             return retVal;
         }
         
-        if (methodName.startsWith("get")) {
+        if (isGetter(method)) {
             TypeMirror type = method.getReturnType();
             
             if (type == null) {
@@ -306,6 +375,27 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         }
         
         throw new AssertionError("Cannot determing type as XmlElement not on a get or set method " + methodName);
+        
+    }
+    
+    /**
+     * Returns a non-decapitalized field name
+     * 
+     * @param method
+     * @return
+     */
+    private static String getRawFieldNameFromMethod(ExecutableElement method) {
+        String simpleName = Utilities.convertNameToString(method.getSimpleName());
+        
+        if (simpleName.startsWith("get") || simpleName.startsWith("set")) {
+            return simpleName.substring(3);
+        }
+        
+        if (simpleName.startsWith("is")) {
+            return simpleName.substring(2);
+        }
+        
+        throw new AssertionError("Unknown method name " + simpleName + " is neither a getter nor a setter");
         
     }
     
@@ -338,17 +428,15 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                     
                 String sValue = (String) av.getValue();
                 if (Generator.JAXB_DEFAULT_STRING.equals(sValue)) {
-                    String methodName = Utilities.convertNameToString(method.getSimpleName());
+                    nameValue = getRawFieldNameFromMethod(method);
                     
-                    nameValue = methodName.substring(3);
                     nameValue = Introspector.decapitalize(nameValue);
                 }
                 else {
                     nameValue = sValue;
                 }
                 
-                String methodName = Utilities.convertNameToString(method.getSimpleName());
-                String sortField = methodName.substring(3);
+                String sortField = getRawFieldNameFromMethod(method);
                 sortField = Introspector.decapitalize(sortField);
                 
                 return new XmlElementInfo(nameValue, type, sortField);
