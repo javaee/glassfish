@@ -49,7 +49,7 @@
         <relativePath />
     </parent>
     <artifactId>maven-plugins</artifactId>
-    <version>2.5.0-b47</version>
+    <version>2.5.0-b48-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -67,7 +67,7 @@
         <connection>scm:git:https://github.com/hk2-project/hk2.git</connection>
         <developerConnection>scm:git:git@github.com:hk2-project/hk2.git</developerConnection>
         <url>https://hk2-project.github.io</url>
-        <tag>maven-plugins-2.5.0-b47</tag>
+        <tag>2.5.0-b44-SNAPSHOT</tag>
     </scm>
 
     <build>
