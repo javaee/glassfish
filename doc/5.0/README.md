@@ -11,7 +11,7 @@ Beta Draft (Pre-General Availability)
 * [Java EE 8 Tutorial](https://javaee.github.io/tutorial/)
 * [JavaServer Faces 2.3 Facelets Tag Library Documentation](vdldoc/index.html)
 * [JavaServer Faces 2.3 JSP Tag Library Documentation](vdldocs/jsp/index.html)
-* [JavaServer Faces 2.3 Standard HTML RenderKit Documentation](renderkitdocs/index.html
+* [JavaServer Faces 2.3 Standard HTML RenderKit Documentation](renderkitdocs/index.html)
 * [JavaServer Faces 2.3 JavaScript Documentation](jsdocs/index.html)
 
 
