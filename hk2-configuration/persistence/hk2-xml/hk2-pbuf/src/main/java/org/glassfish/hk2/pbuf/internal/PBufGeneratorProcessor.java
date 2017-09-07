@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -75,8 +76,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.pbuf.api.annotations.Comment;
 import org.glassfish.hk2.xml.internal.Generator;
 import org.glassfish.hk2.xml.internal.Utilities;
+
+import com.google.protobuf.Method;
 
 /**
  * @author jwells
@@ -190,12 +194,34 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         }
     }
     
+    private void doComment(Writer writer, String comment, boolean indent) throws IOException {
+        if (comment == null || comment.isEmpty()) return;
+        
+        StringTokenizer nlTokenizer = new StringTokenizer(comment, "\n\r");
+        while(nlTokenizer.hasMoreTokens()) {
+            String singleLine = "// " + nlTokenizer.nextToken() + "\n";
+            if (indent) {
+                writeTab(writer);
+            }
+            
+            writer.write(singleLine);
+        }
+    }
+    
     private void handleMethods(Writer writer, TypeElement clazz, List<? extends Element> allMethods, Elements elements) {
         String clazzSimpleName = Utilities.convertNameToString(clazz.getSimpleName());
+        
+        Comment commentAnnotation = clazz.getAnnotation(Comment.class);
+        String comment = null;
+        
+        if (commentAnnotation != null) {
+            comment = commentAnnotation.value();
+        }
         
         try {
             List<XmlElementInfo> infos = doImports(writer, clazz, allMethods, elements);
             
+            doComment(writer, comment, false);
             writer.write("message " + clazzSimpleName + " {\n");
             
             int number = 1;
@@ -215,6 +241,10 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
     }
     
     private boolean handleMethod(Writer writer, XmlElementInfo info, int number) throws IOException {
+        writeBlankLine(writer);
+        
+        doComment(writer, info.getComment(), true);
+        
         writeTab(writer);
         
         if (info.getChildInfo() == null) {
@@ -400,6 +430,13 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
     }
     
     private static XmlElementInfo getXmlElementName(ExecutableElement method, Elements elements) {
+        Comment commentAnnotation = method.getAnnotation(Comment.class);
+        String comment = null;
+        
+        if (commentAnnotation != null) {
+            comment = commentAnnotation.value();
+        }
+        
         List<? extends AnnotationMirror> annotationMirrors = elements.getAllAnnotationMirrors(method);
         for (AnnotationMirror mirror : annotationMirrors) {
             DeclaredType mirrorType = mirror.getAnnotationType();
@@ -439,7 +476,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                 String sortField = getRawFieldNameFromMethod(method);
                 sortField = Introspector.decapitalize(sortField);
                 
-                return new XmlElementInfo(nameValue, type, sortField);
+                return new XmlElementInfo(nameValue, type, sortField, comment);
             }
         }
         
@@ -574,11 +611,13 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         private final String type;
         private ChildInfo childInfo;
         private final String sortField;
+        private final String comment;
         
-        private XmlElementInfo(String name, String type, String sortField) {
+        private XmlElementInfo(String name, String type, String sortField, String comment) {
             this.name = name;
             this.type = type;
             this.sortField = sortField;
+            this.comment = comment;
         }
         
         private String getName() {
@@ -599,6 +638,10 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         
         private String getSortField() {
             return sortField;
+        }
+        
+        private String getComment() {
+            return comment;
         }
         
         @Override
