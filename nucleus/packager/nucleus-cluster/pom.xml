@@ -95,17 +95,11 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency> 
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>trilead-ssh2</artifactId>
-            <version>${trilead-ssh2.version}</version>
-	    <optional>true</optional>
-        </dependency>
 -->
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>org.glassfish.external</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
+            <version>${jsch.version}</version>
         </dependency>
     </dependencies>
 </project>

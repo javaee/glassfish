@@ -72,9 +72,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>org.glassfish.external</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
+            <version>${jsch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
