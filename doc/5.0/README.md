@@ -9,13 +9,16 @@ Beta Draft (Pre-General Availability)
 
 * [Java EE 8 First Cup](https://javaee.github.io/firstcup/)
 * [Java EE 8 Tutorial](https://javaee.github.io/tutorial/)
+* [Java EE 8 Specification APIs](https://javaee.github.io/javaee-spec/javadocs/)
 * [JavaServer Faces 2.3 Facelets Tag Library Documentation](vdldoc/index.html)
 * [JavaServer Faces 2.3 JSP Tag Library Documentation](vdldocs/jsp/index.html)
 * [JavaServer Faces 2.3 Standard HTML RenderKit Documentation](renderkitdocs/index.html)
 * [JavaServer Faces 2.3 JavaScript Documentation](jsdocs/index.html)
 
 
-# GlassFish Documentation
+# GlassFish Server Documentation
+
+* [Application Development Guide](E87459_01.pdf) 
 
 
 # How-to contribute to GlassFish
