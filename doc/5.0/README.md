@@ -31,7 +31,7 @@ Beta Draft (Pre-General Availability)
 
 # Open MQ Documentation
 
-*[Open MQ Release Notes] (mq-release-notes.pdf)
+* [Open MQ Release Notes](mq-release-notes.pdf)
 
 
 # How-to contribute to GlassFish
