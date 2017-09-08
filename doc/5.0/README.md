@@ -1,5 +1,5 @@
-The following is a preliminary list of documentation deliverables being released for the 
-GlassFish 5.0/Java EE 8 Documentation. All documentation placed in the doc/5.0 folder 
+The following is a preliminary list of documentation deliverables being released for the
+GlassFish 5.0/Java EE 8 Documentation. All documentation placed in the doc/5.0 folder
 is included in the list. This page is the basis for the documentation landing page.
 
 Beta Draft (Pre-General Availability)
@@ -18,6 +18,7 @@ Beta Draft (Pre-General Availability)
 
 # GlassFish Server Documentation
 
+* [Installation Guide](installation-guide.pdf)
 * [Application Development Guide](E87459_01.pdf) 
 
 
