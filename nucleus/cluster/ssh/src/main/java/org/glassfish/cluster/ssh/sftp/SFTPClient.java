@@ -83,7 +83,7 @@ public class SFTPClient {
     }
 
     /**
-     * Graceful {@link #stat(String)} that returns null if the path doesn't exist.
+     * Graceful stat that returns null if the path doesn't exist.
      */
     public SftpATTRS _stat(String path) throws SftpException {
         try {
@@ -101,6 +101,11 @@ public class SFTPClient {
      * Makes sure that the directory exists, by creating it if necessary.
      */
     public void mkdirs(String path, int posixPermission) throws SftpException {
+        // remove trailing slash if present
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
         path = normalizePath(path);
         SftpATTRS attrs = _stat(path);
         if (attrs != null && attrs.isDir())
@@ -113,66 +118,6 @@ public class SFTPClient {
         sftpChannel.chmod(posixPermission, path);
     }
 
-    /**
-     * Creates a new file and writes to it.
-    public OutputStream writeToFile(String path) throws IOException {
-        path =normalizePath(path);
-        final SFTPv3FileHandle h = createFile(path);
-        return new OutputStream() {
-            private long offset = 0;
-            public void write(int b) throws IOException {
-                write(new byte[]{(byte)b});
-            }
-
-            @Override
-            public void write(byte[] b, int off, int len) throws IOException {
-                SFTPClient.this.write(h,offset,b,off,len);
-                offset += len;
-            }
-
-            @Override
-            public void close() throws IOException {
-                closeFile(h);
-            }
-        };
-    }
-
-    public InputStream read(String file) throws IOException {
-        file =normalizePath(file);         
-        final SFTPv3FileHandle h = openFileRO(file);
-        return new InputStream() {
-            private long offset = 0;
-
-            public int read() throws IOException {
-                byte[] b = new byte[1];
-                if(read(b)<0)
-                    return -1;
-                return b[0];
-            }
-
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                int r = SFTPClient.this.read(h,offset,b,off,len);
-                if (r<0)    return -1;
-                offset += r;
-                return r;
-            }
-
-            @Override
-            public long skip(long n) throws IOException {
-                offset += n;
-                return n;
-            }
-
-            @Override
-            public void close() throws IOException {
-                closeFile(h);
-            }
-        };
-    }
-     */
-
-
     public void chmod(String path, int permissions) throws SftpException {
         path = normalizePath(path);
         sftpChannel.chmod(permissions, path);
@@ -181,5 +126,10 @@ public class SFTPClient {
     // Commands run in a shell on Windows need to have forward slashes.
     public static String normalizePath(String path){
         return path.replaceAll("\\\\","/");
+    }
+
+    public void cd(String path) throws SftpException {
+        path = normalizePath(path);
+        sftpChannel.cd(path);
     }
 }

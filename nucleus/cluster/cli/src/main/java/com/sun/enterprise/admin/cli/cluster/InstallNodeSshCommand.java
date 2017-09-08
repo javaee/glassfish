@@ -143,7 +143,6 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
     }
 
     private void copyToHostsInternal(File zipFile, ArrayList<String> binDirFiles) throws JSchException, IOException, InterruptedException, CommandException {
-
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
         boolean prompt = promptPass;
@@ -199,10 +198,9 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
             try {
                 logger.info("Copying " + zip + " (" + zipFile.length() + " bytes)"
                         + " to " + host + ":" + sshInstallDir);
-                // Looks like we need to quote the paths to scp in case they
-                // contain spaces.
-                OutputStream outputStream = sftpClient.getSftpChannel().put(FileUtils.quoteString(sshInstallDir));
-                Files.copy(zipFile.toPath(), outputStream);
+                // TODO: Looks like we need to quote the paths to scp in case they contain spaces.
+                sftpClient.cd(sshInstallDir);
+                sftpClient.getSftpChannel().put(zipFile.getAbsolutePath(), zipFile.getName());
                 if (logger.isLoggable(Level.FINER))
                     logger.finer("Copied " + zip + " to " + host + ":" +
                                                                 sshInstallDir);
@@ -240,6 +238,9 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
                 logger.info(Strings.get("remove.glassfish.failed", host, sshInstallDir));
                 throw new IOException(ioe);
             }
+            sftpClient.close();
+
+            sftpClient = sshLauncher.getSFTPClient();
 
             // unjarring doesn't retain file permissions, hence executables need
             // to be fixed with proper permissions
@@ -251,7 +252,7 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
                 }
                 else {
                     for (String binDirFile : binDirFiles) {
-                        sftpClient.chmod((sshInstallDir + "/" + binDirFile), 0755);
+                        sftpClient.chmod(sshInstallDir + "/" + binDirFile, 0755);
                     }
                 }
                 if (logger.isLoggable(Level.FINER))

@@ -277,113 +277,6 @@ public class SSHLauncher {
         session.connect();
     }
 
-  /**
-     * Opens the connection to the host and authenticates with public
-     * key.
-     * 
-    private void openConnection() throws IOException {
-
-    boolean isAuthenticated = false;
-    String message= "";
-    connection = new Connection(host, port);
-
-        connection.connect(new HostVerifier(knownHostsDatabase));
-        if(SSHUtil.checkString(keyFile) == null && SSHUtil.checkString(password) == null &&
-                privateKey == null) {
-            message += "No key or password specified - trying default keys \n";
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("keyfile and password are null. Will try to authenticate with default key file if available");
-            }
-            // check the default key locations if no authentication
-            // method is explicitly configured.
-            File home = new File(System.getProperty("user.home"));
-            for (String keyName : Arrays.asList("id_rsa","id_dsa",
-                                                "identity"))
-            {
-                message += "Tried to authenticate using " + keyName + "\n";
-                File key = new File(home,".ssh/"+keyName);
-                if (key.exists()) {
-                    isAuthenticated =
-                        connection.authenticateWithPublicKey(userName,
-                                                             key, null);
-                }
-                if (isAuthenticated) {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("Authentication successful using key " + keyName);
-                    }
-
-                    message = null;
-
-                    break;
-                }
-
-            }
-        }
-
-        if (!isAuthenticated && SSHUtil.checkString(password) != null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Authenticating with password " + getPrintablePassword(password));
-            }
-            try {
-              isAuthenticated = connection.authenticateWithPassword(userName, password);
-            } catch (IOException iex) {
-                message = "SSH authentication with password failed: " +
-                                ExceptionUtil.getRootCause(iex).getMessage();
-                logger.log(Level.WARNING,message,iex);
-            }
-      }
-
-        if (!isAuthenticated && privateKey != null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Authenticating with privateKey");
-            }
-            try {
-                  isAuthenticated = connection.authenticateWithPublicKey(
-                                                      userName, privateKey, keyPassPhrase);
-            } catch (IOException iex) {
-                message = "SSH authentication with private key failed: " +
-                                ExceptionUtil.getRootCause(iex).getMessage();
-                logger.log(Level.WARNING,message,iex);
-            }
-        }
-      
-        if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
-            if (logger.isLoggable(Level.FINER)) {
-                logger.finer("Specified key file is " + keyFile);
-            }
-            File key = new File(keyFile);
-            if (key.exists()) {
-                if (logger.isLoggable(Level.FINER)) {
-                    logger.finer("Specified key file exists at " + key);
-                }
-                try {
-                  isAuthenticated = connection.authenticateWithPublicKey(
-                                                      userName, key, keyPassPhrase);
-                } catch (IOException iex){
-                    message = "SSH authentication with key file " + key +
-                                    " failed: " +
-                                ExceptionUtil.getRootCause(iex).getMessage();
-                    logger.log(Level.WARNING,message,iex);
-                }
-
-            }
-        }
-
-
-        if (!isAuthenticated && !connection.isAuthenticationComplete()) {
-            connection.close();
-            connection = null;
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Could not authenticate");
-            }
-            throw new IOException("Could not authenticate. " + message);
-        }
-        message = null;
-        SSHUtil.register(connection);
-
-    }
-   */
-
     /**
      * Executes a command on the remote system via ssh, optionally sending
      * lines of data to the remote process's System.in.
@@ -472,13 +365,18 @@ public class SSHLauncher {
         if (logger.isLoggable(Level.FINER)) {
             logger.finer("Running command " + command + " on host: " + this.host);
         }
-
-        openConnection();
+        boolean createNewSession = false;
+        if (session == null)
+            createNewSession = true;
+        if(createNewSession)
+            openConnection();
 
         int status = exec(command, os, listInputStream(stdinLines));
 
-        SSHUtil.unregister(session);
-        session = null;
+        if(createNewSession) {
+            SSHUtil.unregister(session);
+            session = null;
+        }
         return status;
     }
 
@@ -726,25 +624,23 @@ public class SSHLauncher {
         }
         try {
             JSch jsch = new JSch();
+            // Server Auth
+            if (knownHostsLocation == null || knownHostsLocation.equals("")) {
+                throw new IllegalArgumentException("Known hosts database cannot be null");
+            }
+            jsch.setKnownHosts(knownHostsLocation);
+
             Session s1 = jsch.getSession(userName, host, port);
-            s1.setPassword(password);
+            s1.setPassword(passwd);
             s1.connect();
 
             if (!s1.isConnected()) {
                 throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
             }
-
-            //We open up a second connection for scp and exec. For some reason, a hang
-            //is seen in MKS if we try to do everything using the same connection.
-            Session s2 = jsch.getSession(userName, host, port);
-            s2.setPassword(password);
-            s2.connect();
-            this.session = s2;
-
-            if (!s2.isConnected()) {
-                throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
-            }
             SFTPClient sftp = new SFTPClient(s1);
+            ChannelSftp sftpChannel = sftp.getSftpChannel();
+
+            this.session = s1;
 
             if (key.exists()) {
 
@@ -765,9 +661,9 @@ public class SSHLauncher {
                         if (logger.isLoggable(Level.FINE)) {
                             logger.fine(SSH_DIR + " does not exist");
                         }
-                        sftp.getSftpChannel().cd(".");
-                        sftp.getSftpChannel().mkdir(".ssh");
-                        sftp.getSftpChannel().chmod(0700, ".ssh");
+                        sftpChannel.cd(sftpChannel.getHome());
+                        sftpChannel.mkdir(".ssh");
+                        sftpChannel.chmod(0700, ".ssh");
                     }
                 } catch (Exception e) {
                     if (logger.isLoggable(Level.FINER)) {
@@ -779,10 +675,9 @@ public class SSHLauncher {
                 //copy over the public key to remote host
                 //scp.put(pubKey.getAbsolutePath(), "key.tmp", ".ssh", "0600");
                 try {
-                    sftp.getSftpChannel().cd(".ssh");
-                    OutputStream outputStream = sftp.getSftpChannel().put("key.tmp");
-                    Files.copy(pubKey.toPath(), outputStream);
-                    sftp.chmod("key.tmp", 0600);
+                    sftpChannel.cd(".ssh");
+                    sftpChannel.put(pubKey.getAbsolutePath(), "key.tmp");
+                    sftpChannel.chmod(0600, "key.tmp");
                 } catch (SftpException ex) {
                     throw new IOException("Unable to copy the public key", ex);
                 }
@@ -810,16 +705,15 @@ public class SSHLauncher {
                 //for connection to go through
                 logger.info("Fixing file permissions for home(755), .ssh(700) and authorized_keys file(644)");
                 try {
-                    sftp.getSftpChannel().cd(".");
-                    sftp.chmod(".", 0755);
-                    sftp.chmod(SSH_DIR, 0700);
-                    sftp.chmod(SSH_DIR + AUTH_KEY_FILE, 0644);
+                    sftpChannel.cd(sftpChannel.getHome());
+                    sftpChannel.chmod(0755, ".");
+                    sftpChannel.chmod(0700, ".ssh");
+                    sftpChannel.chmod(0644, SSH_DIR + AUTH_KEY_FILE);
                 } catch (SftpException ex) {
                     throw new IOException("Unable to fix file permissions", ex);
                 }
                 //release the connections
                 sftp.close();
-                s2.disconnect();
             }
         } catch (JSchException ex) {
             throw new IOException(ex);
@@ -854,6 +748,12 @@ public class SSHLauncher {
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("Checking connection...");
             }
+            // Server Auth
+            if (knownHostsLocation == null || knownHostsLocation.equals("")) {
+                throw new IllegalArgumentException("Known hosts database cannot be null");
+            }
+            jsch.setKnownHosts(knownHostsLocation);
+
             jsch.addIdentity(f.getAbsolutePath(), rawKeyPassPhrase);
             sess = jsch.getSession(userName, host, port);
             sess.connect();
