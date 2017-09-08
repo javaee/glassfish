@@ -41,6 +41,8 @@ package org.glassfish.hk2.pbuf.test.basic;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -57,8 +59,6 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.protobuf.DescriptorProtos;
 
 /**
  * @author jwells
@@ -86,9 +86,6 @@ public class PBufParserTest {
     @Test
     // @org.junit.Ignore
     public void testMarshalFlatBean() throws Exception {
-        ClassLoader cl = getClass().getClassLoader();
-        URL protoURL = cl.getResource("proto/RootOnlyBean.proto");
-        
         ServiceLocator locator = Utilities.enableLocator();
         
         XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
@@ -139,6 +136,49 @@ public class PBufParserTest {
         
         byte[] asBytes = baos.toByteArray();
         Assert.assertTrue(asBytes.length > 0);
+        
+        /*
+        File f = new File("jrw.pbuf");
+        FileOutputStream bais = new FileOutputStream(f);
+        bais.write(asBytes);
+        bais.close();
+        */
+    }
+    
+    private final static int NUM_LOOPS = 10;
+    
+    @Test
+    public void testMarshalUnmarshalSeveralInSameStream() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            for (int lcv = 0; lcv < NUM_LOOPS; lcv++) {
+              XmlRootHandle<ServiceRecordBlockBean> handle = getStandardTestBlock(xmlService);
+              handle.getRoot().setSequenceNumber((long) lcv);
+              
+              handle.marshal(baos);
+            }
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte output[] = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(output);
+        try {
+            for (int lcv = 0; lcv < NUM_LOOPS; lcv++) {
+                XmlRootHandle<ServiceRecordBlockBean> readHandle = xmlService.unmarshal(bais, ServiceRecordBlockBean.class);
+                validateStandardBean(readHandle, lcv);
+            }
+        }
+        finally {
+            bais.close();
+        }
     }
     
     /**
@@ -159,7 +199,7 @@ public class PBufParserTest {
         
         XmlRootHandle<ServiceRecordBlockBean> handle = xmlService.unmarshal(standardPbufURI, ServiceRecordBlockBean.class);
         
-        validateStandardBean(handle);
+        validateStandardBean(handle, 0);
     }
     
     /**
@@ -259,9 +299,11 @@ public class PBufParserTest {
         validateFooBean(uHandle);
     }
     
-    private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle) {
+    private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle, long sequenceNumber) {
         ServiceRecordBlockBean root = handle.getRoot();
         Assert.assertNotNull(root);
+        Assert.assertEquals(sequenceNumber, root.getSequenceNumber());
+        
         Assert.assertNull(root.getNotSet());
         Assert.assertEquals(0, root.getNotSetInt());
         
@@ -367,6 +409,8 @@ public class PBufParserTest {
         handle.addRoot();
         
         ServiceRecordBlockBean blockBean = handle.getRoot();
+        
+        blockBean.setSequenceNumber(0L);
         
         CustomerBean acmeBean = createCustomerBean(xmlService, ACME, ACME_ID);
         CustomerBean bjsBean = createCustomerBean(xmlService, BJS, BJS_ID);

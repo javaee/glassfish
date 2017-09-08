@@ -139,6 +139,13 @@ public class InteropTest {
         
         byte asBytes[] = baos.toByteArray();
         
+        /*
+        File f = new File("jrw.pbuf");
+        FileOutputStream fox = new FileOutputStream(f);
+        fox.write(asBytes);
+        fox.close();
+        */
+        
         URL pbufURL = loader.getResource(STANDARD_PBUF);
         
         byte benchmark[] = readURLCompletely(pbufURL);

@@ -73,6 +73,7 @@ import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
@@ -86,6 +87,7 @@ public class PBufParser implements XmlServiceParser {
     private final Object unmarshalLock = new Object();
     
     private final WeakHashMap<OutputStream, CodedOutputStream> cosCache = new WeakHashMap<OutputStream, CodedOutputStream>();
+    private final WeakHashMap<InputStream, CodedInputStream> cisCache = new WeakHashMap<InputStream, CodedInputStream>();
     
     @Inject @Named(PBufUtilities.PBUF_SERVICE_NAME)
     private IterableProvider<XmlService> xmlService;
@@ -124,7 +126,20 @@ public class PBufParser implements XmlServiceParser {
         }
         
         synchronized (unmarshalLock) {
-            DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, input);
+            CodedInputStream cis = cisCache.get(input);
+            if (cis == null) {
+                cis = CodedInputStream.newInstance(input);
+                cisCache.put(input, cis);
+            }
+            
+            int size = cis.readInt32();
+            if (size <= 0) {
+                throw new AssertionError("Invalid size of protocol buffer on the wire: " + size);
+            }
+            
+            byte[] rawBytes = cis.readRawBytes(size);
+            
+            DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, rawBytes);
         
             XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
                 null,
@@ -168,13 +183,16 @@ public class PBufParser implements XmlServiceParser {
         
         synchronized (marshalLock) {
             DynamicMessage dynamicMessage = internalMarshal(rootBean);
+            int size = dynamicMessage.getSerializedSize();
+            
             CodedOutputStream cos = cosCache.get(outputStream);
             if (cos == null) {
                 cos = CodedOutputStream.newInstance(outputStream);
                 cosCache.put(outputStream, cos);
             }
-        
+            
             try {
+              cos.writeInt32NoTag(size);
               dynamicMessage.writeTo(cos);
             }
             finally {
@@ -287,7 +305,7 @@ public class PBufParser implements XmlServiceParser {
         return bean;
     }
     
-    private DynamicMessage internalUnmarshal(ModelImpl model, InputStream is) throws Exception {
+    private DynamicMessage internalUnmarshal(ModelImpl model, byte[] bytes) throws Exception {
         Class<?> originalAsClass = model.getOriginalInterfaceAsClass();
         String originalInterface = model.getOriginalInterface();
         String protoName = getSimpleName(originalInterface);
@@ -300,7 +318,7 @@ public class PBufParser implements XmlServiceParser {
             throw new IOException("Unknown model: " + originalInterface + " with protoName=" + protoName);
         }
         
-        DynamicMessage retVal = DynamicMessage.parseFrom(descriptor, is);
+        DynamicMessage retVal = DynamicMessage.parseFrom(descriptor, bytes);
         return retVal;
     }
     

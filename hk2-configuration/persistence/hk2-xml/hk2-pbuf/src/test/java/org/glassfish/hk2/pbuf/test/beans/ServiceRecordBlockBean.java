@@ -56,10 +56,16 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 @Hk2XmlPreGenerate
 @XmlRootElement(name="service-record-block")
-@XmlType(propOrder={ "serviceRecords"
+@XmlType(propOrder={
+        "sequenceNumber"
+        , "serviceRecords"
         , "notSet"
         , "notSetInt" })
 public interface ServiceRecordBlockBean {
+    @XmlElement
+    public long getSequenceNumber();
+    public void setSequenceNumber(long seqNum);
+    
     @XmlElement(name="serviceRecord")
     @PluralOf("ServiceRecord")
     public List<ServiceRecordBean> getServiceRecords();
