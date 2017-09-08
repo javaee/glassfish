@@ -21,11 +21,11 @@ Beta Draft (Pre-General Availability)
 * [Quick Start Guide](quick-start-guide.pdf)
 * [Installation Guide](installation-guide.pdf)
 * [GlassFish Server 5.0 Release Notes](release-notes.pdf)
+* [Application Development Guide](application-development-guide.pdf)
 * [Application Deployment Guide](application-deployment-guide.pdf)
 * [Reference Manual](reference-manual.pdf)
 * [Error Messages Reference](error-messages-reference.pdf)
 * [Security Guide](security-guide.pdf)
-* [Application Development Guide](E87459_01.pdf)
 
 
 # How-to contribute to GlassFish
