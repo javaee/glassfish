@@ -20,7 +20,7 @@ Beta Draft (Pre-General Availability)
 
 * [Quick Start Guide](quick-start-guide.pdf)
 * [Installation Guide](installation-guide.pdf)
-* Administration Guide
+* [Administration Guide](administration-guide.pdf)
 * [GlassFish Server 5.0 Release Notes](release-notes.pdf)
 * [Application Development Guide](application-development-guide.pdf)
 * [Application Deployment Guide](application-deployment-guide.pdf)
