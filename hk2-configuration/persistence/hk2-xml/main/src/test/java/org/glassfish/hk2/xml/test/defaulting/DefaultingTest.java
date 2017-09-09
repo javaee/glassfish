@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
@@ -77,6 +78,18 @@ public class DefaultingTest {
         XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshal(url.toURI(), DefaultedBean.class);
         DefaultedBean db = rootHandle.getRoot();
         
+        XmlHk2ConfigurationBean asBean = (XmlHk2ConfigurationBean) db;
+        Assert.assertFalse(asBean._isSet("int-prop"));
+        Assert.assertFalse(asBean._isSet("long-prop"));
+        Assert.assertFalse(asBean._isSet("short-prop"));
+        Assert.assertFalse(asBean._isSet("byte-prop"));
+        Assert.assertFalse(asBean._isSet("boolean-prop"));
+        Assert.assertFalse(asBean._isSet("char-prop"));
+        Assert.assertFalse(asBean._isSet("float-prop"));
+        Assert.assertFalse(asBean._isSet("double-prop"));
+        Assert.assertFalse(asBean._isSet("string-prop"));
+        Assert.assertFalse(asBean._isSet("qname-prop"));
+        
         Assert.assertEquals(13, db.getIntProp());
         Assert.assertEquals(13L, db.getLongProp());
         Assert.assertEquals((byte) 13, db.getByteProp());
@@ -87,6 +100,44 @@ public class DefaultingTest {
         Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
         Assert.assertEquals("13", db.getStringProp());
         Assert.assertEquals(new QName("http://qwerty.com/qwerty", "foo", "xyz"), db.getQNameProp());
+        
+        // Now set them all to the default values and make sure "isSet" works properly
+        // db.setIntProp(13); we will have to trust that this one works
+        db.setLongProp(13L);
+        db.setByteProp((byte) 13);
+        db.setBooleanProp(true);
+        db.setShortProp((short) 13); 
+        db.setCharProp('f');
+        db.setFloatProp((float) 13.00);
+        db.setDoubleProp(13.00);
+        db.setStringProp("13");
+        db.setQNameProp(new QName("http://qwerty.com/qwerty", "foo", "xyz"));
+        
+        // Check the SET default values (for completeness)
+        Assert.assertEquals(13, db.getIntProp());
+        Assert.assertEquals(13L, db.getLongProp());
+        Assert.assertEquals((byte) 13, db.getByteProp());
+        Assert.assertEquals(true, db.isBooleanProp());
+        Assert.assertEquals((short) 13, db.getShortProp());
+        Assert.assertEquals('f', db.getCharProp());
+        Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
+        Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
+        Assert.assertEquals("13", db.getStringProp());
+        Assert.assertEquals(new QName("http://qwerty.com/qwerty", "foo", "xyz"), db.getQNameProp());
+        
+        // First one still false, need to test this without a setter
+        Assert.assertFalse(asBean._isSet("int-prop"));
+        
+        // But all the rest should be true now
+        Assert.assertTrue(asBean._isSet("long-prop"));
+        Assert.assertTrue(asBean._isSet("short-prop"));
+        Assert.assertTrue(asBean._isSet("byte-prop"));
+        Assert.assertTrue(asBean._isSet("boolean-prop"));
+        Assert.assertTrue(asBean._isSet("char-prop"));
+        Assert.assertTrue(asBean._isSet("float-prop"));
+        Assert.assertTrue(asBean._isSet("double-prop"));
+        Assert.assertTrue(asBean._isSet("string-prop"));
+        Assert.assertTrue(asBean._isSet("qname-prop"));
     }
     
     /**

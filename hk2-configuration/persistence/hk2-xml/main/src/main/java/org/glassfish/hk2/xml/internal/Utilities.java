@@ -783,9 +783,11 @@ public class Utilities {
             String nonChildPropertyNamespace = QNameUtilities.getNamespace(nonChildProperty);
             String nonChildPropertyKey = nonChildProperty.getLocalPart();
             
-            Object value = childToCopy._getProperty(nonChildPropertyNamespace, nonChildPropertyKey);
-            if (value == null) continue;
+            if (!childToCopy._isSet(nonChildPropertyNamespace, nonChildPropertyKey)) {
+                continue;
+            }
             
+            Object value = childToCopy._getProperty(nonChildPropertyNamespace, nonChildPropertyKey);
             child._setProperty(nonChildPropertyNamespace, nonChildPropertyKey, value, false);
         }
         

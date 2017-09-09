@@ -64,8 +64,6 @@ public class NamespaceBeanLikeMapImpl implements NamespaceBeanLikeMap, Serializa
         namespaceMap.put(XmlService.DEFAULT_NAMESPACE, new LinkedHashMap<String, Object>());
     }
     
-    
-    
     private static Map<String, Map<String, Object>> deepCopyNamespaceBeanLikeMaps(Map<String, Map<String, Object>> copyMe) {
         Map<String, Map<String, Object>> retVal = new LinkedHashMap<String, Map<String, Object>>();
         if (copyMe == null) return retVal;

@@ -77,16 +77,9 @@ public interface DefaultedBean {
     public void setShortProp(short prop);
     public short getShortProp();
     
-    /**
-     * This one has a setter
-     * JAXB annotation on both
-     * @return
-     */
     @XmlElement(name="byte-prop", defaultValue="13")
-    public void setByteProp(long prop);
-    
-    @XmlElement(name="byte-prop", defaultValue="13")
-    public short getByteProp();
+    public void setByteProp(byte prop);
+    public byte getByteProp();
     
     @XmlElement(name="boolean-prop", defaultValue="true")
     public boolean isBooleanProp();
@@ -117,7 +110,7 @@ public interface DefaultedBean {
     public int getDefaultIntProp();
     public long getDefaultLongProp();
     public short getDefaultShortProp();
-    public short getDefaultByteProp();
+    public byte getDefaultByteProp();
     public boolean isDefaultBooleanProp();
     public char getDefaultCharProp();
     public float getDefaultFloatProp();

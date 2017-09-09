@@ -425,7 +425,6 @@ public class XmlServiceImpl implements XmlService {
         base._setClassReflectionHelper(classReflectionHelper);
         base._setActive();
         
-        
         return retVal;
     }
     

@@ -373,12 +373,15 @@ public class PBufParserTest {
         handle.addRoot();
         
         OneOfRootBean oneOfRoot = handle.getRoot();
+        
+        XmlHk2ConfigurationBean asConfigBean = (XmlHk2ConfigurationBean) oneOfRoot;
+        Assert.assertFalse(asConfigBean._isSet("CTO"));
+        
         oneOfRoot.setMiss(ALICE);
         oneOfRoot.setCEO(13);
         oneOfRoot.setBetween(BOB);
         oneOfRoot.setCountry(ACME);
         
-        XmlHk2ConfigurationBean asConfigBean = (XmlHk2ConfigurationBean) oneOfRoot;
         Assert.assertFalse(asConfigBean._isSet("CFO"));
         Assert.assertTrue(asConfigBean._isSet("CEO"));
         Assert.assertEquals(13, oneOfRoot.getCEO());
