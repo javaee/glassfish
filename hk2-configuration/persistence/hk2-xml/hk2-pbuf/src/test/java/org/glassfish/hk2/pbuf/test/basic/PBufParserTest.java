@@ -362,7 +362,7 @@ public class PBufParserTest {
      * Tests marshalling and unmarhsalling a bean with oneOfs
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testOneOf() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         

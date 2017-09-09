@@ -223,17 +223,34 @@ public class PBufParser implements XmlServiceParser {
                 throw new IOException("Unknown field " + localPart + " in " + bean);
             }
             
-            Object value = message.getField(fieldDescriptor);
-            if (value == null) continue;
-            
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
             if (childDataModel != null) {
+                boolean fieldSet = message.hasField(fieldDescriptor);
+                if (!fieldSet) {
+                    continue;
+                }
+                
+                Object value = message.getField(fieldDescriptor);
+                
                 value = convertFieldForUnmarshal(value, childDataModel);
                 
                 bean._setProperty(qname, value);
             }
             else {
                 ParentedModel parentedNode = childDescriptor.getParentedModel();
+                
+                if (ChildType.DIRECT.equals(parentedNode.getChildType())) {
+                    // Cannot call hasField on repeated fields in pbuf
+                    boolean fieldSet = message.hasField(fieldDescriptor);
+                    if (!fieldSet) {
+                        continue;
+                    }
+                }
+                
+                Object value = message.getField(fieldDescriptor);
+                if (value == null) {
+                    continue;
+                }
                 
                 DynamicMessage dynamicChild = null;
                 XmlHk2ConfigurationBean child = null;
