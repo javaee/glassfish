@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.xml.test1.utilities;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -111,6 +114,30 @@ public class Utilities {
         }
         finally {
             fos.close();
+        }
+    }
+    
+    public static byte[] readBytesFromURL(URL url) throws IOException {
+        InputStream is = url.openStream();
+        try {
+            byte buffer[] = new byte[2000];
+            
+            ByteArrayOutputStream bais = new ByteArrayOutputStream();
+            try {
+                
+                int readSize;
+                while ((readSize = is.read(buffer)) > 0) {
+                    bais.write(buffer, 0, readSize);
+                }
+            }
+            finally {
+                bais.close();
+            }
+            
+            return bais.toByteArray();
+        }
+        finally {
+            is.close();
         }
         
     }

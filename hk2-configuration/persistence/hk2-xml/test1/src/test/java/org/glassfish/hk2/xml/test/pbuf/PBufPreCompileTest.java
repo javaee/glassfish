@@ -40,7 +40,9 @@
 package org.glassfish.hk2.xml.test.pbuf;
 
 import java.net.URL;
+import java.util.Arrays;
 
+import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,16 +61,26 @@ public class PBufPreCompileTest {
             , "org/glassfish/hk2/xml/test/pbuf/pc1/ThingTwoBean.proto"
     };
     
+    private final static String PRECOMPILED_PREFIX = "protos/";
+    
     /**
      * Tests that the expected files are generate and put into the resulting jar file
      */
     @Test
-    public void testPrecompileHappens() {
+    public void testPrecompileHappens() throws Exception {
         ClassLoader loader = getClass().getClassLoader();
         
         for (String protoResource : PROTO_RESOURCES) {
-            URL url = loader.getResource(protoResource);
-            Assert.assertNotNull("Could not find " + protoResource, url);
+            URL compiledURL = loader.getResource(protoResource);
+            Assert.assertNotNull("Could not find " + protoResource, compiledURL);
+            
+            URL precompiledURL = loader.getResource(PRECOMPILED_PREFIX + protoResource);
+            Assert.assertNotNull("Could not find " + protoResource, precompiledURL);
+            
+            byte compiledProto[] = Utilities.readBytesFromURL(compiledURL);
+            byte precompiledProto[] = Utilities.readBytesFromURL(precompiledURL);
+            
+            Assert.assertTrue(Arrays.equals(precompiledProto, compiledProto));
         }
     }
 
