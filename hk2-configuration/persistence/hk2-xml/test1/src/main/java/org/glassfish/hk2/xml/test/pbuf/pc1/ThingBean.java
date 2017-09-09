@@ -39,18 +39,10 @@
  */
 package org.glassfish.hk2.xml.test.pbuf.pc1;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.glassfish.hk2.pbuf.api.annotations.Comment;
 import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
-import org.glassfish.hk2.pbuf.api.annotations.OneOf;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.test.pbuf.pc2.PBufPrecompileChild2;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -59,58 +51,8 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlRootElement(name="root")
-@XmlType(propOrder={ "name"
-        , "IType"
-        , "remoteTypes"
-        , "localTypes"
-        , "firstThing"
-        , "secondThing"
-        , "thirdThing"
-        , "fourthThing"
-        , "fifthThing"
-        })
+@XmlType(propOrder={ })
 @GenerateProto
-@Comment("This is a comment on the root bean")
-public interface PBufPrecompileRootBean {
-    @Comment("This is a multiline comment\n"
-            + "wherein there are multiple lines\n"
-            + "for this comment.  I will supply now a limerick\n\n"
-            + "There was a young man so benighted\n"
-            + "He never knew when he was slighted;\n"
-            + "He would go to a party\n"
-            + "And eat just as hearty,\n"
-            + "As if he'd been really invited.")
-    @XmlElement
-    public String getName();
-    
-    @XmlAttribute(name="itype")
-    public int getIType();
-    
-    @Comment("This is a single line comment")
-    @XmlElement(name="localTypes")
-    public List<PBufPrecompileChild> getLocalTypes();
-    
-    @XmlElement(name="remoteTypes")
-    public PBufPrecompileChild2[] getRemoteTypes();
-    
-    @XmlElement @OneOf("FirstOneOf")
-    public ThingBean getFirstThing();
-    public void setFirstThing(ThingBean first);
-    
-    @XmlElement @OneOf("FirstOneOf")
-    public ThingBean getSecondThing();
-    public void setSecondThing(ThingBean second);
-    
-    @XmlElement @OneOf("SecondOneOf")
-    public ThingOneBean getThirdThing();
-    public void setThirdThing(ThingOneBean third);
-    
-    @XmlElement @OneOf("SecondOneOf")
-    public ThingTwoBean getFourthThing();
-    public void setFourthThing(ThingTwoBean fouth);
-    
-    @XmlElement @OneOf("SecondOneOf")
-    public String getFifthThing();
-    public void setFifthThing(String fifth);
+public interface ThingBean {
+
 }

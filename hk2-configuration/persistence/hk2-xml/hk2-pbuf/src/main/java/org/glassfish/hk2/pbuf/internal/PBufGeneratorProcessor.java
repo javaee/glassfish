@@ -45,6 +45,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.pbuf.api.annotations.Comment;
+import org.glassfish.hk2.pbuf.api.annotations.OneOf;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.internal.Generator;
 import org.glassfish.hk2.xml.internal.Utilities;
 
@@ -194,13 +197,13 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         }
     }
     
-    private void doComment(Writer writer, String comment, boolean indent) throws IOException {
+    private void doComment(Writer writer, String comment, int indentLevel) throws IOException {
         if (comment == null || comment.isEmpty()) return;
         
         StringTokenizer nlTokenizer = new StringTokenizer(comment, "\n\r");
         while(nlTokenizer.hasMoreTokens()) {
             String singleLine = "// " + nlTokenizer.nextToken() + "\n";
-            if (indent) {
+            for (int lcv = 0; lcv < indentLevel; lcv++) {
                 writeTab(writer);
             }
             
@@ -221,15 +224,49 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         try {
             List<XmlElementInfo> infos = doImports(writer, clazz, allMethods, elements);
             
-            doComment(writer, comment, false);
+            doComment(writer, comment, 0);
             writer.write("message " + clazzSimpleName + " {\n");
             
+            String currentOneOf = null;
+            
+            int indentLevel = 1;
             int number = 1;
             for (XmlElementInfo info : infos) {
-                boolean incrementCount = handleMethod(writer, info, number);
+                String thisOneOf = info.getOneOf();
+                if (!GeneralUtilities.safeEquals(currentOneOf, thisOneOf)) {
+                    if (currentOneOf != null) {
+                        // Must finish current one-of
+                        writeTab(writer);
+                        writer.write("}\n");
+                        
+                        indentLevel = 1;
+                    }
+                    
+                    if (thisOneOf != null) {
+                        if (number > 1) {
+                            writeBlankLine(writer);
+                        }
+                        
+                        // Must start new one of and increment indentLevel
+                        writeTab(writer);
+                        
+                        writer.write("oneof " + thisOneOf + " {\n");
+                        indentLevel = 2;
+                    }
+                    
+                    currentOneOf = thisOneOf;
+                }
+                
+                boolean incrementCount = handleMethod(writer, info, number, indentLevel);
                 if (incrementCount) {
                     number++;
                 }
+            }
+            
+            if (currentOneOf != null) {
+                // Must finish last oneOf
+                writeTab(writer);
+                writer.write("}\n");
             }
             
             writer.write("}\n");
@@ -240,12 +277,14 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         }
     }
     
-    private boolean handleMethod(Writer writer, XmlElementInfo info, int number) throws IOException {
+    private boolean handleMethod(Writer writer, XmlElementInfo info, int number, int indentLevel) throws IOException {
         writeBlankLine(writer);
         
-        doComment(writer, info.getComment(), true);
+        doComment(writer, info.getComment(), indentLevel);
         
-        writeTab(writer);
+        for (int lcv = 0; lcv < indentLevel; lcv++) {
+            writeTab(writer);
+        }
         
         if (info.getChildInfo() == null) {
             writer.write(info.getType() + " " + info.getName() + " = " + number);
@@ -431,10 +470,17 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
     
     private static XmlElementInfo getXmlElementName(ExecutableElement method, Elements elements) {
         Comment commentAnnotation = method.getAnnotation(Comment.class);
-        String comment = null;
         
+        String comment = null;
         if (commentAnnotation != null) {
             comment = commentAnnotation.value();
+        }
+        
+        OneOf oneOfAnnotation = method.getAnnotation(OneOf.class);
+        
+        String oneOf = null;
+        if (oneOfAnnotation != null) {
+            oneOf = oneOfAnnotation.value();
         }
         
         List<? extends AnnotationMirror> annotationMirrors = elements.getAllAnnotationMirrors(method);
@@ -476,7 +522,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
                 String sortField = getRawFieldNameFromMethod(method);
                 sortField = Introspector.decapitalize(sortField);
                 
-                return new XmlElementInfo(nameValue, type, sortField, comment);
+                return new XmlElementInfo(nameValue, type, sortField, comment, oneOf);
             }
         }
         
@@ -556,6 +602,7 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         boolean atLeastOne = false;
         
         List<XmlElementInfo> retVal = new ArrayList<XmlElementInfo>(allMethods.size());
+        HashSet<String> alreadyDone = new HashSet<String>();
         for (Element element : allMethods) {
             if (!(element instanceof ExecutableElement)) {
                 continue;
@@ -577,6 +624,8 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             xmlElementName.setChildInfo(childName);
             
             String importName = childName.getName().replace('.', '/') + ".proto";
+            if (alreadyDone.contains(importName)) continue;
+            alreadyDone.add(importName);
             
             writer.write("import \"" + importName + "\";\n");
             atLeastOne = true;
@@ -612,12 +661,14 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         private ChildInfo childInfo;
         private final String sortField;
         private final String comment;
+        private final String oneOf;
         
-        private XmlElementInfo(String name, String type, String sortField, String comment) {
+        private XmlElementInfo(String name, String type, String sortField, String comment, String oneOf) {
             this.name = name;
             this.type = type;
             this.sortField = sortField;
             this.comment = comment;
+            this.oneOf = oneOf;
         }
         
         private String getName() {
@@ -642,6 +693,10 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
         
         private String getComment() {
             return comment;
+        }
+        
+        private String getOneOf() {
+            return oneOf;
         }
         
         @Override

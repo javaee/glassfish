@@ -54,6 +54,9 @@ public class PBufPreCompileTest {
             , "org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileRootBean.proto"
             , "org/glassfish/hk2/xml/test/pbuf/pc2/PBufPrecompileChild2.proto"
             , "org/glassfish/hk2/xml/test/pbuf/pc2/TypeBean.proto"
+            , "org/glassfish/hk2/xml/test/pbuf/pc1/ThingBean.proto"
+            , "org/glassfish/hk2/xml/test/pbuf/pc1/ThingOneBean.proto"
+            , "org/glassfish/hk2/xml/test/pbuf/pc1/ThingTwoBean.proto"
     };
     
     /**

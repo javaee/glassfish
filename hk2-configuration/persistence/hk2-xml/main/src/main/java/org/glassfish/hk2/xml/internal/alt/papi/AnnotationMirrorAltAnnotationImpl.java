@@ -113,6 +113,11 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
     public synchronized String[] getStringArrayValue(String methodName) {
         getAnnotationValues();
         
+        Object retVal = values.get(methodName);
+        if (retVal == null || !(retVal instanceof String[])) {
+            return null;
+        }
+        
         return (String[]) values.get(methodName);
     }
     
