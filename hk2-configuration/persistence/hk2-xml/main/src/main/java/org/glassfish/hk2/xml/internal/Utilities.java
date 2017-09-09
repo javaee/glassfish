@@ -2161,20 +2161,6 @@ public class Utilities {
         return null;
     }
     
-    private static AltClass getTrueChildTypeFromAdapter(AltAnnotation adapter) {
-        AltClass adapterClass = adapter.getClassValue("value");
-        if (adapterClass == null) return null;
-        
-        return adapterClass.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 0);
-    }
-    
-    private static AltClass getReturnTypeFromAdapter(AltAnnotation adapter) {
-        AltClass adapterClass = adapter.getClassValue("value");
-        if (adapterClass == null) return null;
-        
-        return adapterClass.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 1);
-    }
-    
     public static MethodInformationI getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
         if (m.getMethodInformation() != null) {
             return m.getMethodInformation();
@@ -2368,6 +2354,7 @@ public class Utilities {
         String repPropNamespace = xmlNameMap.getNamespaceMap(variable);
         String repPropName = xmlNameMap.getNameMap(variable);
         boolean required = xmlNameMap.isRequired(variable);
+        String originalMethodName = xmlNameMap.getOriginalMethodName(variable);
         
         QName representedProperty;
         if (repPropName == null) {
@@ -2404,7 +2391,8 @@ public class Utilities {
                 listParameterizedType,
                 xmlWrapperTag,
                 adapter,
-                required);
+                required,
+                originalMethodName);
     }
     
     private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {

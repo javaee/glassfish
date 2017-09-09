@@ -60,6 +60,7 @@ import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -512,6 +513,12 @@ public class PBufParser implements XmlServiceParser {
         
         QName keyProperty = model.getKeyProperty();
         
+        Class<?> originalInterface = model.getOriginalInterfaceAsClass();
+        
+        int oneOfNumber = 0;
+        Map<String, Integer> oneOfToIndexMap = new HashMap<String, Integer>();
+        String currentOneOf = null;
+        
         int number = 1;
         for(Map.Entry<QName, ChildDescriptor> entry : allChildren.entrySet()) {
             QName entryKey = entry.getKey();
@@ -529,15 +536,69 @@ public class PBufParser implements XmlServiceParser {
             
             ChildDataModel dataModel = childDescriptor.getChildDataModel();
             if (dataModel != null) {
-              if (dataModel.getDefaultAsString() != null) {
-                  fBuilder.setDefaultValue(dataModel.getDefaultAsString());
-              }
+                Class<?> dataType = dataModel.getChildTypeAsClass();
+                String originalMethodName = dataModel.getOriginalMethodName();
+                
+                String oneOfValue = Utilities.getOneOf(originalInterface, originalMethodName, dataType);
+                if (GeneralUtilities.safeEquals(oneOfValue, currentOneOf)) {
+                    if (oneOfValue != null) {
+                        int oneOfDeclIndex = oneOfToIndexMap.get(oneOfValue);
+                        
+                        fBuilder.setOneofIndex(oneOfDeclIndex);
+                    }
+                }
+                else {
+                    if (oneOfValue != null) {
+                        DescriptorProtos.OneofDescriptorProto.Builder oneOfBuilder = DescriptorProtos.OneofDescriptorProto.newBuilder();
+                        oneOfBuilder.setName(oneOfValue);
+                        
+                        int oneOfIndex = oneOfNumber++;
+                        builder.addOneofDecl(oneOfIndex, oneOfBuilder.build());
+                        
+                        oneOfToIndexMap.put(oneOfValue, oneOfIndex);
+
+                        fBuilder.setOneofIndex(oneOfIndex);
+                    }
+                    
+                    currentOneOf = oneOfValue;
+                }
+                
+                if (dataModel.getDefaultAsString() != null) {
+                    fBuilder.setDefaultValue(dataModel.getDefaultAsString());
+                }
             
-              DescriptorProtos.FieldDescriptorProto.Type fieldType = convertChildDataModelToType(dataModel);
-              fBuilder.setType(fieldType);
+                DescriptorProtos.FieldDescriptorProto.Type fieldType = convertChildDataModelToType(dataModel);
+                fBuilder.setType(fieldType);
             }
             else {
                 ParentedModel pm = childDescriptor.getParentedModel();
+                
+                Class<?> childDataType = pm.getChildModel().getOriginalInterfaceAsClass();
+                String originalMethodName = pm.getOriginalMethodName();
+                
+                String oneOfValue = Utilities.getOneOf(originalInterface, originalMethodName, childDataType);
+                if (GeneralUtilities.safeEquals(oneOfValue, currentOneOf)) {
+                    if (oneOfValue != null) {
+                        int oneOfDeclIndex = oneOfToIndexMap.get(oneOfValue);
+                        
+                        fBuilder.setOneofIndex(oneOfDeclIndex);
+                    }
+                }
+                else {
+                    if (oneOfValue != null) {
+                        DescriptorProtos.OneofDescriptorProto.Builder oneOfBuilder = DescriptorProtos.OneofDescriptorProto.newBuilder();
+                        oneOfBuilder.setName(oneOfValue);
+                        
+                        int oneOfIndex = oneOfNumber++;
+                        builder.addOneofDecl(oneOfIndex, oneOfBuilder.build());
+                        
+                        oneOfToIndexMap.put(oneOfValue, oneOfIndex);
+
+                        fBuilder.setOneofIndex(oneOfIndex);
+                    }
+                        
+                    currentOneOf = oneOfValue;
+                }
                 
                 ModelImpl childModel = pm.getChildModel();
                 String childTypeName = childModel.getOriginalInterface();
@@ -551,6 +612,7 @@ public class PBufParser implements XmlServiceParser {
             }
             
             builder.addField(fBuilder.build());
+            
         }
         
         DescriptorProtos.DescriptorProto proto = builder.build();

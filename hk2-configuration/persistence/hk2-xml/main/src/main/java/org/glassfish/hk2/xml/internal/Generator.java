@@ -561,6 +561,7 @@ public class Generator {
             }
             
             if (getterOrSetter) {
+                String originalMethodName = mi.getOriginalMethodName();
                 List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty().getLocalPart());
                 boolean required = mi.isRequired();
                 
@@ -582,7 +583,8 @@ public class Generator {
                                 aType,
                                 mi.getWrapperTag(),
                                 adapterClass,
-                                required);
+                                required,
+                                originalMethodName);
                         }
                         else {
                             compiledModel.addNonChild(
@@ -595,7 +597,8 @@ public class Generator {
                                     Format.ELEMENT,
                                     aType,
                                     null,
-                                    required);
+                                    required,
+                                    originalMethodName);
                         }
                         
                         if (aliases != null) {
@@ -613,7 +616,8 @@ public class Generator {
                                         AliasType.IS_ALIAS,
                                         mi.getWrapperTag(),
                                         adapterClass,
-                                        required);
+                                        required,
+                                        originalMethodName);
                                 }
                                 else {
                                     compiledModel.addNonChild(
@@ -626,7 +630,8 @@ public class Generator {
                                             Format.ELEMENT,
                                             AliasType.IS_ALIAS,
                                             alias.getAlias(),
-                                            required);
+                                            required,
+                                            originalMethodName);
                                 }
                             }
                         }
@@ -643,7 +648,8 @@ public class Generator {
                                 mi.getFormat(),
                                 AliasType.NORMAL,
                                 null,
-                                required);
+                                required,
+                                originalMethodName);
                     }
                 }
                 else {
@@ -657,7 +663,8 @@ public class Generator {
                             mi.getFormat(),
                             AliasType.NORMAL,
                             null,
-                            required);
+                            required,
+                            originalMethodName);
                 }
             }
             
@@ -862,7 +869,8 @@ public class Generator {
                         asParameter(parentedModel.getAliasType()) + "," +
                         asParameter(parentedModel.getXmlWrapperTag()) + "," +
                         asParameter(parentedModel.getAdapter()) + "," +
-                        asBoolean(parentedModel.isRequired()) + ");\n");
+                        asBoolean(parentedModel.isRequired()) + "," +
+                        asParameter(parentedModel.getOriginalMethodName()) + ");\n");
             }
             else {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
@@ -876,8 +884,9 @@ public class Generator {
                         asBoolean(childDataModel.isReference()) + "," +
                         asParameter(childDataModel.getFormat()) + "," +
                         asParameter(childDataModel.getAliasType()) + "," +
-                        asParameter(childDataModel.getXmlAlias()) +"," +
-                        asBoolean(childDataModel.isRequired()) + ");\n");
+                        asParameter(childDataModel.getXmlAlias()) + "," +
+                        asBoolean(childDataModel.isRequired()) + "," +
+                        asParameter(childDataModel.getOriginalMethodName()) + ");\n");
             }
         }
         

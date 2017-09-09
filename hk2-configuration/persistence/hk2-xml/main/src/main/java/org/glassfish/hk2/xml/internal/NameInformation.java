@@ -117,8 +117,15 @@ public class NameInformation {
     }
     
     public boolean isRequired(String variableName) {
-        if (variableName == null || valueData == null) return false;
-        return valueData.isRequired();
+        if (variableName == null) return false;
+        if (!nameMapping.containsKey(variableName)) return false;
+        return nameMapping.get(variableName).isRequired();
+    }
+    
+    public String getOriginalMethodName(String variableName) {
+        if (variableName == null) return null;
+        if (!nameMapping.containsKey(variableName)) return null;
+        return nameMapping.get(variableName).getOriginalMethodName();
     }
     
     public Format getFormat(String variableName) {

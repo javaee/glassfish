@@ -145,6 +145,8 @@ public class GeneratorUtilities {
         
         boolean hasAnElement = false;
         for (AltMethod originalMethod : convertMe.getMethods()) {
+            String originalMethodName = originalMethod.getName();
+            
             String setterVariable = Utilities.isSetter(originalMethod);
             if (setterVariable == null) {
                 setterVariable = Utilities.isGetter(originalMethod);
@@ -187,7 +189,16 @@ public class GeneratorUtilities {
                     
                 String defaultValue = Generator.JAXB_DEFAULT_DEFAULT;
                     
-                xmlNameMap.put(setterVariable, new XmlElementData("", setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName, false));
+                xmlNameMap.put(setterVariable, new XmlElementData("",
+                        setterVariable,
+                        setterVariable,
+                        defaultValue,
+                        Format.ELEMENT,
+                        null,
+                        true,
+                        xmlElementWrapperName,
+                        false,
+                        originalMethodName));
                     
                 String aliasName = setterVariable;
                     
@@ -218,7 +229,8 @@ public class GeneratorUtilities {
                                 allXmlElementTypeName,
                                 allXmlElementTypeInterface,
                                 xmlElementWrapperName,
-                                allXmlElementRequired));
+                                allXmlElementRequired,
+                                originalMethodName));
                     }
                 }
             }
@@ -244,7 +256,8 @@ public class GeneratorUtilities {
                             null,
                             true,
                             xmlElementWrapperName,
-                            required));
+                            required,
+                            originalMethodName));
                 }
                 else {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -256,7 +269,8 @@ public class GeneratorUtilities {
                             null,
                             true,
                             xmlElementWrapperName,
-                            required));
+                            required,
+                            originalMethodName));
                 }
             }
             else if (xmlAttribute != null) {
@@ -274,7 +288,8 @@ public class GeneratorUtilities {
                             null,
                             true,
                             xmlElementWrapperName,
-                            required));
+                            required,
+                            originalMethodName));
                 }
                 else {
                     xmlNameMap.put(setterVariable, new XmlElementData(
@@ -286,7 +301,8 @@ public class GeneratorUtilities {
                             null,
                             true,
                             xmlElementWrapperName,
-                            required));
+                            required,
+                            originalMethodName));
                 }
             }
             else if (xmlValue != null) {
@@ -303,7 +319,8 @@ public class GeneratorUtilities {
                         null,
                         false,
                         xmlElementWrapperName,
-                        true);
+                        true,
+                        originalMethodName);
                 xmlNameMap.put(setterVariable, valueData);
             }
             else if (xmlAnyAttribute != null) {
@@ -320,7 +337,8 @@ public class GeneratorUtilities {
                         null,
                         false,
                         xmlElementWrapperName,
-                        false);
+                        false,
+                        originalMethodName);
                 xmlNameMap.put(setterVariable, xmlAnyAttributeData);       
             }
             else {

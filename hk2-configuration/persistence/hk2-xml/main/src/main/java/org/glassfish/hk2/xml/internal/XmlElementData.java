@@ -55,6 +55,7 @@ public class XmlElementData {
     private final boolean isTypeInterface;
     private final String xmlWrapperTag;
     private final boolean required;
+    private final String originalMethodName;
     
     XmlElementData(String namespace,
             String name,
@@ -64,7 +65,8 @@ public class XmlElementData {
             String type,
             boolean isTypeInterface,
             String xmlWrapperTag,
-            boolean required) {
+            boolean required,
+            String originalMethodName) {
         this.namespace = namespace;
         this.name = name;
         this.alias = alias;
@@ -74,6 +76,7 @@ public class XmlElementData {
         this.isTypeInterface = isTypeInterface;
         this.xmlWrapperTag = xmlWrapperTag;
         this.required = required;
+        this.originalMethodName = originalMethodName;
     }
     
     public String getNamespace() { return namespace; }
@@ -85,6 +88,7 @@ public class XmlElementData {
     public boolean isTypeInterface() { return isTypeInterface; }
     public String getXmlWrapperTag() { return xmlWrapperTag; }
     public boolean isRequired() { return required; }
+    public String getOriginalMethodName() { return originalMethodName; }
     
     @Override
     public String toString() {
@@ -97,6 +101,7 @@ public class XmlElementData {
                 "," + isTypeInterface +
                 "," + xmlWrapperTag +
                 "," + required +
+                "," + originalMethodName +
                 "," + System.identityHashCode(this) + ")";
     }
 }

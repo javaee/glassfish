@@ -40,7 +40,7 @@
 package org.glassfish.hk2.pbuf.api.annotations;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -58,7 +58,7 @@ import java.lang.annotation.Target;
  *
  */
 @Documented
-@Retention(SOURCE)
+@Retention(RUNTIME)
 @Target(METHOD)
 public @interface OneOf {
     /**

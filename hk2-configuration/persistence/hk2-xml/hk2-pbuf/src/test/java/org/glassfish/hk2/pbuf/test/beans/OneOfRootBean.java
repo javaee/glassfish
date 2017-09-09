@@ -67,8 +67,8 @@ import org.jvnet.hk2.annotations.Contract;
         })
 public interface OneOfRootBean {
     @XmlElement @OneOf("title")
-    public String getMr();
     public void setMr(String mr);
+    public String getMr();
     
     @XmlElement @OneOf("title")
     public String getMiss();
@@ -79,8 +79,8 @@ public interface OneOfRootBean {
     public void setCEO(int ceo);
     
     @XmlElement @OneOf("job")
-    public CustomerBean getCFO();
     public void setCFO(CustomerBean customers);
+    public CustomerBean getCFO();
     
     @XmlElement @OneOf("title")
     public String getMrs();

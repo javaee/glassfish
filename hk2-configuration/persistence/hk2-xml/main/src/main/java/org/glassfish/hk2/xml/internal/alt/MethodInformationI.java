@@ -135,5 +135,14 @@ public interface MethodInformationI {
      * or null if there is none
      */
     public AdapterInformation getAdapterInformation();
+    
+    /**
+     * The name of the method upon which the annotation
+     * was found.  May be useful in add-on parsers
+     * that need to find other annotations on the method
+     * 
+     * @return The name of the original method on the interface
+     */
+    public String getOriginalMethodName();
 
 }

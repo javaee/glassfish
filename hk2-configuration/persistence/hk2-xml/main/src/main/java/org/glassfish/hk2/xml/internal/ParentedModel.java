@@ -71,6 +71,7 @@ public class ParentedModel implements Serializable {
     private AliasType aliased;
     private String adapterClassName;
     private boolean required;
+    private String originalMethodName;
     
     /** Set at runtime */
     private ClassLoader myLoader;
@@ -91,7 +92,8 @@ public class ParentedModel implements Serializable {
             AliasType aliased,
             String childXmlWrapperTag,
             String adapterClassName,
-            boolean required) {
+            boolean required,
+            String originalMethodName) {
         this.childInterface = childInterface;
         this.childXmlNamespace = childXmlNamespace;
         this.childXmlTag = childXmlTag;
@@ -102,6 +104,7 @@ public class ParentedModel implements Serializable {
         this.childXmlWrapperTag = childXmlWrapperTag;
         this.adapterClassName = adapterClassName;
         this.required = required;
+        this.originalMethodName = originalMethodName;
     }
     
     public String getChildInterface() {
@@ -138,6 +141,10 @@ public class ParentedModel implements Serializable {
     
     public boolean isRequired() {
         return required;
+    }
+    
+    public String getOriginalMethodName() {
+        return originalMethodName;
     }
     
     @SuppressWarnings("unchecked")
@@ -215,6 +222,7 @@ public class ParentedModel implements Serializable {
                 ",givenDefault=" + Utilities.safeString(givenDefault) +
                 ",aliased=" + aliased +
                 ",adapter=" + adapterClassName +
+                ",originalMethodName=" + originalMethodName +
                 ")";
     }
 }

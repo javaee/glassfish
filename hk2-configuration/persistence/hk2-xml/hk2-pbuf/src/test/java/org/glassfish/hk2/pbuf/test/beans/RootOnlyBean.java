@@ -61,8 +61,8 @@ public interface RootOnlyBean {
     public void setName(String name);
     
     @XmlElement(name="address")
-    public String getAddress();
     public void setAddress(String address);
+    public String getAddress();
     
     @XmlElement(name="notSet")
     public String getNotSet();
