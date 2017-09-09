@@ -49,6 +49,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
+import org.glassfish.hk2.pbuf.test.beans.AnotherRootBean;
 import org.glassfish.hk2.pbuf.test.beans.CustomerBean;
 import org.glassfish.hk2.pbuf.test.beans.RootOnlyBean;
 import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBean;
@@ -67,6 +68,8 @@ import org.junit.Test;
 public class PBufParserTest {
     private final static String ALICE = "Alice";
     private final static String ALICE_ADDRESS = "Milky Way";
+    
+    private final static String BOB = "Bob";
     
     private final static String ACME = "Acme";
     private final static long ACME_ID = 3000;
@@ -147,6 +150,11 @@ public class PBufParserTest {
     
     private final static int NUM_LOOPS = 10;
     
+    /**
+     * Tests marshalling and unmarshalling multiple in the same stream
+     * 
+     * @throws Exception
+     */
     @Test
     public void testMarshalUnmarshalSeveralInSameStream() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
@@ -297,6 +305,55 @@ public class PBufParserTest {
         }
         
         validateFooBean(uHandle);
+    }
+    
+    /**
+     * Tests marshalling a different bean with the same child as
+     * other roots.  This did not work previously because of a
+     * bug in the parser
+     */
+    @Test
+    public void testAnotherBeanWithDups() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<AnotherRootBean> handle = xmlService.createEmptyHandle(AnotherRootBean.class);
+        handle.addRoot();
+        
+        AnotherRootBean arb = handle.getRoot();
+        
+        ServiceRecordBean child = xmlService.createBean(ServiceRecordBean.class);
+        child.setServiceRecordID(BOB);
+        
+        arb.setSecondUsage(child);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(asBytes);
+        XmlRootHandle<AnotherRootBean> uHandle = null;
+        try {
+            uHandle = xmlService.unmarshal(bais, AnotherRootBean.class);
+        }
+        finally {
+            bais.close();
+        }
+        
+        AnotherRootBean uRoot = uHandle.getRoot();
+        Assert.assertNotNull(uRoot);
+        
+        ServiceRecordBean uChild = uRoot.getSecondUsage();
+        Assert.assertNotNull(uChild);
+        Assert.assertEquals(BOB, uChild.getServiceRecordID());
     }
     
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle, long sequenceNumber) {

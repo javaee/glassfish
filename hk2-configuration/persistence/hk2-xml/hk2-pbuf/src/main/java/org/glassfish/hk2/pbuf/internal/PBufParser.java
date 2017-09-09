@@ -46,9 +46,10 @@ import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.inject.Inject;
@@ -115,7 +116,7 @@ public class PBufParser implements XmlServiceParser {
     public <T> T parseRoot(Model rootModel, InputStream input,
             Listener listener) throws Exception {
         try {
-            List<Descriptors.FileDescriptor> protoFiles = new LinkedList<Descriptors.FileDescriptor>();
+            Set<Descriptors.FileDescriptor> protoFiles = new HashSet<Descriptors.FileDescriptor>();
             convertAllModels((ModelImpl) rootModel, protoFiles);
         }
         catch (IOException ioe) {
@@ -171,7 +172,7 @@ public class PBufParser implements XmlServiceParser {
         ModelImpl model = rootBean._getModel();
         
         try {
-          List<Descriptors.FileDescriptor> protoFiles = new LinkedList<Descriptors.FileDescriptor>();
+          Set<Descriptors.FileDescriptor> protoFiles = new HashSet<Descriptors.FileDescriptor>();
           convertAllModels(model, protoFiles);
         }
         catch (IOException ioe) {
@@ -413,16 +414,24 @@ public class PBufParser implements XmlServiceParser {
         return retValBuilder.build();
     }
     
-    private void convertAllModels(ModelImpl model, List<Descriptors.FileDescriptor> protoFiles) throws Exception {
+    private void convertAllModels(ModelImpl model, Set<Descriptors.FileDescriptor> protoFiles) throws Exception {
         synchronized (allProtos) {
             Class<?> modelClass = model.getOriginalInterfaceAsClass();
-            if (allProtos.containsKey(modelClass)) return;
+            Descriptors.Descriptor dd = allProtos.get(modelClass);
+            if (dd != null) {
+                protoFiles.add(dd.getFile());
+                return;
+            }
         
             for (ParentedModel pModel : model.getAllChildren()) {
                 convertAllModels(pModel.getChildModel(), protoFiles);
             }
         
-            if (allProtos.containsKey(modelClass)) return;
+            dd = allProtos.get(modelClass);
+            if (dd != null) {
+                protoFiles.add(dd.getFile());
+                return;
+            }
         
             Descriptors.Descriptor converted = convertModelToDescriptor(model, protoFiles);
         
@@ -492,7 +501,7 @@ public class PBufParser implements XmlServiceParser {
         return packageName;
     }
     
-    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model, List<Descriptors.FileDescriptor> knownFiles) throws Exception {
+    private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model, Set<Descriptors.FileDescriptor> knownFiles) throws Exception {
         Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
         
         String protoName = getProtoNameFromModel(model);
