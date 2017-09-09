@@ -1,0 +1,28 @@
+#!/bin/ksh
+
+LIST="\
+org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileChild.proto \
+org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileRootBean.proto \
+org/glassfish/hk2/xml/test/pbuf/pc2/PBufPrecompileChild2.proto \
+org/glassfish/hk2/xml/test/pbuf/pc2/TypeBean.proto \
+org/glassfish/hk2/xml/test/pbuf/pc1/ThingBean.proto \
+org/glassfish/hk2/xml/test/pbuf/pc1/ThingOneBean.proto \
+org/glassfish/hk2/xml/test/pbuf/pc1/ThingTwoBean.proto"
+
+BASE="target/classes/"
+TARGET="src/test/resources/protos/"
+
+for i in ${LIST}
+do
+  BFILE=${BASE}${i}
+  TFILE=${TARGET}${i}
+
+  if [ ! -f ${BFILE} ]
+  then
+    echo "Could not find file to copy over for benchmark: " + ${BFILE}
+    exit 1
+  fi
+
+  cp ${BFILE} ${TFILE}
+done
+

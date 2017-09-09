@@ -26,25 +26,25 @@ message PBufPrecompileRootBean {
 
     int32 itype = 2;
 
-    repeated org.glassfish.hk2.xml.test.pbuf.pc2.PBufPrecompileChild2 remoteTypes = 3;
+    repeated org.glassfish.hk2.xml.test.pbuf.pc2.PBufPrecompileChild2 remote_types = 3;
 
     // This is a single line comment
-    repeated org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileChild localTypes = 4;
+    repeated org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileChild local_types = 4;
 
     oneof FirstOneOf {
 
-        org.glassfish.hk2.xml.test.pbuf.pc1.ThingBean firstThing = 5;
+        org.glassfish.hk2.xml.test.pbuf.pc1.ThingBean first_thing = 5;
 
-        org.glassfish.hk2.xml.test.pbuf.pc1.ThingBean secondThing = 6;
+        org.glassfish.hk2.xml.test.pbuf.pc1.ThingBean second_thing = 6;
     }
 
     oneof SecondOneOf {
 
-        org.glassfish.hk2.xml.test.pbuf.pc1.ThingOneBean thirdThing = 7;
+        org.glassfish.hk2.xml.test.pbuf.pc1.ThingOneBean third_thing = 7;
 
-        org.glassfish.hk2.xml.test.pbuf.pc1.ThingTwoBean fourthThing = 8;
+        org.glassfish.hk2.xml.test.pbuf.pc1.ThingTwoBean fourth_thing = 8;
 
-        string fifthThing = 9;
+        string fifth_thing = 9;
     }
 }
 

@@ -9,7 +9,7 @@ import "org/glassfish/hk2/xml/test/pbuf/pc2/TypeBean.proto";
 
 message PBufPrecompileChild2 {
 
-    bool ZType = 1;
+    bool z_type = 1;
 
     int32 btype = 2;
 

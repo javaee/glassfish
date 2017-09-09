@@ -9,10 +9,10 @@ message PBufPrecompileChild {
 
     int64 jtype = 1;
 
-    int32 SType = 2;
+    int32 s_type = 2;
 
-    bool ZType = 3;
+    bool z_type = 3;
 
-    bool ZType2 = 4;
+    bool z_type2 = 4;
 }
 

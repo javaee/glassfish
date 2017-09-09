@@ -430,6 +430,29 @@ public class PBufParserTest {
         Assert.assertEquals(ACME, uRoot.getCountry());
     }
     
+    /**
+     * Tests that the camel case utility does what we want
+     */
+    @Test
+    public void testCamelCaseUtility() {
+        Assert.assertEquals("url_finder", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("URLFinder"));
+        Assert.assertEquals("another_url_finder", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("AnotherURLFinder"));
+        Assert.assertEquals("allcaps", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("ALLCAPS"));
+        Assert.assertEquals("camel_case", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("camelCase"));
+        Assert.assertEquals("camel_case", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("CamelCase"));
+        Assert.assertEquals("wally_t", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("wallyT"));
+        Assert.assertEquals("wally_tflex", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("wallyTFLEX"));
+        Assert.assertEquals("", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore(""));
+        Assert.assertEquals("e", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("E"));
+        Assert.assertEquals("e", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("e"));
+        Assert.assertEquals("el", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("el"));
+        Assert.assertEquals("e_l", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("eL"));
+        Assert.assertEquals("el", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("El"));
+        Assert.assertEquals("u_rl", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("uRL"));
+        Assert.assertEquals("u_rl", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("URl"));
+        Assert.assertEquals("u_rl", org.glassfish.hk2.pbuf.internal.PBUtilities.camelCaseToUnderscore("uRl"));
+    }
+    
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle, long sequenceNumber) {
         ServiceRecordBlockBean root = handle.getRoot();
         Assert.assertNotNull(root);

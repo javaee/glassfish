@@ -286,15 +286,17 @@ public class PBufGeneratorProcessor extends AbstractProcessor {
             writeTab(writer);
         }
         
+        String translatedName = PBUtilities.camelCaseToUnderscore(info.getName());
+        
         if (info.getChildInfo() == null) {
-            writer.write(info.getType() + " " + info.getName() + " = " + number);
+            writer.write(info.getType() + " " + translatedName + " = " + number);
         }
         else {
             if (info.getChildInfo().isRepeated()) {
                 writer.write("repeated ");
             }
             
-            writer.write(info.getChildInfo().getName() + " " + info.getName() + " = " + number);
+            writer.write(info.getChildInfo().getName() + " " + translatedName + " = " + number);
         }
         
         writer.write(";\n");

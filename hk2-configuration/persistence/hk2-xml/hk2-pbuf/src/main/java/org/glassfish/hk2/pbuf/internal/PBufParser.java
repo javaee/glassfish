@@ -556,7 +556,7 @@ public class PBufParser implements XmlServiceParser {
                 Class<?> dataType = dataModel.getChildTypeAsClass();
                 String originalMethodName = dataModel.getOriginalMethodName();
                 
-                String oneOfValue = Utilities.getOneOf(originalInterface, originalMethodName, dataType);
+                String oneOfValue = PBUtilities.getOneOf(originalInterface, originalMethodName, dataType);
                 if (GeneralUtilities.safeEquals(oneOfValue, currentOneOf)) {
                     if (oneOfValue != null) {
                         int oneOfDeclIndex = oneOfToIndexMap.get(oneOfValue);
@@ -593,7 +593,7 @@ public class PBufParser implements XmlServiceParser {
                 Class<?> childDataType = pm.getChildModel().getOriginalInterfaceAsClass();
                 String originalMethodName = pm.getOriginalMethodName();
                 
-                String oneOfValue = Utilities.getOneOf(originalInterface, originalMethodName, childDataType);
+                String oneOfValue = PBUtilities.getOneOf(originalInterface, originalMethodName, childDataType);
                 if (GeneralUtilities.safeEquals(oneOfValue, currentOneOf)) {
                     if (oneOfValue != null) {
                         int oneOfDeclIndex = oneOfToIndexMap.get(oneOfValue);

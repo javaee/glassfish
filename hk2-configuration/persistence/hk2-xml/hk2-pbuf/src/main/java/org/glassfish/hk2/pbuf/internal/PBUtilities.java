@@ -52,7 +52,7 @@ import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl
  * @author jwells
  *
  */
-public class Utilities {
+public class PBUtilities {
     private static final String GET = "get";
     private static final String IS = "is";
     private static final String SET = "set";
@@ -164,6 +164,58 @@ public class Utilities {
         }
         
         return retVal;
+    }
+    
+    public static String camelCaseToUnderscore(String camelCase) {
+        StringBuffer sb = new StringBuffer();
+        
+        char oneBackCache = 0;
+        boolean firstAlreadyWritten = false;
+        boolean previousLowerCase = false;
+        for (int lcv = 0; lcv < camelCase.length(); lcv++) {
+            char charAt = camelCase.charAt(lcv);
+            if (Character.isUpperCase(charAt)) {
+                charAt = Character.toLowerCase(charAt);
+                if (oneBackCache != 0) {
+                    if (firstAlreadyWritten && previousLowerCase) {
+                        sb.append("_");
+                    }
+                    
+                    sb.append(oneBackCache);
+                    firstAlreadyWritten = true;
+                    previousLowerCase = false;
+                }
+                
+                oneBackCache = charAt;
+            }
+            else {
+                if (oneBackCache != 0) {
+                    if (firstAlreadyWritten) {
+                        sb.append("_");
+                        firstAlreadyWritten = true;
+                    }
+                    sb.append(oneBackCache);
+                    firstAlreadyWritten = true;
+                    
+                    oneBackCache = 0;
+                }
+                
+                sb.append(charAt);
+                firstAlreadyWritten = true;
+                
+                previousLowerCase = true;
+            }
+        }
+        
+        if (oneBackCache != 0) {
+            if (firstAlreadyWritten && previousLowerCase) {
+                sb.append("_");
+            }
+            
+            sb.append(oneBackCache);
+        }
+        
+        return sb.toString();
     }
 
 }
