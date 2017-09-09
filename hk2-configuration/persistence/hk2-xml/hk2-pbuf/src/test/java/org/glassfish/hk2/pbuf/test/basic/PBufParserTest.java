@@ -51,11 +51,13 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.pbuf.test.beans.AnotherRootBean;
 import org.glassfish.hk2.pbuf.test.beans.CustomerBean;
+import org.glassfish.hk2.pbuf.test.beans.OneOfRootBean;
 import org.glassfish.hk2.pbuf.test.beans.RootOnlyBean;
 import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBean;
 import org.glassfish.hk2.pbuf.test.beans.ServiceRecordBlockBean;
 import org.glassfish.hk2.pbuf.test.beans.TypeBean;
 import org.glassfish.hk2.pbuf.test.utilities.Utilities;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.junit.Assert;
@@ -354,6 +356,70 @@ public class PBufParserTest {
         ServiceRecordBean uChild = uRoot.getSecondUsage();
         Assert.assertNotNull(uChild);
         Assert.assertEquals(BOB, uChild.getServiceRecordID());
+    }
+    
+    /**
+     * Tests marshalling and unmarhsalling a bean with oneOfs
+     */
+    @Test
+    @org.junit.Ignore
+    public void testOneOf() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        Assert.assertNotNull(xmlService);
+        
+        XmlRootHandle<OneOfRootBean> handle = xmlService.createEmptyHandle(OneOfRootBean.class);
+        handle.addRoot();
+        
+        OneOfRootBean oneOfRoot = handle.getRoot();
+        oneOfRoot.setMiss(ALICE);
+        oneOfRoot.setCEO(13);
+        oneOfRoot.setBetween(BOB);
+        oneOfRoot.setCountry(ACME);
+        
+        XmlHk2ConfigurationBean asConfigBean = (XmlHk2ConfigurationBean) oneOfRoot;
+        Assert.assertFalse(asConfigBean._isSet("CFO"));
+        Assert.assertTrue(asConfigBean._isSet("CEO"));
+        Assert.assertEquals(13, oneOfRoot.getCEO());
+        Assert.assertFalse(asConfigBean._isSet("CTO"));
+        Assert.assertFalse(asConfigBean._isSet("employee"));
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte[] asBytes = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(asBytes);
+        XmlRootHandle<OneOfRootBean> uHandle = null;
+        try {
+            uHandle = xmlService.unmarshal(bais, OneOfRootBean.class);
+        }
+        finally {
+            bais.close();
+        }
+        
+        OneOfRootBean uRoot = uHandle.getRoot();
+        Assert.assertNotNull(uRoot);
+        
+        Assert.assertNull(oneOfRoot.getMr());
+        Assert.assertEquals(ALICE, oneOfRoot.getMiss());
+        Assert.assertNull(oneOfRoot.getMrs());
+        
+        asConfigBean = (XmlHk2ConfigurationBean) uRoot;
+        Assert.assertFalse(asConfigBean._isSet("CFO"));
+        Assert.assertTrue(asConfigBean._isSet("CEO"));
+        Assert.assertEquals(13, uRoot.getCEO());
+        Assert.assertFalse(asConfigBean._isSet("CTO"));
+        Assert.assertFalse(asConfigBean._isSet("employee"));
+        
+        Assert.assertEquals(BOB, uRoot.getBetween());
+        Assert.assertEquals(ACME, uRoot.getCountry());
     }
     
     private static void validateStandardBean(XmlRootHandle<ServiceRecordBlockBean> handle, long sequenceNumber) {

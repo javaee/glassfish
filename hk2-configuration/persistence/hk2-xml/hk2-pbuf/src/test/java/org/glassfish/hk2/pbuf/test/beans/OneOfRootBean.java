@@ -39,12 +39,13 @@
  */
 package org.glassfish.hk2.pbuf.test.beans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.glassfish.hk2.pbuf.api.annotations.OneOf;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -52,19 +53,52 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-@Hk2XmlPreGenerate
-@XmlRootElement(name="service-record")
+@XmlRootElement(name="onOf")
 @XmlType(propOrder={
-        "ServiceRecordID"
-        , "Customer"
+        "mr"
+        , "mrs"
+        , "miss"
+        , "between"
+        , "CEO"
+        , "CFO"
+        , "CTO"
+        , "employee"
+        , "country"
         })
-public interface ServiceRecordBean {
-    @XmlElement(name="serviceID", required=true)
-    @XmlID
-    public String getServiceRecordID();
-    public void setServiceRecordID(String hash);
+public interface OneOfRootBean {
+    @XmlElement @OneOf("title")
+    public String getMr();
+    public void setMr(String mr);
     
-    @XmlElement(name="customer")
-    CustomerBean getCustomer();
-    void setCustomer(CustomerBean customer);
+    @XmlElement @OneOf("title")
+    public String getMiss();
+    public void setMiss(String name);
+    
+    @XmlElement @OneOf("job")
+    public int getCEO();
+    public void setCEO(int ceo);
+    
+    @XmlElement @OneOf("job")
+    public CustomerBean getCFO();
+    public void setCFO(CustomerBean customers);
+    
+    @XmlElement @OneOf("title")
+    public String getMrs();
+    public void setMrs(String mrs);
+    
+    @XmlElement @OneOf("job")
+    public double getCTO();
+    public void setCTO(double cto);
+    
+    @XmlElement
+    public String getCountry();
+    public void setCountry(String country);
+    
+    @XmlElement
+    public String getBetween();
+    public void setBetween(String between);
+    
+    @XmlElement @OneOf("job")
+    public FooBean getEmployee();
+    public void setEmployee(FooBean foo);
 }

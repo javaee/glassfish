@@ -37,34 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.pbuf.test.beans;
+package org.glassfish.hk2.pbuf.api.annotations;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.jvnet.hk2.annotations.Contract;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 
 /**
+ * This annotation is placed on consecutive (by XmlType propOrder) fields
+ * in order to indicate that they are part of the same oneOf.  The oneOfs
+ * must all have matching names for fields that should be in the same oneOf.
+ * There can be multiple oneOfs with different names.  The same name cannot
+ * appear twice except on consecutive fields.
+ * 
  * @author jwells
  *
  */
-@Contract
-@Hk2XmlPreGenerate
-@XmlRootElement(name="service-record")
-@XmlType(propOrder={
-        "ServiceRecordID"
-        , "Customer"
-        })
-public interface ServiceRecordBean {
-    @XmlElement(name="serviceID", required=true)
-    @XmlID
-    public String getServiceRecordID();
-    public void setServiceRecordID(String hash);
-    
-    @XmlElement(name="customer")
-    CustomerBean getCustomer();
-    void setCustomer(CustomerBean customer);
+@Documented
+@Retention(SOURCE)
+@Target(METHOD)
+public @interface OneOf {
+    /**
+     * The name of the oneof for which this field should
+     * be part of
+     * 
+     * @return The name of the oneof for which this field is part of
+     */
+    public String value();
+
 }
