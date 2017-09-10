@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,18 +56,17 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     public void testLogViewer() {
     	try {
 	        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
-	        /*pressButton("propertyForm:propertyContentPage:logViewer");
+	        pressButton("propertyForm:propertyContentPage:logViewer");
 	        waitForPopUp("LogViewerWindow", "120000");
 	        selectWindow("LogViewerWindow");
-	        assertTrue(isTextPresent(TRIGGER_LV));*/
+	        assertTrue(isTextPresent(TRIGGER_LV));
     	} finally {
     		selectWindow("");
     	}
     }
 
     // basic sanity test for raw log viewer
-    //@Test
-    //@Test
+    @Test
     public void testRawLogViewer() {
     	try {
 		    clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
