@@ -379,12 +379,17 @@ public class PBufParser implements XmlServiceParser {
             
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
             if (childDataModel != null) {
-              Object value = blm.get(localPart);
-              Object convertedValue = convertFieldForMarshal(value);
+                if (!bean._isSet(localPart)) {
+                    continue;
+                }
+                
+                Object value = blm.get(localPart);
+                Class<?> childType = childDataModel.getChildTypeAsClass();
+                Object convertedValue = convertFieldForMarshal(value, childType);
               
-              if (value != null) {
-                  retValBuilder.setField(fieldDescriptor, convertedValue);
-              }
+                if (convertedValue != null) {
+                    retValBuilder.setField(fieldDescriptor, convertedValue);
+                }
             }
             else {
                 ParentedModel parentedModel = childDescriptor.getParentedModel();
@@ -403,8 +408,8 @@ public class PBufParser implements XmlServiceParser {
                     if (listValue != null) {
                         List<XmlHk2ConfigurationBean> asList = (List<XmlHk2ConfigurationBean>) listValue;
                         
-                        for (XmlHk2ConfigurationBean child : asList) {
-                            DynamicMessage subMessage = internalMarshal(child);
+                        for (XmlHk2ConfigurationBean childBean : asList) {
+                            DynamicMessage subMessage = internalMarshal(childBean);
                             
                             retValBuilder.addRepeatedField(fieldDescriptor, subMessage);
                         }
@@ -414,6 +419,10 @@ public class PBufParser implements XmlServiceParser {
                     Object arrayValue = blm.get(localPart);
                     if (arrayValue != null) {
                         int count = Array.getLength(arrayValue);
+                        
+                        if (count <= 0) {
+                            continue;
+                        }
                         
                         for (int lcv = 0; lcv < count; lcv++) {
                             XmlHk2ConfigurationBean child = (XmlHk2ConfigurationBean) Array.get(arrayValue, lcv);
@@ -531,8 +540,6 @@ public class PBufParser implements XmlServiceParser {
         
         DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
         builder.setName(protoName);
-        
-        QName keyProperty = model.getKeyProperty();
         
         Class<?> originalInterface = model.getOriginalInterfaceAsClass();
         
@@ -660,8 +667,14 @@ public class PBufParser implements XmlServiceParser {
         return fD;
     }
     
-    private static Object convertFieldForMarshal(Object field) {
-        if (field == null) return null;
+    private static Object convertFieldForMarshal(Object field, Class<?> expectedType) {
+        if (field == null) {
+            if (String.class.equals(expectedType)) {
+                return new String("");
+            }
+            
+            return null;
+        }
         
         if (field instanceof Short) {
             Short s = (Short) field;

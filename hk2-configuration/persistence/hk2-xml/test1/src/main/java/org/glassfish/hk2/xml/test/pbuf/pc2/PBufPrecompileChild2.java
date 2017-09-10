@@ -53,12 +53,15 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlType(propOrder={ "ZType", "BType", "types" })
+@XmlType(propOrder={
+        "ZType"
+        , "BType"
+        , "types" })
 @GenerateProto
 public interface PBufPrecompileChild2 {
     @XmlElement(name="btype")
-    public void setBType(byte jtype);
-    public byte getBType();
+    public void setBType(int jtype);
+    public int getBType();
     
     @XmlAttribute(required=true)
     public void setZType(boolean ztype);

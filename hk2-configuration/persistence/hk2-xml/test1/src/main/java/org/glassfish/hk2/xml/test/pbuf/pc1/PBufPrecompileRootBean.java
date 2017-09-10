@@ -92,9 +92,11 @@ public interface PBufPrecompileRootBean {
     @Comment("This is a single line comment")
     @XmlElement(name="localTypes")
     public List<PBufPrecompileChild> getLocalTypes();
+    public void addLocalType(PBufPrecompileChild addMe);
     
     @XmlElement(name="remoteTypes")
     public PBufPrecompileChild2[] getRemoteTypes();
+    public void addRemoteType(PBufPrecompileChild2 addMe);
     
     @XmlElement @OneOf("FirstOneOf")
     public ThingBean getFirstThing();

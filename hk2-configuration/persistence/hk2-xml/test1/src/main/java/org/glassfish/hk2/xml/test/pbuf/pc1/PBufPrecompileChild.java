@@ -53,7 +53,8 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @Hk2XmlPreGenerate
-@XmlType(propOrder={ "JType"
+@XmlType(propOrder={
+        "JType"
         , "SType"
         , "ZType"
         , "ZType2"})
