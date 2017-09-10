@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -216,6 +216,8 @@ public class StubProcessor extends AbstractProcessor {
         writeJavaFile(clazz, abstractMethods, name, exceptions, contractsProvided);
     }
     
+    private final static String STUB_EXTENSION = "_hk2Stub";
+    
     private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods,
             String name,
             boolean exceptions,
@@ -225,13 +227,14 @@ public class StubProcessor extends AbstractProcessor {
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
         String packageName = ServiceUtilities.nameToString(packageElement.getQualifiedName());
         String clazzQualifiedName = ServiceUtilities.nameToString(clazz.getQualifiedName());
+        String fullyQualifiedStubName = clazzQualifiedName + STUB_EXTENSION;
         String clazzSimpleName = ServiceUtilities.nameToString(clazz.getSimpleName());
         
-        String stubClazzName = ServiceUtilities.nameToString(clazz.getSimpleName()) + "_hk2Stub";
+        String stubClazzName = ServiceUtilities.nameToString(clazz.getSimpleName()) + STUB_EXTENSION;
         
         Filer filer = processingEnv.getFiler();
         
-        JavaFileObject jfo = filer.createSourceFile(stubClazzName, clazz);
+        JavaFileObject jfo = filer.createSourceFile(fullyQualifiedStubName, clazz);
         
         Writer writer = jfo.openWriter();
         try {
