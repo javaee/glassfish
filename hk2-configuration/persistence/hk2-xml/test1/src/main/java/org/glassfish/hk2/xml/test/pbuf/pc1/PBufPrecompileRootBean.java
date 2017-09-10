@@ -83,9 +83,11 @@ public interface PBufPrecompileRootBean {
             + "As if he'd been really invited.")
     @XmlElement
     public String getName();
+    public void setName(String name);
     
     @XmlAttribute(name="itype")
     public int getIType();
+    public void setIType(int iType);
     
     @Comment("This is a single line comment")
     @XmlElement(name="localTypes")

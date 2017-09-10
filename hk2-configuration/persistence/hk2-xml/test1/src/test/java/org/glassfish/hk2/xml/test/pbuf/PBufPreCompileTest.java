@@ -39,18 +39,30 @@
  */
 package org.glassfish.hk2.xml.test.pbuf;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.pbuf.api.PBufUtilities;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileRootBean;
+import org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileRootBeanOuterClass;
 import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.protobuf.CodedOutputStream;
 
 /**
  * @author jwells
  *
  */
 public class PBufPreCompileTest {
+    private final static String ALICE = "Alice";
+    
     private final static String[] PROTO_RESOURCES = {
             "org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileChild.proto"
             , "org/glassfish/hk2/xml/test/pbuf/pc1/PBufPrecompileRootBean.proto"
@@ -67,6 +79,7 @@ public class PBufPreCompileTest {
      * Tests that the expected files are generate and put into the resulting jar file
      */
     @Test
+    // @org.junit.Ignore
     public void testPrecompileHappens() throws Exception {
         ClassLoader loader = getClass().getClassLoader();
         
@@ -82,6 +95,77 @@ public class PBufPreCompileTest {
             
             Assert.assertTrue(Arrays.equals(precompiledProto, compiledProto));
         }
+    }
+    
+    /**
+     * Tests that we can interoperate with true protocol buffers
+     * generated from java files
+     */
+    @Test
+    public void testCanInteropWithTrueProtos() throws Exception {
+        ServiceLocator locator = Utilities.createInteropLocator();
+        
+        PBufPrecompileRootBeanOuterClass.PBufPrecompileRootBean.Builder rootBuilder = PBufPrecompileRootBeanOuterClass.PBufPrecompileRootBean.newBuilder();
+        
+        PBufPrecompileRootBeanOuterClass.PBufPrecompileRootBean root = rootBuilder.setName(ALICE).
+                setItype(13).
+                build();
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            int serializedSize = root.getSerializedSize();
+            
+            CodedOutputStream cos = CodedOutputStream.newInstance(baos);
+            
+            try {
+                cos.writeInt32NoTag(serializedSize);
+            
+                root.writeTo(cos);
+            }
+            finally {
+                cos.flush();
+            }
+        }
+        finally {
+            baos.close();
+        }
+        
+        byte fromProto[] = baos.toByteArray();
+        
+        XmlService xmlService = locator.getService(XmlService.class, PBufUtilities.PBUF_SERVICE_NAME);
+        
+        XmlRootHandle<PBufPrecompileRootBean> writeHandle = xmlService.createEmptyHandle(PBufPrecompileRootBean.class);
+        writeHandle.addRoot();
+        
+        PBufPrecompileRootBean writeRoot = writeHandle.getRoot();
+        writeRoot.setName(ALICE);
+        writeRoot.setIType(13);
+        
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        try {
+            writeHandle.marshal(baos2);
+        }
+        finally {
+            baos2.close();
+        }
+        
+        byte fromHk2[] = baos2.toByteArray();
+        
+        Assert.assertTrue(Arrays.equals(fromProto, fromHk2));
+        
+        PBufPrecompileRootBean hk2Root = null;
+        ByteArrayInputStream bais = new ByteArrayInputStream(fromHk2);
+        try {
+            XmlRootHandle<PBufPrecompileRootBean> handle = xmlService.unmarshal(bais, PBufPrecompileRootBean.class);
+            
+            hk2Root = handle.getRoot();
+        }
+        finally {
+            bais.close();
+        }
+        
+        Assert.assertEquals(ALICE, hk2Root.getName());
+        Assert.assertEquals(13, hk2Root.getIType());
     }
 
 }

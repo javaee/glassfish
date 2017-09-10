@@ -218,9 +218,11 @@ public class PBufParser implements XmlServiceParser {
             ChildDescriptor childDescriptor = entry.getValue();
             
             String localPart = qname.getLocalPart();
-            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(localPart);
+            String protoPart = PBUtilities.camelCaseToUnderscore(localPart);
+            
+            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(protoPart);
             if (fieldDescriptor == null) {
-                throw new IOException("Unknown field " + localPart + " in " + bean);
+                throw new IOException("Unknown field " + protoPart + " in " + bean);
             }
             
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
@@ -368,9 +370,11 @@ public class PBufParser implements XmlServiceParser {
             ChildDescriptor childDescriptor = allEntry.getValue();
             
             String localPart = qname.getLocalPart();
-            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(localPart);
+            String protoPart = PBUtilities.camelCaseToUnderscore(localPart);
+            
+            Descriptors.FieldDescriptor fieldDescriptor = descriptor.findFieldByName(protoPart);
             if (fieldDescriptor == null) {
-                throw new IOException("Unknown field " + localPart + " in " + bean);
+                throw new IOException("Unknown field " + protoPart + " in " + bean);
             }
             
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
@@ -542,17 +546,17 @@ public class PBufParser implements XmlServiceParser {
             String localPart = entryKey.getLocalPart();
             ChildDescriptor childDescriptor = entry.getValue();
             
+            String protoPart = PBUtilities.camelCaseToUnderscore(localPart);
+            
             DescriptorProtos.FieldDescriptorProto.Builder fBuilder =
-                    DescriptorProtos.FieldDescriptorProto.newBuilder().setName(localPart);
+                    DescriptorProtos.FieldDescriptorProto.newBuilder().setName(protoPart);
             fBuilder.setNumber(number);
             number++;
             
-            if (keyProperty != null && keyProperty.equals(entryKey)) {
-                fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REQUIRED);
-            }
-            
             ChildDataModel dataModel = childDescriptor.getChildDataModel();
             if (dataModel != null) {
+                fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL);
+                
                 Class<?> dataType = dataModel.getChildTypeAsClass();
                 String originalMethodName = dataModel.getOriginalMethodName();
                 
@@ -590,6 +594,9 @@ public class PBufParser implements XmlServiceParser {
             else {
                 ParentedModel pm = childDescriptor.getParentedModel();
                 
+                // Set the type
+                fBuilder.setType(DescriptorProtos.FieldDescriptorProto.Type.TYPE_MESSAGE);
+                
                 Class<?> childDataType = pm.getChildModel().getOriginalInterfaceAsClass();
                 String originalMethodName = pm.getOriginalMethodName();
                 
@@ -620,11 +627,14 @@ public class PBufParser implements XmlServiceParser {
                 ModelImpl childModel = pm.getChildModel();
                 String childTypeName = childModel.getOriginalInterface();
                 
-                fBuilder.setTypeName(childTypeName);
+                fBuilder.setTypeName("." + childTypeName);
                 
                 ChildType childType = pm.getChildType();
                 if (childType.equals(ChildType.ARRAY) || childType.equals(ChildType.LIST)) {
                     fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_REPEATED);
+                }
+                else {
+                    fBuilder.setLabel(DescriptorProtos.FieldDescriptorProto.Label.LABEL_OPTIONAL);
                 }
             }
             
