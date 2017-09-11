@@ -307,18 +307,17 @@ public class NodeTest extends BaseSeleniumTestClass {
     public void testDeleteWithInstance(){
         final String nodeName = NODE_NAME_PREFIX + generateRandomString();
         final String instanceName = "testInstance" + generateRandomString();
+        StandaloneTest standaloneTest = new StandaloneTest();
 
+        standaloneTest.deleteAllStandaloneInstances();
         createSSHNode(nodeName);
         createInstance(instanceName, nodeName);
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         // This part shoudl fail?
         rowActionWithConfirm(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
-        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
+        waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 180000);
         assertTrue(isTextPresent("An error has occurred"));
-
-        StandaloneTest standaloneTest = new StandaloneTest();
         standaloneTest.deleteAllStandaloneInstances();
-
         reset();
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         deleteRow(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
