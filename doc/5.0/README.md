@@ -5,7 +5,7 @@ is included in the list. This page is the basis for the documentation landing pa
 Beta Draft (Pre-General Availability)
 
 
-# Java EE Documentantion
+# Java EE Documentation
 
 * [Java EE 8 First Cup](https://javaee.github.io/firstcup/)
 * [Java EE 8 Tutorial](https://javaee.github.io/tutorial/)
