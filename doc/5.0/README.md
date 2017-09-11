@@ -18,9 +18,9 @@ Beta Draft (Pre-General Availability)
 
 # GlassFish Server Documentation
 
-* [Quick Start Guide](quick-start-guide.pdf)
-* [Installation Guide](installation-guide.pdf)
 * [GlassFish Server 5.0 Release Notes](release-notes.pdf)
+* [Installation Guide](installation-guide.pdf)
+* [Quick Start Guide](quick-start-guide.pdf)
 * [Application Development Guide](application-development-guide.pdf)
 * [Application Deployment Guide](application-deployment-guide.pdf)
 * [Reference Manual](reference-manual.pdf)
@@ -28,8 +28,12 @@ Beta Draft (Pre-General Availability)
 * [Security Guide](security-guide.pdf)
 
 
-# How-to contribute to GlassFish
+# How-to contribute to the GlassFish Documentation
 
 * [How to Contribute to GlassFish and Java EE](https://javaee.github.io/glassfish/how-to-contribute)
 * [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow)
 * [Licenses](https://javaee.github.io/glassfish/LICENSE) governing the GlassFish project.
+
+# Documentation for Previous Releases (archive)
+
+* [GlassFish 4.0 and Java EE 7](documentation4)
