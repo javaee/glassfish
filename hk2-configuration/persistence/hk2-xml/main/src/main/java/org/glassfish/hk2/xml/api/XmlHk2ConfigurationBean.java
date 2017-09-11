@@ -171,6 +171,54 @@ public interface XmlHk2ConfigurationBean {
     public boolean _isSet(String propNamespace, String propName);
     
     /**
+     * Gets the property with the given name from the
+     * default name space.  Defaulting will happen
+     * 
+     * @param propName The property with the given name
+     * @return The value of this property or the default
+     * value if not set
+     */
+    public Object _getProperty(String propName);
+    
+    /**
+     * Gets the property with the given name.
+     * Defaulting will happen
+     * 
+     * @param propNamespace the non-null name space name
+     * @param propName The property with the given name
+     * @return The value of this property or the default
+     * value if not set
+     */
+    public Object _getProperty(String propNamespace, String propName);
+    
+    
+    /**
+     * Will set the corresponding property of this bean to the
+     * given value in the default name space.  Care should be
+     * taken that the propName is one of the properties of
+     * this bean
+     * 
+     * @param propName The non-null name of a property on this bean to set
+     * @param propValue The possibly null value the property should take.  May
+     * not be null if this property represents some scalar value
+     */
+    public void _setProperty(String propName, Object propValue);
+    
+    /**
+     * Will set the corresponding property of this bean to the
+     * given value.  Care should be
+     * taken that the propName is one of the properties of
+     * this bean
+     * 
+     * @param propNamespace The non-null name space of this property
+     * @param propName The non-null name of a property on this bean to set
+     * @param propValue The possibly null value the property should take.  May
+     * not be null if this property represents some scalar value
+     */
+    public void _setProperty(String propNamespace, String propName, Object propValue);
+    
+    
+    /**
      * Gets the root associated with this bean.  If this bean
      * has no associated root this will return null
      * 

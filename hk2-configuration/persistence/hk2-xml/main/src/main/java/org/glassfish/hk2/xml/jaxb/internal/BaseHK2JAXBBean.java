@@ -195,6 +195,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
     }
     
+    @Override
+    public void _setProperty(String propName, Object propValue) {
+        _setProperty(XmlService.DEFAULT_NAMESPACE, propName, propValue);
+    }
+    
+    @Override
     public void _setProperty(String propNamespace, String propName, Object propValue) {
         _setProperty(propNamespace, propName, propValue, true);
     }
@@ -517,6 +523,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName Property of child or non-child element or attribute
      * @return Value
      */
+    @Override
     public Object _getProperty(String propNamespace, String propName) {
         ModelImpl model = _getModel();
         ModelPropertyType mpt = model.getModelPropertyType(propNamespace, propName);
@@ -532,6 +539,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         default:
             throw new AssertionError("Unknown type " + mpt + " for " + propName + " in " + this);
         }
+    }
+    
+    @Override
+    public Object _getProperty(String propName) {
+        return _getProperty(XmlService.DEFAULT_NAMESPACE, propName);
     }
     
     /**
