@@ -40,10 +40,9 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import java.nio.file.Files;
 import java.util.logging.Level;
 
-import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -292,7 +291,7 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
      * @throws SftpException
      */
     private void searchAndFixBinDirectoryFiles(String installDir, SFTPClient sftpClient) throws SftpException {
-        for (ChannelSftp.LsEntry directoryEntry : (List<ChannelSftp.LsEntry>) sftpClient.getSftpChannel().ls(installDir)) {
+        for (LsEntry directoryEntry : (List<LsEntry>) sftpClient.getSftpChannel().ls(installDir)) {
             if (directoryEntry.getFilename().equals(".") || directoryEntry.getFilename().equals(".."))
                 continue;
             else if (directoryEntry.getAttrs().isDir()) {
@@ -314,7 +313,7 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
      * @throws SftpException
      */
     private void fixAllFiles(String binDir, SFTPClient sftpClient) throws SftpException {
-        for (ChannelSftp.LsEntry directoryEntry : (List<ChannelSftp.LsEntry>) sftpClient.getSftpChannel().ls(binDir)) {
+        for (LsEntry directoryEntry : (List<LsEntry>) sftpClient.getSftpChannel().ls(binDir)) {
             if (directoryEntry.getFilename().equals(".") || directoryEntry.getFilename().equals(".."))
                 continue;
             else {
