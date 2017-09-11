@@ -71,7 +71,8 @@ import org.jvnet.hk2.annotations.Contract;
         , "fifthThing"
         })
 @GenerateProto
-@Comment("This is a comment on the root bean")
+@Comment("Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.\n" +
+         "This is a comment on the root bean")
 public interface PBufPrecompileRootBean {
     @Comment("This is a multiline comment\n"
             + "wherein there are multiple lines\n"

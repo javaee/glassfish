@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.glassfish.hk2.pbuf.api.annotations.Comment;
 import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
@@ -67,6 +68,7 @@ import org.jvnet.hk2.annotations.Contract;
 @XmlType(propOrder={ "children" })
 @XmlRootElement(name="interop")
 @GenerateProto
+@Comment("Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.")
 public interface InteropRootBean {
     @XmlElement(name="child")
     @PluralOf("Child")

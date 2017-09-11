@@ -11,6 +11,7 @@ import "org/glassfish/hk2/xml/test/pbuf/pc1/ThingBean.proto";
 import "org/glassfish/hk2/xml/test/pbuf/pc1/ThingOneBean.proto";
 import "org/glassfish/hk2/xml/test/pbuf/pc1/ThingTwoBean.proto";
 
+// Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 // This is a comment on the root bean
 message PBufPrecompileRootBean {
 

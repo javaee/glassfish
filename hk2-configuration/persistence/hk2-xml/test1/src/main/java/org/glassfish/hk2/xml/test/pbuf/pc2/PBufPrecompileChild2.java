@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.glassfish.hk2.pbuf.api.annotations.Comment;
 import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
@@ -58,6 +59,7 @@ import org.jvnet.hk2.annotations.Contract;
         , "BType"
         , "types" })
 @GenerateProto
+@Comment("Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.")
 public interface PBufPrecompileChild2 {
     @XmlElement(name="btype")
     public void setBType(int jtype);

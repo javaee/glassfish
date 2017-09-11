@@ -7,6 +7,7 @@ package org.glassfish.hk2.xml.test.pbuf.pc2;
 
 import "org/glassfish/hk2/xml/test/pbuf/pc2/TypeBean.proto";
 
+// Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 message PBufPrecompileChild2 {
 
     bool z_type = 1;

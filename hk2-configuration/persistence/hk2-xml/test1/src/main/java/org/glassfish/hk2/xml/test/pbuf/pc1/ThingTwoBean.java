@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.test.pbuf.pc1;
 
 import javax.xml.bind.annotation.XmlType;
 
+import org.glassfish.hk2.pbuf.api.annotations.Comment;
 import org.glassfish.hk2.pbuf.api.annotations.GenerateProto;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
@@ -53,6 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Hk2XmlPreGenerate
 @XmlType(propOrder={ })
 @GenerateProto
+@Comment("Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.")
 public interface ThingTwoBean {
 
 }
