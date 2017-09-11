@@ -5,7 +5,7 @@ is included in the list. This page is the basis for the documentation landing pa
 Beta Draft (Pre-General Availability)
 
 
-# Java EE Documentantion
+# Java EE Documentation
 
 * [Java EE 8 First Cup](https://javaee.github.io/firstcup/)
 * [Java EE 8 Tutorial](https://javaee.github.io/tutorial/)
@@ -18,6 +18,10 @@ Beta Draft (Pre-General Availability)
 
 # GlassFish Server Documentation
 
+
+* [Quick Start Guide](quick-start-guide.pdf)
+* [Installation Guide](installation-guide.pdf)
+* [Administration Guide](administration-guide.pdf)
 * [GlassFish Server 5.0 Release Notes](release-notes.pdf)
 * [Installation Guide](installation-guide.pdf)
 * [Quick Start Guide](quick-start-guide.pdf)
@@ -28,12 +32,20 @@ Beta Draft (Pre-General Availability)
 * [Security Guide](security-guide.pdf)
 
 
+# Open MQ Documentation
+
+* [Open MQ Release Notes](mq-release-notes.pdf)
+
+
+# Documentation for Previous Releases (archive)
+
+* [GlassFish 4.0 and Java EE 7](documentation4)
+
+
 # How-to contribute to the GlassFish Documentation
+
 
 * [How to Contribute to GlassFish and Java EE](https://javaee.github.io/glassfish/how-to-contribute)
 * [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow)
 * [Licenses](https://javaee.github.io/glassfish/LICENSE) governing the GlassFish project.
 
-# Documentation for Previous Releases (archive)
-
-* [GlassFish 4.0 and Java EE 7](documentation4)
