@@ -39,6 +39,10 @@ public final class PBufPrecompileChildOuterClass {
     boolean getZType2();
   }
   /**
+   * <pre>
+   * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+   * </pre>
+   *
    * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileChild}
    */
   public  static final class PBufPrecompileChild extends
@@ -346,6 +350,10 @@ public final class PBufPrecompileChildOuterClass {
       return builder;
     }
     /**
+     * <pre>
+     * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+     * </pre>
+     *
      * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc1.PBufPrecompileChild}
      */
     public static final class Builder extends

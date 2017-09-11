@@ -175,6 +175,7 @@ public final class PBufPrecompileRootBeanOuterClass {
   }
   /**
    * <pre>
+   * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
    * This is a comment on the root bean
    * </pre>
    *
@@ -980,6 +981,7 @@ public final class PBufPrecompileRootBeanOuterClass {
     }
     /**
      * <pre>
+     * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
      * This is a comment on the root bean
      * </pre>
      *

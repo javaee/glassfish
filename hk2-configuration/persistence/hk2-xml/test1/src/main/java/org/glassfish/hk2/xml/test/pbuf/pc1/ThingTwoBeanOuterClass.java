@@ -19,6 +19,10 @@ public final class ThingTwoBeanOuterClass {
       com.google.protobuf.MessageOrBuilder {
   }
   /**
+   * <pre>
+   * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+   * </pre>
+   *
    * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc1.ThingTwoBean}
    */
   public  static final class ThingTwoBean extends
@@ -218,6 +222,10 @@ public final class ThingTwoBeanOuterClass {
       return builder;
     }
     /**
+     * <pre>
+     * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+     * </pre>
+     *
      * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc1.ThingTwoBean}
      */
     public static final class Builder extends

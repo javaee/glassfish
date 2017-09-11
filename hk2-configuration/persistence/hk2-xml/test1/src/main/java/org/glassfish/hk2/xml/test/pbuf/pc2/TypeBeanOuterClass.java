@@ -74,6 +74,10 @@ public final class TypeBeanOuterClass {
         getStringBytes();
   }
   /**
+   * <pre>
+   * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+   * </pre>
+   *
    * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc2.TypeBean}
    */
   public  static final class TypeBean extends
@@ -566,6 +570,10 @@ public final class TypeBeanOuterClass {
       return builder;
     }
     /**
+     * <pre>
+     * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+     * </pre>
+     *
      * Protobuf type {@code org.glassfish.hk2.xml.test.pbuf.pc2.TypeBean}
      */
     public static final class Builder extends

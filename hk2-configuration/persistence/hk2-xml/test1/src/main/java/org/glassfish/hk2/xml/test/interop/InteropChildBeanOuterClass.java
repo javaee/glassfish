@@ -34,6 +34,10 @@ public final class InteropChildBeanOuterClass {
     int getHouseNumber();
   }
   /**
+   * <pre>
+   * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+   * </pre>
+   *
    * Protobuf type {@code org.glassfish.hk2.xml.test.interop.InteropChildBean}
    */
   public  static final class InteropChildBean extends
@@ -311,6 +315,10 @@ public final class InteropChildBeanOuterClass {
       return builder;
     }
     /**
+     * <pre>
+     * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+     * </pre>
+     *
      * Protobuf type {@code org.glassfish.hk2.xml.test.interop.InteropChildBean}
      */
     public static final class Builder extends
