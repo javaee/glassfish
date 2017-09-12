@@ -38,7 +38,3 @@
 * [Java EE 7 Tutorial](https://docs.oracle.com/javaee/7/tutorial/)
 * [Java EE 7 Technical Kit](https://javaee.github.io/javaee7/techkit/)
 
-# Documentation for Previous Releases (archive)
-
-* [GlassFish 4.0 and Java EE 7](documentation4)
-
