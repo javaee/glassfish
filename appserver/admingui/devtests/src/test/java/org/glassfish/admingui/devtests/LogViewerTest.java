@@ -60,8 +60,9 @@ public class LogViewerTest extends BaseSeleniumTestClass {
 	        waitForPopUp("LogViewerWindow", "300000");
 	        selectWindow("LogViewerWindow");
 	        assertTrue(isTextPresent(TRIGGER_LV));
+			deselectPopUp();
     	} finally {
-    		selectWindow("null");
+    		selectWindow(null);
     	}
     }
 
@@ -74,8 +75,9 @@ public class LogViewerTest extends BaseSeleniumTestClass {
 		    waitForPopUp("LogViewerWindow", "300000");
 		    selectWindow("LogViewerWindow");
 		    assertTrue(isTextPresent(TRIGGER_IV));
+			deselectPopUp();
     	} finally {
-    		selectWindow("null");
+    		selectWindow(null);
     		
     	}
     }
