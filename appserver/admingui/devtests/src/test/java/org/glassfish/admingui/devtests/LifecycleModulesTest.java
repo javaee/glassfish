@@ -61,6 +61,11 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
         final String lifecycleName = "TestLifecycle"+generateRandomString();
         final String lifecycleClassname = "org.foo.nonexistent.Lifecyclemodule";
 
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
+
         clickAndWait("treeForm:tree:lifecycles:lifecycles_link", TRIGGER_LIFECYCLE_MODULES);
         clickAndWait("propertyForm:deployTable:topActionsGroup1:newButton", TRIGGER_NEW_LIFECYCLE_MODULE);
         setFieldValue("form:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
