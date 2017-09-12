@@ -71,6 +71,7 @@ test_run(){
   cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
   cp $TEST_RUN_LOG $WORKSPACE/results/
   cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true  
+  cp $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports/*.png $WORKSPACE/results/ || true 
 }
 
 run_test_id(){
