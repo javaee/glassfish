@@ -60,7 +60,6 @@ public class LogViewerTest extends BaseSeleniumTestClass {
 	        waitForPopUp("LogViewerWindow", "300000");
 	        selectWindow("LogViewerWindow");
 	        assertTrue(isTextPresent(TRIGGER_LV));
-            selenium.deselectPopUp();
     	} finally {
     		selectWindow(null);
     	}
@@ -72,13 +71,11 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     	try {
 		    clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
 		    pressButton("propertyForm:propertyContentPage:logViewerRaw");
-		    waitForPopUp("LogViewerWindow", "300000");
-		    selectWindow("LogViewerWindow");
+		    waitForPopUp("LogViewerRawWindow", "300000");
+		    selectWindow("LogViewerRawWindow");
 		    assertTrue(isTextPresent(TRIGGER_IV));
-		    selenium.deselectPopUp();
     	} finally {
     		selectWindow(null);
-    		
     	}
     }
 }
