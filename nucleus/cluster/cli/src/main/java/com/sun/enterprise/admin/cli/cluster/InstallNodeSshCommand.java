@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.util.logging.Level;
 
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
@@ -168,6 +169,7 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
             String sshInstallDir = getInstallDir().replace('\\', '/');
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
+            ChannelSftp sftpChannel = sftpClient.getSftpChannel();
             try {
                 if (!sftpClient.exists(sshInstallDir)) {
                     sftpClient.mkdirs(sshInstallDir, 0755);
@@ -198,8 +200,9 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
                 logger.info("Copying " + zip + " (" + zipFile.length() + " bytes)"
                         + " to " + host + ":" + sshInstallDir);
                 // TODO: Looks like we need to quote the paths to scp in case they contain spaces.
-                sftpClient.cd(sshInstallDir);
-                sftpClient.getSftpChannel().put(zipFile.getAbsolutePath(), zipFile.getName());
+                sftpChannel.cd(sftpChannel.getHome());
+                sftpChannel.cd(sshInstallDir);
+                sftpChannel.put(zipFile.getAbsolutePath(), zipFile.getName());
                 if (logger.isLoggable(Level.FINER))
                     logger.finer("Copied " + zip + " to " + host + ":" +
                                                                 sshInstallDir);
@@ -228,7 +231,8 @@ public class InstallNodeSshCommand extends InstallNodeBaseCommand {
 
             try {
                 logger.info("Removing " + host + ":" + sshInstallDir + "/" + getArchiveName());
-                sftpClient.getSftpChannel().rm(sshInstallDir + "/" + getArchiveName());
+                sftpChannel.cd(sftpChannel.getHome());
+                sftpChannel.rm(sshInstallDir + "/" + getArchiveName());
                 if (logger.isLoggable(Level.FINER))
                     logger.finer("Removed " + host + ":" + sshInstallDir + "/" +
                                                             getArchiveName());

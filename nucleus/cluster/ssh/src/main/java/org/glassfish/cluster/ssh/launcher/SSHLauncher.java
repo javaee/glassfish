@@ -62,7 +62,11 @@ import org.glassfish.internal.api.RelativePathResolver;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Rajiv Mordani, Krishna Deepak
@@ -214,12 +218,6 @@ public class SSHLauncher {
         // TODO: Logger?
         // jsch.setLogger(logger);
 
-        // Server Auth
-        if (knownHostsLocation == null || knownHostsLocation.equals("")) {
-            throw new IllegalArgumentException("Known hosts database cannot be null");
-        }
-        jsch.setKnownHosts(knownHostsLocation);
-
         // Client Auth
         String message = "";
         boolean triedAuthentication = false;
@@ -259,6 +257,7 @@ public class SSHLauncher {
         }
 
         session = jsch.getSession(userName, host, port);
+        session.setConfig("StrictHostKeyChecking", "no");
         // Password Auth
         if (SSHUtil.checkString(password) != null) {
             if (logger.isLoggable(Level.FINE)) {
@@ -624,13 +623,8 @@ public class SSHLauncher {
         }
         try {
             JSch jsch = new JSch();
-            // Server Auth
-            if (knownHostsLocation == null || knownHostsLocation.equals("")) {
-                throw new IllegalArgumentException("Known hosts database cannot be null");
-            }
-            jsch.setKnownHosts(knownHostsLocation);
-
             Session s1 = jsch.getSession(userName, host, port);
+            s1.setConfig("StrictHostKeyChecking", "no");
             s1.setPassword(passwd);
             s1.connect();
 
@@ -748,14 +742,9 @@ public class SSHLauncher {
             if(logger.isLoggable(Level.FINER)) {
                 logger.finer("Checking connection...");
             }
-            // Server Auth
-            if (knownHostsLocation == null || knownHostsLocation.equals("")) {
-                throw new IllegalArgumentException("Known hosts database cannot be null");
-            }
-            jsch.setKnownHosts(knownHostsLocation);
-
             jsch.addIdentity(f.getAbsolutePath(), rawKeyPassPhrase);
             sess = jsch.getSession(userName, host, port);
+            sess.setConfig("StrictHostKeyChecking", "no");
             sess.connect();
             status = sess.isConnected();
             if (status) {
@@ -792,6 +781,7 @@ public class SSHLauncher {
                 logger.finer("Checking connection...");
             }
             sess = jsch.getSession(userName, host, port);
+            sess.setConfig("StrictHostKeyChecking", "no");
             sess.setPassword(password);
             sess.connect();
             status = sess.isConnected();
