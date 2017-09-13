@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.pbuf.internal;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,6 +60,7 @@ import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
@@ -80,13 +82,12 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 @Singleton
 @Named(PBufUtilities.PBUF_SERVICE_NAME)
 public class PBufParser implements XmlServiceParser {
     private final HashMap<Class<?>, Descriptors.Descriptor> allProtos = new HashMap<Class<?>, Descriptors.Descriptor>();
-    private final Object marshalLock = new Object();
-    private final Object unmarshalLock = new Object();
     
     private final WeakHashMap<OutputStream, CodedOutputStream> cosCache = new WeakHashMap<OutputStream, CodedOutputStream>();
     private final WeakHashMap<InputStream, CodedInputStream> cisCache = new WeakHashMap<InputStream, CodedInputStream>();
@@ -127,29 +128,41 @@ public class PBufParser implements XmlServiceParser {
             throw new IOException(e);
         }
         
-        synchronized (unmarshalLock) {
-            CodedInputStream cis = cisCache.get(input);
+        
+        CodedInputStream cis;
+        synchronized (cisCache) {
+            cis = cisCache.get(input);
             if (cis == null) {
                 cis = CodedInputStream.newInstance(input);
                 cisCache.put(input, cis);
             }
-            
-            int size = cis.readInt32();
-            if (size <= 0) {
-                throw new AssertionError("Invalid size of protocol buffer on the wire: " + size);
-            }
-            
-            byte[] rawBytes = cis.readRawBytes(size);
-            
-            DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, rawBytes);
-        
-            XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
-                null,
-                message,
-                listener);
-        
-            return (T) retVal;
         }
+            
+        int size;
+        try {
+            size = cis.readInt32();
+        }
+        catch (InvalidProtocolBufferException ipbe) {
+            MultiException me = new MultiException(new EOFException());
+            me.addError(ipbe);
+                
+            throw me;
+        }
+            
+        if (size <= 0) {
+            throw new AssertionError("Invalid size of protocol buffer on the wire: " + size);
+        }
+            
+        byte[] rawBytes = cis.readRawBytes(size);
+            
+        DynamicMessage message = internalUnmarshal((ModelImpl) rootModel, rawBytes);
+        
+        XmlHk2ConfigurationBean retVal = parseDynamicMessage((ModelImpl) rootModel,
+            null,
+            message,
+            listener);
+        
+        return (T) retVal;
     }
 
     /* (non-Javadoc)
@@ -183,23 +196,25 @@ public class PBufParser implements XmlServiceParser {
             throw new IOException(e);
         }
         
-        synchronized (marshalLock) {
-            DynamicMessage dynamicMessage = internalMarshal(rootBean);
-            int size = dynamicMessage.getSerializedSize();
+        DynamicMessage dynamicMessage = internalMarshal(rootBean);
+        int size = dynamicMessage.getSerializedSize();
             
-            CodedOutputStream cos = cosCache.get(outputStream);
+        CodedOutputStream cos;
+        synchronized (cosCache) {
+            cos = cosCache.get(outputStream);
+        
             if (cos == null) {
                 cos = CodedOutputStream.newInstance(outputStream);
                 cosCache.put(outputStream, cos);
             }
+        }
             
-            try {
-              cos.writeInt32NoTag(size);
-              dynamicMessage.writeTo(cos);
-            }
-            finally {
-                cos.flush();
-            }
+        try {
+          cos.writeInt32NoTag(size);
+          dynamicMessage.writeTo(cos);
+        }
+        finally {
+            cos.flush();
         }
     }
     
