@@ -55,7 +55,7 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-@XmlType(propOrder={ "Name" })
+@XmlType(propOrder={ "name" })
 @Hk2XmlPreGenerate
 public interface FooBean {
     @XmlElement(name="name", required=true)

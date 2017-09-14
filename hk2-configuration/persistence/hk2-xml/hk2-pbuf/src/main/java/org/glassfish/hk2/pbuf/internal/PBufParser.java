@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.pbuf.internal;
 
+import java.beans.Introspector;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.Unmarshaller.Listener;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.IterableProvider;
@@ -547,6 +549,68 @@ public class PBufParser implements XmlServiceParser {
         return packageName;
     }
     
+    private static String getXmlTypeValueFromMethodName(String methodName, Object source) {
+        if (methodName == null) {
+            throw new AssertionError("Do not know the method name of " + source);
+        }
+        
+        if (methodName.startsWith("get") || methodName.startsWith("set")) {
+            return Introspector.decapitalize(methodName.substring(3));
+        }
+        
+        if (methodName.startsWith("is")) {
+            return Introspector.decapitalize(methodName.substring(2));
+        }
+        
+        throw new IllegalStateException("Unknown method name pattern, not a get or a set or an is: " + methodName);
+    }
+    
+    private static void validateXmlType(Class<?> originalInterface, Map<QName, ChildDescriptor> allChildren) {
+        XmlType xmlType = originalInterface.getAnnotation(XmlType.class);
+        if (xmlType == null) {
+            throw new IllegalStateException("When using protocol buffers the XmlType MUST be on the interface.  The interface " + originalInterface.getName() +
+                    " does not have one");
+        }
+        
+        String propOrder[] = xmlType.propOrder();
+        
+        Set<String> uniq = new HashSet<String>();
+        for (String order : propOrder) {
+            if (uniq.contains(order)) {
+                throw new IllegalStateException("XmlType propOrder field on " + originalInterface.getName() + " has duplicate value " + order);
+            }
+            
+            uniq.add(order);
+        }
+        
+        Set<String> extras = new HashSet<String>();
+        Set<String> missing = new HashSet<String>(uniq);
+        for (ChildDescriptor cd : allChildren.values()) {
+            ChildDataModel cdm = cd.getChildDataModel();
+            String interfaceMethod;
+            if (cdm != null) {
+                interfaceMethod = getXmlTypeValueFromMethodName(cdm.getOriginalMethodName(), cdm);
+                
+            }
+            else {
+                ParentedModel pm = cd.getParentedModel();
+                
+                interfaceMethod = getXmlTypeValueFromMethodName(pm.getOriginalMethodName(), pm);
+            }
+            
+            missing.remove(interfaceMethod);
+            if (!uniq.contains(interfaceMethod)) {
+                extras.add(interfaceMethod);
+            }
+        }
+        
+        if (!missing.isEmpty() || !extras.isEmpty()) {
+            throw new IllegalStateException("On interface " + originalInterface.getName() +
+                    " the XmlType propOrder field had these extra fields " + missing +
+                    " or missing fields " + extras);
+        }
+    }
+    
     private static Descriptors.Descriptor convertModelToDescriptor(ModelImpl model, Set<Descriptors.FileDescriptor> knownFiles) throws Exception {
         Map<QName, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
         
@@ -557,6 +621,8 @@ public class PBufParser implements XmlServiceParser {
         builder.setName(protoName);
         
         Class<?> originalInterface = model.getOriginalInterfaceAsClass();
+        
+        validateXmlType(originalInterface, allChildren);
         
         int oneOfNumber = 0;
         Map<String, Integer> oneOfToIndexMap = new HashMap<String, Integer>();

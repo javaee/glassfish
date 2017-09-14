@@ -57,7 +57,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 @XmlRootElement(name="foo")
-@XmlType(propOrder={ "Foo2", "Foo3" })
+@XmlType(propOrder={ "foo2", "foo3" })
 @Hk2XmlPreGenerate
 public interface FooBean {
     @XmlElement(name="foo2")
