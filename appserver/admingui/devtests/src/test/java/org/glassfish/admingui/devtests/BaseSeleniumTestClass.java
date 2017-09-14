@@ -396,6 +396,11 @@ public class BaseSeleniumTestClass {
         return Math.abs(r.nextInt(max - 1)) + 1;
     }
 
+    protected int generateRandomNumber(int min, int max) {
+        Random r = new Random();
+        return Math.abs(r.nextInt(max + 1 - min)) + min;
+    }
+
     protected <T> T selectRandomItem(T... items) {
         Random r = new Random();
 
