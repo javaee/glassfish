@@ -1,12 +1,12 @@
-# GlassFish Server Documentation
-
 Beta Draft (Pre-General Availability)
 
-
-# Java EE Documentation
+# Tutorials
 
 * [Java EE 8 First Cup](https://javaee.github.io/firstcup/)
 * [Java EE 8 Tutorial](https://javaee.github.io/tutorial/)
+
+# API Documentation and Tag Reference
+
 * [Java EE 8 Specification APIs](https://javaee.github.io/javaee-spec/javadocs/)
 * [JavaServer Faces 2.3 Facelets Tag Library Documentation](doc/5.0/vdldoc/index.html)
 * [JavaServer Faces 2.3 JSP Tag Library Documentation](doc/5.0/vdldocs/jsp/index.html)
@@ -26,16 +26,14 @@ Beta Draft (Pre-General Availability)
 * [Reference Manual](doc/5.0/reference-manual.pdf)
 * [Error Messages Reference](doc/5.0/error-messages-reference.pdf)
 
-
 # Open MQ Documentation
 
 * [Open MQ Release Notes](doc/5.0/mq-release-notes.pdf)
-
-# How-to contribute to GlassFish
-
-* [How to Contribute to GlassFish and Java EE](https://javaee.github.io/glassfish/how-to-contribute)
-* [Pull Request Acceptance Workflow](https://javaee.github.io/glassfish/pr_workflow)
-* [License](https://javaee.github.io/glassfish/LICENSE) governing the GlassFish project
+* [Technical Overview](doc/4.0/mq-tech-over.pdf)
+* [Developer's Guide for Java Clients](doc/4.0/mq-dev-guide-java.pdf)
+* [Developer's Guide for JMX Clients](doc/4.0/mq-dev-guide-jmx.pdf)
+* [Developer's Guide for C Clients](doc/4.0/mq-dev-guide-c.pdf)
+* [Administration Guide](doc/4.0/mq-admin-guide.pdf)
 
 # Documentation for Previous Releases (archive)
 
