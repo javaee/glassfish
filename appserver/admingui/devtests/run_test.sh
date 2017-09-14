@@ -58,6 +58,7 @@ test_run(){
   chmod 600 $APS_HOME/password.txt
   echo "AS_ADMIN_PASSWORD=" > $APS_HOME/password.txt
   echo "AS_ADMIN_NEWPASSWORD=$PWD" >> $APS_HOME/password.txt
+  rm $S1AS_HOME/domains/domain1/imq/instances/imqbroker/lockv
   $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
   echo "AS_ADMIN_PASSWORD=$PWD" > $APS_HOME/password.txt
