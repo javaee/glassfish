@@ -34,7 +34,7 @@ The updated platform contains several major new specifications (for example, Web
 | Specifications 	|JSR             	|RI       	|
 |:---	|:---:|:---:|
 |Java Servlet 4.0| [JSR 369](https://jcp.org/en/jsr/detail?id=369) | [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
-|JavaServer Faces (JSF) 2.3 | [JSR 372](https://jcp.org/en/jsr/detail?id=372) 	| [Link](https://javaserverfaces.github.io/)|
+|JavaServer Faces (JSF) 2.3 | [JSR 372](https://jcp.org/en/jsr/detail?id=372) 	| [Link](https://javaserverfaces.github.io/download.html)|
 |Java API for WebSocket 1.1 (MR completed Aug. 2014) | [JSR 356](https://jcp.org/en/jsr/detail?id=356) 	| [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
 |Java API for JSON Binding (JSON B) 1.0| [JSR 367](https://jcp.org/en/jsr/detail?id=367) 	| [Link](https://projects.eclipse.org/projects/rt.yasson/downloads)|
 |Java API for JSON Processing 1.1| [JSR 374](https://jcp.org/en/jsr/detail?id=374) 	| [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
