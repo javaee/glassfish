@@ -37,6 +37,11 @@ header a.button {
   padding-left: 32px;
 }
 
+header a.buttonri {
+  background: transparent url(../images/logo.png) 0 0 no-repeat;
+  padding-left: 32px;
+}
+
 header a:hover { 
   text-decoration: none;
 }
