@@ -40,6 +40,12 @@ header a.button {
 header a.buttonri {
   background: transparent url(../images/logo.png) 0 0 no-repeat;
   padding-left: 32px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 134px;
+  height: 58px;
+  padding-top: 22px;
 }
 
 header a:hover { 
