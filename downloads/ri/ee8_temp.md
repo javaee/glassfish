@@ -76,7 +76,7 @@ The updated platform contains several major new specifications (for example, Web
 
 | Specifications 	|JSR             	|RI       	|
 |:---	|:---:|:---:|
-|Java EE Security API 1.0| [JSR 375](http://jcp.org/en/jsr/detail?id=375) | [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
+|Java EE Security API 1.0| [JSR 375](http://jcp.org/en/jsr/detail?id=375) | [Download](https://github.com/javaee/security-soteria/releases/1.0)|
 |Java Authentication Service Provider Interface for Containers 1.1| [JSR 196](http://jcp.org/en/jsr/detail?id=196) | [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
 |Java Authorization Contract for Containers 1.5| [JSR 115](http://jcp.org/en/jsr/detail?id=115) | [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
 |J2EE Management 1.1| [JSR 77](http://jcp.org/en/jsr/detail?id=77) | [Download](http://download.java.net/glassfish/5.0/release/javaee8-ri.zip)|
