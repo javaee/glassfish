@@ -4,17 +4,17 @@ GlassFish is the Open Source Java EE Reference Implementation; as such, we welco
 
 # Latest News
 
+## Sept 21, 2017 - Java EE 8 is Final and GlassFish 5.0 is Released!
+
+See the annoucement [here](https://blogs.oracle.com/theaquarium/java-ee-8-is-final-and-glassfish-50-is-released).
+
+## Sept 12, 2017 - Opening Up Java EE update
+
+See [here](https://blogs.oracle.com/theaquarium/opening-up-ee-update) for an important update.
+
 ## Aug 11, 2017 - Java.Net Mailing Lists Archive ##
 
 The Java.Net Mailing Lists Archive can now be consulted [here](http://download.oracle.com/javaee-archive/).
-
-## Aug 10, 2017 - GF 5 Promoted Builds 19 ##
-
-GlassFish 5 Promoted Builds 19 are now [available](https://javaee.groups.io/g/glassfish/topic/glassfish_5_0_b19_is_promoted/5804720).
-
-## Aug 1, 2017 - Java EE 8 July recap
-
-See [here](https://blogs.oracle.com/theaquarium/java-ee-8-july-recap).
 
 ## July 4, 2017 - GlassFish Docker Images Update
 
