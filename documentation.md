@@ -1,5 +1,3 @@
-Beta Draft (Pre-General Availability)
-
 # Tutorials
 
 * [Java EE 8 First Cup](https://javaee.github.io/firstcup/)
