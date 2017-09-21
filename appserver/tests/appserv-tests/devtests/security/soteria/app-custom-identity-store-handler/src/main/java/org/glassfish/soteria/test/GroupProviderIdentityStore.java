@@ -54,6 +54,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition;
+import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope;
+import javax.security.enterprise.identitystore.IdentityStore.ValidationType;
+import static javax.security.enterprise.identitystore.LdapIdentityStoreDefinition.LdapSearchScope.SUBTREE;
+import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.VALIDATE;
 
 /**
  *
@@ -61,8 +65,10 @@ import javax.security.enterprise.identitystore.LdapIdentityStoreDefinition;
 @LdapIdentityStoreDefinition(
         url = "ldap://localhost:33389/",
         callerBaseDn = "ou=caller,dc=jsr375,dc=net",
+        callerSearchScope = LdapSearchScope.SUBTREE,
         groupSearchBase = "ou=group,dc=jsr375,dc=net",
-        useForExpression = "#{'VALIDATE'}" // usage of expression just for test
+        useForExpression = "#{'VALIDATE'}",
+        groupSearchScopeExpression = "${configBean.searchScopeOneLevel}"
 )
 @ApplicationScoped
 public class GroupProviderIdentityStore implements IdentityStore {

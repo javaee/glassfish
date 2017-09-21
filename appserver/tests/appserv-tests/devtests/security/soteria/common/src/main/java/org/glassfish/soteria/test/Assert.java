@@ -80,6 +80,27 @@ public final class Assert {
         assertNotNull(response);
         assertEquals(500, response.getStatusCode());
     }
+
+    public static void assertApplicationPrincipalAndContainerPrincipalName(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertApplicationPrincipalAndContainerPrincipalSubject("reza", "foo", response
+                .getContentAsString());
+    }
+
+    public static void assertBundledHAMPrecedenceOverLoginConfig(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertBundledHAMPrecedenceOverLoginConfig("reza", "foo", response
+                .getContentAsString());
+    }
+
+    public static void assertBothContainerAndApplicationPrincipalsAreSame(WebResponse response) {
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode());
+        assertBothContainerAndApplicationPrincipalsAreSame("reza", "foo", response
+                .getContentAsString());
+    }
     
     public static void assertAuthenticated(String userType, String name, String response, String... roles) {
         assertTrue(
@@ -153,6 +174,35 @@ public final class Assert {
                 "user " + name + " should have access to resource "+ resource +" but was not \n Response: \n" +
                         response,
                 response.contains(userType + " user has access to " + resource + ": true"));
+    }
+
+    public static void assertBundledHAMPrecedenceOverLoginConfig(String name, String role, String response) {
+        assertTrue(
+                "For " + name + " authentication should have been performed by TestAuthenticationMechanism, but wasn't. \n" +
+                        "+ Response: \n" +
+                        response,
+                response.contains(String.format("Authentication Mechanism:TestAuthenticationMechanism")));
+    }
+
+    public static void assertApplicationPrincipalAndContainerPrincipalSubject(String name, String role, String response) {
+        assertTrue(
+                "Both application principal's and container principal's name should have been same as "
+                        + " but was not. \n Response: \n" +
+                        response,
+                response.contains(String.format("Container caller principal and application caller principal both are " +
+                        "represented by same principal for user %s and is in role %s", name, role)));
+    }
+
+    public static void assertBothContainerAndApplicationPrincipalsAreSame(String name, String role, String response) {
+        assertTrue(
+                "For user " + name + " both container caller principal and application caller principal should have been same, " +
+                        "but " +
+                        "wasn't. \n" +
+                        "+ Response: \n" +
+                        response,
+                response.contains(String.format("Both container caller principal and application caller principals are one and " +
+                                "the same for user %s in role %s",
+                        name, role)));
     }
 
 }

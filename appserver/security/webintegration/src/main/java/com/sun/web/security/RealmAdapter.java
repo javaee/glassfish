@@ -517,7 +517,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     @Override
     public void logout() {
         setSecurityContext(null);
-        resetPolicyContext();
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            public Void run() {
+                resetPolicyContext();
+                return null;
+            }
+        });
     }
 
     public Principal authenticate(HttpServletRequest hreq) {

@@ -127,13 +127,13 @@
         <slf4j.version>1.7.21</slf4j.version>
         <javax.validation.osgi.version>2.0.0</javax.validation.osgi.version>
         <management-api.version>1.1-rev-1</management-api.version>
-        <servlet-api.version>4.0.0-b07</servlet-api.version>
-        <grizzly.version>2.4.0</grizzly.version>
+        <servlet-api.version>4.0.0</servlet-api.version>
+        <grizzly.version>2.4.1</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
         <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
-        <javax.validation.version>2.0.0.CR3</javax.validation.version>
-        <hibernate-validator.version>6.0.0.CR3</hibernate-validator.version>
+        <javax.validation.version>2.0.0.Final</javax.validation.version>
+        <hibernate-validator.version>6.0.2.Final</hibernate-validator.version>
         <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
         <javax.el-api.version>3.0.1-b04</javax.el-api.version>
@@ -142,14 +142,14 @@
         <hk2.plugin.version>2.5.0-b44</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
-        <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
+        <trilead-ssh2.version>2.1.3</trilead-ssh2.version>
         <pfl.version>4.0.1-b001</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
         <antlr.version>2.7.7</antlr.version>
         <ant.version>1.10.1</ant.version>
         <jersey.version>2.26</jersey.version>
-        <jackson.version>2.8.4</jackson.version>
-        <jettison.version>1.3.3</jettison.version>
+        <jackson.version>2.8.9</jackson.version>
+        <jettison.version>1.3.7</jettison.version>
         <jax-rs-api.spec.version>2.1</jax-rs-api.spec.version>
         <jax-rs-api.impl.version>2.1</jax-rs-api.impl.version>
         <mimepull.version>1.9.7</mimepull.version>
@@ -175,6 +175,9 @@
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
         <javadoc.skip>false</javadoc.skip>
         <deploy.skip>false</deploy.skip>
+        <replacer.plugin.version>1.5.3</replacer.plugin.version>
+        <javaee.version.old>7</javaee.version.old>
+        <javaee.version.new>8</javaee.version.new>
     </properties>
 
     <modules>
@@ -182,6 +185,7 @@
         <module>cluster</module>
         <module>common</module>
         <module>core</module>
+        <module>docs</module>
         <module>admin</module>
         <module>flashlight</module>
         <module>grizzly</module>
@@ -430,6 +434,11 @@
                             <pattern>cluster/cli/src/test/resources/fake_gf_install_dir/junk</pattern>
                         </exclude> 
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.code.maven-replacer-plugin</groupId>
+                    <artifactId>replacer</artifactId>
+                    <version>${replacer.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1005,7 +1014,7 @@
                 <version>${asm.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jvnet.hudson</groupId>
+                <groupId>org.glassfish.external</groupId>
                 <artifactId>trilead-ssh2</artifactId>
                 <version>${trilead-ssh2.version}</version>
             </dependency>
@@ -1230,6 +1239,40 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>edit-manPages-javaEEVersion</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <basedir>${project.basedir}</basedir>
+                            <includes>
+                                <include>**/*.1</include>
+                                <include>**/*.1m</include>
+                                <include>**/*.5asc</include>
+                            </includes>
+                            <replacements>
+                                <replacement>
+                                    <token>Java EE ${javaee.version.old}</token>
+                                    <value>Java EE ${javaee.version.new}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <dependencies>
