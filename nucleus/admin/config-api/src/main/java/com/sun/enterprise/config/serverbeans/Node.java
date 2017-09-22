@@ -354,15 +354,15 @@ public interface Node extends ConfigBeanProxy, Named, ReferenceContainer, RefCon
         String installdir = null;
         @Param(name = "type")
         String type = null;
-        @Param(name = "sshport", optional = true, alias = "dcomport")
+        @Param(name = "sshport", optional = true)
         String sshPort = null;
-        @Param(name = "sshnodehost", optional = true, alias = "dcomnodehost")
+        @Param(name = "sshnodehost", optional = true)
         String sshHost = null;
-        @Param(name = "sshuser", optional = true, alias = "dcomuser")
+        @Param(name = "sshuser", optional = true)
         String sshuser = null;
         @Param(name = "sshkeyfile", optional = true)
         String sshkeyfile;
-        @Param(name = "sshpassword", optional = true, alias = "dcompassword")
+        @Param(name = "sshpassword", optional = true)
         String sshpassword;
         @Param(name = "sshkeypassphrase", optional = true)
         String sshkeypassphrase;

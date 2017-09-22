@@ -10,8 +10,7 @@ SYNOPSIS
 DESCRIPTION
        The start-cluster subcommand starts a cluster by starting all GlassFish
        Server instances in the cluster that are not already running. This
-       subcommand requires the Distributed Component Object Model (DCOM)
-       remote protocol or secure shell (SSH) to be configured on the host
+       subcommand requires the secure shell (SSH) to be configured on the host
        where the domain administration server (DAS) is running and on all
        hosts where instances in the cluster reside.
 
@@ -19,11 +18,11 @@ DESCRIPTION
            +----------------------------------------+
            |           If all instances reside on   |
            |           the same host as the DAS,    |
-           |           DCOM or SSH is not required. |
-           |           You might require to start a |
+           |           SSH is not required. You     |
+           |           might require to start a     |
            |           cluster in which instances   |
-           |           reside on hosts where DCOM   |
-           |           or SSH is not configured     |
+           |           reside on hosts where        |
+           |           SSH is not configured        |
            |           that are remote from the     |
            |           DAS. In this situation, run  |
            |           the start-local-instance(1)  |
@@ -87,7 +86,7 @@ EXIT STATUS
 
 SEE ALSO
        create-cluster(1), delete-cluster(1), list-clusters(1), setup-ssh(1),
-       start-local-instance(1), stop-cluster(1), validate-dcom(1)
+       start-local-instance(1), stop-cluster(1)
 
        asadmin(1M)
 
