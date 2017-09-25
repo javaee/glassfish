@@ -440,14 +440,6 @@ public interface Node extends ConfigBeanProxy, Named, ReferenceContainer, RefCon
             if (StringUtils.ok(sshHost))
                 sshC.setSshHost(sshHost);
 
-            if ("DCOM".equals(type)) {
-                if (StringUtils.ok(windowsdomain))
-                    instance.setWindowsDomain(windowsdomain);
-                else if(StringUtils.ok(nodehost))
-                    instance.setWindowsDomain(nodehost);
-                else if(StringUtils.ok(sshHost))
-                    instance.setWindowsDomain(sshHost);
-            }
             instance.setSshConnector(sshC);
         }
     }

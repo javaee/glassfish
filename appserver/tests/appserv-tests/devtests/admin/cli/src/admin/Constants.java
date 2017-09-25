@@ -47,11 +47,6 @@ import java.io.File;
  * @author Byron Nevins
  */
 public class Constants {
-    public static final String DCOM_HOST_PROP = "dcom.host";
-    public static final String DCOM_DOMAIN_PROP = "dcom.domain";
-    public static final String DCOM_USER_PROP = "dcom.user";
-    public static final String DCOM_PASSWORD_PROP = "dcom.password";
-    public static final String DCOM_INSTALLDIR_PROP = "dcom.installdir";
     public static final String pFile = System.getenv("APS_HOME") +
              File.separator + "config" + File.separator + "adminpassword.txt";
     public static final String tmpFile = System.getenv("APS_HOME") +

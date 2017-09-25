@@ -260,15 +260,6 @@ public class NodeUtils {
         }
     }
 
-    private String resolvePassword(String p) {
-        try {
-            return RelativePathResolver.getRealPasswordFromAlias(p);
-        }
-        catch (Exception e) {
-            return p;
-        }
-    }
-
     private void validatePassword(String p) throws CommandValidationException {
 
         String expandedPassword = null;
