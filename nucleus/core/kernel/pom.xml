@@ -195,11 +195,11 @@
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.kohsuke.metainf-services</groupId>
             <artifactId>metainf-services</artifactId>
             <optional>true</optional>
-        </dependency>
+        </dependency> -->
         <dependency>
 	    <groupId>org.glassfish.external</groupId>
 	    <artifactId>management-api</artifactId>

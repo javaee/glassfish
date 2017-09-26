@@ -46,7 +46,7 @@ import org.glassfish.admin.restconnector.ProxyRestMonitoringAdapter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.kohsuke.MetaInfServices;
+//import org.kohsuke.MetaInfServices;
 
 
 /**
@@ -54,7 +54,7 @@ import org.kohsuke.MetaInfServices;
  *
  * @author Jerome Dochez
  */
-@MetaInfServices
+//@MetaInfServices
 public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
     public String getName() {
         return "Embedded";
