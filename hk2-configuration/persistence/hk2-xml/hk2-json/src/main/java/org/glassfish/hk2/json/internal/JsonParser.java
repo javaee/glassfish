@@ -63,7 +63,8 @@ import javax.json.stream.JsonGenerator;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 
-import org.glassfish.hk2.api.Rank;
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.json.api.JsonUtilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -84,7 +85,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  */
 @Singleton
 @Named(JsonUtilities.JSON_SERVICE_NAME)
-@Rank(-1)
+@Visibility(DescriptorVisibility.LOCAL)
 public class JsonParser implements XmlServiceParser {
     private void skipper(javax.json.stream.JsonParser parser) {
         if (!parser.hasNext()) return;

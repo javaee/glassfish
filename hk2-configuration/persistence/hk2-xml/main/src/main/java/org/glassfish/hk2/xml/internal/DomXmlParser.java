@@ -53,6 +53,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.spi.Model;
@@ -66,6 +67,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
 @Singleton
 @Visibility(DescriptorVisibility.LOCAL)
 @Named(XmlServiceParser.STREAM_PARSING_SERVICE)
+@Rank(1) // heuristically use this one in favor of others
 public class DomXmlParser implements XmlServiceParser {
     private final XMLInputFactory xif = XMLInputFactory.newInstance();
     

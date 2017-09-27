@@ -61,8 +61,10 @@ import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.pbuf.api.PBufUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
@@ -86,8 +88,14 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+/**
+ * The pbuf parser
+ * 
+ * @author jwells
+ */
 @Singleton
 @Named(PBufUtilities.PBUF_SERVICE_NAME)
+@Visibility(DescriptorVisibility.LOCAL)
 public class PBufParser implements XmlServiceParser {
     private final HashMap<Class<?>, Descriptors.Descriptor> allProtos = new HashMap<Class<?>, Descriptors.Descriptor>();
     
