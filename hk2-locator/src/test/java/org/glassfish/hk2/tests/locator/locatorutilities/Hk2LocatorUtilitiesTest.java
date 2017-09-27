@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.locatorutilities;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -168,6 +169,78 @@ public class Hk2LocatorUtilitiesTest {
         
         Assert.assertEquals(descriptorC0.getImplementationClass(), SimpleService.class);
         Assert.assertEquals(descriptorC1.getImplementationClass(), SimpleService.class);
+    }
+    
+    /**
+     * Tests a basic greedy scenario
+     */
+    @Test
+    public void testGreedy() {
+        // Do NOT put in SimpleService
+        ServiceLocator locator = LocatorHelper.getServiceLocator(ForgotSimpleService.class);
+        
+        try {
+            locator.getService(ForgotSimpleService.class);
+            Assert.fail("Should have failed with no SimpleService to inject");
+        }
+        catch (MultiException me) {
+            
+        }
+        
+        ServiceLocatorUtilities.enableGreedyResolution(locator);
+        
+        // Twice to check idempotence
+        ServiceLocatorUtilities.enableGreedyResolution(locator);
+        
+        ForgotSimpleService forgot = locator.getService(ForgotSimpleService.class);
+        Assert.assertNotNull(forgot);
+        Assert.assertNotNull(forgot.getInjectedService());
+    }
+    
+    /**
+     * Tests greedy with a parameterized type injection point
+     */
+    @Test
+    public void testGreedyParameterizedType() {
+     // Do NOT put in SimpleService
+        ServiceLocator locator = LocatorHelper.getServiceLocator(ForgotParameterizedService.class);
+        
+        try {
+            locator.getService(ForgotParameterizedService.class);
+            Assert.fail("Should have failed with no SimpleService to inject");
+        }
+        catch (MultiException me) {
+            
+        }
+        
+        ServiceLocatorUtilities.enableGreedyResolution(locator);
+        
+        ForgotParameterizedService forgot = locator.getService(ForgotParameterizedService.class);
+        Assert.assertNotNull(forgot);
+        Assert.assertNotNull(forgot.getPS());
+    }
+    
+    /**
+     * Tests greedy with an interface with GreedyDefaultImplementation
+     */
+    @Test
+    public void testGreedyInterface() {
+        // Do NOT put in SimpleService
+        ServiceLocator locator = LocatorHelper.getServiceLocator(ForgotSimpleInterface.class);
+        
+        try {
+            locator.getService(ForgotSimpleInterface.class);
+            Assert.fail("Should have failed with no SimpleService to inject");
+        }
+        catch (MultiException me) {
+            
+        }
+        
+        ServiceLocatorUtilities.enableGreedyResolution(locator);
+        
+        ForgotSimpleInterface forgot = locator.getService(ForgotSimpleInterface.class);
+        Assert.assertNotNull(forgot);
+        Assert.assertNotNull(forgot.getSI());
     }
 
 }

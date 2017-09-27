@@ -879,6 +879,28 @@ public abstract class ServiceLocatorUtilities {
             if (!isDupException(me)) throw me;
         }
     }
+    
+    /**
+     * Enables greedy service resolution in this service locator by
+     * adding the {@link GredyResolver} into the service locator.  This
+     * method is idempotent.
+     * <p>
+     * WARNING: Use of greedy resolution may cause classes that were not
+     * intended to be instantiated by hk2 to be instantiated by hk2.  Please
+     * use this with care
+     * 
+     * @param locator The locator to enable for greedy resolution
+     */
+    public static void enableGreedyResolution(ServiceLocator locator) {
+        if (locator == null) throw new IllegalArgumentException();
+        
+        try {
+            addClasses(locator, true, GreedyResolver.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
+    }
 
     /**
      * This method will enable the default topic distribution service.
