@@ -963,11 +963,6 @@
                 <artifactId>pfl-tf-tools</artifactId>
                 <version>${pfl.version}</version>
             </dependency>
-           <!-- <dependency>
-                <groupId>org.kohsuke.metainf-services</groupId>
-                <artifactId>metainf-services</artifactId>
-                <version>1.1</version>
-            </dependency> -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
