@@ -4,6 +4,11 @@ GlassFish is the Open Source Java EE Reference Implementation; as such, we welco
 
 # Latest News
 
+## Sept 28, 2017 - Introducing Eclipse Enterprise for Java
+
+See [here](https://blogs.oracle.com/theaquarium/ee4j-eclipse-enterprise-for-java).
+
+
 ## Sept 21, 2017 - Java EE 8 and GlassFish 5.0 Released!
 
 See the annoucement [here](https://blogs.oracle.com/theaquarium/java-ee-8-is-final-and-glassfish-50-is-released).
