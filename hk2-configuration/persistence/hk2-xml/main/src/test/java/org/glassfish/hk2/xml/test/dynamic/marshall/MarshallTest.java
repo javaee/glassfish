@@ -48,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -340,7 +341,7 @@ public class MarshallTest {
     }
     
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMarshalStringArray() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -371,11 +372,29 @@ public class MarshallTest {
             baos.close();
         }
         
-        String asString = new String(baos.toByteArray());
+        byte asBytes[] = baos.toByteArray();
+        String asString = new String(asBytes);
         
         Assert.assertTrue(asString, asString.contains("<data>foo</data>"));
         Assert.assertTrue(asString, asString.contains("<data>bar</data>"));
         Assert.assertTrue(asString, asString.contains("<data>baz</data>"));
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(asBytes);
+        try {
+            XmlRootHandle<StringArrayBean> handle2 = xmlService.unmarshal(bais, StringArrayBean.class, false, false);
+            StringArrayBean root2 = handle2.getRoot();
+            
+            String data2[] = root2.getData();
+            
+            Assert.assertEquals(Arrays.toString(data2), 3, data2.length);
+            
+            Assert.assertEquals("foo", data2[0]);
+            Assert.assertEquals("bar", data2[1]);
+            Assert.assertEquals("baz", data2[2]);
+        }
+        finally {
+            bais.close();
+        }
     }
     
     /**

@@ -787,12 +787,26 @@ public class XmlStreamImpl {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
                 
                 if (!childDataModel.isReference()) {
-                    String valueAsString = value.toString();
-                    if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
+                    if (!value.getClass().isArray()) {
+                        String valueAsString = value.toString();
                     
-                    indenter.writeStartElement(elementTagKey);
-                    indenter.writeCharacters(valueAsString);
-                    indenter.writeEndElement();
+                        indenter.writeStartElement(elementTagKey);
+                        indenter.writeCharacters(valueAsString);
+                        indenter.writeEndElement();
+                    }
+                    else {
+                        int length = Array.getLength(value);
+                        
+                        for (int lcv = 0; lcv < length; lcv++) {
+                            Object indexedValue = Array.get(value, lcv);
+                            
+                            String valueAsString = indexedValue.toString();
+                            
+                            indenter.writeStartElement(elementTagKey);
+                            indenter.writeCharacters(valueAsString);
+                            indenter.writeEndElement();
+                        }
+                    }
                 }
                 else {
                     XmlHk2ConfigurationBean reference = (XmlHk2ConfigurationBean) value;
