@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans2.RefereeBean;
 import org.glassfish.hk2.xml.test.beans2.ReferencesBean;
@@ -327,6 +328,54 @@ public class MarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         
         orderingSpecifiedWithXmlType(locator);
+    }
+    
+    @Test
+    public void testMarshalStringArrayJAXB() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        
+        XmlService jaxbXmlService = locator.getService(XmlService.class, XmlServiceParser.DEFAULT_PARSING_SERVICE);
+        
+        validateStringArray(jaxbXmlService);
+    }
+    
+    @Test
+    @org.junit.Ignore
+    public void testMarshalStringArray() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        XmlService streamXmlService = locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE);
+        
+        validateStringArray(streamXmlService);
+    }
+    
+    private void validateStringArray(XmlService xmlService) throws Exception {
+        XmlRootHandle<StringArrayBean> handle = xmlService.createEmptyHandle(StringArrayBean.class, false, false);
+        handle.addRoot();
+        
+        StringArrayBean root = handle.getRoot();
+        
+        String datum[] = new String[] {
+                "foo"
+                , "bar"
+                , "baz"
+        };
+        
+        root.setData(datum);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        String asString = new String(baos.toByteArray());
+        
+        Assert.assertTrue(asString, asString.contains("<data>foo</data>"));
+        Assert.assertTrue(asString, asString.contains("<data>bar</data>"));
+        Assert.assertTrue(asString, asString.contains("<data>baz</data>"));
     }
     
     /**
