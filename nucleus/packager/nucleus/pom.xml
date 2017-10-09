@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.packager</groupId>
         <artifactId>nucleus-packages</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>nucleus</artifactId>
     <name>Nucleus Package</name>
@@ -176,9 +176,9 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.docs</groupId>
-            <artifactId>basedocs</artifactId>
-            <version>${v3-docs.version}</version>
+            <groupId>org.glassfish.main</groupId>
+            <artifactId>docs</artifactId>
+            <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>
         </dependency>
