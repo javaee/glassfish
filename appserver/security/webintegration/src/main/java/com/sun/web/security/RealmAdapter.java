@@ -1437,6 +1437,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 SecurityContext.setUnauthenticatedContext();
             }
             if (helper != null && helper.getServerAuthConfig() != null) {
+                disableProxyCaching(request, response, disableProxyCaching, securePagesWithPragma);
                 return Realm.AUTHENTICATE_NEEDED;
             }
             isGranted = invokeWebSecurityManager(
