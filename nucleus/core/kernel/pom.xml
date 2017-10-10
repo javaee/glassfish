@@ -108,6 +108,7 @@
                     <include>**/*.1</include>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+		    <include>**/services/*</include>
                 </includes>
             </resource>
         </resources>
