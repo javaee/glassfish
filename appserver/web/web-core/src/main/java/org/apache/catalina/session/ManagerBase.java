@@ -557,7 +557,7 @@ public abstract class ManagerBase implements Manager {
                 String msg = MessageFormat.format(rb.getString(LogFacade.INIT_RANDOM_NUMBER_GENERATOR_EXCEPTION),
                                                   randomClass);
                  log.log(Level.SEVERE, msg, e);
-                 this.random = new java.util.Random();
+                 this.random = new java.security.SecureRandom();
                  this.random.setSeed(seed);
             }
             long t2=System.currentTimeMillis();
