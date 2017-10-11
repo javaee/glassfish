@@ -121,7 +121,7 @@
                             -->
                             org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
                             javax.persistence.*; version="2.0"; resolution:=optional,
-                            org.joda.time; resolution:=optional; version="[1.6.0,3.0.0)",
+                            org.joda.time; resolution:=optional; version="[2.0.0,3.0.0)",
 			    javax.money;version="[1.0.0,2.0.0)";resolution:=optional,
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
                             org.apache.log4j; resolution:=optional,
