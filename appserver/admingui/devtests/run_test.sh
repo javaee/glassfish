@@ -71,11 +71,7 @@ test_run(){
   export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true -Dpasswordfile=$APS_HOME/password.txt test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
-  rm -rf $APS_HOME/password.txt	
-  cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
-  cp $TEST_RUN_LOG $WORKSPACE/results/
-  cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true  
-  cp $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports/*.png $WORKSPACE/results/ || true 
+  rm -rf $APS_HOME/password.txt
 }
 
 run_test_id(){
@@ -98,6 +94,7 @@ post_test_run(){
   cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/ || true
   cp $TEST_RUN_LOG $WORKSPACE/results/ || true
   cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
+  cp $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports/*.png $WORKSPACE/results/ || true
   upload_test_results
   delete_bundle
 }
