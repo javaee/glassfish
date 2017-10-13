@@ -293,6 +293,9 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                     origRequest = "/index.jsf";
                 }
                 logger.log(Level.INFO, "Redirecting to {0}", origRequest);
+                if (!GuiUtil.validateRedirectURL(origRequest)) {
+                    response.sendError(403,"Forbidden");
+                }
                 response.sendRedirect(response.encodeRedirectURL(origRequest));
             } catch (Exception ex) {
                 AuthException ae = new AuthException();

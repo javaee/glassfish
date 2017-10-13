@@ -54,6 +54,7 @@ import javax.faces.context.FacesContext;
 // FIXME: 7-31-08 -- FIX by importing woodstock api's:
 //import com.sun.webui.jsf.model.Option;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
@@ -72,10 +73,13 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.io.File;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -771,9 +775,70 @@ public class GuiUtil {
     }
 
 
+    /**
+     Validate the Redirect URL for Header Injection Attack.
+
+     @param redirectURL	Redirect URL to be validate
+     @return		boolean
+     */
+    public static boolean validateRedirectURL(String redirectURL) {
+        Pattern pattern = Pattern.compile(REDIRECT_PATTERN);
+        return pattern.matcher(redirectURL).matches();
+    }
+
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
+
+    public static String addSafeHeaderName(String headerName) throws Exception {
+        headerName = removeLinearWhiteSpaces(headerName);
+        if (headerName != null) {
+            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
+                throw new Exception("Header Name invalid characters");
+            }
+        }
+        return headerName;
+    }
+
+    public static String getSafeHeaderValue(String headerValue) throws Exception {
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerValue != null) {
+            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                throw new Exception("Header Value invalid characters");
+            }
+        }
+        return headerValue;
+    }
+
+    public static void setHeaderNameValue(HttpServletResponse resp,
+                                            String headerName, String headerValue) throws IOException {
+        headerName = removeLinearWhiteSpaces(headerName);
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerName != null) {
+            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
+                resp.sendError(403, "Forbidden");
+                return;
+            }
+        }
+        if (headerValue != null) {
+            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                resp.sendError(403, "Forbidden");
+                return;
+            }
+        }
+        resp.addHeader(headerName, headerValue);
+    }
+
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";
     public static final Locale guiLocale = new Locale("UTF-8");
+    public static final String REDIRECT_PATTERN = "^\\/.*$";
+    public static final String HEADER_NAME_VALIDATION_PATTERN = "^[a-zA-Z0-9\\-_]*$";
+    public static final String HEADER_VALUE_VALIDATION_PATERN
+                                            = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
 }
