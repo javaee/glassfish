@@ -78,6 +78,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.glassfish.grizzly.http.Method;
@@ -614,7 +615,12 @@ public class CoyoteAdapter extends HttpHandler {
             }
             // END CR 6590921
             // Issue a permanent redirect
-            response.sendRedirect(redirectPath, false);
+            // Validating the redirectPath for header injection
+            if (!ResponseUtil.validateRedirectURL(redirectPath)) {
+                response.sendError(403, "Forbidden");
+            } else {
+                response.sendRedirect(redirectPath, false);
+            }
 
             return false;
         }

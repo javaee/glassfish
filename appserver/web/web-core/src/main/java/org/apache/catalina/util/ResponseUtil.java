@@ -59,12 +59,20 @@
 package org.apache.catalina.util;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.regex.Pattern;
 
 public final class ResponseUtil {
+
+    public static final String REDIRECT_PATTERN = "^\\/.*$";
+    public static final String HEADER_NAME_VALIDATION_PATTERN = "^[a-zA-Z0-9\\-_]*$";
+    public static final String HEADER_VALUE_VALIDATION_PATERN
+                                            = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
+    public static final String COOKIE_HEADER_VALUE_VAL_PATTERN = "^[a-zA-Z0-9\\-\\/+=_ ]*$";
 
     /**
      * Copies the contents of the specified input stream to the specified
@@ -126,6 +134,87 @@ public final class ResponseUtil {
         }
         return exception;
 
+    }
+
+    /**
+     * Validate the Redirect URL for Header Injection Attack.
+     *
+     * @param redirectURL	Redirect URL to be validate
+     * @return		boolean
+     */
+    public static boolean validateRedirectURL(String redirectURL) {
+        Pattern pattern = Pattern.compile(REDIRECT_PATTERN);
+        return pattern.matcher(redirectURL).matches();
+    }
+
+    /**
+     * Remove unwanted white spaces in the URL.
+     *
+     * @param input	String to be stripped with whitespaces
+     * @return		String
+     */
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
+
+    /**
+     * Set the Http Header after suitable validation
+     *
+     * @param resp	Http Response where we should set the header
+     * @param headerName Header Name which should be validated before being set
+     * @param headerValue Header Value which should be validated before being set
+     * @return
+     */
+    public static void setHeaderNameValue(HttpServletResponse resp, String headerName,
+                                          String headerValue) throws IOException {
+        headerName = removeLinearWhiteSpaces(headerName);
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerName != null) {
+            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
+                resp.sendError(403, "Forbidden");
+                return;
+            }
+        }
+        if (headerValue != null) {
+            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                resp.sendError(403, "Forbidden");
+                return;
+            }
+        }
+        resp.addHeader(headerName, headerValue);
+    }
+
+    public static String getSafeHeaderName(String headerName) throws Exception {
+        headerName = removeLinearWhiteSpaces(headerName);
+            if (headerName != null) {
+                if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
+                    throw new Exception("Header Name invalid characters");
+                }
+            }
+        return headerName;
+    }
+
+    public static String getSafeHeaderValue(String headerValue) throws Exception {
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerValue != null) {
+                if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                        throw new Exception("Header Value invalid characters");
+                    }
+            }
+        return headerValue;
+    }
+
+    public static String getSafeCookieHeaderValue(String headerValue) throws Exception {
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerValue != null) {
+            if (!Pattern.compile(COOKIE_HEADER_VALUE_VAL_PATTERN).matcher(headerValue).matches()) {
+                throw new Exception (" Cookie Header Value has invalid characters");
+            }
+        }
+        return headerValue;
     }
 
 }

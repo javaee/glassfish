@@ -88,6 +88,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.util.ResponseUtil;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.CookieSerializerUtils;
 import org.glassfish.grizzly.http.util.CookieUtils;
@@ -1540,7 +1541,17 @@ public class Response
         if (included)
             return;
 
-        coyoteResponse.setHeader(name, value);
+        try {
+            String safeName = ResponseUtil.getSafeHeaderName(name);
+            String safeValue = ResponseUtil.getSafeHeaderValue(value);
+            coyoteResponse.setHeader(safeName, safeValue);
+        } catch (Exception e) {
+            try {
+                coyoteResponse.sendError(403, "Forbidden");
+            } catch (IOException ex) {
+                // just return
+            }
+        }
 
     }
 
