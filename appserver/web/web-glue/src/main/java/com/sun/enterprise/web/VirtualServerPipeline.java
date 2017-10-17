@@ -57,6 +57,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.web.LogFacade;
 
@@ -311,7 +313,13 @@ public class VirtualServerPipeline extends StandardPipeline {
                 }
             }
 
-            hres.sendRedirect(location);
+            // Validate the URL for extra spaces before redirection.
+            Pattern pattern = Pattern.compile("^\\/.*$");
+            if(!pattern.matcher(location).matches()) {
+                hres.sendError(403, "Forbidden");
+            } else {
+                hres.sendRedirect(location);
+            }
             return true;
         }
 
