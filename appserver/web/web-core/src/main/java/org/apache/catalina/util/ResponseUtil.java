@@ -68,7 +68,7 @@ import java.util.regex.Pattern;
 
 public final class ResponseUtil {
 
-    public static final String REDIRECT_PATTERN = "^\\/.*$";
+    public static final String REDIRECT_PATTERN = "^[A-Za-z0-9\\/:.]*$";
     public static final String HEADER_NAME_VALIDATION_PATTERN = "^[a-zA-Z0-9\\-_]*$";
     public static final String HEADER_VALUE_VALIDATION_PATERN
                                             = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
