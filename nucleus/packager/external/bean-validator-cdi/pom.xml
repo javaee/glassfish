@@ -51,7 +51,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>bean-validator-cdi</artifactId>
     <name>HV. CDI portable extension as OSGi bundle</name>
-    <description>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator CDI portable extension version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</description>
+    <description>Validation API (JSR 380) version ${javax.validation.version}, Hibernate Validator CDI portable extension version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</description>
 
     <build>
         <plugins>
