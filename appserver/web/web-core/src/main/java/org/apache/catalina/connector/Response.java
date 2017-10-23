@@ -1547,6 +1547,7 @@ public class Response
             coyoteResponse.setHeader(safeName, safeValue);
         } catch (Exception e) {
             try {
+                System.out.println("**************************** setheader : " + name + ":: value : " + value);
                 coyoteResponse.sendError(403, "Forbidden");
             } catch (IOException ex) {
                 // just return
