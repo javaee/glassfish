@@ -133,19 +133,8 @@ public class BaseSeleniumTestClass {
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
                 String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-                String url = "/management/domain/view-log";
-
-                String passwordFile = SeleniumHelper.getParameter("passwordfile", "");
-                String password = FileUtils.readFileToString(new File(passwordFile));
-                if(password.isEmpty() || !(password.startsWith("AS_ADMIN_PASSWORD=")) || password.length() <= 18) {
-                    throw new Exception("Password is not set correctly.");
-                } else {
-                    int index = password.indexOf("=");
-                    password = password.substring(index + 1, password.length() - 1);
-                }
-
-                int port = Integer.parseInt(SeleniumHelper.getParameter("admin.port", "4848"));
-                InputStream is = RestUtil.getInputStream(hostName, port, url, password, IS_SECURE_ADMIN_ENABLED);
+                URL url = new URL("http://" + hostName + ":" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
+                InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
                 String line = in.readLine();
@@ -159,7 +148,7 @@ public class BaseSeleniumTestClass {
         } catch (FileNotFoundException fnfe) {
             //
         } catch (Exception ex) {
-            Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
+            //Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
     }
 

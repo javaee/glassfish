@@ -41,8 +41,6 @@
 package org.glassfish.admingui.common.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,14 +72,11 @@ import javax.faces.context.FacesContext;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.sun.enterprise.admin.util.AuthenticationInfo;
-import com.sun.enterprise.admin.util.HttpConnectorAddress;
 import org.glassfish.jersey.client.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -1000,39 +995,6 @@ public class RestUtil {
             boolean result = defaultVerifier.verify(host, sslSession);
             return (result) ? true : host.equals(sslSession.getPeerHost());
         }
-    }
-
-    public static synchronized InputStream getInputStream(String host, int port, String urlStr, String password, boolean isSecure) throws IOException {
-        InputStream is = null;
-        try {
-            HttpConnectorAddress addr = new HttpConnectorAddress(host, port, isSecure);
-            if (isSecure) {
-                AuthenticationInfo authenticationInfo = new AuthenticationInfo("admin", password);
-                addr.setAuthenticationInfo(authenticationInfo);
-                HttpsURLConnection connection = (HttpsURLConnection) addr.openConnection(urlStr);
-
-                connection.setHostnameVerifier(
-                        new HostnameVerifier() {
-                            public boolean verify(String rserver, SSLSession sses) {
-                                return true;
-                            }
-                        });
-
-                connection.setDoOutput(true);
-                connection.connect();
-                is = connection.getInputStream();
-            } else {
-                HttpURLConnection connection = (HttpURLConnection) addr.openConnection(urlStr);
-                connection.connect();
-                is = connection.getInputStream();
-            }
-        } catch (Exception ex) {
-            GuiUtil.getLogger().warning("RestUtil.getInputSream() failed");
-            if (GuiUtil.getLogger().isLoggable(Level.FINE)) {
-                ex.printStackTrace();
-            }
-        }
-        return is;
     }
 
     /* This is a list of attribute name of password for different command.
