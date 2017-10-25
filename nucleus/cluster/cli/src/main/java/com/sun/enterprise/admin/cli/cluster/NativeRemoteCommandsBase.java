@@ -40,46 +40,28 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.SftpException;
+import com.sun.enterprise.admin.cli.CLICommand;
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.DomainDirs;
 import com.sun.enterprise.util.io.FileUtils;
-import java.io.*;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
+import org.glassfish.internal.api.RelativePathResolver;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.RelativePathResolver;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.cli.CLICommand;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
-import org.glassfish.cluster.ssh.sftp.SFTPClient;
-
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Nodes;
-import com.sun.enterprise.config.serverbeans.Node;
-
-import com.sun.enterprise.universal.glassfish.TokenResolver;
-import com.sun.enterprise.util.io.DomainDirs;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.net.NetUtils;
-
-import com.trilead.ssh2.SFTPv3DirectoryEntry;
-
-import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.DomDocument;
-
-import com.sun.enterprise.security.store.PasswordAdapter;
 
 /**
  *  Base class for SSH provisioning commands.
@@ -224,19 +206,20 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
      * @param dir directory to be removed
      * @param force true means delete all files, false means leave non-GlassFish files
      *              untouched
+     * @throws SftpException in case of error
      * @throws IOException in case of error
      */
     // byron XXXX
     void deleteRemoteFiles(SFTPClient sftpClient, List<String> dasFiles, String dir, boolean force)
-            throws IOException {
+            throws SftpException, IOException {
 
-        for (SFTPv3DirectoryEntry directoryEntry : (List<SFTPv3DirectoryEntry>) sftpClient.ls(dir)) {
-            if (directoryEntry.filename.equals(".") || directoryEntry.filename.equals("..")
-                    || directoryEntry.filename.equals("nodes")) {
+        for (ChannelSftp.LsEntry directoryEntry : (List<ChannelSftp.LsEntry>) sftpClient.getSftpChannel().ls(dir)) {
+            if (directoryEntry.getFilename().equals(".") || directoryEntry.getFilename().equals("..")
+                    || directoryEntry.getFilename().equals("nodes")) {
                 continue;
             }
-            else if (directoryEntry.attributes.isDirectory()) {
-                String f1 = dir + "/" + directoryEntry.filename;
+            else if (directoryEntry.getAttrs().isDir()) {
+                String f1 = dir + "/" + directoryEntry.getFilename();
                 deleteRemoteFiles(sftpClient, dasFiles, f1, force);
                 //only if file is present in DAS, it is targeted for removal on remote host
                 //using force deletes all files on remote host
@@ -244,27 +227,27 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
                     if (logger.isLoggable(Level.FINE))
                         logger.fine("Force removing directory " + f1);
                     if (isRemoteDirectoryEmpty(sftpClient, f1)) {
-                        sftpClient.rmdir(f1);
+                        sftpClient.getSftpChannel().rmdir(f1);
                     }
                 }
                 else {
                     if (dasFiles.contains(f1)) {
                         if (isRemoteDirectoryEmpty(sftpClient, f1)) {
-                            sftpClient.rmdir(f1);
+                            sftpClient.getSftpChannel().rmdir(f1);
                         }
                     }
                 }
             }
             else {
-                String f2 = dir + "/" + directoryEntry.filename;
+                String f2 = dir + "/" + directoryEntry.getFilename();
                 if (force) {
                     if (logger.isLoggable(Level.FINE))
                         logger.fine("Force removing file " + f2);
-                    sftpClient.rm(f2);
+                    sftpClient.getSftpChannel().rm(f2);
                 }
                 else {
                     if (dasFiles.contains(f2))
-                        sftpClient.rm(f2);
+                        sftpClient.getSftpChannel().rm(f2);
                 }
             }
         }
@@ -276,10 +259,10 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
      * @param sftp SFTP client handle
      * @param file path to remote directory
      * @return true if empty, false otherwise
-     * @throws IOException
+     * @throws SftpException
      */
-    boolean isRemoteDirectoryEmpty(SFTPClient sftp, String file) throws IOException {
-        List<SFTPv3DirectoryEntry> l = (List<SFTPv3DirectoryEntry>) sftp.ls(file);
+    boolean isRemoteDirectoryEmpty(SFTPClient sftp, String file) throws SftpException {
+        List<ChannelSftp.LsEntry> l = (List<ChannelSftp.LsEntry>) sftp.getSftpChannel().ls(file);
         if (l.size() > 2)
             return false;
         return true;
