@@ -50,8 +50,8 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testLoggerSettings() {
-        final String rotationLimit = Integer.toString(generateRandomNumber());
-        final String rotationTimeLimit = Integer.toString(generateRandomNumber());
+        final String rotationLimit = Integer.toString(generateRandomNumber(500*1000, Integer.MAX_VALUE - 1));
+        final String rotationTimeLimit = Integer.toString(generateRandomNumber(0, Integer.MAX_VALUE - 1));
         final String flushFrequency = Integer.toString(generateRandomNumber());
 
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
