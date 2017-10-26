@@ -7095,6 +7095,7 @@ public class StandardContext
      * Writes the specified message to a servlet log file.
      */
     public void log(String message) {
+        message=OWASPUtil.encode(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null) {
             /* PWC 6403328
@@ -7110,6 +7111,7 @@ public class StandardContext
      * Writes the specified exception and message to a servlet log file.
      */
     public void log(Exception exception, String message) {
+        message=OWASPUtil.encode(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(exception, logName() + message);
@@ -7119,6 +7121,7 @@ public class StandardContext
      * Writes the specified message and exception to a servlet log file.
      */
     public void log(String message, Throwable throwable) {
+        message=OWASPUtil.encode(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(logName() + message, throwable);
