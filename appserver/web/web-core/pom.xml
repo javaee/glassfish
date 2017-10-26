@@ -91,28 +91,7 @@
             </roles>
         </developer>
     </developers>
-<build>
-    <plugins>
-<plugin>
-    <artifactId>maven-assembly-plugin</artifactId>
-    <version>2.2.1</version>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>web-core</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-    <executions>
-        <execution>
-            <id>make-assembly</id> 
-            <phase>package</phase>
-            <goals>
-                <goal>single</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-    </plugins>
-</build>
+
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
@@ -121,59 +100,45 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.owasp.esapi</groupId>
-            <artifactId>esapi</artifactId>
-            <version>${esapi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>container-common</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-naming</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.annotations</groupId>
             <artifactId>logging-annotation-processor</artifactId>
             <optional>true</optional>
-            <scope>provided</scope>
         </dependency>
         <dependency> <!-- for FindBugs -->
             <groupId>org.osgi</groupId>

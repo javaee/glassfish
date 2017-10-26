@@ -41,8 +41,6 @@
 
 package org.apache.catalina.util;
 
-import org.owasp.esapi.ESAPI;
-
 public final class OWASPUtil {
     private OWASPUtil() {
     }
@@ -50,8 +48,38 @@ public final class OWASPUtil {
     public static String encode(String message){
         message = message.replace( '\n' ,  '_' ).replace( '\r' , '_' )
                 .replace( '\t' , '_' );
-        message = ESAPI.encoder().canonicalize( message );
+        message = encodeForHtml(message);
         return message;
+    }
+
+    public static String encodeForHtml(String message){
+        StringBuilder escapedTxt = new StringBuilder();
+        for (int i = 0; i < message.length(); i++) {
+            char tmp = message.charAt(i);
+            switch (tmp) {
+                case '<':
+                    escapedTxt.append("&lt;");
+                    break;
+                case '>':
+                    escapedTxt.append("&gt;");
+                    break;
+                case '&':
+                    escapedTxt.append("&amp;");
+                    break;
+                case '"':
+                    escapedTxt.append("&quot;");
+                    break;
+                case '\'':
+                    escapedTxt.append("&#x27;");
+                    break;
+                case '/':
+                    escapedTxt.append("&#x2F;");
+                    break;
+                default:
+                    escapedTxt.append(tmp);
+            }
+        }
+        return escapedTxt.toString();
     }
 
 }
