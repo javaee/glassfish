@@ -757,7 +757,7 @@ public abstract class AuthenticatorBase
                 }
                 this.random.setSeed(seed);
             } catch (Exception e) {
-                this.random = new java.security.SecureRandom();
+                this.random = new SecureRandom();
             }
         }
         
