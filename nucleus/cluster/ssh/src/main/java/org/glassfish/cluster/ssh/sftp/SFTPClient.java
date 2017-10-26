@@ -40,57 +40,57 @@
 
 package org.glassfish.cluster.ssh.sftp;
 
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.SFTPException;
-import com.trilead.ssh2.SFTPv3Client;
-import com.trilead.ssh2.SFTPv3FileAttributes;
-import com.trilead.ssh2.SFTPv3FileHandle;
-import com.trilead.ssh2.sftp.ErrorCodes;
+import com.jcraft.jsch.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
-public class SFTPClient extends SFTPv3Client {
+public class SFTPClient {
 
-    private Connection connection = null;
+    private Session session = null;
 
-    public SFTPClient(Connection conn) throws IOException {
-        super(conn);
-        this.connection = conn;
-        SSHUtil.register(connection);
+    private ChannelSftp sftpChannel = null;
+
+    public SFTPClient(Session session) throws JSchException {
+        this.session = session;
+        sftpChannel = (ChannelSftp) session.openChannel("sftp");
+        sftpChannel.connect();
+        SSHUtil.register(session);
+    }
+
+    public ChannelSftp getSftpChannel() {
+        return sftpChannel;
     }
 
     /**
      * Close the SFTP connection and free any resources associated with it.
      * close() should be called when you are done using the SFTPClient
      */
-    @Override
     public void close() {
-        if (connection != null) {
-            SSHUtil.unregister(connection);
-            connection = null;
+        if (session != null) {
+            SSHUtil.unregister(session);
+            session = null;
         }
-        super.close();
     }
 
     /**
      * Checks if the given path exists.
      */
-    public boolean exists(String path) throws IOException {
+    public boolean exists(String path) throws SftpException {
         return _stat(normalizePath(path))!=null;
     }
 
     /**
-     * Graceful {@link #stat(String)} that returns null if the path doesn't exist.
+     * Graceful stat that returns null if the path doesn't exist.
      */
-    public SFTPv3FileAttributes _stat(String path) throws IOException {
+    public SftpATTRS _stat(String path) throws SftpException {
         try {
-            return stat(normalizePath(path));
-        } catch (SFTPException e) {
-            int c = e.getServerErrorCode();
-            if (c== ErrorCodes.SSH_FX_NO_SUCH_FILE || c==ErrorCodes.SSH_FX_NO_SUCH_PATH)
+            return sftpChannel.stat(normalizePath(path));
+        } catch (SftpException e) {
+            int c = e.id;
+            if (c == ChannelSftp.SSH_FX_NO_SUCH_FILE)
                 return null;
             else
                 throw e;
@@ -100,87 +100,27 @@ public class SFTPClient extends SFTPv3Client {
     /**
      * Makes sure that the directory exists, by creating it if necessary.
      */
-    public void mkdirs(String path, int posixPermission) throws IOException {
-        path =normalizePath(path);
-        SFTPv3FileAttributes atts = _stat(path);
-        if (atts!=null && atts.isDirectory())
+    public void mkdirs(String path, int posixPermission) throws SftpException {
+        // remove trailing slash if present
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        path = normalizePath(path);
+        SftpATTRS attrs = _stat(path);
+        if (attrs != null && attrs.isDir())
             return;
 
         int idx = path.lastIndexOf("/");
         if (idx>0)
             mkdirs(path.substring(0,idx), posixPermission);
-
-        try {
-            mkdir(path, posixPermission);
-        } catch (IOException e) {
-            throw new IOException("Failed to mkdir "+path,e);
-        }
+        sftpChannel.mkdir(path);
+        sftpChannel.chmod(posixPermission, path);
     }
 
-    /**
-     * Creates a new file and writes to it.
-     */
-    public OutputStream writeToFile(String path) throws IOException {
-        path =normalizePath(path);
-        final SFTPv3FileHandle h = createFile(path);
-        return new OutputStream() {
-            private long offset = 0;
-            public void write(int b) throws IOException {
-                write(new byte[]{(byte)b});
-            }
-
-            @Override
-            public void write(byte[] b, int off, int len) throws IOException {
-                SFTPClient.this.write(h,offset,b,off,len);
-                offset += len;
-            }
-
-            @Override
-            public void close() throws IOException {
-                closeFile(h);
-            }
-        };
-    }
-
-    public InputStream read(String file) throws IOException {
-        file =normalizePath(file);         
-        final SFTPv3FileHandle h = openFileRO(file);
-        return new InputStream() {
-            private long offset = 0;
-
-            public int read() throws IOException {
-                byte[] b = new byte[1];
-                if(read(b)<0)
-                    return -1;
-                return b[0];
-            }
-
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                int r = SFTPClient.this.read(h,offset,b,off,len);
-                if (r<0)    return -1;
-                offset += r;
-                return r;
-            }
-
-            @Override
-            public long skip(long n) throws IOException {
-                offset += n;
-                return n;
-            }
-
-            @Override
-            public void close() throws IOException {
-                closeFile(h);
-            }
-        };
-    }
-
-    public void chmod(String path, int permissions) throws IOException {
-        path =normalizePath(path);
-        SFTPv3FileAttributes atts = new SFTPv3FileAttributes();
-        atts.permissions = permissions;
-        setstat(path, atts);
+    public void chmod(String path, int permissions) throws SftpException {
+        path = normalizePath(path);
+        sftpChannel.chmod(permissions, path);
     }
 
     // Commands run in a shell on Windows need to have forward slashes.
@@ -188,4 +128,8 @@ public class SFTPClient extends SFTPv3Client {
         return path.replaceAll("\\\\","/");
     }
 
+    public void cd(String path) throws SftpException {
+        path = normalizePath(path);
+        sftpChannel.cd(path);
+    }
 }

@@ -58,6 +58,10 @@ test_run(){
   chmod 600 $APS_HOME/password.txt
   echo "AS_ADMIN_PASSWORD=" > $APS_HOME/password.txt
   echo "AS_ADMIN_NEWPASSWORD=$PWD" >> $APS_HOME/password.txt
+  LOCKFILE=$S1AS_HOME/domains/domain1/imq/instances/imqbroker/lockv
+  if [ -f $LOCKFILE ];then
+    rm $LOCKFILE
+  fi
   $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/password.txt change-admin-password
   $S1AS_HOME/bin/asadmin start-domain
   echo "AS_ADMIN_PASSWORD=$PWD" > $APS_HOME/password.txt
@@ -67,10 +71,7 @@ test_run(){
   export DISPLAY=127.0.0.1:1	
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DsecureAdmin=true -Dpasswordfile=$APS_HOME/password.txt test | tee $TEST_RUN_LOG
   $S1AS_HOME/bin/asadmin stop-domain
-  rm -rf $APS_HOME/password.txt	
-  cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
-  cp $TEST_RUN_LOG $WORKSPACE/results/
-  cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true  
+  rm -rf $APS_HOME/password.txt
 }
 
 run_test_id(){
@@ -87,6 +88,13 @@ run_test_id(){
   test_run
   merge_junit_xmls $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports
   change_junit_report_class_names
+}
+
+post_test_run(){
+  cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/ || true
+  cp $TEST_RUN_LOG $WORKSPACE/results/ || true
+  cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
+  cp $WORKSPACE/main/appserver/admingui/devtests/target/surefire-reports/*.png $WORKSPACE/results/ || true
   upload_test_results
   delete_bundle
 }
@@ -97,5 +105,6 @@ case $OPT in
   list_test_ids )
     list_test_ids;;
   run_test_id )
+    trap post_test_run SIGTERM SIGABRT EXIT
     run_test_id $TEST_ID ;;
 esac

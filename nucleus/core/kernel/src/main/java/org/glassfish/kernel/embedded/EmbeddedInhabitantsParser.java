@@ -43,7 +43,6 @@ package org.glassfish.kernel.embedded;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.kohsuke.MetaInfServices;
 
 import com.sun.enterprise.server.logging.LogManagerService;
 import com.sun.enterprise.v3.admin.PrivateAdminAdapter;
@@ -59,7 +58,6 @@ import javax.inject.Inject;
  *
  * @author Jerome Dochez
  */
-@MetaInfServices
 public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
   
 	@Inject
