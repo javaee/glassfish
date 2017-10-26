@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.admin.remote.RemoteRestAdminCommand;
 import com.sun.enterprise.util.cluster.windows.process.WindowsException;
 import java.util.logging.Logger;
@@ -207,7 +209,9 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                     // server still not down, do we poll?
                     errorMessage = pollForRealDeath("SSH");
                 }
-            } catch (IOException ex) {
+            } catch (JSchException ex) {
+                //could not get to other host
+            } catch (SftpException ex) {
                 //could not get to other host
             } finally {
                 if (ftpClient != null) {

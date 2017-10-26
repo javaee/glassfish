@@ -122,10 +122,16 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         final String description = "devtest test for server->resources page- " + jndiName;
         final String tableID = "propertyForm:resourcesTable";
 
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
+
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
         
         gotoServerResourcesPage();
+        waitForPageLoad(jndiName, TIMEOUT);
         assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
@@ -164,5 +170,6 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         reset();
         gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
+        waitForElement("propertyForm:resourcesTable");
     }
 }
