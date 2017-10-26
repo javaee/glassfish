@@ -1,0 +1,97 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-jdbc-properties" name="ref-jdbc-properties"></a><a id="GHJDB00029" name="GHJDB00029"></a></p>
+
+<h4><a id="sthref56" name="sthref56"></a><a id="sthref57" name="sthref57"></a>Properties Specific to JDBC Connection Pools</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Most JDBC drivers allow use of standard property lists to specify the user, password, and other resource configuration information. Although properties are optional with respect to the GlassFish Server, some properties might be necessary for most databases. For details, see the JDBC 4.0 Standard Extension API.</p>
+<p>Changing JDBC driver properties requires a server restart.</p>
+<p>The following standard properties are common to many JDBC vendors. For information about the properties available for your JDBC driver, consult the vendor's documentation.</p>
+<dl>
+<dt><code>user</code></dt>
+<dd>
+<p>Specifies the user name for connecting to the database.</p>
+</dd>
+<dt><code>password</code></dt>
+<dd>
+<p>Specifies the password for connecting to the database.</p>
+</dd>
+<dt><code>databaseName</code></dt>
+<dd>
+<p>Specifies the database for this connection pool.</p>
+</dd>
+<dt><code>serverName</code></dt>
+<dd>
+<p>Specifies the database server for this connection pool.</p>
+</dd>
+<dt><code>port</code></dt>
+<dd>
+<p>Specifies the port on which the database server listens for requests.</p>
+</dd>
+<dt><code>networkProtocol</code></dt>
+<dd>
+<p>Specifies the communication protocol.</p>
+</dd>
+<dt><code>roleName</code></dt>
+<dd>
+<p>Specifies the initial SQL role name.</p>
+</dd>
+<dt><code>datasourceName</code></dt>
+<dd>
+<p>Specifies an underlying <code>XADataSource</code>, or a <code>ConnectionPoolDataSource</code> if connection pooling is done.</p>
+</dd>
+<dt><code>description</code></dt>
+<dd>
+<p>Specifies a text description.</p>
+</dd>
+<dt><code>url</code></dt>
+<dd>
+<p>Specifies the URL for this connection pool. Although this is not a standard property, it is commonly used.</p>
+</dd>
+</dl>
+
+
+
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

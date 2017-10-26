@@ -363,17 +363,9 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
 
 	    // get a new section object from the cache Arun 9/27/99
             result = SectionPool.getCoordinatorLogSection(sectionName);
-            if( result == null ) {
-            }
-
-            // Copy in the name and set initial values of the other variables.
-
-            else {
-
                 // Add the new section information to the map.
+            sectionMapping.put(sectionName,result);
 
-                sectionMapping.put(sectionName,result);
-            }
         }
 
         return result;
@@ -1161,13 +1153,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
             logStateHolder.logFile = logStateHolder.log.open(serverName,
 			       CoordinatorLogPool.getCoordinatorLog());
 
-            if( logStateHolder.logFile == null ) {
-				_logger.log(Level.SEVERE,"jts.cannot_open_log_file",serverName);
-				 String msg = LogFormatter.getLocalizedMessage(_logger,
-				 						"jts.cannot_open_log_file");
-				 throw  new org.omg.CORBA.INTERNAL(msg);
-            } else 
-                Configuration.setLogFile(logStateHolder.logFile);
+            Configuration.setLogFile(logStateHolder.logFile);
         }
 
         result = (logStateHolder.logFile != null);
@@ -1222,13 +1208,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
             logStateHolder.logFile = logStateHolder.log.open(serverName,
 			       CoordinatorLogPool.getCoordinatorLog(logPath));
 
-            if( logStateHolder.logFile == null ) {
-				_logger.log(Level.SEVERE,"jts.cannot_open_log_file",serverName);
-				 String msg = LogFormatter.getLocalizedMessage(_logger,
-				 						"jts.cannot_open_log_file");
-				 throw  new org.omg.CORBA.INTERNAL(msg);
-            } else 
-                Configuration.setLogFile(logPath,logStateHolder.logFile);
+            Configuration.setLogFile(logPath,logStateHolder.logFile);
         }
 
         result = (logStateHolder.logFile != null);

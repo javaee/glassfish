@@ -209,16 +209,16 @@ public class ParamMetadata {
                 return Boolean.valueOf(value);
             }
             if (clazz.equals(Integer.TYPE) || clazz.equals(Integer.class)) {
-                return new Integer(value);
+                return Integer.valueOf(value);
             }
             if (clazz.equals(Long.TYPE) || clazz.equals(Long.class)) {
-                return new Long(value);
+                return Long.valueOf(value);
             }
             if (clazz.equals(Double.TYPE) || clazz.equals(Double.class)) {
-                return new Double(value);
+                return Double.valueOf(value);
             }
             if (clazz.equals(Float.TYPE) || clazz.equals(Float.class)) {
-                return new Float(value);
+                return Float.valueOf(value);
             }
             // TBD - arrays/lists of values
             RestLogging.restLogger.log(Level.SEVERE, RestLogging.UNSUPPORTED_FIXED_VALUE);

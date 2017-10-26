@@ -1,0 +1,166 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-standaloneinstanceresources" name="ref-standaloneinstanceresources"></a><a id="GHCLU00022" name="GHCLU00022"></a></p>
+
+<h4><a id="sthref338" name="sthref338"></a><a id="sthref339" name="sthref339"></a><a id="sthref340" name="sthref340"></a>Resources</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Resources page to perform the following tasks on the selected standalone GlassFish Server instance:</p>
+<ul>
+<li>
+<p>Viewing and managing the instance's existing resources</p>
+</li>
+<li>
+<p>Creating additional resources for the instance</p>
+</li>
+</ul>
+<p>The Instance Name field is a read-only field that displays the name of the current instance.</p>
+<p>The Resources page displays a list of the instances's existing resources. For each resource, the following information is provided.</p>
+<dl>
+<dt>Resource Name</dt>
+<dd>
+<p>The name that was assigned to the resource when the resource was created. Clicking the name opens one of the following pages to edit the resource, depending on the type of the resource:</p>
+<ul>
+<li>
+<p><a href="../../../jdbc/en/help/ref-jdbcresourceedit.html">Edit JDBC Resource</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-javamailsessionsedit.html">Edit JavaMail Session</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-jndicustomresourceedit.html">Edit Custom Resource</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-jndicustomresourcenew.html">New Custom Resource</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-jndiexternalresourceedit.html">Edit External Resource</a></p>
+</li>
+<li>
+<p><a href="../../../jca/en/help/ref-connectorresourceedit.html">Edit Connector Resource</a></p>
+</li>
+<li>
+<p><a href="../../../jca/en/help/ref-adminobjectedit.html">Edit Admin Object Resource</a></p>
+</li>
+</ul>
+</dd>
+<dt>Enabled</dt>
+<dd>
+<p>An indication of whether the resource is enabled:</p>
+<ul>
+<li>
+<p>If the resource is enabled, a check mark (&#10003;) is displayed.</p>
+</li>
+<li>
+<p>If the resource is disabled, a cross (&#10007;) is displayed.</p>
+</li>
+</ul>
+</dd>
+<dt>Type</dt>
+<dd>
+<p>The type of the resource.</p>
+</dd>
+</dl>
+<p>The Resources table also contains the following options.</p>
+<dl>
+<dt>Enable</dt>
+<dd>
+<p>Button to enable one or more selected resources.</p>
+</dd>
+<dt>Disable</dt>
+<dd>
+<p>Button to disable one or more selected resources.</p>
+</dd>
+<dt>New</dt>
+<dd>
+<p>Drop-down list that creates a resource of the selected type. Selecting a resource type from the list opens one of the following pages to create a resource of the selected type:</p>
+<ul>
+<li>
+<p><a href="../../../jdbc/en/help/ref-jdbcresourcenew.html">New JDBC Resource</a></p>
+</li>
+<li>
+<p><a href="../../../jms/en/help/ref-jmsconnectionnew.html">New JMS Connection Factory</a></p>
+</li>
+<li>
+<p><a href="../../../jms/en/help/ref-jmsdestinationnew.html">New JMS Destination Resource</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-javamailsessioncreate.html">New JavaMail Session</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-jndicustomresourcenew.html">New Custom Resource</a></p>
+</li>
+<li>
+<p><a href="../../../full/en/help/ref-jndiexternalresourcenew.html">New External Resource</a></p>
+</li>
+<li>
+<p><a href="../../../jca/en/help/ref-connectorresourcenew.html">New Connector Resource</a></p>
+</li>
+<li>
+<p><a href="../../../jca/en/help/ref-adminobjectnew.html">New Admin Object Resource</a></p>
+</li>
+</ul>
+</dd>
+<dt>Filter</dt>
+<dd>
+<p>Drop-down list that filters the list of displayed resources by type.</p>
+</dd>
+</dl>
+<a id="sthref341" name="sthref341"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-standalone-instance-resource-create.html">To Create a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-display.html">To List Resources for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-enable-disable.html">To Enable or Disable a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+<li>
+<p><a href="task-standalone-instance-resource-edit.html">To Edit a Resource for a Standalone GlassFish Server Instance</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

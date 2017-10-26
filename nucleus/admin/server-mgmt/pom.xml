@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.main.admin</groupId>
         <artifactId>nucleus-admin</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>server-mgmt</artifactId>
@@ -122,31 +122,6 @@
                             <extension>true</extension>
                             <packageName>com.sun.enterprise.admin.servermgmt.xml.stringsubs</packageName>
                             <clearOutputDir>false</clearOutputDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.glassfish.docs.man</groupId>
-                                    <artifactId>server-mgmt-manpage</artifactId>
-                                    <version>${v3-docs.version}</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>

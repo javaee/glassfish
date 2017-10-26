@@ -1,0 +1,109 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-messagesecurityconfig" name="ref-messagesecurityconfig"></a><a id="GHCOM00118" name="GHCOM00118"></a></p>
+
+<h4><a id="sthref226" name="sthref226"></a>Message Security Configurations</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Message Security Configurations page to view and modify the available configurations for message security providers.</p>
+<p>To configure message security, you need a basic understanding of security and web services concepts. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSSCG00037">Chapter 3, <i>Administering Message Security,</i> in <i>Oracle GlassFish Server Security Guide</i></a> and <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00009">Chapter 6, <i>Administering Web Applications,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<p>GlassFish Server implements message security using message security providers integrated in its SOAP processing layer. The message security providers depend on other security facilities of GlassFish Server.</p>
+<p>For each configuration, the following information is provided.</p>
+<dl>
+<dt>Authentication Layer</dt>
+<dd>
+<p>The message layer at which authentication is performed. By default, a SOAP configuration is provided. It is also possible to provide an HttpServlet configuration.</p>
+</dd>
+<dt>Default Provider</dt>
+<dd>
+<p>The default server provider for this configuration. By default, no default server provider is configured.</p>
+</dd>
+<dt>Default Client Provider</dt>
+<dd>
+<p>The default client provider for this configuration. By default, no default client provider is configured.</p>
+</dd>
+</dl>
+<p>The Message Security Configuration table also contains the following options.</p>
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new configuration.</p>
+</dd>
+<dt>Delete</dt>
+<dd>
+<p>Button to delete one or more selected configurations.</p>
+</dd>
+</dl>
+<a id="GHCOM457" name="GHCOM457"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
+</li>
+<li>
+<p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
+</li>
+<li>
+<p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
+</li>
+</ul>
+<a id="GHCOM458" name="GHCOM458"></a>
+<h5>Related asadmin Commands</h5>
+<p>None.</p>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

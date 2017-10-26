@@ -1,0 +1,103 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-virtualservers" name="ref-virtualservers"></a><a id="GHWEB00010" name="GHWEB00010"></a></p>
+
+<h4><a id="sthref119" name="sthref119"></a>Virtual Servers</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>A virtual server, sometimes called a virtual host, is an object that allows the same physical server to host multiple Internet domain names. All virtual servers hosted on the same physical server share the Internet Protocol (IP) address of that physical server. A virtual server associates a domain name for a server (such as <code>www.sun.com</code>) with the particular server on which the GlassFish Server is running.</p>
+<p>Use the Virtual Servers page to configure virtual servers.</p>
+<p>For each virtual server, the following information is provided.</p>
+<dl>
+<dt>Name</dt>
+<dd>
+<p>The name of the virtual server.</p>
+</dd>
+<dt>State</dt>
+<dd>
+<p>Either <code>on</code>, <code>off</code>, or <code>disabled</code>.</p>
+</dd>
+<dt>Default Web Module</dt>
+<dd>
+<p>The deployed web module (if any) that is to respond to all requests that cannot be mapped to other web modules deployed to the virtual server.</p>
+</dd>
+</dl>
+<p>The Virtual Servers table also contains the following options.</p>
+<dl>
+<dt>New</dt>
+<dd>
+<p>Button to create a new virtual server.</p>
+</dd>
+<dt>Delete</dt>
+<dd>
+<p>Button to delete one or more selected virtual servers.</p>
+</dd>
+</dl>
+<a id="sthref120" name="sthref120"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-virtualservercreate.html">To Create a Virtual Server</a></p>
+</li>
+<li>
+<p><a href="task-virtualserveredit.html">To Edit a Virtual Server</a></p>
+</li>
+<li>
+<p><a href="task-virtualserverdelete.html">To Delete a Virtual Server</a></p>
+</li>
+</ul>
+<a id="sthref121" name="sthref121"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00062"><code>create-virtual-server</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00207"><code>list-virtual-servers</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00113"><code>delete-virtual-server</code>(1)</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

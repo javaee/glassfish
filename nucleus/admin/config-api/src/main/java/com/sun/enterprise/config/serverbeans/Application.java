@@ -402,7 +402,7 @@ public interface Application extends ApplicationName, PropertyBag {
             if (appRef != null) {
                 deploymentParams.virtualservers = appRef.getVirtualServers();
             }
-            deploymentParams.deploymentorder = new Integer(app.getDeploymentOrder());
+            deploymentParams.deploymentorder = Integer.valueOf(app.getDeploymentOrder());
             for (Property prop : app.getProperty()) {
                 if (prop.getName().equals(ARCHIVE_TYPE_PROP_NAME)) {
                     deploymentParams.type = prop.getValue();

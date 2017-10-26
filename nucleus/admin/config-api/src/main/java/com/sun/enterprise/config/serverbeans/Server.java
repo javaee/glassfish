@@ -598,10 +598,9 @@ public interface Server extends ConfigBeanProxy, PropertyBag, Named, SystemPrope
                     List<ServerRef> serverRefs = c.getServerRef();
                     Iterator<ServerRef> serverRefIter = serverRefs.iterator();
                     boolean allLBEnabled = false;
-                    while (!allLBEnabled && serverRefIter.hasNext()) {
+                    while (serverRefIter.hasNext()) {
                         ServerRef serverRef = serverRefIter.next();
-                        allLBEnabled = allLBEnabled
-                                || Boolean.parseBoolean(serverRef.getLbEnabled());
+                        allLBEnabled = Boolean.parseBoolean(serverRef.getLbEnabled());
                     }
                     //if there are existing instances in cluster
                     //and they all have lb-enabled to false, set it

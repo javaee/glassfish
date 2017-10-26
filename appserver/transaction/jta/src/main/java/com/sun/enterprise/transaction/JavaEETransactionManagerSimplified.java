@@ -1474,7 +1474,7 @@ public class JavaEETransactionManagerSimplified
     /**
      * Called by JavaEETransactionImpl also
      */
-    JavaEETransactionManagerDelegate getDelegate() {
+    synchronized JavaEETransactionManagerDelegate getDelegate() {
         JavaEETransactionManagerDelegate d = delegates.get();
         return (d == null)? delegate : d;
     }

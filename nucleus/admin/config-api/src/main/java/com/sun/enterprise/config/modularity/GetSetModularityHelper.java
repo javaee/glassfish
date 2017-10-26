@@ -66,47 +66,6 @@ public class GetSetModularityHelper {
     private Domain domain;
 
     /**
-     * checks and see if a class has an attribute with he specified name or not.
-     *
-     * @param classToQuery  the class toc heck the attribute presence
-     * @param attributeName the attribute to check its presence in the class.
-     * @return true if present and false if not.
-     */
-    private boolean checkAttributePresence(Class classToQuery, String attributeName) {
-        String fieldName = convertAttributeToPropertyName(attributeName);
-        String methodName = "set" + fieldName.replaceFirst(fieldName.substring(0, 1), String.valueOf(Character.toUpperCase(fieldName.charAt(0))));
-        Method[] methods = classToQuery.getMethods();
-        for (Method m : methods) {
-            if (m.getName().equals(methodName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * convert an xml attribute name to variable name representing it.
-     *
-     * @param attributeName the attribute name in "-" separated form as appears in the domain.xml
-     * @return the class instance variable which represent that attributeName
-     */
-    private String convertAttributeToPropertyName(String attributeName) {
-        StringTokenizer tokenizer = new StringTokenizer(attributeName, "-", false);
-        StringBuilder propertyName = new StringBuilder();
-        boolean isFirst = true;
-        while (tokenizer.hasMoreTokens()) {
-            String part = tokenizer.nextToken();
-            if (!isFirst) {
-                Locale loc = Locale.getDefault();
-                part = part.replaceFirst(part.substring(0, 1), part.substring(0, 1).toUpperCase(loc));
-            }
-            isFirst = false;
-            propertyName.append(part);
-        }
-        return propertyName.toString();
-    }
-
-    /**
      * @param prefix   the entire . separated string
      * @param position starts with one
      * @return the configbean class matching the element in the given position or null

@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-jcdi</artifactId>
     <name>Glassfish JCDI Package</name>
@@ -104,9 +104,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-   	    <groupId>org.glassfish.hk2.external</groupId>
+   	    <groupId>org.glassfish.main.external</groupId>
     	    <artifactId>bean-validator-cdi</artifactId>
-	    <version>${bean.validator.cdi.version}</version>
+	    <version>${project.version}</version>
     	</dependency>
 	<dependency>
             <groupId>javax.enterprise</groupId>

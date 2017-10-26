@@ -933,11 +933,9 @@ public class ResourceUtil {
                 List<ConfigModel> lcm = getRealChildConfigModels(childModel, dom.document);
 
                 Collections.sort(lcm, new ConfigModelComparator());
-                if (lcm != null) {
-                    for (ConfigModel cmodel : lcm) {
-                        if ((!isDeprecated(cmodel) || canShowDeprecated)) {
-                            links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
-                        }
+                for (ConfigModel cmodel : lcm) {
+                    if ((!isDeprecated(cmodel) || canShowDeprecated)) {
+                        links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                     }
                 }
 

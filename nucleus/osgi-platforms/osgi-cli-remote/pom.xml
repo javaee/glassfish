@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.osgi-platforms</groupId>
         <artifactId>osgi-platforms</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.main.osgi-platforms</groupId>
@@ -61,35 +61,6 @@
             <email>ancoron@java.net</email>
         </developer>
     </developers>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.glassfish.docs.man</groupId>
-                                    <artifactId>osgi-cli-remote-manpage</artifactId>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>

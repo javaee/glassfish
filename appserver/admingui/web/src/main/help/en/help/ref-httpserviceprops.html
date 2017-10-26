@@ -1,0 +1,74 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-httpserviceprops" name="ref-httpserviceprops"></a><a id="GHWEB00009" name="GHWEB00009"></a></p>
+
+<h4><a id="sthref108" name="sthref108"></a><a id="sthref109" name="sthref109"></a>Properties Specific to the HTTP Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following additional properties are available for the HTTP service. If you specify these properties, they apply to all <a href="ref-group-networklisteners.html">Network Listeners</a>.</p>
+<dl>
+<dt><code>ssl-cache-entriese</code></dt>
+<dd>
+<p>The number of SSL sessions to be cached. The default value is 10,000.</p>
+</dd>
+<dt><code>ssl3-session-timeout</code></dt>
+<dd>
+<p>The interval at which SSL3 sessions are cached. The default value is 86,400.</p>
+</dd>
+<dt><code>ssl-session-timeout</code></dt>
+<dd>
+<p>The interval at which SSL2 sessions are cached. The default value is 100.</p>
+</dd>
+<dt><code>proxyHandler</code></dt>
+<dd>
+<p>The fully qualified class name of a custom implementation of the <code>com.sun.appserv.ProxyHandler</code> abstract class, which allows a back-end GlassFish Server instance to retrieve information about the original client request that was intercepted by an SSL-terminating proxy server (for example, a load balancer). An implementation of this abstract class inspects a given request for the custom request headers through which the proxy server communicates the information about the original client request to the Enterprise Server instance, and returns that information to its caller.</p>
+<p>The default implementation reads the client IP address from an HTTP request header named <code>Proxy-ip</code>, the SSL <code>keysize</code> from an HTTP request header named <code>Proxy-keysize</code>, and the SSL client certificate chain from an HTTP request header named <code>Proxy-auth-cert</code>. The <code>Proxy-auth-cert</code> value must contain the BASE-64 encoded client certificate chain without the <code>BEGIN CERTIFICATE</code> and <code>END CERTIFICATE</code> boundaries and with <code>\n</code> replaced with <code>% d% a</code>.</p>
+<p>This setting is used only if the Auth Pass Through checkbox for the network listener protocol's HTTP page is set to true.</p>
+</dd>
+<dt><code>connectionTimeout</code></dt>
+<dd>
+<p>Specifies the number of seconds that network listeners wait, after accepting a connection, for the request URI line to be presented. The default value is 30.</p>
+</dd>
+</dl>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
