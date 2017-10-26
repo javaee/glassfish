@@ -43,7 +43,7 @@ package org.glassfish.ejb.startup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,7 +125,7 @@ public class EjbDeployer
     private Object lock = new Object();
     private volatile CMPDeployer cmpDeployer = null;
 
-    private static Random random = new Random();
+    private static SecureRandom random = new SecureRandom();
 
     // Property used to persist unique id across server restart.
     static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
