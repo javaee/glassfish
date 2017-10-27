@@ -40,7 +40,7 @@
 
 package org.glassfish.cluster.ssh.util;
 
-import com.trilead.ssh2.Connection;
+import com.jcraft.jsch.Session;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,29 +55,28 @@ import org.glassfish.api.admin.CommandException;
  * @author Rajiv Mordani
  */
 public class SSHUtil {
-    private static final List<Connection> activeConnections = 
-                            new ArrayList<Connection>();
+    private static final List<Session> activeConnections = new ArrayList<Session>();
     private static final String NL = System.getProperty("line.separator");
 
    /**
        * Registers a connection for cleanup when the plugin is stopped.
        *
-       * @param connection The connection.
+       * @param session The connection.
        */
-      public static synchronized void register(Connection connection) {
-          if (!activeConnections.contains(connection)) {
-              activeConnections.add(connection);
+      public static synchronized void register(Session session) {
+          if (!activeConnections.contains(session)) {
+              activeConnections.add(session);
           }
       }
 
    /**
        * Unregisters a connection for cleanup when the plugin is stopped.
        *
-       * @param connection The connection.
+       * @param session The connection.
        */
-      public static synchronized void unregister(Connection connection) {
-          connection.close();
-          activeConnections.remove(connection);
+      public static synchronized void unregister(Session session) {
+          session.disconnect();
+          activeConnections.remove(session);
       }
 
    /**

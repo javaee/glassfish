@@ -51,6 +51,7 @@ import com.sun.logging.LogDomains;
 import java.security.Permission;
 import java.security.Permissions;
 
+import com.sun.enterprise.security.web.integration.LogUtils;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.web.*;
 import org.glassfish.security.common.Role;
@@ -64,7 +65,7 @@ import org.glassfish.security.common.Role;
  */
 public class WebPermissionUtil {
 
-    static Logger logger = Logger.getLogger(LogDomains.SECURITY_LOGGER);
+    static Logger logger = LogUtils.getLogger();
     
     public WebPermissionUtil() {
     }
@@ -1253,21 +1254,21 @@ class MapValue {
     			if (deny) {
         			if (otherIsUncovered) {
         				WebPermissionUtil.logger.log(Level.INFO,
-        						"JACC: For the URL pattern {0}, all but the following methods have been excluded: {1}", args);
+								LogUtils.NOT_EXCLUDED_METHODS, args);
         			}
         			else {
         				WebPermissionUtil.logger.log(Level.INFO,
-        						"JACC: For the URL pattern {0}, the following methods have been excluded: {1}", args);
+								LogUtils.EXCLUDED_METHODS, args);
         			}
     			}
     			else {
         			if (otherIsUncovered) {
         				WebPermissionUtil.logger.log(Level.WARNING,
-        						"JACC: For the URL pattern {0}, all but the following methods were uncovered: {1}", args);
+								LogUtils.NOT_UNCOVERED_METHODS, args);
         			}
         			else {
         				WebPermissionUtil.logger.log(Level.WARNING,
-        						"JACC: For the URL pattern {0}, the following methods were uncovered: {1}", args);
+								LogUtils.UNCOVERED_METHODS, args);
         			}
     			}
     		}
