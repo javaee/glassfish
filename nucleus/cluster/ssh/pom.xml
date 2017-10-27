@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.cluster</groupId>
         <artifactId>cluster</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>cluster-ssh</artifactId>
     <packaging>glassfish-jar</packaging>
@@ -73,8 +73,8 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>trilead-ssh2</artifactId>
-            <version>${trilead-ssh2.version}</version>
+            <artifactId>jsch</artifactId>
+            <version>${jsch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>

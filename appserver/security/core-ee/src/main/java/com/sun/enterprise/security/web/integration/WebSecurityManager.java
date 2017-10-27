@@ -55,6 +55,7 @@ import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.security.web.integration.LogUtils;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.ee.CachedPermission;
 import com.sun.enterprise.security.ee.CachedPermissionImpl;
@@ -94,7 +95,7 @@ import org.glassfish.api.web.Constants;
  */
 public class WebSecurityManager  {
     private static final Logger logger =
-    Logger.getLogger(LogDomains.SECURITY_LOGGER);
+    LogUtils.getLogger();
 
     /**
      * Request path. Copied from org.apache.catalina.Globals;
@@ -260,7 +261,7 @@ public class WebSecurityManager  {
             }
 
         } catch(java.net.MalformedURLException mue){
-            logger.log(Level.SEVERE, "ejbsm.codesourceerror", mue);
+            logger.log(Level.SEVERE, LogUtils.EJBSM_CODSOURCEERROR, mue);
             throw new RuntimeException(mue);
         } 
 
@@ -429,10 +430,10 @@ public class WebSecurityManager  {
             try {
 		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 	    } catch(ClassNotFoundException cnfe){
-		logger.severe("jaccfactory.notfound");
+		logger.log(Level.SEVERE, LogUtils.JACCFACTORY_NOTFOUND);
 		throw new PolicyContextException(cnfe);
 	    } catch(PolicyContextException pce){
-		logger.severe("jaccfactory.notfound");
+		logger.log(Level.SEVERE, LogUtils.JACCFACTORY_NOTFOUND);
 		throw pce;
 	    }
 	}
@@ -645,9 +646,9 @@ public class WebSecurityManager  {
 	    } catch (java.security.PrivilegedActionException pae) {
 		Throwable cause = pae.getCause();
 		if( cause instanceof java.security.AccessControlException) {
-		    logger.log(Level.SEVERE,"[Web-Security] setPolicy SecurityPermission required to call PolicyContext.setContextID",cause);
+		    logger.log(Level.SEVERE, LogUtils.SECURITY_PERMISSION_REQUIRED, cause);
 		} else {
-		    logger.log(Level.SEVERE,"[Web-Security] Unexpected Exception while setting policy context",cause);
+		    logger.log(Level.SEVERE, LogUtils.POLICY_CONTEXT_EXCEPTION, cause);
 		}
 		throw cause;
 	    }
