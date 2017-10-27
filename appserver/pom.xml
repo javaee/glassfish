@@ -111,8 +111,7 @@
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
-        <dbschema.version>3.1.1</dbschema.version>
-        <dbschema.osgi.version>6.0</dbschema.osgi.version>
+        <dbschema.version>6.6-SNAPSHOT</dbschema.version>
         <schema2beans.version>3.1.1</schema2beans.version>
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
         <mq.version>5.1.1-b06</mq.version>
@@ -943,7 +942,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>dbschema-repackaged</artifactId>
+                <artifactId>dbschema</artifactId>
                 <version>${dbschema.version}</version>
             </dependency>
             <dependency>
