@@ -56,7 +56,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -129,8 +128,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             spf.setNamespaceAware(true);
             
 	    // turn validation on for deployment descriptor XML files
-            spf.setValidating(validating);
-            spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            spf.setValidating(validating);    
 
 	    // this feature is needed for backward compat with old DDs 
 	    // constructed by J2EE1.2 which used Java encoding names
@@ -202,15 +200,14 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             // always use system default to parse DD
             System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            System.clearProperty("javax.xml.parsers.DocumentBuilderFactory");
+            System.clearProperty("javax.xml.parsers.DocumentBuilderFactory"); 
 
             // set the namespace awareness
             dbf.setNamespaceAware(true);
+            
+	    // turn validation on for deployment descriptor XML files
+            dbf.setValidating(validating);            
 
-            // turn validation on for deployment descriptor XML files
-            dbf.setValidating(validating);
-
-            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             // Validation part 2a: set the schema language if necessary
             try     {
                 // put the default schema for this deployment file type
