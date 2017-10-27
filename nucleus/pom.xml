@@ -178,6 +178,7 @@
         <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
+	<jmockit.version>1.35</jmockit.version>
     </properties>
 
     <modules>
@@ -974,9 +975,9 @@
                 <version>6.5.2</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.jmockit</groupId>
+                <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
-                <version>0.999.15</version>
+                <version>${jmockit.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
