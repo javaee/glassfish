@@ -17,7 +17,7 @@ Java EE 8 is focused on modernization and simplification of the platform, key ad
 - Servlet 4.0 API with HTTP/2 support
 - Server-Sent Events support (Client & Server-side)
 - New standard constraints added to Bean Validation
-- Support for Java SE 8 new capabilities (ex. Data & Time API, Streams API, annotations enhancements, ...) 
+- Support for Java SE 8 new capabilities (ex. Date & Time API, Streams API, annotations enhancements, ...) 
 
 | Specifications 	|JSR             	|RI       	|
 |:---	|:---:|:---:|
