@@ -62,6 +62,7 @@ package org.apache.catalina.core;
 import org.apache.catalina.*;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.deploy.*;
+import org.apache.catalina.util.OWASPUtil;
 import org.apache.naming.*;
 
 import javax.naming.NamingException;
@@ -1070,6 +1071,7 @@ public class NamingContextListener
      * @param message Message to be logged
      */
     protected void log(String message) {
+        message = OWASPUtil.neutralizeForLog(message);
         if (!(container instanceof Container)) {
             if (log.isLoggable(Level.INFO)) {
                 // Did not localize this message
@@ -1097,6 +1099,7 @@ public class NamingContextListener
      * @param t Related exception
      */
     protected void log(String message, Throwable t) {
+        message = OWASPUtil.neutralizeForLog(message);
         if (!(container instanceof Container)) {
             log.log(Level.WARNING, logName() + ": " + message, t);
             return;

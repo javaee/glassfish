@@ -126,10 +126,7 @@ import org.apache.catalina.fileupload.Multipart;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardSession;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.ParameterMap;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.StringParser;
+import org.apache.catalina.util.*;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -3780,10 +3777,16 @@ public class Request
              * before the response is flushed.
              */
             if (jvmRoute == null) {
-                Cookie newCookie = new Cookie(
-                        getContext().getSessionCookieName(), session.getId());
-                configureSessionCookie(newCookie);
-                ((HttpResponse)response).addSessionCookieInternal(newCookie);
+                Cookie newCookie = null;
+                try {
+                    newCookie = new Cookie(
+                            OWASPUtil.getSafeHeaderValue(getContext().getSessionCookieName()), OWASPUtil.getSafeHeaderValue(session.getId()));
+                    configureSessionCookie(newCookie);
+                    ((HttpResponse)response).addSessionCookieInternal(newCookie);
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, e.getMessage());
+                }
+
             }
         }
     }

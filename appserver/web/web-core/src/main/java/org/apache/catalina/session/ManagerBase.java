@@ -63,6 +63,7 @@ import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.util.OWASPUtil;
 import java.security.SecureRandom;
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
@@ -550,14 +551,14 @@ public abstract class ManagerBase implements Manager {
             try {
                  // Construct and seed a new random number generator
                  Class<?> clazz = Class.forName(randomClass);
-                 this.random = (SecureRandom) clazz.newInstance();
+                 this.random = (Random) clazz.newInstance();
                  this.random.setSeed(seed);
             } catch (Exception e) {
                  // Fall back to the simple case
                 String msg = MessageFormat.format(rb.getString(LogFacade.INIT_RANDOM_NUMBER_GENERATOR_EXCEPTION),
                                                   randomClass);
                  log.log(Level.SEVERE, msg, e);
-                 this.random = new SecureRandom();
+                 this.random = new java.util.Random();
                  this.random.setSeed(seed);
             }
             long t2=System.currentTimeMillis();
@@ -1003,7 +1004,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message) {
-        log.log(Level.INFO, message);
+        log.log(Level.INFO, OWASPUtil.neutralizeForLog(message));
     }
 
 
@@ -1015,7 +1016,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message, Throwable throwable) {
-        log.log(Level.INFO, message, throwable);
+        log.log(Level.INFO, OWASPUtil.neutralizeForLog(message), throwable);
     }
 
 
@@ -1197,9 +1198,12 @@ public abstract class ManagerBase implements Manager {
     public String getSessionAttribute( String sessionId, String key ) {
         Session s = sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return null;
         }
         Object o=s.getSession().getAttribute(key);
@@ -1211,9 +1215,12 @@ public abstract class ManagerBase implements Manager {
     public void expireSession( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return;
         }
         s.expire();
@@ -1223,9 +1230,12 @@ public abstract class ManagerBase implements Manager {
     public String getLastAccessedTimeMillis( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return "";
         }
         return new Date(s.getLastAccessedTime()).toString();

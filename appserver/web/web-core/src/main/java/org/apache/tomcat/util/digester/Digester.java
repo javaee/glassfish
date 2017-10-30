@@ -62,6 +62,7 @@ package org.apache.tomcat.util.digester;
 
 
 import org.apache.catalina.LogFacade;
+import org.apache.catalina.util.OWASPUtil;
 import org.glassfish.web.util.IntrospectionUtils;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -1164,7 +1165,7 @@ public class Digester extends DefaultHandler {
                 try {
                     Rule rule = rules.get(j);
                     if (debug) {
-                        log.log(Level.FINE, "  Fire end() for " + rule);
+                        log.log(Level.FINE, OWASPUtil.neutralizeForLog("  Fire end() for " + rule));
                     }
                     rule.end(namespaceURI, name);
                 } catch (Exception e) {

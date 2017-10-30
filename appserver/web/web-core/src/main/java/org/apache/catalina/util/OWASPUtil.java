@@ -41,11 +41,19 @@
 
 package org.apache.catalina.util;
 
+import java.util.regex.Pattern;
+
+/*
+Util class for static methods for handling encoding of invalid string characters. Use recommendations from Open Web Application Security Project (see here
+http://www.owasp.org/index.php/Log_Forging)
+ */
 public final class OWASPUtil {
+    public static final String HEADER_VALUE_VALIDATION_PATERN = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
+
     private OWASPUtil() {
     }
 
-    public static String encode(String message){
+    public static String neutralizeForLog(String message){
         message = message.replace( '\n' ,  '_' ).replace( '\r' , '_' )
                 .replace( '\t' , '_' );
         message = encodeForHtml(message);
@@ -53,33 +61,34 @@ public final class OWASPUtil {
     }
 
     public static String encodeForHtml(String message){
-        StringBuilder escapedTxt = new StringBuilder();
-        for (int i = 0; i < message.length(); i++) {
-            char tmp = message.charAt(i);
-            switch (tmp) {
-                case '<':
-                    escapedTxt.append("&lt;");
-                    break;
-                case '>':
-                    escapedTxt.append("&gt;");
-                    break;
-                case '&':
-                    escapedTxt.append("&amp;");
-                    break;
-                case '"':
-                    escapedTxt.append("&quot;");
-                    break;
-                case '\'':
-                    escapedTxt.append("&#x27;");
-                    break;
-                case '/':
-                    escapedTxt.append("&#x2F;");
-                    break;
-                default:
-                    escapedTxt.append(tmp);
+        StringBuilder escaped = new StringBuilder();
+        for(char ch:message.toCharArray()){
+            switch (ch) {
+                case '<':escaped.append("&lt;");break;
+                case '>':escaped.append("&gt;");break;
+                case '&':escaped.append("&amp;");break;
+                case '"':escaped.append("&quot;");break;
+                case '\'':escaped.append("&#x27;");break;
+                case '/':escaped.append("&#x2F;");break;
+                default:escaped.append(ch);
             }
         }
-        return escapedTxt.toString();
+        return escaped.toString();
+    }
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+                input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+            }
+        return input;
+    }
+    public static String getSafeHeaderValue(String headerValue) throws Exception {
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (headerValue != null) {
+                if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                        throw new Exception("Header Value invalid characters");
+                    }
+            }
+        return headerValue;
     }
 
 }
