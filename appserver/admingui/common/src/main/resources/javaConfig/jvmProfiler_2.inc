@@ -122,7 +122,7 @@
                     <sun:staticText id="ProfilerName2" text="#{pageSession.valueMap['name']}"/>
                 </sun:property>
                <sun:property id="profilerEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-                    <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+                    <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
                </sun:property>
                 <sun:property id="ClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.Classpath}" helpText="$resource{i18nc.jvm.ClasspathHelp}">
                     <sun:textField id="ClasspathLabel" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.Classpath']}"  text="#{pageSession.valueMap['classpath']}" />

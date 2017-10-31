@@ -116,7 +116,7 @@
             <sun:textField id="descAdaptor" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
         <!--<sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
        </sun:property>-->
 
 </sun:propertySheetSection>

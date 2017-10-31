@@ -82,7 +82,7 @@
 #include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="onRestartProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.OnRestart}" helpText="$resource{i18n_jts.ts.OnRestartHelp}">
-                    <sun:checkbox id="enabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['automaticRecovery']}" selectedValue="true">
+                    <sun:checkbox id="enabled"  selected="#{pageSession.valueMap['automaticRecovery']}" selectedValue="true">
                    </sun:checkbox>
                 </sun:property>
                 <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jts.ts.Timeout}" helpText="$resource{i18n_jts.ts.TimeoutHelp}">
