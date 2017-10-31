@@ -617,7 +617,6 @@ public class CoyoteAdapter extends HttpHandler {
             // Issue a permanent redirect
             // Validating the redirectPath for header injection
             if (!ResponseUtil.validateRedirectURL(redirectPath)) {
-                System.out.println("********************************* redirectPath : " + redirectPath);
                 response.sendError(403, "Forbidden");
             } else {
                 response.sendRedirect(redirectPath, false);

@@ -614,7 +614,6 @@ public class OutputBuffer extends Writer
             cookie = new Cookie(safeName, safeValue);
         } catch (Exception e) {
             try {
-                System.out.println("********************************* getSafeCookie : " + name + " :: value : " + value);
                 grizzlyResponse.sendError(403, "Forbidden");
             } catch (Exception ex) {
                 // just return

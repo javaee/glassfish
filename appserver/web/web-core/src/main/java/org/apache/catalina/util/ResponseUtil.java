@@ -68,11 +68,8 @@ import java.util.regex.Pattern;
 
 public final class ResponseUtil {
 
-        public static final String REDIRECT_PATTERN = "^[A-Za-z0-9\\/\\-:.]*$";
-        public static final String HEADER_NAME_VALIDATION_PATTERN = "^[a-zA-Z0-9\\-_]*$";
-        public static final String HEADER_VALUE_VALIDATION_PATERN
-                                                = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\"\\/:&_ ]*$";
-        public static final String COOKIE_HEADER_VALUE_VAL_PATTERN = "^[a-zA-Z0-9\\-\\/+=_ ]*$";
+    public static final String CRLF_ENCODED_STRING = "%0d%0a";
+    public static final String CR_ENCODED_STRING = "%0d";
 
     /**
      * Copies the contents of the specified input stream to the specified
@@ -143,8 +140,7 @@ public final class ResponseUtil {
      * @return		boolean
      */
     public static boolean validateRedirectURL(String redirectURL) {
-        Pattern pattern = Pattern.compile(REDIRECT_PATTERN);
-        return pattern.matcher(redirectURL).matches();
+        return (!(redirectURL.contains(CRLF_ENCODED_STRING) || redirectURL.contains(CR_ENCODED_STRING)));
     }
 
     /**
@@ -161,56 +157,47 @@ public final class ResponseUtil {
     }
 
     /**
-     * Set the Http Header after suitable validation
+     * Return Http Header Name after suitable validation
      *
-     * @param resp	Http Response where we should set the header
      * @param headerName Header Name which should be validated before being set
-     * @param headerValue Header Value which should be validated before being set
-     * @return
+     * @return String Header Name sanitized for CRLF attack
      */
-    public static void setHeaderNameValue(HttpServletResponse resp, String headerName,
-                                          String headerValue) throws IOException {
-        headerName = removeLinearWhiteSpaces(headerName);
-        headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerName != null) {
-            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
-                resp.sendError(403, "Forbidden");
-                return;
-            }
-        }
-        if (headerValue != null) {
-            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
-                resp.sendError(403, "Forbidden");
-                return;
-            }
-        }
-        resp.addHeader(headerName, headerValue);
-    }
-
     public static String getSafeHeaderName(String headerName) throws Exception {
         headerName = removeLinearWhiteSpaces(headerName);
             if (headerName != null) {
-                if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
+                if (headerName.contains(CRLF_ENCODED_STRING) || headerName.contains(CR_ENCODED_STRING)) {
                     throw new Exception("Header Name invalid characters");
                 }
             }
         return headerName;
     }
 
+    /**
+     * Return Http Header Value after suitable validation
+     *
+     * @param headerValue Header Value which should be validated before being set
+     * @return String Header Value sanitized for CRLF attack
+     */
     public static String getSafeHeaderValue(String headerValue) throws Exception {
         headerValue = removeLinearWhiteSpaces(headerValue);
         if (headerValue != null) {
-                if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
+                if (headerValue.contains(CRLF_ENCODED_STRING) || headerValue.contains(CR_ENCODED_STRING)) {
                         throw new Exception("Header Value invalid characters");
                     }
             }
         return headerValue;
     }
 
+    /**
+     * Return Cookie Http Header Value after suitable validation
+     *
+     * @param headerValue Header Value which should be validated before being set
+     * @return String Header Value sanitized for CRLF attack
+     */
     public static String getSafeCookieHeaderValue(String headerValue) throws Exception {
         headerValue = removeLinearWhiteSpaces(headerValue);
         if (headerValue != null) {
-            if (!Pattern.compile(COOKIE_HEADER_VALUE_VAL_PATTERN).matcher(headerValue).matches()) {
+            if (headerValue.contains(CRLF_ENCODED_STRING) || headerValue.contains(CR_ENCODED_STRING)) {
                 throw new Exception (" Cookie Header Value has invalid characters");
             }
         }
