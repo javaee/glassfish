@@ -40,6 +40,10 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="theme" bundle="org.glassfish.admingui.community-theme.Strings");
+/>
+
 <sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/community-theme/images/masthead-product_name_open.png" 
               style="border-width: 0px"
               productImageDescription="$resource{theme.productName}"
