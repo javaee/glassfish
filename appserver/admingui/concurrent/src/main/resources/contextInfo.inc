@@ -45,7 +45,7 @@
                  //onChange="javascript:   webui.suntheme.dropDown.setDisabled('#{pageSession.ctxInfoCompId}', !this.checked); "
              />
         </sun:property>
-        <sun:property id="contextInfo"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  helpText="$resource{i18ncon.contextInfoLabelHelp}">
+        <sun:property id="contextInfo"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="" helpText="$resource{i18ncon.contextInfoLabelHelp}">
             ### the beforeEncode is needed for 'loadDefault' since beforeCreate will not be called.
             <event>
                 <!beforeEncode

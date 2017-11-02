@@ -65,7 +65,6 @@
 
 #include "/concurrent/contextInfo.inc"
         <sun:property id="statusProp"  rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" visible="#{false}" />
             <sun:checkbox id="enabled"  selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="statusProp2" rendered="#{useString}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"

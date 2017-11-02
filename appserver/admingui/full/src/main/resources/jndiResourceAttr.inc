@@ -64,7 +64,7 @@
                     onClick="enableClassnameFields('predefine'); updateFactoryClassOnClick();"
                 />
                 <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{attrMap.classname}"
-                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" >
+                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" label="" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
                     />
@@ -74,9 +74,9 @@
                 "<br /><br />
 
                 <sun:radioButton id="optB"  name="classnameOption" selected="$pageSession{classnameOption}" selectedValue="input"
-                    onClick="javascript: enableClassnameFields('input');"
+                    onClick="javascript: enableClassnameFields('input');" label=""
                 />
-                <sun:textField id="ClassnameText" text="#{attrMap.classnameInput}" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.jndiResource.className']}">
+                <sun:textField id="ClassnameText" text="#{attrMap.classnameInput}" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.jndiResource.className']}" label="" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameTextId});
                     />
@@ -115,7 +115,6 @@
         </sun:property>
 
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" visible="#{false}" />
             <sun:checkbox id="enabled"  selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" >
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{statusId});

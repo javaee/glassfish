@@ -181,7 +181,7 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.installProp}");
                 />
-                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['install']}" selectedValue="true"  label="Enabled" >
+                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['install']}" selectedValue="true" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.installOptionId}");
                     />
