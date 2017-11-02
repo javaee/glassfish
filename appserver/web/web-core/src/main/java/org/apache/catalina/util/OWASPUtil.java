@@ -123,22 +123,6 @@ public final class OWASPUtil {
         return Integer.toHexString(c);
     }
 
-    public static String removeLinearWhiteSpaces(String input) {
-        if (input != null) {
-                input = Pattern.compile("//s").matcher(input).replaceAll(" ");
-            }
-        return input;
-    }
-    public static String getSafeHeaderValue(String headerValue) throws Exception {
-        headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerValue != null) {
-                if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
-                        throw new Exception("Header Value invalid characters");
-                    }
-            }
-        return headerValue;
-    }
-
     private static Map<Integer,String> getCharacterToEntityMap(){
         Map<Integer, String> map = new HashMap<>(252);
 
