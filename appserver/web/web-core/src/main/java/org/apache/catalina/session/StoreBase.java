@@ -60,6 +60,7 @@ package org.apache.catalina.session;
 
 import org.apache.catalina.*;
 import org.apache.catalina.util.LifecycleSupport;
+import org.apache.catalina.util.OWASPUtil;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -369,10 +370,10 @@ public abstract class StoreBase
             containerName = container.getName();
         }
         if (logger != null) {
-            logger.log(getStoreName()+"[" + containerName + "]: " +
-                       message);
+            logger.log(OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
+                       message));
         } else {
-            log.log(Level.FINE, getStoreName() + "[" + containerName + "]: " + message);
+            log.log(Level.FINE, OWASPUtil.neutralizeForLog(getStoreName() + "[" + containerName + "]: " + message));
         }
     }
 
@@ -392,10 +393,10 @@ public abstract class StoreBase
             containerName = container.getName();
         }
         if (logger != null) {
-            logger.log(getStoreName()+"[" + containerName + "]: " +
-                message, t, Logger.WARNING);
+            logger.log(OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
+                message), t, Logger.WARNING);
         } else {
-            log.log(Level.WARNING, getStoreName()+"[" + containerName + "]: " + message, t);
+            log.log(Level.WARNING, OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " + message), t);
         }
     }
 

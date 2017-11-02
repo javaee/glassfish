@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import org.apache.catalina.*;
 import org.apache.catalina.realm.JAASRealm;
+import org.apache.catalina.util.OWASPUtil;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -311,7 +312,7 @@ public class StandardEngine
                     domain=getName();
                 }
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Register " + domain);
+                    log.log(Level.FINE, "Register " + OWASPUtil.neutralizeForLog(domain));
                 }
                 oname=new ObjectName(domain + ":type=Engine");
                 controller=oname;

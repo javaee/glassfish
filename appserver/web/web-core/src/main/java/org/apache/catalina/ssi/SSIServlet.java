@@ -60,6 +60,7 @@ package org.apache.catalina.ssi;
 
 
 import org.apache.catalina.Globals;
+import org.apache.catalina.util.OWASPUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -185,19 +186,19 @@ public class SSIServlet extends HttpServlet {
         if (debug > 0)
             log("SSIServlet.requestHandler()\n" + "Serving "
                     + (buffered?"buffered ":"unbuffered ") + "resource '"
-                    + path + "'");
+                    + OWASPUtil.neutralizeForLog(path) + "'");
         // Exclude any resource in the /WEB-INF and /META-INF subdirectories
         // (the "toUpperCase()" avoids problems on Windows systems)
         if (path == null || path.toUpperCase(Locale.ENGLISH).startsWith("/WEB-INF")
                 || path.toUpperCase(Locale.ENGLISH).startsWith("/META-INF")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't serve file: " + path);
+            log("Can't serve file: " + OWASPUtil.neutralizeForLog(path));
             return;
         }
         URL resource = servletContext.getResource(path);
         if (resource == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't find file: " + path);
+            log("Can't find file: " + OWASPUtil.neutralizeForLog(path));
             return;
         }
         String resourceMimeType = servletContext.getMimeType(path);

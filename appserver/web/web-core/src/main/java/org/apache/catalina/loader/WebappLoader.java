@@ -62,6 +62,7 @@ package org.apache.catalina.loader;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.LifecycleSupport;
+import org.apache.catalina.util.OWASPUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
@@ -753,7 +754,7 @@ public class WebappLoader
                 setReloadable
                     ( ((Boolean) event.getNewValue()).booleanValue() );
             } catch (NumberFormatException e) {
-                log.log(Level.SEVERE, LogFacade.SET_RELOADABLE_PROPERTY_EXCEPTION, event.getNewValue().toString());
+                log.log(Level.SEVERE, LogFacade.SET_RELOADABLE_PROPERTY_EXCEPTION, OWASPUtil.neutralizeForLog(event.getNewValue().toString()));
             }
         } else if ("antiJARLocking".equals(propName)) {
             ClassLoader cloader = Thread.currentThread().getContextClassLoader();
@@ -848,11 +849,11 @@ public class WebappLoader
         if (logger != null) {
             String msg = MessageFormat.format(rb.getString(LogFacade.WEB_APP_LOADER_EXCEPTION),
                     new Object[] {containerName, message});
-            logger.log(msg, t);
+            logger.log(OWASPUtil.neutralizeForLog(msg), t);
         } else {
             String msg = MessageFormat.format(rb.getString(LogFacade.WEB_APP_LOADER_EXCEPTION),
                     new Object[] {containerName, message});
-            log.log(Level.WARNING, msg, t);
+            log.log(Level.WARNING, OWASPUtil.neutralizeForLog(msg), t);
         }
     }
 
