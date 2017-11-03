@@ -55,7 +55,7 @@
         />
    </sun:radioButton>
     "<br />
-    <sun:upload id="fileupload" label="" style="margin-left: 17pt" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.uploadedFile']}" uploadedFile="#{requestScope.uploadedFile}"
+    <sun:upload id="fileupload" style="margin-left: 17pt" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.uploadedFile']}" uploadedFile="#{requestScope.uploadedFile}"
         onChange="javascript:admingui.deploy.setFieldValue('#{appNameId}', this.value,  '#{dropDownProp}', '#{typeId}', '#{contextRootId}', '#{extensionId}', window, '#{sessionScope.appTypeString}');">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{fileuploadId});

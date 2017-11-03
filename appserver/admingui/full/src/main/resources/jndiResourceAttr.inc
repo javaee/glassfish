@@ -64,7 +64,7 @@
                     onClick="enableClassnameFields('predefine'); updateFactoryClassOnClick();"
                 />
                 <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{attrMap.classname}"
-                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" label="" >
+                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
                     />
@@ -74,9 +74,9 @@
                 "<br /><br />
 
                 <sun:radioButton id="optB"  name="classnameOption" selected="$pageSession{classnameOption}" selectedValue="input"
-                    onClick="javascript: enableClassnameFields('input');" label=""
+                    onClick="javascript: enableClassnameFields('input');"
                 />
-                <sun:textField id="ClassnameText" text="#{attrMap.classnameInput}" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.jndiResource.className']}" label="" >
+                <sun:textField id="ClassnameText" text="#{attrMap.classnameInput}" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.jndiResource.className']}">
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameTextId});
                     />
