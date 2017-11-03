@@ -776,18 +776,6 @@ public class GuiUtil {
 
 
     /**
-     Validate the Redirect URL for Header Injection Attack.
-
-     @param redirectURL	Redirect URL to be validate
-     @return		boolean
-     */
-    public static boolean validateRedirectURL(String redirectURL) {
-        String llRedirectURL = redirectURL.toLowerCase();
-        return (!(llRedirectURL.contains(CRLF_ENCODED_STRING) || llRedirectURL.contains(CR_ENCODED_STRING)
-                || llRedirectURL.contains(CRLF_STRING)));
-    }
-
-    /**
      Remove extra white spaces in String and convert into lowercase.
 
      @param input Input String
@@ -804,19 +792,33 @@ public class GuiUtil {
                                             String headerName, String headerValue) throws IOException {
         headerName = removeLinearWhiteSpaces(headerName);
         headerValue = removeLinearWhiteSpaces(headerValue);
-        String safeHeaderName = headerName.toLowerCase();
-        String safeHeaderValue = headerValue.toLowerCase();
-        if (safeHeaderName != null && (safeHeaderName.contains(CRLF_ENCODED_STRING)
-                || safeHeaderName.contains(CR_ENCODED_STRING) || safeHeaderName.contains(CRLF_STRING))) {
+        if (validateStringforCRLF(headerName)) {
             resp.sendError(403, "Forbidden");
             return;
         }
-        if (safeHeaderValue != null && (safeHeaderValue.contains(CRLF_ENCODED_STRING)
-                || safeHeaderValue.contains(CR_ENCODED_STRING) || safeHeaderValue.contains(CRLF_STRING))) {
+        if (validateStringforCRLF(headerValue)) {
             resp.sendError(403, "Forbidden");
             return;
         }
         resp.addHeader(headerName, headerValue);
+    }
+
+    /**
+     Validate the String for Header Injection Attack.
+
+     @param input	String to be validate
+     @return		boolean
+     */
+    public static boolean validateStringforCRLF (String input) {
+        if (input != null && (input.contains(CRLF_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_STRING))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
@@ -824,7 +826,9 @@ public class GuiUtil {
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";
     public static final Locale guiLocale = new Locale("UTF-8");
-    public static final String CRLF_ENCODED_STRING = "%0d%0a";
-    public static final String CR_ENCODED_STRING = "%0d";
+    public static final String CRLF_ENCODED_STRING_LOWER = "%0d%0a";
+    public static final String CRLF_ENCODED_STRING_UPPER = "%0D%0A";
+    public static final String CR_ENCODED_STRING_LOWER = "%0d";
+    public static final String CR_ENCODED_STRING_UPPER = "%0D";
     public static final String CRLF_STRING = "\"\\r\\n\"";
 }
