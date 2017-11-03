@@ -782,10 +782,17 @@ public class GuiUtil {
      @return		boolean
      */
     public static boolean validateRedirectURL(String redirectURL) {
-        Pattern pattern = Pattern.compile(REDIRECT_PATTERN);
-        return pattern.matcher(redirectURL).matches();
+        String llRedirectURL = redirectURL.toLowerCase();
+        return (!(llRedirectURL.contains(CRLF_ENCODED_STRING) || llRedirectURL.contains(CR_ENCODED_STRING)
+                || llRedirectURL.contains(CRLF_STRING)));
     }
 
+    /**
+     Remove extra white spaces in String and convert into lowercase.
+
+     @param input Input String
+     @return		string
+     */
     public static String removeLinearWhiteSpaces(String input) {
         if (input != null) {
             input = Pattern.compile("//s").matcher(input).replaceAll(" ");
@@ -793,41 +800,21 @@ public class GuiUtil {
         return input;
     }
 
-    public static String addSafeHeaderName(String headerName) throws Exception {
-        headerName = removeLinearWhiteSpaces(headerName);
-        if (headerName != null) {
-            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
-                throw new Exception("Header Name invalid characters");
-            }
-        }
-        return headerName;
-    }
-
-    public static String getSafeHeaderValue(String headerValue) throws Exception {
-        headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerValue != null) {
-            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
-                throw new Exception("Header Value invalid characters");
-            }
-        }
-        return headerValue;
-    }
-
     public static void setHeaderNameValue(HttpServletResponse resp,
                                             String headerName, String headerValue) throws IOException {
         headerName = removeLinearWhiteSpaces(headerName);
         headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerName != null) {
-            if (!Pattern.compile(HEADER_NAME_VALIDATION_PATTERN).matcher(headerName).matches()) {
-                resp.sendError(403, "Forbidden");
-                return;
-            }
+        String safeHeaderName = headerName.toLowerCase();
+        String safeHeaderValue = headerValue.toLowerCase();
+        if (safeHeaderName != null && (safeHeaderName.contains(CRLF_ENCODED_STRING)
+                || safeHeaderName.contains(CR_ENCODED_STRING) || safeHeaderName.contains(CRLF_STRING))) {
+            resp.sendError(403, "Forbidden");
+            return;
         }
-        if (headerValue != null) {
-            if (!Pattern.compile(HEADER_VALUE_VALIDATION_PATERN).matcher(headerValue).matches()) {
-                resp.sendError(403, "Forbidden");
-                return;
-            }
+        if (safeHeaderValue != null && (safeHeaderValue.contains(CRLF_ENCODED_STRING)
+                || safeHeaderValue.contains(CR_ENCODED_STRING) || safeHeaderValue.contains(CRLF_STRING))) {
+            resp.sendError(403, "Forbidden");
+            return;
         }
         resp.addHeader(headerName, headerValue);
     }
@@ -837,8 +824,7 @@ public class GuiUtil {
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";
     public static final Locale guiLocale = new Locale("UTF-8");
-    public static final String REDIRECT_PATTERN = "^\\/.*$";
-    public static final String HEADER_NAME_VALIDATION_PATTERN = "^[a-zA-Z0-9\\-_]*$";
-    public static final String HEADER_VALUE_VALIDATION_PATERN
-                                            = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
+    public static final String CRLF_ENCODED_STRING = "%0d%0a";
+    public static final String CR_ENCODED_STRING = "%0d";
+    public static final String CRLF_STRING = "\"\\r\\n\"";
 }
