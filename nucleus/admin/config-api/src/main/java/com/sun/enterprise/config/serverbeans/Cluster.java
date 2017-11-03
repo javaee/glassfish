@@ -70,7 +70,7 @@ import org.glassfish.api.admin.config.ReferenceContainer;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -721,7 +721,7 @@ public interface Cluster extends ConfigBeanProxy, PropertyBag, Named, SystemProp
 
                         // generate a random port since user did not provide one.
                         // better fix in future would be to walk existing clusters and pick an unused port.
-                        TCPPORT = Integer.toString(new Random(System.currentTimeMillis()).nextInt(9200 - 9090) + 9090);
+                        TCPPORT = Integer.toString(new SecureRandom().nextInt(9200 - 9090) + 9090);
 
                         // hardcode all instances to use same default port.
                         // generate mode does not support multiple instances on one machine.
@@ -742,7 +742,7 @@ public interface Cluster extends ConfigBeanProxy, PropertyBag, Named, SystemProp
                             gmsListenerPortSysProp.setName(propName);
                             if (TCPPORT == null || TCPPORT.trim().charAt(0) == '$') {
                                 String generateGmsListenerPort = Integer.toString(
-                                        new Random(System.currentTimeMillis()).nextInt(9200 - 9090) + 9090);
+                                        new SecureRandom().nextInt(9200 - 9090) + 9090);
                                 gmsListenerPortSysProp.setValue(generateGmsListenerPort);
                             } else {
                                 gmsListenerPortSysProp.setValue(TCPPORT);
