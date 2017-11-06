@@ -59,6 +59,7 @@ import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -85,7 +86,7 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
     }
 
     @Override
-    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
+    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXException {
         if(deplLogger.isLoggable(Level.FINE)) {
             deplLogger.logp(Level.FINE, "ACCPersistencerArchivist",
                     "readPersistenceDeploymentDescriptors", "archive = {0}",

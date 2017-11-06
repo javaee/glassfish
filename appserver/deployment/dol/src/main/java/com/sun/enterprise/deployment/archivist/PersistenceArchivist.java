@@ -50,6 +50,7 @@ import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
@@ -98,7 +99,7 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
 
     @Override
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         String puRoot = getPuRoot(archive);
         readPersistenceDeploymentDescriptor(main, archive, puRoot, descriptor);
         return null;  // return null so that the descritor does not get added twice to extensions
@@ -122,7 +123,7 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
 
     protected PersistenceUnitsDescriptor readPersistenceDeploymentDescriptor(Archivist main,
             ReadableArchive subArchive, String puRoot, RootDeploymentDescriptor descriptor)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         final String subArchiveURI = subArchive.getURI().getSchemeSpecificPart();
         if (deplLogger.isLoggable(Level.FINE)) {

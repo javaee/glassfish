@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
@@ -109,7 +110,7 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
     }
 
     public ApplicationClientDescriptor open(final ReadableArchive archive,
-            final String mainClassNameToRun) throws IOException, SAXParseException {
+            final String mainClassNameToRun) throws IOException, SAXException {
         this.mainClassNameToRun = mainClassNameToRun;
         return super.open(archive);
     }

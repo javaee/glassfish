@@ -50,6 +50,7 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -155,7 +156,7 @@ public abstract class ExtensionsArchivist  {
      *
      */
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
 
          getStandardDDFile(descriptor).setArchiveType(main.getModuleType());
@@ -195,7 +196,7 @@ public abstract class ExtensionsArchivist  {
      * @return the extension descriptor object with additional runtime information
      */
      public Object readRuntimeDeploymentDescriptor(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         ConfigurationDeploymentDescriptorFile ddFile = getConfigurationDDFile(main, descriptor, archive);
 

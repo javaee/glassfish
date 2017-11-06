@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import org.glassfish.api.deployment.archive.ArchiveType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.Archive;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Service;
 
@@ -65,7 +66,7 @@ public class WarPersistenceArchivist extends PersistenceArchivist {
     }
 
     @Override
-    public Object open(Archivist main, ReadableArchive warArchive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
+    public Object open(Archivist main, ReadableArchive warArchive, RootDeploymentDescriptor descriptor) throws IOException, SAXException {
         final String CLASSES_DIR = "WEB-INF/classes/";
 
         if(deplLogger.isLoggable(Level.FINE)) {

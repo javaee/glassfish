@@ -81,6 +81,7 @@ import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -422,7 +423,7 @@ public class DOLUtils {
 
     // read alternative runtime descriptor if there is an alternative runtime 
     // DD packaged inside the archive
-    public static void readAlternativeRuntimeDescriptor(ReadableArchive appArchive, ReadableArchive embeddedArchive, Archivist archivist, BundleDescriptor descriptor, String altDDPath) throws IOException, SAXParseException {
+    public static void readAlternativeRuntimeDescriptor(ReadableArchive appArchive, ReadableArchive embeddedArchive, Archivist archivist, BundleDescriptor descriptor, String altDDPath) throws IOException, SAXException {
         String altRuntimeDDPath = null;
         ConfigurationDeploymentDescriptorFile confDD = null;
         @SuppressWarnings("unchecked") 
@@ -477,7 +478,7 @@ public class DOLUtils {
      * @param main the main archivist
      * @param warnIfMultipleDDs whether to log warnings if both the GlassFish and the legacy Sun descriptors are present
      */
-    public static void readRuntimeDeploymentDescriptor(List<ConfigurationDeploymentDescriptorFile> confDDFiles, ReadableArchive archive, RootDeploymentDescriptor descriptor, Archivist main, final boolean warnIfMultipleDDs) throws IOException, SAXParseException {
+    public static void readRuntimeDeploymentDescriptor(List<ConfigurationDeploymentDescriptorFile> confDDFiles, ReadableArchive archive, RootDeploymentDescriptor descriptor, Archivist main, final boolean warnIfMultipleDDs) throws IOException, SAXException {
         if (confDDFiles == null || confDDFiles.isEmpty()) {
             return;
         }

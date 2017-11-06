@@ -53,6 +53,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 
@@ -143,7 +144,7 @@ public class XMLPermissionsHandler {
                 
                 declaredPermXml = pd.getDeclaredPermissions();
                 
-            } catch (SAXParseException e) {
+            } catch (SAXException e) {
                 throw new SecurityException(e);
             } catch (IOException e) {
                 throw new SecurityException(e);
