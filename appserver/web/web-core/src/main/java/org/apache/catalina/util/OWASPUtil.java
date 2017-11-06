@@ -41,6 +41,8 @@
 
 package org.apache.catalina.util;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +53,6 @@ Util class for static methods for handling encoding of invalid string characters
 http://www.owasp.org/index.php/Log_Forging)
  */
 public final class OWASPUtil {
-    public static final String HEADER_VALUE_VALIDATION_PATERN = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
     private final static String  IMMUNE_HTML = ",.-_ ";
     private static final char REPLACEMENT_CHAR = '\ufffd';
     private static final String REPLACEMENT_HEX = "fffd";
@@ -70,6 +71,26 @@ public final class OWASPUtil {
 
     private OWASPUtil() {
     }
+
+    /**
+     Remove extra white spaces in String and convert into lowercase.
+
+     @param input Input String
+     @return		string
+     */
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
+
+    public static String getSafeHeaderValue(String headerValue) {
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        headerValue = neutralizeForLog(headerValue);
+        return headerValue;
+    }
+
 
     public static String neutralizeForLog(String message){
         StringBuilder sb = new StringBuilder();
