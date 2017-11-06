@@ -241,7 +241,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @return the DOL descriptor for the J2EE Module
      */
     public T read(InputStream is)
-        throws IOException, SAXParseException {
+        throws IOException, SAXParseException {    
         return read(null, is);
     }
        
@@ -293,7 +293,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      */
     @SuppressWarnings("unchecked")
     public T read(T descriptor, InputStream is) 
-        throws IOException, SAXParseException {
+        throws IOException, SAXParseException {        
         
         errorReportingString = FileUtils.revertFriendlyFilenameExtension(errorReportingString);
         String error = (errorReportingString == null)? errorReportingString:new File(errorReportingString).getName();
@@ -524,7 +524,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
     }
 
     /**
-     * @param type the archive type to set on this deployment descriptor file
+     * @param the archive type to set on this deployment descriptor file
      */
     public void setArchiveType(ArchiveType type) {
         archiveType = type;
