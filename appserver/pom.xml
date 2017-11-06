@@ -136,6 +136,7 @@
         <guava.version>13.0.1</guava.version>
 	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
         <libpam4j.version>1.9</libpam4j.version>
+        <testng.version>6.11</testng.version>
     </properties>
 
     <modules>
@@ -1084,6 +1085,11 @@
                 <artifactId>libpam4j</artifactId>
                 <version>${libpam4j.version}</version>
            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
       </dependencies>
     </dependencyManagement>
 
