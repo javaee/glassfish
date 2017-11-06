@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.web;
 
+import com.sun.appserv.web.cache.OWASPUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.SingleSignOn;
@@ -300,12 +301,12 @@ public class GlassFishSingleSignOn
         // Has a valid user already been authenticated?
         //S1AS8 6155481 START
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, LogFacade.REQUEST_PROCESSED, hreq.getRequestURI());
+            logger.log(Level.FINE, LogFacade.REQUEST_PROCESSED, OWASPUtil.neutralizeForLog(hreq.getRequestURI()));
         }
         if (hreq.getUserPrincipal() != null) {
             //S1AS8 6155481 START            
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, LogFacade.PRINCIPAL_ALREADY_AUTHENTICATED, hreq.getUserPrincipal().getName());
+                logger.log(Level.FINE, LogFacade.PRINCIPAL_ALREADY_AUTHENTICATED, OWASPUtil.neutralizeForLog(hreq.getUserPrincipal().getName()));
             }
             // START OF IASRI 4665318
             // context.invokeNext(request, response);
