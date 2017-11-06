@@ -43,6 +43,7 @@ package com.sun.enterprise.util.net;
 import com.sun.enterprise.util.CULoggerInfo;
 import com.sun.enterprise.util.StringUtils;
 import java.net.*;
+import java.security.SecureRandom;
 import java.util.*;
 import java.io.*;
 import java.util.logging.Level;
@@ -467,7 +468,7 @@ public class NetUtils {
         int range = endingPort - startingPort;
         int port = 0;
         if (range > 0) {
-            Random r = new Random();
+            SecureRandom r = new SecureRandom();
             while (true) {
                 port = r.nextInt(range + 1) + startingPort;
                 if (isPortFree(hostName, port)) {

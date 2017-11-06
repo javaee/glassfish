@@ -64,7 +64,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
-
+import java.security.SecureRandom;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +73,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.text.MessageFormat;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -191,13 +190,13 @@ public abstract class AuthenticatorBase
     /**
      * A random number generator to use when generating session identifiers.
      */
-    protected Random random = null;
+    protected SecureRandom random = null;
     
     /**
      * The Java class name of the random number generator class to be used
      * when generating session identifiers.
      */
-    protected String randomClass = java.security.SecureRandom.class.getName();
+    protected String randomClass = SecureRandom.class.getName();
         
     /**
      * The SingleSignOn implementation in our request processing chain,
@@ -744,12 +743,12 @@ public abstract class AuthenticatorBase
      * generating session identifiers.  If there is no such generator
      * currently defined, construct and seed a new one.
      */
-    protected synchronized Random getRandom() {
+    protected synchronized SecureRandom getRandom() {
         
         if (this.random == null) {
             try {
                 Class clazz = Class.forName(randomClass);
-                this.random = (Random) clazz.newInstance();
+                this.random = (SecureRandom) clazz.newInstance();
                 long seed = System.currentTimeMillis();
                 char entropy[] = getEntropy().toCharArray();
                 for (int i = 0; i < entropy.length; i++) {
@@ -758,7 +757,7 @@ public abstract class AuthenticatorBase
                 }
                 this.random.setSeed(seed);
             } catch (Exception e) {
-                this.random = new java.util.Random();
+                this.random = new SecureRandom();
             }
         }
         

@@ -124,7 +124,7 @@
                             org.joda.time; resolution:=optional; version="[2.0.0,3.0.0)",
 			    javax.money;version="[1.0.0,2.0.0)";resolution:=optional,
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
-                            org.apache.log4j; resolution:=optional,
+                            org.apache.log4j; resolution:=optional,javax.script.*;version="0",
                             org.jboss.logmanager; resolution:=optional,
                             javax.el;version="[2.2,4]",
                             com.sun.el,

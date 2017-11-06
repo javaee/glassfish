@@ -41,10 +41,6 @@
 -->
 
 <index version="2.0">
-  <indexitem text="add-on components">
-    <indexitem text="installing (reference)" target="ref-uc-addon"></indexitem>
-    <indexitem text="installing (task)" target="task-uc-addon"></indexitem>
-  </indexitem>
   <indexitem text="admin realm">
     <indexitem text="adding users (task)" target="task-adminuserscreate"></indexitem>
     <indexitem text="deleting users" target="task-adminusersdelete"></indexitem>
@@ -114,16 +110,6 @@
   </indexitem>
   <indexitem text="clustered instances">
     <indexitem text="system properties (reference)" target="ref-sysinstancevalues"></indexitem>
-  </indexitem>
-  <indexitem text="components">
-    <indexitem text="installing add-on (reference)" target="ref-uc-addon"></indexitem>
-    <indexitem text="installing add-on (task)" target="task-uc-addon"></indexitem>
-    <indexitem text="viewing available updates (reference)" target="ref-uc-update"></indexitem>
-    <indexitem text="viewing available updates (task)" target="task-uc-update"></indexitem>
-    <indexitem text="viewing information (reference)" target="ref-uc-pkgdetails"></indexitem>
-    <indexitem text="viewing information (task)" target="task-uc-pkgdetails"></indexitem>
-    <indexitem text="viewing installed (reference)" target="ref-uc-installed"></indexitem>
-    <indexitem text="viewing installed (task)" target="task-uc-installed-remove"></indexitem>
   </indexitem>
   <indexitem text="configurations">
     <indexitem text="clustered instances (reference)" target="ref-sysinstancevalues"></indexitem>
@@ -313,9 +299,6 @@
     <indexitem text="viewing for virtual servers (reference)" target="ref-servermonitoringdata"></indexitem>
     <indexitem text="viewing for virtual servers (task)" target="task-servermonitoringdata"></indexitem>
   </indexitem>
-  <indexitem text="network proxy settings">
-    <indexitem text="configuring for Update Tool" target="task-uc-set-proxy"></indexitem>
-  </indexitem>
   <indexitem text="PAM realm">
     <indexitem text="properties" target="ref-pamrealmprop"></indexitem>
   </indexitem>
@@ -343,9 +326,6 @@
     <indexitem text="Solaris realm" target="ref-solarisrealmprop"></indexitem>
     <indexitem text="system (reference)" target="ref-systemproperties"></indexitem>
     <indexitem text="system (task)" target="task-systemproperties"></indexitem>
-  </indexitem>
-  <indexitem text="proxy settings">
-    <indexitem text="configuring for Update Tool" target="task-uc-set-proxy"></indexitem>
   </indexitem>
   <indexitem text="realms">
     <indexitem text="creating (reference)" target="ref-realmsnew"></indexitem>
@@ -407,11 +387,6 @@
   <indexitem text="system properties (task)" target="task-systemproperties"></indexitem>
   <indexitem text="transactions">
     <indexitem text="recovering (reference)" target="ref-recovertransactions"></indexitem>
-  </indexitem>
-  <indexitem text="Update Tool">
-    <indexitem text="concepts" target="ref-uc-concepts"></indexitem>
-    <indexitem text="configuring" target="ref-uc-config"></indexitem>
-    <indexitem text="configuring network proxy settings for" target="task-uc-set-proxy"></indexitem>
   </indexitem>
   <indexitem text="virtual servers">
     <indexitem text="viewing monitoring data (reference)" target="ref-servermonitoringdata"></indexitem>
