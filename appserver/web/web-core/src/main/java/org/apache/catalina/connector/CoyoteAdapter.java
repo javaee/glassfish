@@ -616,10 +616,11 @@ public class CoyoteAdapter extends HttpHandler {
             // END CR 6590921
             // Issue a permanent redirect
             // Validating the redirectPath for header injection
-            if (!ResponseUtil.validateRedirectURL(redirectPath)) {
+            if (ResponseUtil.validateStringforCRLF(redirectPath)) {
                 response.sendError(403, "Forbidden");
             } else {
-                response.sendRedirect(redirectPath, false);
+                response.sendRedirect(ResponseUtil.removeLinearWhiteSpaces(redirectPath),
+                        false);
             }
 
             return false;

@@ -68,8 +68,11 @@ import java.util.regex.Pattern;
 
 public final class ResponseUtil {
 
-    public static final String CRLF_ENCODED_STRING = "%0d%0a";
-    public static final String CR_ENCODED_STRING = "%0d";
+    public static final String CRLF_ENCODED_STRING_LOWER = "%0d%0a";
+    public static final String CRLF_ENCODED_STRING_UPPER = "%0D%0A";
+    public static final String CR_ENCODED_STRING_LOWER = "%0d";
+    public static final String CR_ENCODED_STRING_UPPER = "%0D";
+    public static final String CRLF_STRING = "\"\\r\\n\"";
 
     /**
      * Copies the contents of the specified input stream to the specified
@@ -134,13 +137,21 @@ public final class ResponseUtil {
     }
 
     /**
-     * Validate the Redirect URL for Header Injection Attack.
-     *
-     * @param redirectURL	Redirect URL to be validate
-     * @return		boolean
+     Validate the String for Header Injection Attack.
+
+     @param input	String to be validate
+     @return		boolean
      */
-    public static boolean validateRedirectURL(String redirectURL) {
-        return (!(redirectURL.contains(CRLF_ENCODED_STRING) || redirectURL.contains(CR_ENCODED_STRING)));
+    public static boolean validateStringforCRLF (String input) {
+        if (input != null && (input.contains(CRLF_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_STRING))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -164,10 +175,8 @@ public final class ResponseUtil {
      */
     public static String getSafeHeaderName(String headerName) throws Exception {
         headerName = removeLinearWhiteSpaces(headerName);
-            if (headerName != null) {
-                if (headerName.contains(CRLF_ENCODED_STRING) || headerName.contains(CR_ENCODED_STRING)) {
-                    throw new Exception("Header Name invalid characters");
-                }
+            if (validateStringforCRLF(headerName)) {
+                throw new Exception("Header Name invalid characters");
             }
         return headerName;
     }
@@ -180,10 +189,8 @@ public final class ResponseUtil {
      */
     public static String getSafeHeaderValue(String headerValue) throws Exception {
         headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerValue != null) {
-                if (headerValue.contains(CRLF_ENCODED_STRING) || headerValue.contains(CR_ENCODED_STRING)) {
-                        throw new Exception("Header Value invalid characters");
-                    }
+        if (validateStringforCRLF(headerValue)) {
+                throw new Exception("Header Value invalid characters");
             }
         return headerValue;
     }
@@ -196,10 +203,8 @@ public final class ResponseUtil {
      */
     public static String getSafeCookieHeaderValue(String headerValue) throws Exception {
         headerValue = removeLinearWhiteSpaces(headerValue);
-        if (headerValue != null) {
-            if (headerValue.contains(CRLF_ENCODED_STRING) || headerValue.contains(CR_ENCODED_STRING)) {
-                throw new Exception (" Cookie Header Value has invalid characters");
-            }
+        if (validateStringforCRLF(headerValue)) {
+            throw new Exception (" Cookie Header Value has invalid characters");
         }
         return headerValue;
     }
