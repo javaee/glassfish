@@ -248,10 +248,9 @@ public class SaxParserHandler extends DefaultHandler {
                     } else {
                       fileName = getSchemaURLFor(systemID.substring(systemID.lastIndexOf('/')+1));                    
                     }
-                    // if this is not a request for a schema located in our repository, 
-                    // let's hope that the hint provided by schemaLocation is correct
+                    // if this is not a request for a schema located in our repository, we fail the deployment
                     if (fileName==null) {
-                        throw new SAXException(localStrings.getLocalString("invalid.schema", "Requested schema not in local repository"));
+                        throw new SAXException(localStrings.getLocalString("invalid.schema", "Requested schema not in local repository, check for typos in the descriptor file"));
                     }
                     if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
                       DOLUtils.getDefaultLogger().fine("Resolved to " + fileName);;
