@@ -84,6 +84,12 @@ public class VirtualServerPipeline extends StandardPipeline {
 
     private ConcurrentLinkedQueue<CharChunk> locations;
 
+    public static final String CRLF_ENCODED_STRING_LOWER = "%0d%0a";
+    public static final String CRLF_ENCODED_STRING_UPPER = "%0D%0A";
+    public static final String CR_ENCODED_STRING_LOWER = "%0d";
+    public static final String CR_ENCODED_STRING_UPPER = "%0D";
+    public static final String CRLF_STRING = "\"\\r\\n\"";
+
     /**
      * Constructor.
      *
@@ -314,8 +320,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             }
 
             // Validate the URL for extra spaces before redirection.
-            Pattern pattern = Pattern.compile("^\\/.*$");
-            if(!pattern.matcher(location).matches()) {
+            if(validateStringforCRLF(location)) {
                 hres.sendError(403, "Forbidden");
             } else {
                 hres.sendRedirect(location);
@@ -324,6 +329,18 @@ public class VirtualServerPipeline extends StandardPipeline {
         }
 
         return false;
+    }
+
+    public static boolean validateStringforCRLF (String input) {
+        if (input != null && (input.contains(CRLF_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_STRING))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
