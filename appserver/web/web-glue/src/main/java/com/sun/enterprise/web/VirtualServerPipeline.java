@@ -323,7 +323,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             if(validateStringforCRLF(location)) {
                 hres.sendError(403, "Forbidden");
             } else {
-                hres.sendRedirect(location);
+                hres.sendRedirect(removeLinearWhiteSpaces(location));
             }
             return true;
         }
@@ -343,6 +343,18 @@ public class VirtualServerPipeline extends StandardPipeline {
         }
     }
 
+    /**
+     Remove extra white spaces in String and convert into lowercase.
+
+     @param input Input String
+     @return		string
+     */
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
 
     /**
      * Class representing redirect parameters
