@@ -69,7 +69,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
 
         private String URL = null;
         private String userName = null;
-        private String password = null;
+        private char[] password = null;
         private String driverName = null;
         private int maxPool = 0;
         private int minPool = 0;
@@ -108,7 +108,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
   public ConnectionFactoryImpl(
 		String URL, 
 		String userName, 
-		String password, 
+		char[] password,
 		String driverName
 		)
   {
@@ -131,7 +131,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
   public ConnectionFactoryImpl(
 		String URL, 
 		String userName, 
-		String password, 
+		char[] password,
 		String driverName,
 		int    minPool,
                 int    maxPool
@@ -258,7 +258,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
    * Sets database user password
    * @param password      database user password
    */
-  public void setPassword (String password)
+  public void setPassword (char[] password)
   {
 	// REMOVE WHEN SUPPORTED:
 	//unsupported();
