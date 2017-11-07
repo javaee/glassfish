@@ -62,6 +62,7 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
@@ -89,7 +90,7 @@ public class UndeployedLaunchable implements Launchable {
             final ReadableArchive ra,
             final String callerSuppliedMainClassName,
             final String callerSuppliedAppName,
-            final ClassLoader classLoader) throws IOException, SAXParseException, UserError {
+            final ClassLoader classLoader) throws IOException, SAXException, UserError {
 
         ArchivistFactory af = Util.getArchivistFactory();
 
@@ -243,7 +244,7 @@ public class UndeployedLaunchable implements Launchable {
         return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
-    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXException {
         this.classLoader = loader;
         if (acDesc == null) {
             final AppClientArchivist _archivist = getArchivist(

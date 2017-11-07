@@ -56,6 +56,7 @@ import java.security.PrivilegedAction;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -73,7 +74,7 @@ interface Launchable {
      */
     Class getMainClass() throws ClassNotFoundException;
 
-    ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXParseException;
+    ApplicationClientDescriptor getDescriptor(URLClassLoader loader) throws IOException, SAXException;
 
     void validateDescriptor();
 
@@ -87,7 +88,7 @@ interface Launchable {
         static Launchable newLaunchable(final URI uri,
                 final String callerSuppliedMainClassName,
                 final String callerSuppliedAppName,
-                final ServiceLocator habitat) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXParseException, UserError {
+                final ServiceLocator habitat) throws IOException, BootException, URISyntaxException, XMLStreamException, SAXException, UserError {
             /*
              * Make sure the requested URI exists and is readable.
              */
@@ -141,7 +142,7 @@ interface Launchable {
         static ApplicationClientDescriptor openWithAnnoProcessingAndTempLoader(
                 final AppClientArchivist archivist, final URLClassLoader loader,
                 final ReadableArchive facadeRA,
-                final ReadableArchive clientRA) throws IOException, SAXParseException {
+                final ReadableArchive clientRA) throws IOException, SAXException {
             archivist.setAnnotationProcessingRequested(true);
             final ACCClassLoader tempLoader = AccessController.doPrivileged(
                     new PrivilegedAction<ACCClassLoader>() {
