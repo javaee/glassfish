@@ -69,7 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.glassfish.admingui.common.util.OWASPUtil;
+import org.glassfish.admingui.common.util.LogCleanerUtil;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -293,7 +293,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                 if ((origRequest == null) || "/favicon.ico".equals(origRequest)) {
                     origRequest = "/index.jsf";
                 }
-                logger.log(Level.INFO, "Redirecting to {0}", OWASPUtil.neutralizeForLog(origRequest));
+                logger.log(Level.INFO, "Redirecting to {0}", LogCleanerUtil.neutralizeForLog(origRequest));
                 if (GuiUtil.validateStringforCRLF(origRequest)) {
                     response.sendError(403,"Forbidden");
                 }

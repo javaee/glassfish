@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 Util class for static methods for handling encoding of invalid string characters. Use recommendations from Open Web Application Security Project (see here
 http://www.owasp.org/index.php/Log_Forging)
  */
-public final class OWASPUtil {
+public final class LogCleanerUtil {
     public static final String HEADER_VALUE_VALIDATION_PATERN = "^[a-zA-Z0-9()\\-=\\*\\.\\?;,+\\/:&_ ]*$";
     private final static String  IMMUNE_HTML = ",.-_ ";
     private static final char REPLACEMENT_CHAR = '\ufffd';
@@ -68,7 +68,7 @@ public final class OWASPUtil {
         }
     }
 
-    private OWASPUtil() {
+    private LogCleanerUtil() {
     }
 
     public static String neutralizeForLog(String message){
