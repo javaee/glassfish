@@ -81,7 +81,7 @@ import javax.servlet.http.HttpServletMapping;
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
 import org.apache.catalina.connector.MappingImpl;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.CharChunk;
@@ -234,9 +234,9 @@ public final class ApplicationDispatcher
         this.name = name;
 
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, "servletPath= " + OWASPUtil.neutralizeForLog(this.servletPath) + ", pathInfo= "
-                    + OWASPUtil.neutralizeForLog(this.pathInfo) + ", queryString= " + OWASPUtil.neutralizeForLog(queryString) + ", name= "
-                    + OWASPUtil.neutralizeForLog(this.name));
+            log.log(Level.FINE, "servletPath= " + LogCleanerUtil.neutralizeForLog(this.servletPath) + ", pathInfo= "
+                    + LogCleanerUtil.neutralizeForLog(this.pathInfo) + ", queryString= " + LogCleanerUtil.neutralizeForLog(queryString) + ", name= "
+                    + LogCleanerUtil.neutralizeForLog(this.name));
     }
 
     // ----------------------------------------------------- Instance Variables

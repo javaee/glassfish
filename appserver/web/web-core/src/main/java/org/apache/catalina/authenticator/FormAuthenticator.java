@@ -77,7 +77,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
 
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;
@@ -160,7 +160,7 @@ public class FormAuthenticator
         // processing section of this method. 
         if (principal != null && !loginAction) {
             if (log.isLoggable(Level.FINE))
-                log.log(Level.FINE, OWASPUtil.neutralizeForLog("Already authenticated '" + principal.getName() + "'"));
+                log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Already authenticated '" + principal.getName() + "'"));
             String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
             if (ssoId != null) {
                 getSession(request, true);
@@ -182,7 +182,7 @@ public class FormAuthenticator
             char[] password =                (char[]) session.getNote(Constants.SESS_PASSWORD_NOTE);
             if ((username != null) && (password != null)) {
                 if (log.isLoggable(Level.FINE))
-                    log.log(Level.FINE, OWASPUtil.neutralizeForLog("Reauthenticating username '" + username + "'"));
+                    log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Reauthenticating username '" + username + "'"));
                 principal =
                     context.getRealm().authenticate(username, password);
                 if (principal != null) {
@@ -274,7 +274,7 @@ public class FormAuthenticator
         char[] password = ((pwd != null)? pwd.toCharArray() : null);
 
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Authenticating username '" + username + "'"));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Authenticating username '" + username + "'"));
         principal = realm.authenticate(username, password);
         if (principal == null) {
 
@@ -297,7 +297,7 @@ public class FormAuthenticator
 
         // Save the authenticated Principal in our session
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Authentication of '" + username + "' was successful"));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Authentication of '" + username + "' was successful"));
         if (session == null)
             session = getSession(request, true);
         session.setNote(Constants.FORM_PRINCIPAL_NOTE, principal);
@@ -329,7 +329,7 @@ public class FormAuthenticator
         }
 
         if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Redirecting to original '" + requestURI + "'"));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Redirecting to original '" + requestURI + "'"));
         }
 
         hres.sendRedirect(hres.encodeRedirectURL(requestURI));

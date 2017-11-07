@@ -1535,7 +1535,7 @@ public abstract class RealmBase
      * @param message Message to be logged
      */
     protected void log(String message) {
-        message = OWASPUtil.neutralizeForLog(message);
+        message = LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = null;
         String name = null;
         if (container != null) {
@@ -1559,7 +1559,7 @@ public abstract class RealmBase
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
-        message = OWASPUtil.neutralizeForLog(message);
+        message = LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = null;
         String name = null;
         if (container != null) {

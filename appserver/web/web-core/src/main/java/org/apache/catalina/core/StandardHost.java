@@ -62,7 +62,7 @@ package org.apache.catalina.core;
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
@@ -740,7 +740,7 @@ public class StandardHost
     public Context map(String uri) {
 
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, "Mapping request URI '" + OWASPUtil.neutralizeForLog(uri) + "'");
+            log.log(Level.FINE, "Mapping request URI '" + LogCleanerUtil.neutralizeForLog(uri) + "'");
         if (uri == null)
             return (null);
 
@@ -774,7 +774,7 @@ public class StandardHost
 
         // Return the mapped Context (if any)
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, " Mapped to context '" + OWASPUtil.neutralizeForLog(context.getPath()) + "'");
+            log.log(Level.FINE, " Mapped to context '" + LogCleanerUtil.neutralizeForLog(context.getPath()) + "'");
         return (context);
 
     }
@@ -1246,7 +1246,7 @@ public class StandardHost
                 StandardEngine engine=(StandardEngine)parent;
                 domain=engine.getName();
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, OWASPUtil.neutralizeForLog("Registering host " + getName()
+                    log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Registering host " + getName()
                             + " with domain " + domain));
                 }
                 oname=new ObjectName(domain + ":type=Host,host=" +
@@ -1272,7 +1272,7 @@ public class StandardHost
         throws Exception
     {
         if( log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Create ObjectName " + domain + " " + parent));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Create ObjectName " + domain + " " + parent));
         return new ObjectName( domain + ":type=Host,host=" + getName());
     }
 

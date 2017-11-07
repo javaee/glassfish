@@ -3778,7 +3778,7 @@ public class Request
              */
             if (jvmRoute == null) {
                 Cookie newCookie = new Cookie(
-                        OWASPUtil.getSafeHeaderValue(getContext().getSessionCookieName()), OWASPUtil.getSafeHeaderValue(session.getId()));
+                        LogCleanerUtil.getSafeHeaderValue(getContext().getSessionCookieName()), LogCleanerUtil.getSafeHeaderValue(session.getId()));
                 configureSessionCookie(newCookie);
                 ((HttpResponse)response).addSessionCookieInternal(newCookie);
             }

@@ -64,7 +64,7 @@ import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.tomcat.util.security.PrivilegedSetTccl;
 
 import javax.servlet.ServletContext;
@@ -2316,7 +2316,7 @@ public class StandardSession
      * @param message Message to be logged
      */
     protected void log(String message) {
-        message = OWASPUtil.neutralizeForLog(message);
+        message = LogCleanerUtil.neutralizeForLog(message);
         if ((manager != null) && (manager instanceof ManagerBase)) {
             ((ManagerBase) manager).log(message);
         } else {
@@ -2332,7 +2332,7 @@ public class StandardSession
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
-        message = OWASPUtil.neutralizeForLog(message);
+        message = LogCleanerUtil.neutralizeForLog(message);
         if ((manager != null) && (manager instanceof ManagerBase)) {
             ((ManagerBase) manager).log(message, t);
         } else {

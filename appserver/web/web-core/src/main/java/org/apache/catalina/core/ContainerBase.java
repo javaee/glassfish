@@ -93,7 +93,7 @@ import org.apache.catalina.Response;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.naming.resources.ProxyDirContext;
 import org.glassfish.web.valve.GlassFishValve;
 
@@ -1488,7 +1488,7 @@ public abstract class ContainerBase
      * @param message Message to be logged
      */
     protected void log(String message) {
-            message = OWASPUtil.neutralizeForLog(message);
+            message = LogCleanerUtil.neutralizeForLog(message);
 //         Logger logger = getLogger();
 //         if (logger != null)
 //             logger.log(logName() + ": " + message);
@@ -1505,7 +1505,7 @@ public abstract class ContainerBase
      * @param throwable Related exception
      */
     protected void log(String message, Throwable throwable) {
-        message = OWASPUtil.neutralizeForLog(message);
+        message = LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(logName() + ": " + message, throwable);
@@ -1585,7 +1585,7 @@ public abstract class ContainerBase
         throws Exception
     {
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Create ObjectName " + domain + " " + parent));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Create ObjectName " + domain + " " + parent));
         return null;
     }
 

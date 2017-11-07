@@ -62,7 +62,7 @@ package org.apache.catalina.realm;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LogFacade;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.*;
@@ -285,7 +285,7 @@ public class JAASRealm
         if( appName==null ) appName="Tomcat";
 
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Authenticating " + appName + " " +  username));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Authenticating " + appName + " " +  username));
 
         // What if the LoginModule is in the container class loader ?
         //
@@ -299,7 +299,7 @@ public class JAASRealm
             if (log.isLoggable(Level.FINE)) {
                 log.log(Level.FINE, "Error initializing JAAS: " +  e.toString());
 
-                String msg = MessageFormat.format(rb.getString(LogFacade.LOGIN_EXCEPTION_AUTHENTICATING_USERNAME), OWASPUtil.neutralizeForLog(username));
+                String msg = MessageFormat.format(rb.getString(LogFacade.LOGIN_EXCEPTION_AUTHENTICATING_USERNAME), LogCleanerUtil.neutralizeForLog(username));
                 log.log(Level.FINE, msg, e);
             }
             return (null);
@@ -308,7 +308,7 @@ public class JAASRealm
         }
 
         if (log.isLoggable(Level.FINE))
-            log.log(Level.FINE, "Login context created " + OWASPUtil.neutralizeForLog(username));
+            log.log(Level.FINE, "Login context created " + LogCleanerUtil.neutralizeForLog(username));
 
         // Negotiate a login via this LoginContext
         Subject subject = null;
@@ -317,28 +317,28 @@ public class JAASRealm
             subject = loginContext.getSubject();
             if (subject == null) {
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_FAILED_LOGIN, OWASPUtil.neutralizeForLog(username));
+                    log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_FAILED_LOGIN, LogCleanerUtil.neutralizeForLog(username));
                 }
                 return (null);
             }
         } catch (AccountExpiredException e) {
             if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_EXPIRED_ACCOUNT, OWASPUtil.neutralizeForLog(username));
+                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_EXPIRED_ACCOUNT, LogCleanerUtil.neutralizeForLog(username));
             }
             return (null);
         } catch (CredentialExpiredException e) {
             if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_EXPIRED_CREDENTIAL, OWASPUtil.neutralizeForLog(username));
+                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_EXPIRED_CREDENTIAL, LogCleanerUtil.neutralizeForLog(username));
             }
             return (null);
         } catch (FailedLoginException e) {
             if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_FAILED_LOGIN, OWASPUtil.neutralizeForLog(username));
+                log.log(Level.FINE, LogFacade.USERNAME_NOT_AUTHENTICATED_FAILED_LOGIN, LogCleanerUtil.neutralizeForLog(username));
             }
             return (null);
         } catch (LoginException e) {
             String msg = MessageFormat.format(rb.getString(LogFacade.LOGIN_EXCEPTION_AUTHENTICATING_USERNAME),
-                    OWASPUtil.neutralizeForLog(username));
+                    LogCleanerUtil.neutralizeForLog(username));
             log.log(Level.FINE, msg, e);
             return (null);
         } catch (Throwable e) {
@@ -347,18 +347,18 @@ public class JAASRealm
         }
 
         if( log.isLoggable(Level.FINE))
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog("Getting principal " + subject));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog("Getting principal " + subject));
 
         // Return the appropriate Principal for this authenticated Subject
         Principal principal = createPrincipal(username, subject);
         if (principal == null) {
             if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "Failed to authenticate username " + OWASPUtil.neutralizeForLog(username));
+                log.log(Level.FINE, "Failed to authenticate username " + LogCleanerUtil.neutralizeForLog(username));
             }
             return (null);
         }
         if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "Successful to authenticate username " + OWASPUtil.neutralizeForLog(username));
+            log.log(Level.FINE, "Successful to authenticate username " + LogCleanerUtil.neutralizeForLog(username));
         }
 
         return (principal);

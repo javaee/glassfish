@@ -60,7 +60,7 @@ package org.apache.catalina.session;
 
 import org.apache.catalina.*;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -370,10 +370,10 @@ public abstract class StoreBase
             containerName = container.getName();
         }
         if (logger != null) {
-            logger.log(OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
+            logger.log(LogCleanerUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
                        message));
         } else {
-            log.log(Level.FINE, OWASPUtil.neutralizeForLog(getStoreName() + "[" + containerName + "]: " + message));
+            log.log(Level.FINE, LogCleanerUtil.neutralizeForLog(getStoreName() + "[" + containerName + "]: " + message));
         }
     }
 
@@ -393,10 +393,10 @@ public abstract class StoreBase
             containerName = container.getName();
         }
         if (logger != null) {
-            logger.log(OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
+            logger.log(LogCleanerUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " +
                 message), t, Logger.WARNING);
         } else {
-            log.log(Level.WARNING, OWASPUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " + message), t);
+            log.log(Level.WARNING, LogCleanerUtil.neutralizeForLog(getStoreName()+"[" + containerName + "]: " + message), t);
         }
     }
 

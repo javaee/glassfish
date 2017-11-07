@@ -99,7 +99,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.web.valve.GlassFishValve;
 // END GlassFish 1343
 
@@ -1724,7 +1724,7 @@ public class StandardWrapper
      *  to mark this servlet as permanently unavailable
      */
     public void unavailable(UnavailableException unavailable) {
-        String msg = MessageFormat.format(rb.getString(LogFacade.MARK_SERVLET_UNAVAILABLE), OWASPUtil.neutralizeForLog(getName()));
+        String msg = MessageFormat.format(rb.getString(LogFacade.MARK_SERVLET_UNAVAILABLE), LogCleanerUtil.neutralizeForLog(getName()));
         getServletContext().log(msg);
         if (unavailable == null)
             setAvailable(Long.MAX_VALUE);
@@ -2092,7 +2092,7 @@ public class StandardWrapper
         try {
             unload();
         } catch (ServletException e) {
-            String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_UNLOAD_EXCEPTION), OWASPUtil.neutralizeForLog(getName()));
+            String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_UNLOAD_EXCEPTION), LogCleanerUtil.neutralizeForLog(getName()));
             getServletContext().log(msg, e);
         }
 

@@ -4971,7 +4971,7 @@ public class StandardContext
         synchronized (filterConfigs) {
             filterConfigs.clear();
             for (String name : filterDefs.keySet()) {
-                String safeName = OWASPUtil.neutralizeForLog(name);
+                String safeName = LogCleanerUtil.neutralizeForLog(name);
                 if(log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE, " Starting filter '" + safeName + "'");
                 }
@@ -5004,7 +5004,7 @@ public class StandardContext
         // Release all Filter and FilterConfig instances
         synchronized (filterConfigs) {
             for (String filterName : filterConfigs.keySet()) {
-                String safeFilterName = OWASPUtil.neutralizeForLog(filterName);
+                String safeFilterName = LogCleanerUtil.neutralizeForLog(filterName);
                 if(log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE, " Stopping filter '" + safeFilterName + "'");
                 }
@@ -5092,7 +5092,7 @@ public class StandardContext
             throws Exception {
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Configuring event listener class '" +
-                    OWASPUtil.neutralizeForLog(listenerClassName) + "'");
+                    LogCleanerUtil.neutralizeForLog(listenerClassName) + "'");
         }
         return createListener((Class<EventListener>)
             loader.loadClass(listenerClassName));
@@ -5230,11 +5230,11 @@ public class StandardContext
             this.resources = proxyDirContext;
         } catch(Throwable t) {
             if(log.isLoggable(Level.FINE)) {
-                String msg = MessageFormat.format(rb.getString(LogFacade.STARTING_RESOURCES_EXCEPTION), OWASPUtil.neutralizeForLog(getName()));
+                String msg = MessageFormat.format(rb.getString(LogFacade.STARTING_RESOURCES_EXCEPTION), LogCleanerUtil.neutralizeForLog(getName()));
                 log.log(Level.SEVERE, msg, t);
             } else {
                 log.log(Level.SEVERE, LogFacade.STARTING_RESOURCE_EXCEPTION_MESSAGE,
-                        new Object[] {OWASPUtil.neutralizeForLog(getName()), t.getMessage()});
+                        new Object[] {LogCleanerUtil.neutralizeForLog(getName()), t.getMessage()});
             }
             ok = false;
         }
@@ -5382,7 +5382,7 @@ public class StandardContext
                 try {
                     wrapper.load();
                 } catch(ServletException e) {
-                    String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_LOAD_EXCEPTION), OWASPUtil.neutralizeForLog(getName()));
+                    String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_LOAD_EXCEPTION), LogCleanerUtil.neutralizeForLog(getName()));
                     getServletContext().log(msg, StandardWrapper.getRootCause(e));
                     // NOTE: load errors (including a servlet that throws
                     // UnavailableException from the init() method) are NOT
@@ -5425,7 +5425,7 @@ public class StandardContext
 
         if (started) {
             if (log.isLoggable(Level.INFO)) {
-                log.log(Level.INFO, LogFacade.CONTAINER_ALREADY_STARTED_EXCEPTION, OWASPUtil.neutralizeForLog(logName()));
+                log.log(Level.INFO, LogFacade.CONTAINER_ALREADY_STARTED_EXCEPTION, LogCleanerUtil.neutralizeForLog(logName()));
             }
             return;
         }
@@ -5441,7 +5441,7 @@ public class StandardContext
         }
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Starting " +
-                    ("".equals(getName()) ? "ROOT" : OWASPUtil.neutralizeForLog(getName())));
+                    ("".equals(getName()) ? "ROOT" : LogCleanerUtil.neutralizeForLog(getName())));
         }
 
         // Set JMX object name for proper pipeline registration
@@ -7097,7 +7097,7 @@ public class StandardContext
      * Writes the specified message to a servlet log file.
      */
     public void log(String message) {
-        message=OWASPUtil.neutralizeForLog(message);
+        message= LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null) {
             /* PWC 6403328
@@ -7113,7 +7113,7 @@ public class StandardContext
      * Writes the specified exception and message to a servlet log file.
      */
     public void log(Exception exception, String message) {
-        message=OWASPUtil.neutralizeForLog(message);
+        message= LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(exception, logName() + message);
@@ -7123,7 +7123,7 @@ public class StandardContext
      * Writes the specified message and exception to a servlet log file.
      */
     public void log(String message, Throwable throwable) {
-        message=OWASPUtil.neutralizeForLog(message);
+        message= LogCleanerUtil.neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(logName() + message, throwable);

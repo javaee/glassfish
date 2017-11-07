@@ -63,8 +63,8 @@ import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.util.OWASPUtil;
-import java.security.SecureRandom;
+import org.apache.catalina.util.LogCleanerUtil;
+
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -1004,7 +1004,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message) {
-        log.log(Level.INFO, OWASPUtil.neutralizeForLog(message));
+        log.log(Level.INFO, LogCleanerUtil.neutralizeForLog(message));
     }
 
 
@@ -1016,7 +1016,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message, Throwable throwable) {
-        log.log(Level.INFO, OWASPUtil.neutralizeForLog(message), throwable);
+        log.log(Level.INFO, LogCleanerUtil.neutralizeForLog(message), throwable);
     }
 
 

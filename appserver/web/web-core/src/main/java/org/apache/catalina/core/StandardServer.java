@@ -62,7 +62,7 @@ package org.apache.catalina.core;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.OWASPUtil;
+import org.apache.catalina.util.LogCleanerUtil;
 
 import javax.management.ObjectName;
 import java.beans.PropertyChangeListener;
@@ -544,7 +544,7 @@ public final class StandardServer
                 break;
             } else {
                 log.log(Level.WARNING, LogFacade.STANDARD_SERVER_AWAIT_INVALID_COMMAND_RECEIVED_EXCEPTION,
-                        OWASPUtil.neutralizeForLog(command.toString()));
+                        LogCleanerUtil.neutralizeForLog(command.toString()));
             }
         }
 
