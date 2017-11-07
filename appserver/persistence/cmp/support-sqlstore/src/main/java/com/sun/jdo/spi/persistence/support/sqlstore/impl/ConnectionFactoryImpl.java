@@ -51,6 +51,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 
@@ -598,7 +599,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
   public boolean equals(Object obj) {
 	if ((obj != null) && (obj instanceof ConnectionFactoryImpl) ) {
 		ConnectionFactoryImpl cf = (ConnectionFactoryImpl)obj;
-		return (cf.URL.equals(this.URL) && cf.userName.equals(this.userName) && cf.driverName.equals(this.driverName) && cf.password.equals(this.password));
+		return (cf.URL.equals(this.URL) && cf.userName.equals(this.userName) && cf.driverName.equals(this.driverName) && Arrays.equals(cf.password,this.password));
 	}
 	return false;
   }
@@ -609,7 +610,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
   * @return A hash code of the owning ConnectionFactoryImpl as an int.
   */
   public int hashCode() {
-  	return URL.hashCode() + userName.hashCode() + password.hashCode() + driverName.hashCode();
+  	return URL.hashCode() + userName.hashCode() + Arrays.hashCode(password) + driverName.hashCode();
   }
 
 

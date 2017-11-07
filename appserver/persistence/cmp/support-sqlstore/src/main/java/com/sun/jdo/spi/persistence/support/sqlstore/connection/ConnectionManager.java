@@ -1135,7 +1135,7 @@ public class ConnectionManager {
         } else if (!this.pooling)					// Get a non-pooled connection.
         {
             conn = (ConnectionImpl) this.getConnection(this.userName,
-                    new String(this.password));
+                    this.password);
             conn.setPooled(false);
             conn.checkXact();
         } else	// This is a pooled connection.
@@ -1205,7 +1205,7 @@ public class ConnectionManager {
     public synchronized Connection getConnection
             (
             String userName,
-            String password
+            char[] password
             ) throws SQLException {
         boolean debug = logger.isLoggable(Logger.FINEST);
 
@@ -1243,7 +1243,7 @@ public class ConnectionManager {
                             (
                                     this.expandedUrl,
                                     this.expandAttribute(userName),
-                                    this.expandAttribute(password)
+                                    this.expandAttribute(new String(password))
                             ),
                                     this.expandedUrl,
                                     this.expandAttribute(userName),
