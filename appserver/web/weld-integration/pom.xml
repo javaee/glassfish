@@ -139,10 +139,6 @@
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>com.google.collections</groupId>
                     <artifactId>google-collections</artifactId>
                 </exclusion>
