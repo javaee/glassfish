@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.appserv.web.cache.OWASPUtil;
+import com.sun.appserv.web.cache.LogCleanerUtil;
 import org.glassfish.web.LogFacade;
 
 
@@ -151,14 +151,14 @@ public class ConstraintField extends Field {
             // the field is not present in the request
             if (isFine) {
                 _logger.log(Level.FINE, LogFacade.CONSTRAINT_FIELD_NOT_FOUND,
-                        new Object[] {OWASPUtil.neutralizeForLog(name), SCOPE_NAMES[scope], cacheOnMatchFailure});
+                        new Object[] {LogCleanerUtil.neutralizeForLog(name), SCOPE_NAMES[scope], cacheOnMatchFailure});
             }
             return cacheOnMatchFailure;
         } else if (constraints.length == 0) {
             // the field is present but has no value constraints
             if (isFine) {
                 _logger.log(Level.FINE, LogFacade.CONSTRAINT_FIELD_FOUND,
-                        new Object[] {OWASPUtil.neutralizeForLog(name), OWASPUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatch});
+                        new Object[] {LogCleanerUtil.neutralizeForLog(name), LogCleanerUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatch});
             }
             return cacheOnMatch;
         }
@@ -171,7 +171,7 @@ public class ConstraintField extends Field {
             if (c.matches(value)) {
                 if (isFine) {
                     _logger.log(Level.FINE, LogFacade.CONSTRAINT_FIELD_MATCH,
-                            new Object[] {OWASPUtil.neutralizeForLog(name), OWASPUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatch});
+                            new Object[] {LogCleanerUtil.neutralizeForLog(name), LogCleanerUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatch});
                 }
                 return cacheOnMatch;
             }
@@ -180,7 +180,7 @@ public class ConstraintField extends Field {
         // none of the values matched; should we cache?
         if (isFine) {
             _logger.log(Level.FINE, LogFacade.CONSTRAINT_FIELD_NOT_MATCH,
-                    new Object[] {OWASPUtil.neutralizeForLog(name), OWASPUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatchFailure});
+                    new Object[] {LogCleanerUtil.neutralizeForLog(name), LogCleanerUtil.neutralizeForLog(value.toString()), SCOPE_NAMES[scope], cacheOnMatchFailure});
         }
         return cacheOnMatchFailure;
     }
