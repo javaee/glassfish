@@ -40,6 +40,8 @@
 
 package org.glassfish.admingui.common.servlet;
 
+import org.glassfish.admingui.common.util.GuiUtil;
+
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -236,7 +238,8 @@ public class DownloadServlet extends HttpServlet {
      *	<p> This method is responsible for setting the response header
      *	    information.</p>
      */
-    protected void writeHeader(DownloadServlet.ContentSource source, DownloadServlet.Context context) {
+    protected void writeHeader(DownloadServlet.ContentSource source, DownloadServlet.Context context)
+			throws IOException {
 	ServletResponse resp = context.getServletResponse();
 	if (!(resp instanceof HttpServletResponse)) {
 	    // This implementation is only valid for HttpServletResponse
@@ -264,7 +267,7 @@ public class DownloadServlet extends HttpServlet {
 		contentType = DEFAULT_CONTENT_TYPE;
 	    }
 	}
-	((HttpServletResponse) resp).setHeader("Content-type", contentType);
+	GuiUtil.setHeaderNameValue((HttpServletResponse) resp, "Content-type", contentType);
 	
 	// Write additional headers
 	Object o = context.getAttribute(HEADERS);
