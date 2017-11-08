@@ -52,6 +52,7 @@
     <artifactId>ctm-example</artifactId>
     <name>CTM example</name>
     <description>A use case for TenantScoped services</description>
+    <packaging>glassfish-jar</packaging>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>

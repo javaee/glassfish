@@ -52,6 +52,7 @@
     
     <name>HK2 configuration module</name>
     <description>${project.name}</description>
+    <packaging>glassfish-jar</packaging>
 
     <properties>
         <javax.validation.version.upperbound>3</javax.validation.version.upperbound>

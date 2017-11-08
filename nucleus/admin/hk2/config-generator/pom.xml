@@ -52,6 +52,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>HK2 configuration reader generator module</name>
+    <packaging>glassfish-jar</packaging>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>

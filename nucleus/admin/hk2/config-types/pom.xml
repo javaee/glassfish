@@ -50,6 +50,7 @@
 
     <artifactId>config-types</artifactId>
     <name>HK2 config types</name>
+    <packaging>glassfish-jar</packaging>
     
     <build>
         <plugins>
