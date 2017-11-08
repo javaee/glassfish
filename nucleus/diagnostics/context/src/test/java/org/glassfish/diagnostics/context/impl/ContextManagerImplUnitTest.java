@@ -45,7 +45,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
 import mockit.Expectations;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.glassfish.contextpropagation.*;
@@ -103,7 +102,7 @@ public class ContextManagerImplUnitTest {
       // we tell the mocking framework to return an instance. 
       ContextMapHelper expectationsRefContextMapHelper;
       {
-        expectationsRefContextMapHelper.getScopeAwareContextMap(); returns(mockedContextMap);
+        expectationsRefContextMapHelper.getScopeAwareContextMap(); returns(mockedContextMap,null,null);
       }
 
       // We expect ContextManagerImpl to then go ahead and use the
@@ -113,8 +112,8 @@ public class ContextManagerImplUnitTest {
       // in a WARNING log message) but does fine for this test.
       ContextMap expectationsRefContextMap = mockedContextMap;
       {
-        expectationsRefContextMap.get(ContextManager.WORK_CONTEXT_KEY); returns(null);
-        expectationsRefContextMap.createViewCapable(ContextManager.WORK_CONTEXT_KEY); returns(null);
+        expectationsRefContextMap.get(ContextManager.WORK_CONTEXT_KEY); returns(null,null,null);
+        expectationsRefContextMap.createViewCapable(ContextManager.WORK_CONTEXT_KEY); returns(null,null,null);
       }
     };
 

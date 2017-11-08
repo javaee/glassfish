@@ -133,7 +133,7 @@
         <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation.version>2.0.0.Final</javax.validation.version>
-        <hibernate-validator.version>6.0.2.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.0.3.Final</hibernate-validator.version>
         <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
         <javax.el-api.version>3.0.1-b04</javax.el-api.version>
@@ -178,6 +178,7 @@
         <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
+	<jmockit.version>1.35</jmockit.version>
     </properties>
 
     <modules>
@@ -975,9 +976,9 @@
                 <version>6.5.2</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.jmockit</groupId>
+                <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
-                <version>0.999.15</version>
+                <version>${jmockit.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>

@@ -63,7 +63,7 @@ import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-
+import java.security.SecureRandom;
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -550,14 +550,14 @@ public abstract class ManagerBase implements Manager {
             try {
                  // Construct and seed a new random number generator
                  Class<?> clazz = Class.forName(randomClass);
-                 this.random = (Random) clazz.newInstance();
+                 this.random = (SecureRandom) clazz.newInstance();
                  this.random.setSeed(seed);
             } catch (Exception e) {
                  // Fall back to the simple case
                 String msg = MessageFormat.format(rb.getString(LogFacade.INIT_RANDOM_NUMBER_GENERATOR_EXCEPTION),
                                                   randomClass);
                  log.log(Level.SEVERE, msg, e);
-                 this.random = new java.util.Random();
+                 this.random = new SecureRandom();
                  this.random.setSeed(seed);
             }
             long t2=System.currentTimeMillis();
