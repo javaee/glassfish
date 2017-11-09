@@ -93,10 +93,10 @@
         />
 
         <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monService}"  helpText="$resource{common.monitoring.monServiceHelp}">
-            <sun:checkbox id="momServiceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['monitoringEnabled']}" selectedValue="true" />
+            <sun:checkbox id="momServiceCheckbox"   selected="#{pageSession.valueMap['monitoringEnabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monMbeans}"  helpText="$resource{common.monitoring.monMbeansHelp}">
-            <sun:checkbox id="momBbeanCheckbox" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['mbeanEnabled']}" selectedValue="true" />
+            <sun:checkbox id="momBbeanCheckbox"  selected="#{pageSession.valueMap['mbeanEnabled']}" selectedValue="true" />
         </sun:property>
         "<br />
     </sun:propertySheetSection>

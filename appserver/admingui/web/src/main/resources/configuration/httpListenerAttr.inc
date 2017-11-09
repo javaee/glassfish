@@ -58,15 +58,15 @@
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="security"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}" helpText="#{pageSession.secHelpText}" >
-            <sun:checkbox disabled="#{readOnly}"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.protocolMap['securityEnabled']}" selectedValue="true" />
+            <sun:checkbox disabled="#{readOnly}"   selected="#{pageSession.protocolMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['jkEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['jkEnabled']}" selectedValue="true" />
         </sun:property>
         
         <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">

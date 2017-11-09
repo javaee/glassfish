@@ -88,7 +88,7 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
       <sun:property id="reloadProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Reload}" helpText="$resource{i18nc.domain.ReloadHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['dynamicReloadEnabled']}" selectedValue="true" >
+            <sun:checkbox  selected="#{pageSession.valueMap['dynamicReloadEnabled']}" selectedValue="true" >
             </sun:checkbox>
         </sun:property>
         <sun:property id="reloadIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.ReloadPollInterval}" helpText="$resource{i18nc.domain.ReloadPollIntervalHelp}">
@@ -104,7 +104,7 @@
     </sun:propertySheetSection>
     <sun:propertySheetSection id="propertSectionAutoDeploy" label="$resource{i18nc.domain.AutoDeploySettings}" >
         <sun:property id="AutoDeployProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeploy}" helpText="$resource{i18nc.domain.AutoDeployHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['autodeployEnabled']}" selectedValue="true" />
         </sun:property>
        <sun:property id="AutoDeployIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AutoDeployPollInterval}" helpText="$resource{i18nc.domain.AutoDeployPollIntervalHelp}">
             <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AutoDeployPollInterval']}" text="#{pageSession.valueMap['autodeployPollingIntervalInSeconds']}" />
@@ -121,10 +121,10 @@
                     <sun:dropDown id="trans" selected="#{pageSession.valueMap['deployXmlValidation']}" labels={"$resource{i18nc.domain.Full}" "$resource{i18nc.domain.Parsing}"  "$resource{i18nc.domain.None}"}  values={"full" "parsing"  "none"} />
                 </sun:property>
         <sun:property id="VerifierProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Verifier}" helpText="$resource{i18nc.domain.VerifierHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployVerifierEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['autodeployVerifierEnabled']}" selectedValue="true" />
         </sun:property>
          <sun:property id="PrecompileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Precompile}" helpText="$resource{i18nc.domain.PrecompileHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autodeployJspPrecompilationEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['autodeployJspPrecompilationEnabled']}" selectedValue="true" />
         </sun:property>
     "<br /><br />
     </sun:propertySheetSection>

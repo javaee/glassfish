@@ -84,7 +84,7 @@
 #include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18n_ejb.availability.ejbAvailabilityServiceHelp}">
-                    <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
+                    <sun:checkbox  selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
                 </sun:property>
                 <sun:property id="HAPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.haPersistenceType}" helpText="$resource{i18n_ejb.availability.haPersistenceTypeHelp}">
                     <sun:dropDown id="HAPersistenceType" selected="#{pageSession.valueMap['sfsbHaPersistenceType']}" labels="#{pageSession.persistenceType}">

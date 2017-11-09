@@ -60,7 +60,7 @@
                                 <sun:textField id="JavacOptions" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.JavacOptions']}" text="#{pageSession.valueMap['javacOptions']}"/>     
                             </sun:property>                        
                           <sun:property id="debugEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugLabel}" helpText="$resource{i18nc.jvm.DebugHelp}">
-                                <sun:checkbox id="debug" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['debugEnabled']}" selectedValue="true" />      
+                                <sun:checkbox id="debug"  selected="#{pageSession.valueMap['debugEnabled']}" selectedValue="true" />      
                             </sun:property>
                             <sun:property id="DebugOptionsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.DebugOptionsLabel}" helpText="$resource{i18nc.jvm.DebugOptionsHelp}">
                                 <sun:textField id="DebugOptions" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.DebugOptions']}" text="#{pageSession.valueMap['debugOptions']}" />      

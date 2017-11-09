@@ -181,7 +181,7 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.installProp}");
                 />
-                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['install']}" selectedValue="true"  label="Enabled" >
+                <sun:checkbox id="installOption" selected="#{pageSession.valueMap['install']}" selectedValue="true" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.installOptionId}");
                     />
@@ -195,7 +195,7 @@
                 getClientId(component="$this{component}" clientId="#{pageSession.sshConnectorSectionId}");
             />
             <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
-                <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
+                <sun:checkbox id="force"  selected="#{pageSession.valueMap['force']}" selectedValue="true" />
             </sun:property>
             <sun:property id="sshport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.sshPort}" helpText="$resource{i18ncs.node.sshPortHelp}">
                 <sun:textField id="sshport" text="#{pageSession.valueMap['sshport']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.sshPort']}"  />
@@ -244,7 +244,7 @@
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.setupSshPropId}");
                     />
-                <sun:checkbox id="setupSsh"  selected="#{pageSession.valueMap['setupSsh']}" label="$resource{i18n.common.Enabled}" selectedValue="true"
+                <sun:checkbox id="setupSsh"  selected="#{pageSession.valueMap['setupSsh']}"  selectedValue="true"
                       onChange="showSetupSSH();">
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.setupSshId}");
@@ -257,7 +257,7 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.generateId}");
                 />
-                <sun:checkbox id="generate"  selected="#{pageSession.valueMap['generatekey']}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
+                <sun:checkbox id="generate"  selected="#{pageSession.valueMap['generatekey']}"  selectedValue="true" />
             </sun:property>
 
             <sun:property id="setupPswd"   visible="#{pageSession.showSetupPswd}"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.setupsshPswd}" helpText="$resource{i18ncs.node.setupsshPswdHelp}">
@@ -298,11 +298,11 @@
                 getClientId(component="$this{component}" clientId="#{pageSession.dcomSectionId}");
             />
             <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
-                <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['winForce']}" selectedValue="true" />
+                <sun:checkbox id="force"  selected="#{pageSession.valueMap['winForce']}" selectedValue="true" />
             </sun:property>
 
             <sun:property id="validate"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.validateDcom}" helpText="$resource{i18ncs.node.validateDcomHelp}">
-                <sun:checkbox id="validate"  selected="#{pageSession.valueMap['validateDcom']}" label="$resource{i18n.common.Enabled}" selectedValue="true"
+                <sun:checkbox id="validate"  selected="#{pageSession.valueMap['validateDcom']}"  selectedValue="true"
                       onChange="showTestDir('#{pageSession.validateId}', '#{pageSession.testdirId}');">
                     <!afterCreate
                         getClientId(component="$this{component}" clientId="#{pageSession.validateId}");

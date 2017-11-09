@@ -73,10 +73,10 @@
             </sun:textField>
         </sun:property>
          <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.wrapJdbcObjects}" helpText="$resource{i18njdbc.jdbcPool.wrapJdbcObjectsHelp}">
-            <sun:checkbox  selected="#{pageSession.valueMap['wrapJdbcObjects']}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['wrapJdbcObjects']}"  selectedValue="true" />
        </sun:property>
        <sun:property id="poolingProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.pooling}" helpText="$resource{i18njdbc.jdbcPool.poolingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['pooling']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['pooling']}" selectedValue="true" />
        </sun:property>
 </sun:propertySheetSection>
 <sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njdbc.jdbcPool.connectionSettings}">
@@ -114,7 +114,7 @@
    </sun:property>
 
     <sun:property id="p7"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.lazyConnectionAssociation}" helpText="$resource{i18njdbc.jdbcPool.lazyConnectionAssociationHelp}">
-        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['lazyConnectionAssociation']}" label="$resource{i18n.common.Enabled}" onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
+        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['lazyConnectionAssociation']}"  onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{associateId});
             />
@@ -122,7 +122,7 @@
    </sun:property>
 
     <sun:property id="p6"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.lazyConnectionEnlistment}" helpText="$resource{i18njdbc.jdbcPool.lazyConnectionEnlistmentHelp}">
-        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['lazyConnectionEnlistment']}" label="$resource{i18n.common.Enabled}"  selectedValue="true">  
+        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['lazyConnectionEnlistment']}"   selectedValue="true">  
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{enlistId});
             />
@@ -130,10 +130,10 @@
     </sun:property>
 
     <sun:property id="p8"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.associationWithThread}" helpText="$resource{i18njdbc.jdbcPool.associationWithThreadHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['associateWithThread']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['associateWithThread']}"  selectedValue="true"/>  
    </sun:property>
    <sun:property id="p9"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.matchConnections}" helpText="$resource{i18njdbc.jdbcPool.matchConnectionsHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['matchConnections']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['matchConnections']}"  selectedValue="true"/>  
    </sun:property>
 
     <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.maxConnectionUsageCount}" helpText="$resource{i18njdbc.jdbcPool.maxConnectionUsageCountHelp}">
@@ -219,7 +219,7 @@
        </sun:property>
 
         <sun:property id="allowProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.allowCaller}" helpText="$resource{i18njdbc.jdbcPool.allowCallerHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap.allowNonComponentCallers}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap.allowNonComponentCallers}" selectedValue="true" />
        </sun:property>
 
       "<br /><br />
