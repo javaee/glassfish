@@ -1081,9 +1081,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
            /* //set adminpassfile
             if (!getJmsService().getType().equals(REMOTE)) {
-                //For LOCAL and EMBEDDED, we pass in the admin pass file path
-                //containing the MQ admin password to enable authenticated
-                //startup of the broker.
                 String adminPassFilePath = getAdminPassFilePath(adminPassword);
                 if (adminPassFilePath != null) {
                     ConnectorConfigProperty  envProp13 = new ConnectorConfigProperty  (
