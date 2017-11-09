@@ -61,7 +61,6 @@ import org.glassfish.web.sniffer.WarDetector;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PreDestroy;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;

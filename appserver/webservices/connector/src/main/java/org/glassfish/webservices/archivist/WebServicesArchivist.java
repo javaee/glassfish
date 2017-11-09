@@ -62,7 +62,6 @@ import java.util.ArrayList;
 import org.glassfish.hk2.api.PerLookup;
 
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Extension Archivist for webservices.

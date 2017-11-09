@@ -82,7 +82,6 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.Application;

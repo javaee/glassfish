@@ -47,7 +47,6 @@ import org.glassfish.api.deployment.archive.ArchiveType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.Archive;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.IOException;

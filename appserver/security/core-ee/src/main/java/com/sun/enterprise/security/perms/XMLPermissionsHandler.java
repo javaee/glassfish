@@ -54,8 +54,6 @@ import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
 
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.deployment.io.PermissionsDeploymentDescriptorFile;

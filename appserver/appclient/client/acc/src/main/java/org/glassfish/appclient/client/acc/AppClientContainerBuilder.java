@@ -64,7 +64,6 @@ import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Implements a builder for accumulating configuration information for the

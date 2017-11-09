@@ -51,7 +51,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.io.InputStream;

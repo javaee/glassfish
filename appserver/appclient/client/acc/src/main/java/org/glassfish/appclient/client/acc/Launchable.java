@@ -57,7 +57,6 @@ import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Something launchable by the ACC - an app client archive or a class.
@@ -186,7 +185,7 @@ interface Launchable {
                 final String moduleID,
                 final URI groupFacadeURI,
                 final ApplicationClientDescriptor clientFacadeDescriptor,
-                final String appClientName) throws IOException, SAXParseException {
+                final String appClientName) throws IOException {
 
             /*
              * The ReadableArchive argument should be the facade archive and

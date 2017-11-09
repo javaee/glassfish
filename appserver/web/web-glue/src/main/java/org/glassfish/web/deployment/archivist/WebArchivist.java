@@ -67,7 +67,6 @@ import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
 import java.io.InputStream;

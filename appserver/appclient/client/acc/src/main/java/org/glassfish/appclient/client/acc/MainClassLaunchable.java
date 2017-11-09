@@ -60,7 +60,6 @@ import java.util.zip.ZipEntry;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Represents a Launchable main class which the caller specifies by the

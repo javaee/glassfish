@@ -60,7 +60,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * PersistenceArchivist for app clients that knows how to scan for PUs in
