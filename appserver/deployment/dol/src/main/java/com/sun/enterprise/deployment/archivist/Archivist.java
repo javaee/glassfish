@@ -69,7 +69,7 @@ import org.glassfish.hk2.classmodel.reflect.*;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Optional;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.util.*;
@@ -237,12 +237,12 @@ public abstract class Archivist<T extends BundleDescriptor> {
      * @return the deployment descriptor for this archive
      */
     public T open(ReadableArchive archive)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         return open(archive, (Application) null);
     }
 
     public T open(final ReadableArchive descriptorArchive,
-            final ReadableArchive contentArchive) throws IOException, SAXParseException {
+            final ReadableArchive contentArchive) throws IOException, SAXException {
         return open(descriptorArchive, contentArchive, null);
     }
     /**
@@ -260,12 +260,12 @@ public abstract class Archivist<T extends BundleDescriptor> {
      * @return DOL object graph for the application
      * 
      * @throws IOException
-     * @throws SAXParseException
+     * @throws SAXException
      */
     public T open(final ReadableArchive descriptorArchive,
             final ReadableArchive contentArchive,
             final Application app)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         setManifest(contentArchive.getManifest());
 
         T descriptor = readDeploymentDescriptors(descriptorArchive, contentArchive, app);
@@ -276,14 +276,14 @@ public abstract class Archivist<T extends BundleDescriptor> {
     }
 
     public T open(ReadableArchive archive,
-            Application app) throws IOException, SAXParseException {
+            Application app) throws IOException, SAXException {
         return open(archive, archive, app);
     }
 
     // fill in the rest of the application with an application object
     // populated from previus reading of the standard deployment descriptor
     public Application openWith(Application app, ReadableArchive archive)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         setManifest(archive.getManifest());
 
@@ -307,7 +307,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      * @return the deployment descriptor for this archive
      */
     public T open(String path)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         this.path = path;
         File file = new File(path);
@@ -322,7 +322,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      *
      * @param file the archive to open
      */
-    public T open(File file) throws IOException, SAXParseException {
+    public T open(File file) throws IOException, SAXException {
 
         path = file.getAbsolutePath();
         ReadableArchive archive = archiveFactory.openArchive(file);
@@ -385,7 +385,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      */
     private T readDeploymentDescriptors(ReadableArchive descriptorArchive,
             ReadableArchive contentArchive,
-            Application app) throws IOException, SAXParseException {
+            Application app) throws IOException, SAXException {
 
         // read the standard deployment descriptors
         T descriptor = readStandardDeploymentDescriptor(descriptorArchive);
@@ -398,7 +398,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
 
     private T readRestDeploymentDescriptors (T descriptor, 
         ReadableArchive descriptorArchive, ReadableArchive contentArchive, 
-        Application app) throws IOException, SAXParseException {
+        Application app) throws IOException, SAXException {
         Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
         if (extensionsArchivists!=null) {
             for (ExtensionsArchivist extension : extensionsArchivists) {
@@ -657,7 +657,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      * @link getDeploymentDescriptorPath
      */
     public T readStandardDeploymentDescriptor(ReadableArchive archive)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         InputStream is = null;
 
@@ -705,7 +705,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      * @link getRuntimeDeploymentDescriptorPath
      */
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         readRuntimeDeploymentDescriptor(archive, descriptor, true);
     }
 
@@ -722,7 +722,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
      */
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor,
             final boolean warnIfMultipleDDs)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         String ddFileEntryName = getRuntimeDeploymentDescriptorPath(archive);
         // if we are not supposed to handle runtime info, just pass

@@ -62,7 +62,7 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import javax.enterprise.deploy.shared.ModuleType;
 
@@ -89,7 +89,7 @@ public class UndeployedLaunchable implements Launchable {
             final ReadableArchive ra,
             final String callerSuppliedMainClassName,
             final String callerSuppliedAppName,
-            final ClassLoader classLoader) throws IOException, SAXParseException, UserError {
+            final ClassLoader classLoader) throws IOException, SAXException, UserError {
 
         ArchivistFactory af = Util.getArchivistFactory();
 
@@ -194,14 +194,14 @@ public class UndeployedLaunchable implements Launchable {
 
     private UndeployedLaunchable(final ServiceLocator habitat,
             final ReadableArchive clientRA,
-            final String callerSuppliedMainClass) throws IOException, SAXParseException {
+            final String callerSuppliedMainClass) throws IOException {
         this.callerSuppliedMainClassName = callerSuppliedMainClass;
         this.clientRA = clientRA;
     }
     private UndeployedLaunchable(final ServiceLocator habitat,
             final ReadableArchive clientRA,
             final ApplicationClientDescriptor acd,
-            final String callerSuppliedMainClass) throws IOException, SAXParseException {
+            final String callerSuppliedMainClass) throws IOException {
         this(habitat, clientRA, callerSuppliedMainClass);
         this.acDesc = acd;
     }
@@ -209,7 +209,7 @@ public class UndeployedLaunchable implements Launchable {
     private UndeployedLaunchable(final ServiceLocator habitat,
             final ReadableArchive clientRA,
             final AppClientArchivist archivist,
-            final String callerSuppliedMainClass) throws IOException, SAXParseException {
+            final String callerSuppliedMainClass) throws IOException {
         this(habitat, clientRA, callerSuppliedMainClass);
         this.archivist = completeInit(archivist);
     }
@@ -230,7 +230,7 @@ public class UndeployedLaunchable implements Launchable {
         return classLoader;
     }
 
-    private String mainClassNameToLaunch() throws IOException, SAXParseException {
+    private String mainClassNameToLaunch() throws IOException {
         return (callerSuppliedMainClassName != null ? callerSuppliedMainClassName :
             extractMainClassFromArchive(clientRA));
     }
@@ -243,7 +243,7 @@ public class UndeployedLaunchable implements Launchable {
         return mf.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
     }
 
-    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXException {
         this.classLoader = loader;
         if (acDesc == null) {
             final AppClientArchivist _archivist = getArchivist(

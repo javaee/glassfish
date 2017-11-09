@@ -229,7 +229,13 @@ public class SaxParserHandler extends DefaultHandler {
             if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
                 DOLUtils.getDefaultLogger().fine("Asked to resolve  " + publicID + " system id = " + systemID);
             }
-            if (publicID==null) {
+            // If public ID is there and is present in our map, use it
+            if (publicID != null && getMapping().containsKey(publicID)) {
+                this.publicID = publicID;
+                return new InputSource(new BufferedInputStream(getDTDUrlFor(getMapping().get(publicID))));
+            }
+            // In case invalid public ID is given (or) public ID is null, use system ID to resolve
+            else {
                     // unspecified schema
                     if (systemID==null || systemID.lastIndexOf('/')==systemID.length()) {
                         return null;
@@ -242,25 +248,24 @@ public class SaxParserHandler extends DefaultHandler {
                     } else {
                       fileName = getSchemaURLFor(systemID.substring(systemID.lastIndexOf('/')+1));                    
                     }
-                    // if this is not a request for a schema located in our repository, 
-                    // let's hope that the hint provided by schemaLocation is correct
+                    // if this is not a request for a schema located in our repository, we fail the deployment
                     if (fileName==null) {
-                        fileName = systemID;
+                        throw new SAXException(localStrings.getLocalString(
+                                "invalid.schema",
+                                "Requested schema is not found in local repository, please ensure that there are no typos in the XML namespace declaration."));
                     }
                     if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
                       DOLUtils.getDefaultLogger().fine("Resolved to " + fileName);;
                     }
                     return new InputSource(fileName);
             }
-            if ( getMapping().containsKey(publicID)) {                    
-                this.publicID = publicID;
-                return new InputSource(new BufferedInputStream(getDTDUrlFor(getMapping().get(publicID))));
-            } 
+        } catch (SAXException e) {
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, e.getMessage(), e);
+            throw e;
         } catch(Exception ioe) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, ioe.getMessage(), ioe);
-	    throw new SAXException(ioe);
+            throw new SAXException(ioe);
         }
-        return null;
     }
     
     /**

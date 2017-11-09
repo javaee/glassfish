@@ -241,7 +241,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @return the DOL descriptor for the J2EE Module
      */
     public T read(InputStream is)
-        throws IOException, SAXParseException {    
+        throws IOException, SAXException {
         return read(null, is);
     }
        
@@ -254,7 +254,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @return the DOL descriptor for the J2EE Module
      */
     public T read(T descriptor, File in)
-        throws IOException, SAXParseException {
+        throws IOException, SAXException {
         
         FileInputStream fis = new FileInputStream(in);
         try {
@@ -273,7 +273,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @return the DOL descriptor for the J2EE Module
      */    
     public T read(T descriptor, ReadableArchive in)
-        throws IOException, SAXParseException {
+        throws IOException, SAXException {
             
             InputStream is = in.getEntry(getDeploymentDescriptorPath());
             try {
@@ -292,8 +292,8 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
      * @return the DOL descriptor for the J2EE Module
      */
     @SuppressWarnings("unchecked")
-    public T read(T descriptor, InputStream is) 
-        throws IOException, SAXParseException {        
+    public T read(T descriptor, InputStream is)
+            throws IOException, SAXException {
         
         errorReportingString = FileUtils.revertFriendlyFilenameExtension(errorReportingString);
         String error = (errorReportingString == null)? errorReportingString:new File(errorReportingString).getName();
@@ -333,7 +333,7 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                                 new Object[]{e.getMessage()});            
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "Error occurred", e);
-            return null;
+            throw e;
         } catch (IOException e) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.saxParserError",
                                 e.getMessage() == null ? "" : new Object[]{e.getMessage()});            

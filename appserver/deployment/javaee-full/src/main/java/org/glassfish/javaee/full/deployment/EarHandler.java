@@ -60,7 +60,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.web.sniffer.WarDetector;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PreDestroy;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;
@@ -580,7 +580,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 _logger.fine("time to read application.xml " + (System.currentTimeMillis() - start));
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } catch (SAXParseException e) {
+            } catch (SAXException e) {
                 throw new RuntimeException(e);
             }
             context.addModuleMetaData(holder);

@@ -67,7 +67,7 @@ import org.glassfish.deployment.common.RootDeploymentDescriptor;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -191,7 +191,7 @@ public class ApplicationArchivist extends Archivist<Application> {
      */
     @Override
     public Application open(ReadableArchive appArchive)
-        throws IOException, SAXParseException { 
+        throws IOException, SAXException {
         
         setManifest(appArchive.getManifest());
         
@@ -201,7 +201,7 @@ public class ApplicationArchivist extends Archivist<Application> {
     }
 
     public Application openWith(Application application, ReadableArchive archive)
-        throws IOException, SAXParseException {         
+        throws IOException, SAXException {
         setManifest(archive.getManifest());
 
         setDescriptor(application);
@@ -258,7 +258,7 @@ public class ApplicationArchivist extends Archivist<Application> {
      * @param directory whether the application is packaged as a directory
      */
     public Application createApplication(ReadableArchive archive,
-        boolean directory) throws IOException, SAXParseException {
+        boolean directory) throws IOException, SAXException {
         if (hasStandardDeploymentDescriptor(archive) ) {
             return readStandardDeploymentDescriptor(archive);
         } else {
@@ -536,7 +536,7 @@ public class ApplicationArchivist extends Archivist<Application> {
      * @return true if everything went fine
      */
     public boolean readModulesDescriptors(Application app, ReadableArchive appArchive)
-        throws IOException, SAXParseException { 
+        throws IOException, SAXException {
         
         List<ModuleDescriptor> nonexistentModules = 
             new ArrayList<ModuleDescriptor>();
@@ -669,7 +669,7 @@ public class ApplicationArchivist extends Archivist<Application> {
      */
     @Override
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, Application descriptor)
-        throws IOException, SAXParseException {    
+        throws IOException, SAXException {
         
         if (descriptor != null) {
 
@@ -771,7 +771,7 @@ public class ApplicationArchivist extends Archivist<Application> {
         try {
             Application a = readStandardDeploymentDescriptor(source);
             copyInto(a, source, target);
-        } catch(SAXParseException spe) {
+        } catch(SAXException spe) {
             DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.fileCopyFailure", spe);
         }
     }
