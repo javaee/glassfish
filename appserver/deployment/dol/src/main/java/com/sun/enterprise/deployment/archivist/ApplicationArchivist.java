@@ -142,14 +142,15 @@ public class ApplicationArchivist extends Archivist<Application> {
               
             // we need to copy the old archive to a temp file so
             // the save method can copy its original contents from
-            InputStream is = in.getEntry(aModule.getArchiveUri());
+
             File tmpFile=null;
-            try {
+            BufferedOutputStream bos = null;
+            try (InputStream is = in.getEntry(aModule.getArchiveUri())){
                 if (in instanceof WritableArchive) {
                     subArchivist.setArchiveUri(internalJar.getURI().getSchemeSpecificPart());
                 } else {
                     tmpFile = getTempFile(path);
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
+                    bos = new BufferedOutputStream(new FileOutputStream(tmpFile));
                     ArchivistUtils.copy(is, bos);
 
                     // configure archivist
@@ -162,6 +163,13 @@ public class ApplicationArchivist extends Archivist<Application> {
                     boolean ok = tmpFile.delete();
                     if (! ok) {
                       logger.log(Level.WARNING, localStrings.getLocalString("enterprise.deployment.cantDelete", "Error deleting file {0}", new Object[]{tmpFile.getAbsolutePath()}));
+                    }
+                }
+                if ( bos != null) {
+                    try {
+                        bos.close();
+                    } catch (IOException ioe) {
+                        //ignore
                     }
                 }
             }
