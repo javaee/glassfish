@@ -91,7 +91,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.util.DOMWriter;
-import org.apache.catalina.util.MD5Encoder;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.XMLWriter;
 import org.apache.naming.resources.CacheEntry;
@@ -249,22 +248,16 @@ public class WebdavServlet
      /**
      * MD5 message digest provider.
      */
-    protected static final MessageDigest md5Helper;
+    protected static final MessageDigest sha256Helper;
 
     static {
         // Load the MD5 helper used to calculate signatures.
         try {
-            md5Helper = MessageDigest.getInstance("MD5");
+            sha256Helper = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No MD5");
+            throw new IllegalStateException("No SHA-256");
         }
     }
-
-
-    /**
-     * The MD5 helper object for this class.
-     */
-    protected static final MD5Encoder md5Encoder = new MD5Encoder();
 
 
     // ----------------------------------------------------- Instance Variables
@@ -1152,11 +1145,11 @@ public class WebdavServlet
                 + secret;
             
             byte[] digestBytes = null;
-            synchronized(md5Helper) {
-                digestBytes = md5Helper.digest(lockTokenStr.getBytes(
+            synchronized(sha256Helper) {
+                digestBytes = sha256Helper.digest(lockTokenStr.getBytes(
                             Charset.defaultCharset()));
             }
-            String lockToken = new String(md5Encoder.encode(digestBytes));
+            String lockToken = new String(digestBytes);
 
             if ( exists && object instanceof DirContext &&
                 lock.depth == INFINITY) {

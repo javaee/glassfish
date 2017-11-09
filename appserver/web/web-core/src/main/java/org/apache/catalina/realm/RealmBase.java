@@ -58,7 +58,6 @@
 
 package org.apache.catalina.realm;
 
-import com.sun.org.apache.xml.internal.security.algorithms.implementations.SignatureDSA;
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Response;
@@ -1448,9 +1447,9 @@ public abstract class RealmBase
      * Return the digest associated with given principal's user name.
      */
     protected char[] getDigest(String username, String realmName) {
-        if (md5Helper == null) {
+        if (sha256Helper == null) {
             try {
-                md5Helper = MessageDigest.getInstance("SHA-256");
+                sha256Helper = MessageDigest.getInstance("SHA-256");
             } catch (NoSuchAlgorithmException e) {
                 log.log(Level.SEVERE, LogFacade.CANNOT_GET_MD5_DIGEST_EXCEPTION, e);
                 throw new IllegalStateException(e.getMessage());
