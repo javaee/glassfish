@@ -308,12 +308,9 @@ public class DownloadServlet extends HttpServlet {
 	    }
 	    return;
 	}
-        InputStream stream = null;
-	try {
-	    javax.servlet.ServletOutputStream out = resp.getOutputStream();
 
-	    // Get the InputStream
-	    stream = new BufferedInputStream(in);
+	try ( InputStream stream = new BufferedInputStream(in)){
+	    javax.servlet.ServletOutputStream out = resp.getOutputStream();
 
 	    // Write the header
 	    writeHeader(source, context);
@@ -331,18 +328,7 @@ public class DownloadServlet extends HttpServlet {
     
 	} catch (IOException ex) {
 	    throw new RuntimeException(ex);
-	} finally {
-            if (stream != null) {
-                try {
-                    // Close the Stream
-                    stream.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
-        }
-
-    }
+	}
 
 
     //////////////////////////////////////////////////////////////////////////
