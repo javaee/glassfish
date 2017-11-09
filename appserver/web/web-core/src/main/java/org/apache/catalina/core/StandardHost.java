@@ -62,7 +62,7 @@ package org.apache.catalina.core;
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;

@@ -58,6 +58,7 @@
 
 package org.apache.catalina.core;
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.connector.Request;
@@ -81,7 +82,6 @@ import javax.servlet.http.HttpServletMapping;
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
 import org.apache.catalina.connector.MappingImpl;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.CharChunk;

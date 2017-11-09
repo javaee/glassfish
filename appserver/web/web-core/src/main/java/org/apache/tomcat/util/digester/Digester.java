@@ -61,8 +61,8 @@
 package org.apache.tomcat.util.digester;
 
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.LogFacade;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.web.util.IntrospectionUtils;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;

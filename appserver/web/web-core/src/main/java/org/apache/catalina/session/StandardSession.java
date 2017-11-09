@@ -60,11 +60,11 @@
 package org.apache.catalina.session;
 
 import com.sun.enterprise.spi.io.BaseIndirectlySerializable;
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.tomcat.util.security.PrivilegedSetTccl;
 
 import javax.servlet.ServletContext;

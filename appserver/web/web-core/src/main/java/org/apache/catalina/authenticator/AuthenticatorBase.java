@@ -58,11 +58,11 @@
 
 package org.apache.catalina.authenticator;
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
 import java.security.SecureRandom;

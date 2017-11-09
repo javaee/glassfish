@@ -61,8 +61,7 @@ package org.apache.catalina.core;
 
 import org.apache.catalina.*;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.LogCleanerUtil;
-
+import com.sun.logging.LogCleanerUtil;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import java.beans.PropertyChangeListener;

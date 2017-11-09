@@ -60,8 +60,7 @@ package org.apache.catalina.session;
 
 import org.apache.catalina.*;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.LogCleanerUtil;
-
+import com.sun.logging.LogCleanerUtil;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;

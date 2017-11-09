@@ -59,10 +59,10 @@
 package org.apache.catalina.core;
 
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.deploy.*;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.naming.*;
 
 import javax.naming.NamingException;

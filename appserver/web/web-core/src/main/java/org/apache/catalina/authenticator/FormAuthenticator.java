@@ -77,7 +77,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
 
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;

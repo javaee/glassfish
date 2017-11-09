@@ -59,7 +59,7 @@
 package org.apache.catalina.loader;
 
 import org.apache.catalina.LogFacade;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 import org.apache.naming.JndiPermission;
 import org.glassfish.web.loader.Reloader;
 

@@ -62,7 +62,7 @@ package org.apache.catalina.realm;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LogFacade;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.*;

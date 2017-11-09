@@ -60,8 +60,7 @@ package org.apache.catalina.ssi;
 
 
 import org.apache.catalina.Globals;
-import org.apache.catalina.util.LogCleanerUtil;
-
+import com.sun.logging.LogCleanerUtil;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

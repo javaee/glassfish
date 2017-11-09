@@ -61,9 +61,8 @@ package org.apache.catalina.authenticator;
 
 import org.apache.catalina.*;
 import org.apache.catalina.Logger;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.catalina.valves.ValveBase;
-
+import com.sun.logging.LogCleanerUtil;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

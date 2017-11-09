@@ -60,7 +60,7 @@ package org.apache.catalina.valves;
 
 
 import org.apache.catalina.*;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

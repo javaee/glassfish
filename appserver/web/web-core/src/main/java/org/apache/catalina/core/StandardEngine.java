@@ -60,7 +60,7 @@ package org.apache.catalina.core;
 
 import org.apache.catalina.*;
 import org.apache.catalina.realm.JAASRealm;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;

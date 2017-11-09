@@ -105,6 +105,8 @@ import javax.servlet.http.WebConnection;
 
 import com.sun.appserv.ProxyHandler;
 import javax.servlet.http.MappingMatch;
+
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.Context;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.Globals;

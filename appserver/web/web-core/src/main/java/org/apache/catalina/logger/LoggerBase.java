@@ -68,8 +68,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.LogCleanerUtil;
-
+import com.sun.logging.LogCleanerUtil;
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import java.beans.PropertyChangeListener;

@@ -58,6 +58,7 @@
 
 package org.apache.catalina.realm;
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Response;

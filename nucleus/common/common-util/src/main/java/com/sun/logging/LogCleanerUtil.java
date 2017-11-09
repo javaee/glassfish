@@ -39,10 +39,8 @@
  */
 
 
-package org.apache.catalina.util;
+package com.sun.logging;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -62,7 +62,7 @@ package org.apache.catalina.loader;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.LogCleanerUtil;
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;

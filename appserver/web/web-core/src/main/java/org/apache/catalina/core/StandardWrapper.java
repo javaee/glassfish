@@ -82,6 +82,7 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerServlet;
 import org.apache.catalina.Context;
@@ -99,7 +100,6 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.glassfish.web.valve.GlassFishValve;
 // END GlassFish 1343
 

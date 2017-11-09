@@ -58,6 +58,7 @@
 
 package org.apache.catalina.core;
 
+import com.sun.logging.LogCleanerUtil;
 import org.glassfish.grizzly.http.server.util.AlternateDocBase;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;

@@ -75,6 +75,7 @@ import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletException;
 
+import com.sun.logging.LogCleanerUtil;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.ContainerListener;
@@ -93,7 +94,6 @@ import org.apache.catalina.Response;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.LogCleanerUtil;
 import org.apache.naming.resources.ProxyDirContext;
 import org.glassfish.web.valve.GlassFishValve;
 
