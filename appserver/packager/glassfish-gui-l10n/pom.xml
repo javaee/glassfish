@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-gui-l10n</artifactId>
     <name>Glassfish Admin GUI Localization Package</name>
@@ -120,11 +120,6 @@
     </profiles>
     
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.main.admingui</groupId>
-            <artifactId>console-updatecenter-plugin-l10n</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.main.admingui</groupId>
             <artifactId>console-community-branding-plugin-l10n</artifactId>

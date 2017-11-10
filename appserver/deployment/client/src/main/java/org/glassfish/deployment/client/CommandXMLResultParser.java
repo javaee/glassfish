@@ -42,6 +42,7 @@ package org.glassfish.deployment.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -57,6 +58,8 @@ public class CommandXMLResultParser {
 
     static DFDeploymentStatus parse(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory pf = SAXParserFactory.newInstance();
+        pf.setValidating(true);
+        pf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         SAXParser parser = pf.newSAXParser();
         
         

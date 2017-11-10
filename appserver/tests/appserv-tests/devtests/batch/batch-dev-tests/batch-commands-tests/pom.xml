@@ -49,7 +49,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
     	<artifactId>batch-dev-tests</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>batch-commands-tests</artifactId>
     <packaging>jar</packaging>

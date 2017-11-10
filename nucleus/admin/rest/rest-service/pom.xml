@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.main.admin</groupId>
         <artifactId>rest-service-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>rest-service</artifactId>
@@ -134,11 +134,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.kohsuke.metainf-services</groupId>
-            <artifactId>metainf-services</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.main.security</groupId>
             <artifactId>security</artifactId>
