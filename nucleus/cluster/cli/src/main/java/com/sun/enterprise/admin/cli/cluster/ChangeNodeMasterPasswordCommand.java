@@ -109,7 +109,7 @@ public  class ChangeNodeMasterPasswordCommand extends LocalInstanceCommand {
 
             oldPassword = passwords.get("AS_ADMIN_MASTERPASSWORD");
             if (oldPassword == null) {
-                oldPassword = super.readPassword(strings.get("old.mp"));
+                oldPassword = new String(super.readPassword(strings.get("old.mp")));
             }
             if (oldPassword == null)
                 throw new CommandException(strings.get("no.console"));
@@ -129,7 +129,7 @@ public  class ChangeNodeMasterPasswordCommand extends LocalInstanceCommand {
             nmpo.prompt = strings.get("new.mp");
             nmpo.promptAgain = strings.get("new.mp.again");
             nmpo.param._password = true;
-            newPassword = super.getPassword(nmpo, null, true);
+            newPassword = new String(super.getPassword(nmpo, null, true));
 
             // for each instance encrypt the keystore
             for(String instanceDir2: getInstanceDirs(nodeDirChild)) {

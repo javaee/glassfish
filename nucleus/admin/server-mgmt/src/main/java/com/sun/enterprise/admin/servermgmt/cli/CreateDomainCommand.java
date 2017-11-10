@@ -183,7 +183,7 @@ public final class CreateDomainCommand extends CLICommand {
                 if (ok(val)) {
                     programOpts.setUser(val);
                     if (adminPassword == null) {
-                        adminPassword = getAdminPassword();
+                        adminPassword = new String(getAdminPassword());
                     }
                 }
             }
@@ -299,7 +299,7 @@ public final class CreateDomainCommand extends CLICommand {
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
         }
         else {
-            adminPassword = getAdminPassword();
+            adminPassword = new String(getAdminPassword());
             boolean haveAdminPwd = true;
         }
 
@@ -309,7 +309,7 @@ public final class CreateDomainCommand extends CLICommand {
 
         if (masterPassword == null) {
             if (useMasterPassword) {
-                masterPassword = getMasterPassword();
+                masterPassword = new String(getMasterPassword());
             } else {
                 masterPassword = DEFAULT_MASTER_PASSWORD;
             }
@@ -344,7 +344,7 @@ public final class CreateDomainCommand extends CLICommand {
     /**
      * Get the admin password as a required option.
      */
-    private String getAdminPassword() throws CommandValidationException {
+    private char[] getAdminPassword() throws CommandValidationException {
         // create a required ParamModel for the password
         ParamModelData po = new ParamModelData(ADMIN_PASSWORD, String.class, false, null);
         po.prompt = strings.get("AdminPassword");
@@ -356,7 +356,7 @@ public final class CreateDomainCommand extends CLICommand {
     /**
      * Get the master password as a required option (by default it is not required)
      */
-    private String getMasterPassword() throws CommandValidationException {
+    private char[] getMasterPassword() throws CommandValidationException {
         // create a required ParamModel for the password
         ParamModelData po = new ParamModelData(MASTER_PASSWORD, String.class, 
                 false /* optional */, null);
@@ -512,7 +512,7 @@ public final class CreateDomainCommand extends CLICommand {
         }
         //checkAsadminPrefsFile();
         if (saveLoginOpt) {
-            saveLogin(aPort, adminUser, adminPassword, domainName);
+            saveLogin(aPort, adminUser, adminPassword.toCharArray(), domainName);
         }
     }
 
@@ -521,7 +521,7 @@ public final class CreateDomainCommand extends CLICommand {
      * ".asadminpass" in user's home directory.
      */
     private void saveLogin(final int port, final String user,
-            final String password, final String dn) {
+            final char[] password, final String dn) {
         try {
             // by definition, the host name will default to "localhost"
             // and entry is overwritten

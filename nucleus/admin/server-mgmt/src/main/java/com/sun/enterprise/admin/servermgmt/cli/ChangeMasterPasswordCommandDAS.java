@@ -105,15 +105,15 @@ public class ChangeMasterPasswordCommandDAS extends LocalDomainCommand {
             if (mp == null) {
                 mp = passwords.get("AS_ADMIN_MASTERPASSWORD");
                 if (mp == null) {
-                    mp = super.readPassword(strings.get("current.mp"));
+                    mp = new String(super.readPassword(strings.get("current.mp")));
                 }
             }
             if (mp == null)     throw new CommandException(strings.get("no.console"));
             if (!super.verifyMasterPassword(mp))
                 throw new CommandException(strings.get("incorrect.mp"));
             
-            String nmp = getPassword("newmasterpassword", strings.get("new.mp"), 
-                    strings.get("new.mp.again"), true);
+            String nmp = new String(getPassword("newmasterpassword", strings.get("new.mp"),
+                    strings.get("new.mp.again"), true));
             if (nmp == null)
                 throw new CommandException(strings.get("no.console"));
             if(nmp.trim().length() < 6)

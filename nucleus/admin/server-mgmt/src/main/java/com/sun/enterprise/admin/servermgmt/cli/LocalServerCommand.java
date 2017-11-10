@@ -150,7 +150,7 @@ public abstract class LocalServerCommand extends CLICommand {
         String pw = serverDirs == null ? null : serverDirs.getLocalPassword();
 
         if (ok(pw)) {
-            programOpts.setPassword(pw,
+            programOpts.setPassword(pw.toCharArray(),
                     ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
             logger.finer("Using local password");
         }
@@ -545,7 +545,7 @@ public abstract class LocalServerCommand extends CLICommand {
         for (int i = 0; i < times; i++) {
             // XXX - I18N
             String prompt = strings.get("mp.prompt", (times - i));
-            mpv = super.readPassword(prompt);
+            mpv = new String(super.readPassword(prompt));
             if (mpv == null)
                 throw new CommandException(strings.get("no.console"));
             // ignore retries :)

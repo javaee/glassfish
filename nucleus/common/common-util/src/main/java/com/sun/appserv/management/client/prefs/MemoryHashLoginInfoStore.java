@@ -257,7 +257,7 @@ public class MemoryHashLoginInfoStore implements LoginInfoStore {
             final int port        = uri.getPort();
             final String user     = uri.getUserInfo();
             final String password = new String(decoder.decodeBuffer(encp));
-            return ( new LoginInfo(host, port, user, password) );
+            return ( new LoginInfo(host, port, user, password.toCharArray()) );
         }
         static String login2Line(final LoginInfo login) throws IOException, URISyntaxException {
             final String scheme   = "asadmin";
@@ -265,7 +265,7 @@ public class MemoryHashLoginInfoStore implements LoginInfoStore {
             final int port        = login.getPort();
             final String user     = login.getUser();
             final URI uri         = new URI(scheme, user, host, port, null, null, null);
-            final String password = login.getPassword();
+            final String password = new String(login.getPassword());
             final String encp     = encoder.encode(password.getBytes());
             final String line     = uri.toString() + ' ' + encp;
 
