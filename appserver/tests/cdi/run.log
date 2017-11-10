@@ -1,0 +1,386 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.glassfish.tests.cdi.cases.multiBeansXml:multiBeansApp:ear:5.0.1-SNAPSHOT
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-ear-plugin is missing. @ line 61, column 21
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.glassfish.tests.cdi.cases.preDestroyScoping:preDestroyScoping:ear:5.0.1-SNAPSHOT
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-ear-plugin is missing. @ line 61, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] GlassFish CDI Tests
+[INFO] GlassFish CDI Negative Tests
+[INFO] GlassFish Normal Scoped Bean With Final Methods
+[INFO] CDI Negative Tests Runner
+[INFO] GlassFish CDI Test Cases
+[INFO] GlassFish CDI MultiBeanXml Test
+[INFO] GlassFish Ejb1 With Specific beans.xml
+[INFO] GlassFish Ejb2 With Specific beans.xml
+[INFO] HK2 CDI MultiBeansApp EAR
+[INFO] GlassFish CDI PreDestroyScoping Test
+[INFO] GlassFish library for PreDestroyScoping test
+[INFO] CDI Pre Destroy Scoping Case WebApp
+[INFO] CDI PreDestroyScoping EAR
+[INFO] CDI Test Case Runner
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish CDI Tests 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ cdi ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ cdi ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ cdi ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish CDI Negative Tests 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ negative ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ negative ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ negative ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish Normal Scoped Bean With Final Methods 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ normalScopeWithFinal ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/normalScopeWithFinal
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ normalScopeWithFinal ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ normalScopeWithFinal ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ normalScopeWithFinal ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/normalScopeWithFinal/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ normalScopeWithFinal ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ normalScopeWithFinal ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/normalScopeWithFinal/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ normalScopeWithFinal ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ normalScopeWithFinal ---
+[INFO] No tests to run.
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building CDI Negative Tests Runner 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ runner ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/runner
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ runner ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ runner ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ runner ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/runner/src/main/resources
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/runner/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ runner ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ runner ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/runner/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ runner ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12:test (default-test) @ runner ---
+[INFO] Surefire report directory: /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/runner/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.oracle.cdi.devtest.runner.test.NegativeTest
+Configuring TestNG with: org.apache.maven.surefire.testng.conf.TestNGMapConfigurator@3a1706e1
+nucleus.home=/mnt/main/work/glassfish-src/build/glassfish5/glassfish/
+asadmin --host localhost --port 4848 --interactive=false --echo=true --terse=false start-domain --verbose=false --upgrade=false --watchdog=false --debug=false --dry-run=false --drop-interrupted-commands=false
+Waiting for domain1 to start ...
+Successfully started the domain : domain1
+domain  Location: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1
+Log File: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1/logs/server.log
+Admin Port: 4848
+Command start-domain executed successfully.
+asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false deploy --force=false --precompilejsp=false --verify=false --generatermistubs=false --availabilityenabled=false --asyncreplication=true --keepreposdir=false --keepfailedstubs=false --isredeploy=false --logreportederrors=true --_classicstyle=false negative/normalScopeWithFinal/target/normalScopeWithFinal.jar
+Command deploy failed.
+remote failure: File not found : /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/negative/normalScopeWithFinal/target/normalScopeWithFinal.jar
+asadmin --host localhost --port 4848 --interactive=false --echo=true --terse=false stop-domain --force=true --kill=false
+Waiting for the domain to stop .
+Command stop-domain executed successfully.
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.06 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish CDI Test Cases 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ cases ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ cases ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ cases ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish CDI MultiBeanXml Test 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ multiBeansXml ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ multiBeansXml ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ multiBeansXml ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish Ejb1 With Specific beans.xml 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ ejb1 ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ ejb1 ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ ejb1 ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ ejb1 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb1/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ ejb1 ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ ejb1 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb1/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ ejb1 ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ ejb1 ---
+[INFO] No tests to run.
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish Ejb2 With Specific beans.xml 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ ejb2 ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb2
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ ejb2 ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ ejb2 ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ ejb2 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb2/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ ejb2 ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ ejb2 ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/ejb2/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ ejb2 ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ ejb2 ---
+[INFO] No tests to run.
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building HK2 CDI MultiBeansApp EAR 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ multiBeansApp ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/multiBeansApp
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ multiBeansApp ---
+[INFO] 
+[INFO] --- maven-ear-plugin:2.5:generate-application-xml (default-generate-application-xml) @ multiBeansApp ---
+[INFO] Generating application.xml
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ multiBeansApp ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ multiBeansApp ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/multiBeansApp/src/main/resources
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/multiBeansXml/multiBeansApp/src/main/manpages
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish CDI PreDestroyScoping Test 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ preDestroyScoping ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ preDestroyScoping ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ preDestroyScoping ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building GlassFish library for PreDestroyScoping test 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ lib ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/lib
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ lib ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ lib ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ lib ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/lib/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ lib ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ lib ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/lib/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ lib ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ lib ---
+[INFO] No tests to run.
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building CDI Pre Destroy Scoping Case WebApp 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ web ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/web
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ web ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ web ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ web ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/web/src/main/resources
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/web/src/main/manpages
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ web ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ web ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/web/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ web ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ web ---
+[INFO] No tests to run.
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building CDI PreDestroyScoping EAR 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ preDestroyScoping ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/ear
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ preDestroyScoping ---
+[INFO] 
+[INFO] --- maven-ear-plugin:2.5:generate-application-xml (default-generate-application-xml) @ preDestroyScoping ---
+[INFO] Generating application.xml
+[INFO] 
+[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ preDestroyScoping ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ preDestroyScoping ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/ear/src/main/resources
+[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/cdi/cases/preDestroyScoping/ear/src/main/manpages
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building CDI Test Case Runner 5.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] GlassFish CDI Tests ............................... SUCCESS [0.387s]
+[INFO] GlassFish CDI Negative Tests ...................... SUCCESS [0.009s]
+[INFO] GlassFish Normal Scoped Bean With Final Methods ... SUCCESS [0.285s]
+[INFO] CDI Negative Tests Runner ......................... SUCCESS [8.892s]
+[INFO] GlassFish CDI Test Cases .......................... SUCCESS [0.015s]
+[INFO] GlassFish CDI MultiBeanXml Test ................... SUCCESS [0.008s]
+[INFO] GlassFish Ejb1 With Specific beans.xml ............ SUCCESS [0.022s]
+[INFO] GlassFish Ejb2 With Specific beans.xml ............ SUCCESS [0.019s]
+[INFO] HK2 CDI MultiBeansApp EAR ......................... SUCCESS [0.093s]
+[INFO] GlassFish CDI PreDestroyScoping Test .............. SUCCESS [0.005s]
+[INFO] GlassFish library for PreDestroyScoping test ...... SUCCESS [0.016s]
+[INFO] CDI Pre Destroy Scoping Case WebApp ............... SUCCESS [0.028s]
+[INFO] CDI PreDestroyScoping EAR ......................... SUCCESS [0.018s]
+[INFO] CDI Test Case Runner .............................. FAILURE [0.128s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 11.292s
+[INFO] Finished at: Fri Nov 10 11:25:30 IST 2017
+[INFO] Final Memory: 38M/429M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal on project runner: Could not resolve dependencies for project org.glassfish.tests.cdi.cases:runner:jar:5.0.1-SNAPSHOT: The following artifacts could not be resolved: org.glassfish.tests.cdi.cases.multiBeansXml:multiBeansApp:ear:5.0.1-SNAPSHOT, org.glassfish.tests.cdi.cases.preDestroyScoping:preDestroyScoping:ear:5.0.1-SNAPSHOT: Could not find artifact org.glassfish.tests.cdi.cases.multiBeansXml:multiBeansApp:ear:5.0.1-SNAPSHOT -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <goals> -rf :runner

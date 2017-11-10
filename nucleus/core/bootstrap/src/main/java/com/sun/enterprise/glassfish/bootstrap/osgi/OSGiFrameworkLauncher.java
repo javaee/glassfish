@@ -76,7 +76,9 @@ public class OSGiFrameworkLauncher {
             ServiceLoader<FrameworkFactory> frameworkFactories =
                     ServiceLoader.load(FrameworkFactory.class, getClass().getClassLoader());
             Map<String, String> mm = new HashMap<String, String>();
-            properties.putAll(mm);
+            for (Map.Entry<Object, Object> e: properties.entrySet()) {
+                mm.put((String)e.getKey(), (String)e.getValue());
+            }
             for (FrameworkFactory ff : frameworkFactories) {
                 framework = ff.newFramework(mm);
                 break;
