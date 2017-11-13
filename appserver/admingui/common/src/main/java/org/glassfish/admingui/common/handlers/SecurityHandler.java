@@ -355,12 +355,12 @@ public class SecurityHandler {
             String realmName = (String) handlerCtx.getInputValue("Realm");
             String configName = (String) handlerCtx.getInputValue("configName");
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
-            String password = (String)handlerCtx.getInputValue("Password");
+            char[] password = ((String)handlerCtx.getInputValue("Password")).toCharArray();
             String userid = (String)handlerCtx.getInputValue("UserId");
             String createNew = (String)handlerCtx.getInputValue("CreateNew");
 
             if (password == null) {
-                password = "";
+                password = "".toCharArray();
             }
             // before save user synchronize realm, for the case if keyfile is changed
             String tmpEP = GuiUtil.getSessionValue("REST_URL") + "/configs/config/"
@@ -378,7 +378,7 @@ public class SecurityHandler {
 
             attrs = new HashMap<String, Object>();
             attrs.put("id", userid);
-            attrs.put("userpassword", password);
+            attrs.put("userpassword", new String(password));
             attrs.put("target", configName);
             if (grouplist != null && grouplist.contains(","))
                 grouplist = grouplist.replace(',', ':');
