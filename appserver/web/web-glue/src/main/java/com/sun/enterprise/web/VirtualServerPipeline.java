@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.appserv.web.cache.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
@@ -110,7 +110,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_OFF);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, LogCleanerUtil.neutralizeForLog(msg));
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_NOT_FOUND,
@@ -119,7 +119,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_DISABLED);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, LogCleanerUtil.neutralizeForLog(msg));
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_FORBIDDEN,
@@ -296,12 +296,12 @@ public class VirtualServerPipeline extends StandardPipeline {
                     if (redirectMatch.validURI) {
                         logger.log(Level.WARNING,
                             LogFacade.INVALID_REDIRECTION_LOCATION,
-                                LogCleanerUtil.neutralizeForLog(location));
+                                neutralizeForLog(location));
                     } else {
                         if (logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE,
                                 LogFacade.INVALID_REDIRECTION_LOCATION,
-                                    LogCleanerUtil.neutralizeForLog(location));
+                                    neutralizeForLog(location));
                         }
                     }
                 } finally {
