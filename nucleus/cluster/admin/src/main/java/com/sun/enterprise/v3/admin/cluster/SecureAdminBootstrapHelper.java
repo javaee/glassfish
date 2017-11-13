@@ -40,13 +40,14 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.util.cluster.RemoteType;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.cluster.windows.process.WindowsException;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFile;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFileSystem;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -95,7 +96,7 @@ public abstract class SecureAdminBootstrapHelper {
      * @param node Node from the domain configuration for the target node
      * @param logger
      * @return the remote helper
-     * @throws IOException
+     * @throws BootstrapException
      */
     public static SecureAdminBootstrapHelper getRemoteHelper(
             final ServiceLocator habitat,
@@ -313,8 +314,8 @@ public abstract class SecureAdminBootstrapHelper {
          * @param milliseconds normal Java time (in milliseconds)
          * @return
          */
-        Integer secondsSince_01_Jan_1970(final long milliseconds) {
-            return Integer.valueOf((int) (milliseconds) / 1000);
+        int secondsSince_01_Jan_1970(final long milliseconds) {
+            return (int) (milliseconds) / 1000;
         }
     }
 
@@ -337,7 +338,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient = launcher.getSFTPClient();
             }
-            catch (IOException ex) {
+            catch (JSchException ex) {
                 throw new BootstrapException(launcher, ex);
             }
         }
@@ -349,9 +350,9 @@ public abstract class SecureAdminBootstrapHelper {
                     remoteDir);
             Integer instanceDirPermissions;
             try {
-                instanceDirPermissions = ftpClient.lstat(remoteNodeDir).permissions;
+                instanceDirPermissions = ftpClient.getSftpChannel().lstat(remoteNodeDir).getPermissions();
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteNodeDir, ex);
             }
             logger.log(Level.FINE, "Creating remote bootstrap directory "
@@ -360,7 +361,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient.mkdirs(remoteDir, instanceDirPermissions);
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteDir, ex);
             }
         }
@@ -374,16 +375,11 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         void writeToFile(final String path, final InputStream content) throws IOException {
-            final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
-            int bytesRead;
-            final byte[] buffer = new byte[1024];
             try {
-                while ((bytesRead = content.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
+                ftpClient.getSftpChannel().put(content, path);
             }
-            finally {
-                os.close();
+            catch (SftpException ex) {
+                throw new IOException(ex);
             }
         }
         /* bnevins -- this method had to be made abstract ONLY because of the
@@ -407,9 +403,11 @@ public abstract class SecureAdminBootstrapHelper {
             /*
              * Times over ssh are expressed as seconds since 01 Jan 1970.
              */
-            final SFTPv3FileAttributes attrs = ftpClient.stat(path);
-            attrs.mtime = secondsSince_01_Jan_1970(when);
-            ftpClient.setstat(path, attrs);
+            try {
+                ftpClient.getSftpChannel().setMtime(path, secondsSince_01_Jan_1970(when));
+            } catch (SftpException e) {
+                throw new IOException(e);
+            }
         }
     }
 

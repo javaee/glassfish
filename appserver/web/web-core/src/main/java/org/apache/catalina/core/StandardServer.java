@@ -72,8 +72,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.AccessControlException;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.text.MessageFormat;
 import java.util.logging.Level;
@@ -253,7 +253,7 @@ public final class StandardServer
      * A random number generator that is <strong>only</strong> used if
      * the shutdown command string is longer than 1024 characters.
      */
-    private Random random = null;
+    private SecureRandom random = null;
 
 
     /**
@@ -510,8 +510,8 @@ public final class StandardServer
             int expected = 1024; // Cut off to avoid DoS attack
             while (expected < shutdown.length()) {
                 if (random == null)
-                    random = new Random(System.currentTimeMillis());
-                expected += random.nextInt(1024);
+                    random = new SecureRandom();//use self seeding
+                    expected += random.nextInt(1024);
             }
             while (expected > 0) {
                 int ch = -1;

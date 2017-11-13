@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.core</groupId>
         <artifactId>nucleus-core</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>kernel</artifactId>
@@ -108,6 +108,7 @@
                     <include>**/*.1</include>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+		    <include>**/services/*</include>
                 </includes>
             </resource>
         </resources>
@@ -194,11 +195,6 @@
             <groupId>org.glassfish.main.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kohsuke.metainf-services</groupId>
-            <artifactId>metainf-services</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
 	    <groupId>org.glassfish.external</groupId>

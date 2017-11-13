@@ -77,7 +77,7 @@ import org.glassfish.internal.deployment.DeploymentTracing;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PreDestroy;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.inject.Inject;
@@ -196,7 +196,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             try {
                 applicationFactory.openWith(application, sourceArchive, 
                     archivist);
-            } catch(SAXParseException e) {
+            } catch(SAXException e) {
                 throw new IOException(e);
             }
         }
@@ -211,7 +211,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
                 ModuleDescriptor md = application.getStandaloneBundleDescriptor().getModuleDescriptor();
                 md.setModuleName(name);
-            } catch(SAXParseException e) {
+            } catch(SAXException e) {
                 throw new IOException(e);
             }
         }

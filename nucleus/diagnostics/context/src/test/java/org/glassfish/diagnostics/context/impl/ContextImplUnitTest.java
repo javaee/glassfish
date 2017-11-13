@@ -45,7 +45,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Verifications;
 import mockit.Expectations;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.glassfish.contextpropagation.Location;
@@ -170,7 +169,7 @@ public class ContextImplUnitTest {
       // so that we can also verify that contextImpl returns it.
       View expectationsRefViewVariable = mockedView;
       {
-        expectationsRefViewVariable.get(key); returns(expectedValueOfKey1);
+        expectationsRefViewVariable.get(key); returns(expectedValueOfKey1,null,null);
       }
     };
 

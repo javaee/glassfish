@@ -58,12 +58,21 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.security.enterprise.identitystore.CredentialValidationResult.Status.VALID;
 
 @RememberMe(
-    cookieMaxAgeSeconds = 3600,
-    cookieSecureOnly = false,
+    cookieName = "#{self.rememberMeConfigBean.getCookieName()}",
+    cookieMaxAgeSecondsExpression = "#{self.rememberMeConfigBean.maxAgeSeconds}",
+    cookieSecureOnlyExpression = "#{self.rememberMeConfigBean.isSecureOnly()}",
+    cookieHttpOnlyExpression = "#{self.rememberMeConfigBean.httpOnly}",
     isRememberMeExpression ="#{self.isRememberMe(httpMessageContext)}"
 )
 @RequestScoped
 public class TestAuthenticationMechanism implements HttpAuthenticationMechanism {
+
+    public RememberMeConfigBean getRememberMeConfigBean() {
+        return rememberMeConfigBean;
+    }
+
+    @Inject
+    private RememberMeConfigBean rememberMeConfigBean;
     
     @Inject
     private IdentityStoreHandler identityStoreHandler;

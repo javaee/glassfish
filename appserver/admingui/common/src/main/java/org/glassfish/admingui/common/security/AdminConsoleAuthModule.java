@@ -293,7 +293,11 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                     origRequest = "/index.jsf";
                 }
                 logger.log(Level.INFO, "Redirecting to {0}", origRequest);
-                response.sendRedirect(response.encodeRedirectURL(origRequest));
+                if (GuiUtil.validateStringforCRLF(origRequest)) {
+                    response.sendError(403,"Forbidden");
+                }
+                response.sendRedirect(
+                        response.encodeRedirectURL(GuiUtil.removeLinearWhiteSpaces(origRequest)));
             } catch (Exception ex) {
                 AuthException ae = new AuthException();
                 ae.initCause(ex);

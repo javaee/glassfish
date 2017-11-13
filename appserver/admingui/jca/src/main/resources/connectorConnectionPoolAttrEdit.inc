@@ -76,7 +76,7 @@
         </sun:property>
 
         <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.ping}" helpText="$resource{i18njca.jcaPool.pingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap.ping}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap.ping}" selectedValue="true" />
         </sun:property>
         <sun:property id="deploymentOrder" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resource.deploymentOrder}"  helpText="$resource{i18n.common.resource.deploymentOrderHelp}">
             <sun:textField id="deploymentOrder" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.common.deploymentOrder']}" text="#{pageSession.valueMap.deploymentOrder}" />

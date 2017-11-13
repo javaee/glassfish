@@ -45,6 +45,7 @@ import com.sun.enterprise.util.cluster.windows.process.WindowsRemoteAsadmin;
 import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFile;
 import java.io.*;
 import java.net.*;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.*;
 
@@ -137,7 +138,7 @@ public class NodeRunnerDcom {
      */
     private void setupAuthTokenFile(List<String> cmd, List<String> stdin) throws WindowsException {
         WindowsRemoteFileSystem wrfs = new WindowsRemoteFileSystem(dcomInfo.getCredentials());
-        authTokenFilePath = dcomInfo.getNadminParentPath() + "\\token_" + System.nanoTime() + new Random().nextInt(1000);
+        authTokenFilePath = dcomInfo.getNadminParentPath() + "\\token_" + System.nanoTime() + new SecureRandom().nextInt(1000);
         authTokenFilePath = createUniqueFilename(dcomInfo.getNadminParentPath());
         authTokenFile = new WindowsRemoteFile(wrfs, authTokenFilePath);
         authTokenFile.copyFrom(stdin);
@@ -163,7 +164,7 @@ public class NodeRunnerDcom {
         if(random.length() > 16)
             random = random.substring(random.length() - 16);
 
-        random += "" + new Random(System.currentTimeMillis()).nextInt(10000);
+        random += "" + new SecureRandom().nextInt(10000);
 
         return path + "\\DELETE_ME_" + random;
     }

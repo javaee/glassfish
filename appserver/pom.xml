@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../nucleus/pom.xml</relativePath>
     </parent>    
     <artifactId>glassfish-parent</artifactId>
@@ -67,7 +67,7 @@
         <jstl-api.version>1.2.1</jstl-api.version>
         <mojarra.version>2.3.2</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.10</woodstock.version>
+        <woodstock.version>4.0.2.11</woodstock.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
         <javax.interceptor-api.version>1.2.1</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
@@ -81,8 +81,8 @@
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
-        <javax.security.enterprise-api.version>1.0-b12</javax.security.enterprise-api.version>
-        <javax.security.enterprise.version>1.0-b13</javax.security.enterprise.version>
+        <javax.security.enterprise-api.version>1.0</javax.security.enterprise-api.version>
+        <javax.security.enterprise.version>1.0</javax.security.enterprise.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -93,7 +93,7 @@
         <version_suffix />
         <major_version>5</major_version>
         <minor_version>0</minor_version>
-        <update_version></update_version>
+        <update_version>1</update_version>
         <install.dir.name>glassfish5</install.dir.name>
 
         <javaee.major_version>8</javaee.major_version>
@@ -109,8 +109,8 @@
         <jaxb.version>2.3.0</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
-        <eclipselink.version>2.7.0-RC3</eclipselink.version>
-        <javax-persistence-api.version>2.2.0-RC3</javax-persistence-api.version>
+        <eclipselink.version>2.7.0</eclipselink.version>
+        <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
         <dbschema.version>3.1.1</dbschema.version>
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
         <schema2beans.version>3.1.1</schema2beans.version>
@@ -133,9 +133,9 @@
         <com.ibm.jbatch.container.version>1.0.2</com.ibm.jbatch.container.version>
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
-        <guava.version>13.0.1</guava.version>
-	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
-	 <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <libpam4j.version>1.9</libpam4j.version>
+	<easymock.version>3.5</easymock.version>
     </properties>
 
     <modules>
@@ -1054,11 +1054,6 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
@@ -1078,6 +1073,11 @@
                 <artifactId>derby-distribution</artifactId>
                 <version>${derby.version}</version>
                 <type>zip</type>
+           </dependency>
+           <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>libpam4j</artifactId>
+                <version>${libpam4j.version}</version>
            </dependency>
       </dependencies>
     </dependencyManagement>
