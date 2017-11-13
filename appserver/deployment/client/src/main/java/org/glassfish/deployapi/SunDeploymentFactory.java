@@ -127,7 +127,7 @@ public class SunDeploymentFactory implements DeploymentFactory {
             }
             try {
                 hostInfo.setUserName(username);
-                hostInfo.setPassword(password);
+                hostInfo.setPassword(password.toCharArray());
                 DeploymentManager answer = null;
 
                 answer = new SunDeploymentManager(hostInfo);

@@ -84,7 +84,7 @@ public class GetHostAndPortTest {
         sci.setHostName("localhost");
         sci.setHostPort(4848); // 8080 for the REST client
         sci.setUserName("admin");
-        sci.setPassword("");
+        sci.setPassword("".toCharArray());
 
         df.connect(sci);
 
