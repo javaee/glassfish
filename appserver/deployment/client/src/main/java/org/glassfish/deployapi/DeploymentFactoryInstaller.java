@@ -48,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.Buffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.jar.JarFile;
@@ -121,29 +122,6 @@ public class DeploymentFactoryInstaller {
         
         return repository.listFiles();        
     }
-    
-    /**
-     * Add a new deployment manager to our respository
-     */
-    public void addDeploymentFactory(File newDM) throws IOException {
-        
-        int number=1;
-        // copy to the right location...
-        File repository = new File(System.getProperty(J2EE_HOME)+File.separator+
-            J2EE_DEPLOYMENT_MANAGER_REPOSITORY);
-        File to = new File(repository, newDM.getName());
-        while (to.exists()) {
-            to = new File(repository, newDM.getName()+number);
-            number++;
-        }
-        ArchivistUtils.copy(
-            new BufferedInputStream(new FileInputStream(newDM)),
-            new BufferedOutputStream(new FileOutputStream(to)));
-        
-        installDeploymentFactory(to);
-    
-    }
-    
     
     protected void installDeploymentFactory(final File installedDM) throws IOException {
         
