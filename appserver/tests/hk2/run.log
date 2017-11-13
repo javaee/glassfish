@@ -1,611 +1,0 @@
-[INFO] Scanning for projects...
-[WARNING] 
-[WARNING] Some problems were encountered while building the effective model for org.glassfish.tests.hk2.cdi.ear:app:ear:5.0-SNAPSHOT
-[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-ear-plugin is missing. @ line 61, column 21
-[WARNING] 
-[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-[WARNING] 
-[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-[WARNING] 
-[INFO] ------------------------------------------------------------------------
-[INFO] Reactor Build Order:
-[INFO] 
-[INFO] GlassFish HK2 Tests
-[INFO] GlassFish HK2 Isolation Tests
-[INFO] GlassFish HK2 Isolation WebApps
-[INFO] Isolation servlet one
-[INFO] Isolation servlet two
-[INFO] GlassFish HK2 Isolation Test Runner
-[INFO] GlassFish HK2 CDI Tests
-[INFO] GlassFish HK2 Basic CDI test
-[INFO] HK2 CDI Basic Test EJB1
-[INFO] HK2 CDI Basic Test Runner
-[INFO] GlassFish HK2 CDI EAR test
-[INFO] HK2 CDI EAR Test Lib1
-[INFO] HK2 CDI EAR Test Ejb1
-[INFO] HK2 CDI EAR Test Ejb2
-[INFO] HK2 CDI EAR Test War1
-[INFO] HK2 CDI EAR Test War2
-[INFO] HK2 CDI EAR Test EAR
-[INFO] HK2 CDI EAR Test Runner
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 Tests 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ hk2 ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ hk2 ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ hk2 ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ hk2 ---
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ hk2 ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/5.0-SNAPSHOT/hk2-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 Isolation Tests 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ isolation ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ isolation ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ isolation ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ isolation ---
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ isolation ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/5.0-SNAPSHOT/isolation-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 Isolation WebApps 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ web ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ web ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ web ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ web ---
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ web ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/web/5.0-SNAPSHOT/web-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building Isolation servlet one 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ iso1 ---
-[INFO] Deleting /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ iso1 ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ iso1 ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ iso1 ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ iso1 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/src/main/resources
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/src/main/manpages
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ iso1 ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ iso1 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ iso1 ---
-[INFO] No sources to compile
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ iso1 ---
-[INFO] No tests to run.
-[INFO] 
-[INFO] --- maven-war-plugin:2.2:war (default-war) @ iso1 ---
-Downloading: https://maven.java.net/content/repositories/promoted/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.pom
-Downloading: https://maven.java.net/content/repositories/releases/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.pom
-Downloading: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.pom
-2/12 KB   6/12 KB   10/12 KB   12/12 KB              Downloaded: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.pom (12 KB at 12.6 KB/sec)
-Downloading: https://maven.java.net/content/repositories/promoted/com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom
-           Downloading: https://maven.java.net/content/repositories/releases/com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom
-           Downloading: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom
-4/14 KB    8/14 KB   12/14 KB   14/14 KB              Downloaded: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom (14 KB at 21.3 KB/sec)
-Downloading: https://maven.java.net/content/repositories/promoted/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar
-           Downloading: https://maven.java.net/content/repositories/releases/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar
-           Downloading: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar
-4/422 KB   5/422 KB   9/422 KB   13/422 KB   16/422 KB   20/422 KB   24/422 KB   28/422 KB   32/422 KB   36/422 KB   40/422 KB   44/422 KB   48/422 KB   52/422 KB   56/422 KB   60/422 KB   63/422 KB   66/422 KB   69/422 KB   73/422 KB   77/422 KB   81/422 KB   85/422 KB   87/422 KB   88/422 KB   92/422 KB   96/422 KB   100/422 KB   104/422 KB   108/422 KB   112/422 KB   114/422 KB   116/422 KB   120/422 KB   121/422 KB   122/422 KB   124/422 KB   128/422 KB   130/422 KB   133/422 KB   135/422 KB   138/422 KB   142/422 KB   144/422 KB   145/422 KB   149/422 KB   152/422 KB   153/422 KB   157/422 KB   160/422 KB   162/422 KB   166/422 KB   169/422 KB   170/422 KB   174/422 KB   178/422 KB   180/422 KB   183/422 KB   187/422 KB   188/422 KB   189/422 KB   193/422 KB   197/422 KB   198/422 KB   199/422 KB   200/422 KB   201/422 KB   205/422 KB   208/422 KB   212/422 KB   216/422 KB   218/422 KB   220/422 KB   224/422 KB   228/422 KB   229/422 KB   230/422 KB   234/422 KB   238/422 KB   242/422 KB   246/422 KB   250/422 KB   250/422 KB   252/422 KB   256/422 KB   260/422 KB   262/422 KB   264/422 KB   267/422 KB   271/422 KB   274/422 KB   276/422 KB   278/422 KB   282/422 KB   286/422 KB   290/422 KB   294/422 KB   298/422 KB   298/422 KB   300/422 KB   303/422 KB   307/422 KB   310/422 KB   312/422 KB   316/422 KB   317/422 KB   319/422 KB   323/422 KB   327/422 KB   331/422 KB   334/422 KB   337/422 KB   341/422 KB   345/422 KB   347/422 KB   351/422 KB   355/422 KB   359/422 KB   363/422 KB   367/422 KB   371/422 KB   373/422 KB   374/422 KB   378/422 KB   382/422 KB   386/422 KB   387/422 KB   391/422 KB   395/422 KB   399/422 KB   403/422 KB   407/422 KB   411/422 KB   413/422 KB   415/422 KB   419/422 KB   421/422 KB   422/422 KB                Downloaded: http://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar (422 KB at 61.7 KB/sec)
-[INFO] Packaging webapp
-[INFO] Assembling webapp [iso1] in [/mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target/hk2-isolation-web-iso1]
-[INFO] Processing war project
-[INFO] Copying webapp resources [/mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/src/main/webapp]
-[INFO] Webapp assembled in [27 msecs]
-[INFO] Building war: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target/hk2-isolation-web-iso1.war
-[INFO] WEB-INF/web.xml already added, skipping
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ iso1 ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target/hk2-isolation-web-iso1.war to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/web/iso1/5.0-SNAPSHOT/iso1-5.0-SNAPSHOT.war
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/web/iso1/5.0-SNAPSHOT/iso1-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building Isolation servlet two 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ iso2 ---
-[INFO] Deleting /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ iso2 ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ iso2 ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ iso2 ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ iso2 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/src/main/resources
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/src/main/manpages
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ iso2 ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ iso2 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ iso2 ---
-[INFO] No sources to compile
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ iso2 ---
-[INFO] No tests to run.
-[INFO] 
-[INFO] --- maven-war-plugin:2.2:war (default-war) @ iso2 ---
-[INFO] Packaging webapp
-[INFO] Assembling webapp [iso2] in [/mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target/hk2-isolation-web-iso2]
-[INFO] Processing war project
-[INFO] Copying webapp resources [/mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/src/main/webapp]
-[INFO] Webapp assembled in [3 msecs]
-[INFO] Building war: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target/hk2-isolation-web-iso2.war
-[INFO] WEB-INF/web.xml already added, skipping
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ iso2 ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target/hk2-isolation-web-iso2.war to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/web/iso2/5.0-SNAPSHOT/iso2-5.0-SNAPSHOT.war
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/web/iso2/5.0-SNAPSHOT/iso2-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 Isolation Test Runner 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ runner ---
-[INFO] Deleting /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ runner ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ runner ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ runner ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ runner ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/src/main/resources
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/src/main/manpages
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ runner ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ runner ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ runner ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target/test-classes
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.12:test (default-test) @ runner ---
-[INFO] Surefire report directory: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target/surefire-reports
-
--------------------------------------------------------
- T E S T S
--------------------------------------------------------
-Running com.oracle.hk2.devtest.isolation.runner.IsolationTest
-Configuring TestNG with: org.apache.maven.surefire.testng.conf.TestNGMapConfigurator@35bd8bc9
-nucleus.home=/mnt/main/work/glassfish-src/build/glassfish5/glassfish/
-asadmin --host localhost --port 4848 --interactive=false --echo=true --terse=false start-domain --verbose=false --upgrade=false --watchdog=false --debug=false --dry-run=false --drop-interrupted-commands=false
-Waiting for domain1 to start ....
-Successfully started the domain : domain1
-domain  Location: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1
-Log File: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1/logs/server.log
-Admin Port: 4848
-Command start-domain executed successfully.
-asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false deploy --force=false --precompilejsp=false --verify=false --generatermistubs=false --availabilityenabled=false --asyncreplication=true --keepreposdir=false --keepfailedstubs=false --isredeploy=false --logreportederrors=true --_classicstyle=false /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso1/target/hk2-isolation-web-iso1.war
-Application deployed with name hk2-isolation-web-iso1.
-Command deploy executed successfully.
-asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false deploy --force=false --precompilejsp=false --verify=false --generatermistubs=false --availabilityenabled=false --asyncreplication=true --keepreposdir=false --keepfailedstubs=false --isredeploy=false --logreportederrors=true --_classicstyle=false /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/web/iso2/target/hk2-isolation-web-iso2.war
-Application deployed with name hk2-isolation-web-iso2.
-Command deploy executed successfully.
-asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false undeploy --keepreposdir=false --isredeploy=false --cascade=false --_ignorecascade=false --_classicstyle=false hk2-isolation-web-iso1
-Command undeploy executed successfully.
-asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false undeploy --keepreposdir=false --isredeploy=false --cascade=false --_ignorecascade=false --_classicstyle=false hk2-isolation-web-iso2
-Command undeploy executed successfully.
-asadmin --host localhost --port 4848 --interactive=false --echo=true --terse=false stop-domain --force=true --kill=false
-Waiting for the domain to stop .
-Command stop-domain executed successfully.
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.176 sec
-
-Results :
-
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-
-[INFO] 
-[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ runner ---
-[INFO] Building jar: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target/runner.jar
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ runner ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/target/runner.jar to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/runner/5.0-SNAPSHOT/runner-5.0-SNAPSHOT.jar
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/isolation/runner/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/isolation/runner/5.0-SNAPSHOT/runner-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 CDI Tests 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ cdi ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ cdi ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ cdi ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ cdi ---
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ cdi ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/cdi/5.0-SNAPSHOT/cdi-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building GlassFish HK2 Basic CDI test 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ basic ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ basic ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ basic ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ basic ---
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ basic ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/cdi/basic/5.0-SNAPSHOT/basic-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building HK2 CDI Basic Test EJB1 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ ejb1 ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ ejb1 ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ ejb1 ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ ejb1 ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ ejb1 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] Copying 3 resources
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/manpages
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ ejb1 ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 26 source files to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/target/classes
-[INFO] /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/ppp/ApplicationPopulatorPostProcessor.java: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/ppp/ApplicationPopulatorPostProcessor.java uses or overrides a deprecated API.
-[INFO] /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/ppp/ApplicationPopulatorPostProcessor.java: Recompile with -Xlint:deprecation for details.
-[INFO] /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/scoped/CustomScopeContext.java: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/scoped/CustomScopeContext.java uses unchecked or unsafe operations.
-[INFO] /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/main/java/com/oracle/hk2/devtest/cdi/ejb1/scoped/CustomScopeContext.java: Recompile with -Xlint:unchecked for details.
-[INFO] 
-[INFO] --- hk2-inhabitant-generator:2.5.0-b44:generate-inhabitants (default) @ ejb1 ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ ejb1 ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ ejb1 ---
-[INFO] No sources to compile
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.4.3:test (default-test) @ ejb1 ---
-[INFO] No tests to run.
-[INFO] 
-[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ ejb1 ---
-[INFO] Building jar: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/target/ejb1.jar
-[INFO] 
-[INFO] --- maven-install-plugin:2.4:install (default-install) @ ejb1 ---
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/target/ejb1.jar to /home/mskd/.m2/repository/org/glassfish/tests/hk2/cdi/basic/ejb1/5.0-SNAPSHOT/ejb1-5.0-SNAPSHOT.jar
-[INFO] Installing /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/pom.xml to /home/mskd/.m2/repository/org/glassfish/tests/hk2/cdi/basic/ejb1/5.0-SNAPSHOT/ejb1-5.0-SNAPSHOT.pom
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
-[INFO] Building HK2 CDI Basic Test Runner 5.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ runner ---
-[INFO] 
-[INFO] --- glassfishbuild-maven-plugin:3.2.20:echo (echo) @ runner ---
-[INFO] ------------------------------------------------------------------------
-[INFO] Building in /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] --- maven-enforcer-plugin:1.0-beta-1:enforce (enforce-versions) @ runner ---
-[INFO] 
-[INFO] --- build-helper-maven-plugin:3.0.0:add-resource (add-resource) @ runner ---
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:resources (default-resources) @ runner ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/src/main/resources
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/src/main/manpages
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:compile (default-compile) @ runner ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.4.3:testResources (default-testResources) @ runner ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ runner ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 1 source file to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/target/test-classes
-[INFO] 
-[INFO] --- maven-surefire-plugin:2.12:test (default-test) @ runner ---
-[INFO] Surefire report directory: /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/target/surefire-reports
-
--------------------------------------------------------
- T E S T S
--------------------------------------------------------
-Running com.oracle.hk2.devtest.cdi.runner.BasicCDITest
-Configuring TestNG with: org.apache.maven.surefire.testng.conf.TestNGMapConfigurator@7af56b26
-nucleus.home=/mnt/main/work/glassfish-src/build/glassfish5/glassfish/
-asadmin --host localhost --port 4848 --interactive=false --echo=true --terse=false start-domain --verbose=false --upgrade=false --watchdog=false --debug=false --dry-run=false --drop-interrupted-commands=false
-Waiting for domain1 to start ...
-Successfully started the domain : domain1
-domain  Location: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1
-Log File: /mnt/main/work/glassfish-src/build/glassfish5/glassfish/domains/domain1/logs/server.log
-Admin Port: 4848
-Command start-domain executed successfully.
-asadmin --host localhost --port 4848 --user admin --interactive=false --echo=true --terse=false deploy --force=false --precompilejsp=false --verify=false --generatermistubs=false --availabilityenabled=false --asyncreplication=true --keepreposdir=false --keepfailedstubs=false --isredeploy=false --logreportederrors=true --_classicstyle=false /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/ejb1/target/ejb1.jar
-Command deploy failed.
-remote failure: Error occurred during deployment: Exception while loading the app : CDI deployment failure:Exception List with 2 exceptions:
-Exception 0 :
-org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type HK2Service with qualifiers @Default
-  at injection point [BackedAnnotatedField] @Inject private com.oracle.hk2.devtest.cdi.jit.CDIServiceInjectedWithHK2Service.hk2Service
-  at com.oracle.hk2.devtest.cdi.jit.CDIServiceInjectedWithHK2Service.hk2Service(CDIServiceInjectedWithHK2Service.java:0)
-
-	at org.jboss.weld.bootstrap.Validator.validateInjectionPointForDeploymentProblems(Validator.java:375)
-	at org.jboss.weld.bootstrap.Validator.validateInjectionPoint(Validator.java:287)
-	at org.jboss.weld.bootstrap.Validator.validateGeneralBean(Validator.java:140)
-	at org.jboss.weld.bootstrap.Validator.validateRIBean(Validator.java:161)
-	at org.jboss.weld.bootstrap.Validator.validateBean(Validator.java:518)
-	at org.jboss.weld.bootstrap.Validator.validateBeans(Validator.java:504)
-	at org.jboss.weld.bootstrap.Validator.validateDeployment(Validator.java:479)
-	at org.jboss.weld.bootstrap.WeldStartup.validateBeans(WeldStartup.java:481)
-	at org.jboss.weld.bootstrap.WeldBootstrap.validateBeans(WeldBootstrap.java:90)
-	at org.glassfish.weld.WeldDeployer.event(WeldDeployer.java:230)
-	at org.glassfish.kernel.event.EventsImpl.send(EventsImpl.java:131)
-	at org.glassfish.internal.data.ApplicationInfo.load(ApplicationInfo.java:328)
-	at com.sun.enterprise.v3.server.ApplicationLifecycle.deploy(ApplicationLifecycle.java:496)
-	at com.sun.enterprise.v3.server.ApplicationLifecycle.deploy(ApplicationLifecycle.java:219)
-	at org.glassfish.deployment.admin.DeployCommand.execute(DeployCommand.java:491)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2$1.run(CommandRunnerImpl.java:540)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2$1.run(CommandRunnerImpl.java:536)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at javax.security.auth.Subject.doAs(Subject.java:360)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2.execute(CommandRunnerImpl.java:535)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$3.run(CommandRunnerImpl.java:566)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$3.run(CommandRunnerImpl.java:558)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at javax.security.auth.Subject.doAs(Subject.java:360)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:557)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:1465)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.access$1300(CommandRunnerImpl.java:110)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1847)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1723)
-	at org.glassfish.admin.rest.resources.admin.CommandResource.executeCommand(CommandResource.java:408)
-	at org.glassfish.admin.rest.resources.admin.CommandResource.execCommandSimpInMultOut(CommandResource.java:235)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:76)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:148)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:191)
-	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:200)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:103)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:493)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:415)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:104)
-	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:277)
-	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:272)
-	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:268)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:316)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:298)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:268)
-	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:289)
-	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:256)
-	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:703)
-	at org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainer.service(GrizzlyHttpContainer.java:377)
-	at org.glassfish.admin.rest.adapter.JerseyContainerCommandService$3.service(JerseyContainerCommandService.java:174)
-	at org.glassfish.admin.rest.adapter.RestAdapter.service(RestAdapter.java:179)
-	at com.sun.enterprise.v3.services.impl.ContainerMapper$HttpHandlerCallable.call(ContainerMapper.java:463)
-	at com.sun.enterprise.v3.services.impl.ContainerMapper.service(ContainerMapper.java:168)
-	at org.glassfish.grizzly.http.server.HttpHandler.runService(HttpHandler.java:206)
-	at org.glassfish.grizzly.http.server.HttpHandler.doHandle(HttpHandler.java:180)
-	at org.glassfish.grizzly.http.server.HttpServerFilter.handleRead(HttpServerFilter.java:242)
-	at org.glassfish.grizzly.filterchain.ExecutorResolver$9.execute(ExecutorResolver.java:119)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeFilter(DefaultFilterChain.java:284)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeChainPart(DefaultFilterChain.java:201)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.execute(DefaultFilterChain.java:133)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.process(DefaultFilterChain.java:112)
-	at org.glassfish.grizzly.ProcessorExecutor.execute(ProcessorExecutor.java:77)
-	at org.glassfish.grizzly.nio.transport.TCPNIOTransport.fireIOEvent(TCPNIOTransport.java:539)
-	at org.glassfish.grizzly.strategies.AbstractIOStrategy.fireIOEvent(AbstractIOStrategy.java:112)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.run0(WorkerThreadIOStrategy.java:117)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.access$100(WorkerThreadIOStrategy.java:56)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy$WorkerThreadRunnable.run(WorkerThreadIOStrategy.java:137)
-	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.doWork(AbstractThreadPool.java:593)
-	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.run(AbstractThreadPool.java:573)
-	at java.lang.Thread.run(Thread.java:745)
-Exception 1 :
-org.jboss.weld.exceptions.DeploymentException: WELD-001408: Unsatisfied dependencies for type HK2Service with qualifiers @Default
-  at injection point [BackedAnnotatedField] @Inject private com.oracle.hk2.devtest.cdi.ejb1.scoped.CustomScopedEjb.hk2Service
-  at com.oracle.hk2.devtest.cdi.ejb1.scoped.CustomScopedEjb.hk2Service(CustomScopedEjb.java:0)
-
-	at org.jboss.weld.bootstrap.Validator.validateInjectionPointForDeploymentProblems(Validator.java:375)
-	at org.jboss.weld.bootstrap.Validator.validateInjectionPoint(Validator.java:287)
-	at org.jboss.weld.bootstrap.Validator.validateGeneralBean(Validator.java:140)
-	at org.jboss.weld.bootstrap.Validator.validateRIBean(Validator.java:161)
-	at org.jboss.weld.bootstrap.Validator.validateBean(Validator.java:518)
-	at org.jboss.weld.bootstrap.Validator.validateBeans(Validator.java:504)
-	at org.jboss.weld.bootstrap.Validator.validateDeployment(Validator.java:479)
-	at org.jboss.weld.bootstrap.WeldStartup.validateBeans(WeldStartup.java:481)
-	at org.jboss.weld.bootstrap.WeldBootstrap.validateBeans(WeldBootstrap.java:90)
-	at org.glassfish.weld.WeldDeployer.event(WeldDeployer.java:230)
-	at org.glassfish.kernel.event.EventsImpl.send(EventsImpl.java:131)
-	at org.glassfish.internal.data.ApplicationInfo.load(ApplicationInfo.java:328)
-	at com.sun.enterprise.v3.server.ApplicationLifecycle.deploy(ApplicationLifecycle.java:496)
-	at com.sun.enterprise.v3.server.ApplicationLifecycle.deploy(ApplicationLifecycle.java:219)
-	at org.glassfish.deployment.admin.DeployCommand.execute(DeployCommand.java:491)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2$1.run(CommandRunnerImpl.java:540)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2$1.run(CommandRunnerImpl.java:536)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at javax.security.auth.Subject.doAs(Subject.java:360)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2.execute(CommandRunnerImpl.java:535)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$3.run(CommandRunnerImpl.java:566)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$3.run(CommandRunnerImpl.java:558)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at javax.security.auth.Subject.doAs(Subject.java:360)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:557)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:1465)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl.access$1300(CommandRunnerImpl.java:110)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1847)
-	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1723)
-	at org.glassfish.admin.rest.resources.admin.CommandResource.executeCommand(CommandResource.java:408)
-	at org.glassfish.admin.rest.resources.admin.CommandResource.execCommandSimpInMultOut(CommandResource.java:235)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:76)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:148)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:191)
-	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:200)
-	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:103)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:493)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:415)
-	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:104)
-	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:277)
-	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:272)
-	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:268)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:316)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:298)
-	at org.glassfish.jersey.internal.Errors.process(Errors.java:268)
-	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:289)
-	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:256)
-	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:703)
-	at org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainer.service(GrizzlyHttpContainer.java:377)
-	at org.glassfish.admin.rest.adapter.JerseyContainerCommandService$3.service(JerseyContainerCommandService.java:174)
-	at org.glassfish.admin.rest.adapter.RestAdapter.service(RestAdapter.java:179)
-	at com.sun.enterprise.v3.services.impl.ContainerMapper$HttpHandlerCallable.call(ContainerMapper.java:463)
-	at com.sun.enterprise.v3.services.impl.ContainerMapper.service(ContainerMapper.java:168)
-	at org.glassfish.grizzly.http.server.HttpHandler.runService(HttpHandler.java:206)
-	at org.glassfish.grizzly.http.server.HttpHandler.doHandle(HttpHandler.java:180)
-	at org.glassfish.grizzly.http.server.HttpServerFilter.handleRead(HttpServerFilter.java:242)
-	at org.glassfish.grizzly.filterchain.ExecutorResolver$9.execute(ExecutorResolver.java:119)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeFilter(DefaultFilterChain.java:284)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeChainPart(DefaultFilterChain.java:201)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.execute(DefaultFilterChain.java:133)
-	at org.glassfish.grizzly.filterchain.DefaultFilterChain.process(DefaultFilterChain.java:112)
-	at org.glassfish.grizzly.ProcessorExecutor.execute(ProcessorExecutor.java:77)
-	at org.glassfish.grizzly.nio.transport.TCPNIOTransport.fireIOEvent(TCPNIOTransport.java:539)
-	at org.glassfish.grizzly.strategies.AbstractIOStrategy.fireIOEvent(AbstractIOStrategy.java:112)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.run0(WorkerThreadIOStrategy.java:117)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.access$100(WorkerThreadIOStrategy.java:56)
-	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy$WorkerThreadRunnable.run(WorkerThreadIOStrategy.java:137)
-	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.doWork(AbstractThreadPool.java:593)
-	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.run(AbstractThreadPool.java:573)
-	at java.lang.Thread.run(Thread.java:745)
-. Please see server.log for more details.
-Tests run: 9, Failures: 1, Errors: 0, Skipped: 8, Time elapsed: 10.784 sec <<< FAILURE!
-
-Results :
-
-Failed tests:   beforeTest(com.oracle.hk2.devtest.cdi.runner.BasicCDITest): expected [true] but found [false]
-
-Tests run: 9, Failures: 1, Errors: 0, Skipped: 8
-
-[INFO] ------------------------------------------------------------------------
-[INFO] Reactor Summary:
-[INFO] 
-[INFO] GlassFish HK2 Tests ............................... SUCCESS [0.518s]
-[INFO] GlassFish HK2 Isolation Tests ..................... SUCCESS [0.013s]
-[INFO] GlassFish HK2 Isolation WebApps ................... SUCCESS [0.012s]
-[INFO] Isolation servlet one ............................. SUCCESS [16.055s]
-[INFO] Isolation servlet two ............................. SUCCESS [0.110s]
-[INFO] GlassFish HK2 Isolation Test Runner ............... SUCCESS [11.931s]
-[INFO] GlassFish HK2 CDI Tests ........................... SUCCESS [0.010s]
-[INFO] GlassFish HK2 Basic CDI test ...................... SUCCESS [0.008s]
-[INFO] HK2 CDI Basic Test EJB1 ........................... SUCCESS [0.575s]
-[INFO] HK2 CDI Basic Test Runner ......................... FAILURE [13.267s]
-[INFO] GlassFish HK2 CDI EAR test ........................ SKIPPED
-[INFO] HK2 CDI EAR Test Lib1 ............................. SKIPPED
-[INFO] HK2 CDI EAR Test Ejb1 ............................. SKIPPED
-[INFO] HK2 CDI EAR Test Ejb2 ............................. SKIPPED
-[INFO] HK2 CDI EAR Test War1 ............................. SKIPPED
-[INFO] HK2 CDI EAR Test War2 ............................. SKIPPED
-[INFO] HK2 CDI EAR Test EAR .............................. SKIPPED
-[INFO] HK2 CDI EAR Test Runner ........................... SKIPPED
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 43.998s
-[INFO] Finished at: Fri Nov 10 11:28:08 IST 2017
-[INFO] Final Memory: 69M/464M
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12:test (default-test) on project runner: There are test failures.
-[ERROR] 
-[ERROR] Please refer to /mnt/main/work/glassfish-src/glassfish/appserver/tests/hk2/cdi/basic/runner/target/surefire-reports for the individual test results.
-[ERROR] -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
-[ERROR] 
-[ERROR] After correcting the problems, you can resume the build with the command
-[ERROR]   mvn <goals> -rf :runner
