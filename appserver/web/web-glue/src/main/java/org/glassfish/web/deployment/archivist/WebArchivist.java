@@ -65,7 +65,8 @@ import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.web.deployment.util.*;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.xml.sax.SAXParseException;
+
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -391,7 +392,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptorImpl> {
                             wfArchivist.hasStandardDeploymentDescriptor(embeddedArchive)) {
                         try {
                             wfDesc = (WebFragmentDescriptor)wfArchivist.open(embeddedArchive);
-                        } catch(SAXParseException ex) {
+                        } catch(SAXException ex) {
                             IOException ioex = new IOException();
                             ioex.initCause(ex);
                             throw ioex;

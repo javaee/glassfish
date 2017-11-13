@@ -749,21 +749,21 @@ class PartItem
             }
         }
 
-        OutputStream output = getOutputStream();
-        if (cachedContent != null) {
-            output.write(cachedContent);
-        } else {
-            if (dfosFile != null && (dfosFile.getPath() == null || dfosFile.getPath().contains("\0"))) {
-                String msg = MessageFormat.format(
-                        rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), dfosFile.getPath());
-                throw new IOException(msg);
+        try (OutputStream output = getOutputStream()) {
+            if (cachedContent != null) {
+                output.write(cachedContent);
+            } else {
+                if (dfosFile != null && (dfosFile.getPath() == null || dfosFile.getPath().contains("\0"))) {
+                    String msg = MessageFormat.format(
+                      rb.getString(LogFacade.REPOSITORY_PATH_CONTAIN_NULL_CHARACTER), dfosFile.getPath());
+                    throw new IOException(msg);
+                }
+                FileInputStream input = new FileInputStream(dfosFile);
+                Streams.copy(input, output, false);
+                deleteFile(dfosFile);
+                dfosFile = null;
             }
-            FileInputStream input = new FileInputStream(dfosFile);
-            Streams.copy(input, output, false);
-            deleteFile(dfosFile);
-            dfosFile = null;
         }
-        output.close();
 
         cachedContent = null;
     }

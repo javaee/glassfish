@@ -109,19 +109,19 @@
 #include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="sheetSection">
           <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.WriteSystemLog}" helpText="$resource{i18nc.log.WriteSystemlogHelp}">
-                <sun:checkbox id="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging']}" selectedValue="true" />
+                <sun:checkbox id="writeSystemLogEnabled"  selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging']}" selectedValue="true" />
            </sun:property> 
 
            <sun:property id="logtoConsole"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogtoConsole}" helpText="$resource{i18nc.log.LogtoConsoleHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.logtoConsole']}"  selectedValue="true" />
+                <sun:checkbox  selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.logtoConsole']}"  selectedValue="true" />
            </sun:property>
           
            <sun:property id="rotationOnDateChange"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.rotationOnDateChange}" helpText="$resource{i18nc.log.rotationOnDateChangeHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange']}"  selectedValue="true" />
+                <sun:checkbox  selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange']}"  selectedValue="true" />
            </sun:property>
 
           <sun:property id="multiline"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.multiLineMode}" helpText="$resource{i18nc.log.multiLineModeHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.multiLineMode']}"  selectedValue="true" />
+                <sun:checkbox  selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.multiLineMode']}"  selectedValue="true" />
            </sun:property>
 
            <sun:property id="consoleFormat"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.ConsoleLogFormat}" helpText="$resource{i18nc.log.ConsoleLogFormatHelp}">

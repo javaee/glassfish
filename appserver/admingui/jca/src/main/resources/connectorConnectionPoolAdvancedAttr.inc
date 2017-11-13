@@ -76,11 +76,11 @@
    </sun:property>
 
    <sun:property id="poolingProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.pooling}" helpText="$resource{i18njca.jcaPool.poolingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['pooling']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['pooling']}" selectedValue="true" />
        </sun:property>
 
     <sun:property id="p7"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.lazyConnectionAssociation}" helpText="$resource{i18njca.jcaPool.lazyConnectionAssociationHelp}">
-        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['lazyConnectionAssociation']}" label="$resource{i18n.common.Enabled}" onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
+        <sun:checkbox id="associate"  selected="#{pageSession.valueMap['lazyConnectionAssociation']}"  onClick="enableDisableLazyConnection('#{associateId}');" selectedValue="true" >  
            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{associateId});
             />
@@ -88,7 +88,7 @@
    </sun:property>
 
     <sun:property id="p6"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.lazyConnectionEnlistment}" helpText="$resource{i18njca.jcaPool.lazyConnectionEnlistmentHelp}">
-        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['lazyConnectionEnlistment']}" label="$resource{i18n.common.Enabled}"  selectedValue="true">  
+        <sun:checkbox id="enlist"  selected="#{pageSession.valueMap['lazyConnectionEnlistment']}"   selectedValue="true">  
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{enlistId});
             />
@@ -96,11 +96,11 @@
     </sun:property>
 
     <sun:property id="p8"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.associationWithThread}" helpText="$resource{i18njca.jcaPool.associationWithThreadHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['associateWithThread']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['associateWithThread']}"  selectedValue="true"/>  
    </sun:property>
 
     <sun:property id="p9"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.matchConnections}" helpText="$resource{i18njca.jcaPool.matchConnectionsHelp}">
-        <sun:checkbox  selected="#{pageSession.valueMap['matchConnections']}" label="$resource{i18n.common.Enabled}" selectedValue="true"/>  
+        <sun:checkbox  selected="#{pageSession.valueMap['matchConnections']}"  selectedValue="true"/>  
    </sun:property>
 
     <sun:property id="p10"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxConnectionUsageCount}" helpText="$resource{i18njca.jcaPool.maxConnectionUsageCountHelp}">

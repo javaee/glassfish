@@ -59,7 +59,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Represents a Launchable main class which the caller specifies by the
@@ -85,7 +85,7 @@ public class
         return mainClass;
     }
 
-    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXException {
         /*
          * There is no developer-provided descriptor possible so just
          * use a default one.

@@ -63,7 +63,7 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Implements a builder for accumulating configuration information for the
@@ -179,7 +179,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
     private AppClientContainer createContainer(final Launchable client,
             final CallbackHandler callerSuppliedCallbackHandler,
-            final boolean isTextAuth) throws BootException, BootException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, InjectionException, IOException, SAXParseException {
+            final boolean isTextAuth) throws BootException, BootException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, InjectionException, IOException, SAXException {
         AppClientContainer container = ACCModulesManager.getService(AppClientContainer.class);
         //process the packaged permissions.xml
         container.processPermissions();

@@ -67,7 +67,7 @@
         <jstl-api.version>1.2.1</jstl-api.version>
         <mojarra.version>2.3.2</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.10</woodstock.version>
+        <woodstock.version>4.0.2.11</woodstock.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
         <javax.interceptor-api.version>1.2.1</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
@@ -133,6 +133,7 @@
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
 	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
         <libpam4j.version>1.9</libpam4j.version>
+	<easymock.version>3.5</easymock.version>
     </properties>
 
     <modules>
