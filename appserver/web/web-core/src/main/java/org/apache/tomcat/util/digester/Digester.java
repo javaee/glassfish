@@ -61,6 +61,7 @@
 package org.apache.tomcat.util.digester;
 
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.LogFacade;
 import org.glassfish.web.util.IntrospectionUtils;
 import org.xml.sax.*;
@@ -1164,7 +1165,7 @@ public class Digester extends DefaultHandler {
                 try {
                     Rule rule = rules.get(j);
                     if (debug) {
-                        log.log(Level.FINE, "  Fire end() for " + rule);
+                        log.log(Level.FINE, neutralizeForLog("  Fire end() for " + rule));
                     }
                     rule.end(namespaceURI, name);
                 } catch (Exception e) {
