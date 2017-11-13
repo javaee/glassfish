@@ -81,7 +81,7 @@ public final class AuthenticationInfo {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("User: ").append(user);
-        result.append(", Password: ").append(StringUtils.ok(new String(password)) ? "<non-null>" : "<null>");
+        result.append(", Password: ").append((password != null && password.length > 0) ? "<non-null>" : "<null>");
         return result.toString();
     }
 }

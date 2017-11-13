@@ -361,7 +361,7 @@ public class ProgramOptions {
     public void setPassword(char[] password, PasswordLocation location) {
         if (logger.isLoggable(Level.FINER))
             logger.finer("Setting password to: " +
-                                    (ok(new String(password)) ? "<non-null>" : "<null>"));
+                                    ((password != null && password.length > 0) ? "<non-null>" : "<null>"));
         this.password = password;
         this.location = location;
     }

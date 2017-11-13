@@ -105,7 +105,7 @@ public final class LoginInfo implements Comparable<LoginInfo> {
     }
     
     public String toString() {
-        return ( host + port + user + new String(password) );
+        return ( host + port + user + password != null ? new String(password) : null);
     }
 
     public int compareTo(final LoginInfo that) {

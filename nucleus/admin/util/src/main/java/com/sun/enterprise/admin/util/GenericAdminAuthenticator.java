@@ -452,9 +452,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 user = up[0];
             } else if (up.length >= 2) {
                 user = up[0];
-                password = up[1].toCharArray();
-                if (password == null)
-                    password = "".toCharArray();
+                password = up[1] != null ? up[1].toCharArray() : "".toCharArray();
             }
             if (up.length > 2) {
                 host = up[2];
@@ -476,7 +474,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             realm = as.getAuthRealmName();
 
         try {
-            loginAsAdmin(user, new String(password), realm, host);
+            loginAsAdmin(user, password != null ? new String(password) : null, realm, host);
             return null;
         } catch (LoginException e) {
             if (ADMSEC_LOGGER.isLoggable(Level.FINE)) {

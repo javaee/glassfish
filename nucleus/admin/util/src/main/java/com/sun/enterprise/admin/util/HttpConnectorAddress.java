@@ -295,7 +295,7 @@ public final class HttpConnectorAddress {
          * character with empty string "" works. Hence implementing the same.
          * Date: 10/10/2003.
          */
-        String cs = null, user = this.getUser(), pass = new String(this.getPassword());
+        String cs = null, user = this.getUser(), pass = this.getPassword() != null ? new String(this.getPassword()) : null;
         String up = (user == null) ? "" : user;
         String pp = (pass == null) ? "" : pass;
         cs = up + ":" + pp;

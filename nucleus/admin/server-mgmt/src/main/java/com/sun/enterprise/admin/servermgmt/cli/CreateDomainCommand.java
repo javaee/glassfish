@@ -183,7 +183,8 @@ public final class CreateDomainCommand extends CLICommand {
                 if (ok(val)) {
                     programOpts.setUser(val);
                     if (adminPassword == null) {
-                        adminPassword = new String(getAdminPassword());
+                        char[] pwdArr = getAdminPassword();
+                        adminPassword = pwdArr != null ? new String(pwdArr) : null;
                     }
                 }
             }
@@ -299,7 +300,8 @@ public final class CreateDomainCommand extends CLICommand {
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
         }
         else {
-            adminPassword = new String(getAdminPassword());
+            char[] pwdArr = getAdminPassword();
+            adminPassword = pwdArr != null ? new String(pwdArr) : null;
             boolean haveAdminPwd = true;
         }
 
@@ -309,7 +311,8 @@ public final class CreateDomainCommand extends CLICommand {
 
         if (masterPassword == null) {
             if (useMasterPassword) {
-                masterPassword = new String(getMasterPassword());
+                char[] mpArr = getMasterPassword();
+                masterPassword = mpArr != null ? new String(mpArr) : null;
             } else {
                 masterPassword = DEFAULT_MASTER_PASSWORD;
             }
@@ -512,7 +515,7 @@ public final class CreateDomainCommand extends CLICommand {
         }
         //checkAsadminPrefsFile();
         if (saveLoginOpt) {
-            saveLogin(aPort, adminUser, adminPassword.toCharArray(), domainName);
+            saveLogin(aPort, adminUser, adminPassword != null ? adminPassword.toCharArray() : null, domainName);
         }
     }
 

@@ -701,7 +701,7 @@ public class RemoteAdminCommand {
                     logger.log(Level.FINER, "URL: {0}", url.toURL(uriString).toString());
                     logger.log(Level.FINER, "Password options: {0}", passwordOptions);
                     logger.log(Level.FINER, "Using auth info: User: {0}, Password: {1}", 
-                            new Object[]{user, ok(new String(password)) ? "<non-null>" : "<null>"});
+                            new Object[]{user, (password != null && password.length > 0) ? "<non-null>" : "<null>"});
                 }
                 final AuthenticationInfo authInfo = authenticationInfo();
                 if (authInfo != null) {

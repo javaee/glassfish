@@ -123,7 +123,7 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
      * Get SSH password from password file or user.
      */
     private String getRemotePassword(String node, String key) throws CommandException {
-        String password = getFromPasswordFile(key) ;
+        String password = getFromPasswordFile(key);
 
         if (password != null) {
             String alias = RelativePathResolver.getAlias(password);
@@ -134,7 +134,8 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
         //get password from user if not found in password file
         if (password == null) {
             if (programOpts.isInteractive()) {
-                password = new String(readPassword(Strings.get("SSHPasswordPrompt", getRemoteUser(), node)));
+                char[] pArr = readPassword(Strings.get("SSHPasswordPrompt", getRemoteUser(), node));
+                password = pArr != null ? new String(pArr) : null;
             }
             else {
                 throw new CommandException(Strings.get("SSHPasswordNotFound"));
@@ -160,7 +161,8 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
         if (passphrase == null) {
             if (programOpts.isInteractive()) {
                 //i18n
-                passphrase = new String(readPassword(Strings.get("SSHPassphrasePrompt", getSshKeyFile())));
+                char[] pArr = readPassword(Strings.get("SSHPassphrasePrompt", getSshKeyFile()));
+                passphrase = pArr != null ? new String(pArr) : null;
             }
             else {
                 passphrase = ""; //empty passphrase
@@ -179,7 +181,8 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
         if (masterPass == null) {
             if (programOpts.isInteractive()) {
                 //i18n
-                masterPass = new String(readPassword(Strings.get("DomainMasterPasswordPrompt", domain)));
+                char[] mpArr = readPassword(Strings.get("DomainMasterPasswordPrompt", domain));
+                masterPass = mpArr != null ? new String(mpArr) : null;
             }
             else {
                 masterPass = "changeit"; //default

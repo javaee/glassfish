@@ -763,8 +763,8 @@ public abstract class CLICommand implements PostConstruct {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
             logger.finer("Passwords were read from password file: " +
                                         pwfile);
-            char[] password = passwords.get(
-                    Environment.getPrefix() + "PASSWORD").toCharArray();
+            char[] password = passwords.get(Environment.getPrefix() + "PASSWORD") != null ?
+                    passwords.get(Environment.getPrefix() + "PASSWORD").toCharArray() : null;
             if (password != null && programOpts.getPassword() == null)
                 programOpts.setPassword(password,
                     ProgramOptions.PasswordLocation.PASSWORD_FILE);
@@ -1051,7 +1051,7 @@ public abstract class CLICommand implements PostConstruct {
                     msg = strings.get("missingPasswordAdvice", name, passwordName(opt));
                 throw new CommandValidationException(msg);
             }
-            options.set(pwdname, new String(pwd));
+            options.set(pwdname, pwd != null ? new String(pwd) : null);
         }
     }
 
@@ -1078,7 +1078,7 @@ public abstract class CLICommand implements PostConstruct {
             boolean create) throws CommandValidationException {
 
         String passwordName = passwordName(opt);
-        char[] password = passwords.get(passwordName).toCharArray();
+        char[] password = passwords.get(passwordName) != null ? passwords.get(passwordName).toCharArray() : null;
         if (password != null)
             return password;
 
@@ -1133,8 +1133,8 @@ public abstract class CLICommand implements PostConstruct {
             if (newpassword == null)
                 newpassword = "".toCharArray();
             if (newpassword.length == 0) {
-                newpassword = defaultPassword.toCharArray();
-                passwords.put(passwordName, new String(newpassword));
+                newpassword = defaultPassword != null ? defaultPassword.toCharArray() : null;
+                passwords.put(passwordName, newpassword != null ? new String(newpassword) : null);
                 return newpassword;
             }
         }
@@ -1146,7 +1146,7 @@ public abstract class CLICommand implements PostConstruct {
          * we have.
          */
         if (!create) {
-            passwords.put(passwordName, new String(newpassword));
+            passwords.put(passwordName, newpassword != null ? new String(newpassword) : null);
             return newpassword;
         }
 
@@ -1164,7 +1164,7 @@ public abstract class CLICommand implements PostConstruct {
                 strings.get("OptionsDoNotMatch",
                             ok(prompt) ? prompt : passwordName));
         }
-        passwords.put(passwordName, new String(newpassword));
+        passwords.put(passwordName, newpassword != null ? new String(newpassword) : null);
         return newpassword;
     }
 
