@@ -58,7 +58,7 @@
 
 package org.apache.catalina.core;
 
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.glassfish.grizzly.http.server.util.AlternateDocBase;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
@@ -4972,7 +4972,7 @@ public class StandardContext
         synchronized (filterConfigs) {
             filterConfigs.clear();
             for (String name : filterDefs.keySet()) {
-                String safeName = LogCleanerUtil.neutralizeForLog(name);
+                String safeName = neutralizeForLog(name);
                 if(log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE, " Starting filter '" + safeName + "'");
                 }
@@ -5005,7 +5005,7 @@ public class StandardContext
         // Release all Filter and FilterConfig instances
         synchronized (filterConfigs) {
             for (String filterName : filterConfigs.keySet()) {
-                String safeFilterName = LogCleanerUtil.neutralizeForLog(filterName);
+                String safeFilterName = neutralizeForLog(filterName);
                 if(log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE, " Stopping filter '" + safeFilterName + "'");
                 }
@@ -5093,7 +5093,7 @@ public class StandardContext
             throws Exception {
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Configuring event listener class '" +
-                    LogCleanerUtil.neutralizeForLog(listenerClassName) + "'");
+                    neutralizeForLog(listenerClassName) + "'");
         }
         return createListener((Class<EventListener>)
             loader.loadClass(listenerClassName));
@@ -5231,11 +5231,11 @@ public class StandardContext
             this.resources = proxyDirContext;
         } catch(Throwable t) {
             if(log.isLoggable(Level.FINE)) {
-                String msg = MessageFormat.format(rb.getString(LogFacade.STARTING_RESOURCES_EXCEPTION), LogCleanerUtil.neutralizeForLog(getName()));
+                String msg = MessageFormat.format(rb.getString(LogFacade.STARTING_RESOURCES_EXCEPTION), neutralizeForLog(getName()));
                 log.log(Level.SEVERE, msg, t);
             } else {
                 log.log(Level.SEVERE, LogFacade.STARTING_RESOURCE_EXCEPTION_MESSAGE,
-                        new Object[] {LogCleanerUtil.neutralizeForLog(getName()), t.getMessage()});
+                        new Object[] {neutralizeForLog(getName()), t.getMessage()});
             }
             ok = false;
         }
@@ -5383,7 +5383,7 @@ public class StandardContext
                 try {
                     wrapper.load();
                 } catch(ServletException e) {
-                    String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_LOAD_EXCEPTION), LogCleanerUtil.neutralizeForLog(getName()));
+                    String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_LOAD_EXCEPTION), neutralizeForLog(getName()));
                     getServletContext().log(msg, StandardWrapper.getRootCause(e));
                     // NOTE: load errors (including a servlet that throws
                     // UnavailableException from the init() method) are NOT
@@ -5426,7 +5426,7 @@ public class StandardContext
 
         if (started) {
             if (log.isLoggable(Level.INFO)) {
-                log.log(Level.INFO, LogFacade.CONTAINER_ALREADY_STARTED_EXCEPTION, LogCleanerUtil.neutralizeForLog(logName()));
+                log.log(Level.INFO, LogFacade.CONTAINER_ALREADY_STARTED_EXCEPTION, neutralizeForLog(logName()));
             }
             return;
         }
@@ -5442,7 +5442,7 @@ public class StandardContext
         }
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "Starting " +
-                    ("".equals(getName()) ? "ROOT" : LogCleanerUtil.neutralizeForLog(getName())));
+                    ("".equals(getName()) ? "ROOT" : neutralizeForLog(getName())));
         }
 
         // Set JMX object name for proper pipeline registration
@@ -7098,7 +7098,7 @@ public class StandardContext
      * Writes the specified message to a servlet log file.
      */
     public void log(String message) {
-        message= LogCleanerUtil.neutralizeForLog(message);
+        message= neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null) {
             /* PWC 6403328
@@ -7114,7 +7114,7 @@ public class StandardContext
      * Writes the specified exception and message to a servlet log file.
      */
     public void log(Exception exception, String message) {
-        message= LogCleanerUtil.neutralizeForLog(message);
+        message= neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(exception, logName() + message);
@@ -7124,7 +7124,7 @@ public class StandardContext
      * Writes the specified message and exception to a servlet log file.
      */
     public void log(String message, Throwable throwable) {
-        message= LogCleanerUtil.neutralizeForLog(message);
+        message= neutralizeForLog(message);
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(logName() + message, throwable);

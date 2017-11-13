@@ -60,7 +60,7 @@
 package org.apache.catalina.session;
 
 import com.sun.enterprise.spi.io.BaseIndirectlySerializable;
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.security.SecurityUtil;
@@ -2316,7 +2316,7 @@ public class StandardSession
      * @param message Message to be logged
      */
     protected void log(String message) {
-        message = LogCleanerUtil.neutralizeForLog(message);
+        message = neutralizeForLog(message);
         if ((manager != null) && (manager instanceof ManagerBase)) {
             ((ManagerBase) manager).log(message);
         } else {
@@ -2332,7 +2332,7 @@ public class StandardSession
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
-        message = LogCleanerUtil.neutralizeForLog(message);
+        message = neutralizeForLog(message);
         if ((manager != null) && (manager instanceof ManagerBase)) {
             ((ManagerBase) manager).log(message, t);
         } else {

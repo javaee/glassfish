@@ -61,7 +61,7 @@ package org.apache.catalina.core;
 
 import org.apache.catalina.*;
 import org.apache.catalina.util.LifecycleSupport;
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import java.beans.PropertyChangeListener;
@@ -609,7 +609,7 @@ public class StandardService
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
 
         if (log.isLoggable(Level.INFO)) {
-            log.log(Level.INFO, LogFacade.STOPPING_SERVICE, LogCleanerUtil.neutralizeForLog(this.name));
+            log.log(Level.INFO, LogFacade.STOPPING_SERVICE, neutralizeForLog(this.name));
         }
         started = false;
 
@@ -659,7 +659,7 @@ public class StandardService
                 domain=engine.getName();
                 oname=new ObjectName(domain + ":type=Service,serviceName="+name);
             } catch (Exception e) {
-                String msg = MessageFormat.format(rb.getString(LogFacade.ERROR_REGISTER_SERVICE_EXCEPTION), LogCleanerUtil.neutralizeForLog(domain));
+                String msg = MessageFormat.format(rb.getString(LogFacade.ERROR_REGISTER_SERVICE_EXCEPTION), neutralizeForLog(domain));
                 log.log(Level.SEVERE, msg, e);
             }
             
@@ -695,7 +695,7 @@ public class StandardService
         try {
             initialize();
         } catch( Throwable t ) {
-            String msg = MessageFormat.format(rb.getString(LogFacade.FAILED_SERVICE_INIT_EXCEPTION), LogCleanerUtil.neutralizeForLog(domain));
+            String msg = MessageFormat.format(rb.getString(LogFacade.FAILED_SERVICE_INIT_EXCEPTION), neutralizeForLog(domain));
             log.log(Level.SEVERE, msg, t);
         }
     }

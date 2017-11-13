@@ -106,7 +106,7 @@ import javax.servlet.http.WebConnection;
 import com.sun.appserv.ProxyHandler;
 import javax.servlet.http.MappingMatch;
 
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.Context;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.Globals;
@@ -147,6 +147,7 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.web.valve.GlassFishValve;
 import javax.servlet.http.HttpServletMapping;
+import static com.sun.logging.LogCleanerUtil.getSafeHeaderValue;
 
 /**
  * Wrapper object for the Coyote request.
@@ -3780,7 +3781,7 @@ public class Request
              */
             if (jvmRoute == null) {
                 Cookie newCookie = new Cookie(
-                        LogCleanerUtil.getSafeHeaderValue(getContext().getSessionCookieName()), LogCleanerUtil.getSafeHeaderValue(session.getId()));
+                        getSafeHeaderValue(getContext().getSessionCookieName()), getSafeHeaderValue(session.getId()));
                 configureSessionCookie(newCookie);
                 ((HttpResponse)response).addSessionCookieInternal(newCookie);
             }

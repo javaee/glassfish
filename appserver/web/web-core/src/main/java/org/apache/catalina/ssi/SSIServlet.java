@@ -60,7 +60,7 @@ package org.apache.catalina.ssi;
 
 
 import org.apache.catalina.Globals;
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -185,19 +185,19 @@ public class SSIServlet extends HttpServlet {
         if (debug > 0)
             log("SSIServlet.requestHandler()\n" + "Serving "
                     + (buffered?"buffered ":"unbuffered ") + "resource '"
-                    + LogCleanerUtil.neutralizeForLog(path) + "'");
+                    + neutralizeForLog(path) + "'");
         // Exclude any resource in the /WEB-INF and /META-INF subdirectories
         // (the "toUpperCase()" avoids problems on Windows systems)
         if (path == null || path.toUpperCase(Locale.ENGLISH).startsWith("/WEB-INF")
                 || path.toUpperCase(Locale.ENGLISH).startsWith("/META-INF")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't serve file: " + LogCleanerUtil.neutralizeForLog(path));
+            log("Can't serve file: " + neutralizeForLog(path));
             return;
         }
         URL resource = servletContext.getResource(path);
         if (resource == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't find file: " + LogCleanerUtil.neutralizeForLog(path));
+            log("Can't find file: " + neutralizeForLog(path));
             return;
         }
         String resourceMimeType = servletContext.getMimeType(path);

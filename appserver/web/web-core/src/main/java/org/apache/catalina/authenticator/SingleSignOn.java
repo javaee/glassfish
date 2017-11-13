@@ -62,7 +62,7 @@ package org.apache.catalina.authenticator;
 import org.apache.catalina.*;
 import org.apache.catalina.Logger;
 import org.apache.catalina.valves.ValveBase;
-import com.sun.logging.LogCleanerUtil;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -501,7 +501,7 @@ public class SingleSignOn
      * @param message Message to be logged
      */
     protected void log(String message) {
-        message = LogCleanerUtil.neutralizeForLog(message);
+        message = neutralizeForLog(message);
         Logger logger = container.getLogger();
         if (logger != null) {
             logger.log(this.toString() + ": " + message);
@@ -520,7 +520,7 @@ public class SingleSignOn
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
-        message = LogCleanerUtil.neutralizeForLog(message);
+        message = neutralizeForLog(message);
         Logger logger = container.getLogger();
         if (logger != null) {
             logger.log(this.toString() + ": " + message, t,
