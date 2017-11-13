@@ -95,6 +95,7 @@ import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 
 /**
  *
@@ -189,11 +190,11 @@ public class RestUtil {
         if (logger.isLoggable(Level.FINEST)) {
             Map maskedAttr = maskOffPassword(attrs);
             logger.log(Level.FINEST,
-                       GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO",
+                       neutralizeForLog(GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO",
                                                 new Object[]{
                         endpoint,
                         (useData && "post".equals(method)) ? data : attrs, method
-                    }));
+                    })));
         }
 
         // Execute the request...
@@ -451,7 +452,7 @@ public class RestUtil {
                                 GuiUtil.handleError(handlerCtx, message);
                                 if (!quiet) {
 				    Logger logger = GuiUtil.getLogger();
-                                    logger.severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
+                                    logger.severe(neutralizeForLog(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr})));
 				    if (logger.isLoggable(Level.FINEST)){
                                     	logger.finest("response.getResponseBody(): " + response.getResponseBody());
 				    }
@@ -464,7 +465,7 @@ public class RestUtil {
                         } else { // Issue Number :13312 handling the case when throwException is false.
                             if (!quiet) {
 				Logger logger = GuiUtil.getLogger();
-                                logger.severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
+                                logger.severe(neutralizeForLog(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr})));
 				if (logger.isLoggable(Level.FINEST)){
                                 	logger.finest("response.getResponseBody(): " + response.getResponseBody());
 				}
@@ -474,7 +475,7 @@ public class RestUtil {
                     }
                     case WARNING: {
                         GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);
-                        GuiUtil.getLogger().warning(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
+                        GuiUtil.getLogger().warning(neutralizeForLog(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr})));
                         return responseMap;
                     }
                     case SUCCESS: {
@@ -484,7 +485,7 @@ public class RestUtil {
             } catch (Exception ex) {
                 if (!quiet) {
 		    Logger logger = GuiUtil.getLogger();
-                    logger.severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr}));
+                    logger.severe(neutralizeForLog(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, maskedAttr})));
 		    if (logger.isLoggable(Level.FINEST)){
                         logger.finest("response.getResponseBody(): " + response.getResponseBody());
 		    }
