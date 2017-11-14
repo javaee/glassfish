@@ -119,8 +119,7 @@ public class ASEntBeanCmpResource extends EjbTest implements EjbCheck {
                     }
 
 //                    String password = defPrincipal.getPassword();
-                    char[] password = getXPathValue("sun-ejb-jar/enterprise-beans/cmp-resource/default-resource-principal/password")
-                            .toCharArray();
+                    char[] password = getXPathValueasCharArray("sun-ejb-jar/enterprise-beans/cmp-resource/default-resource-principal/password");
                     if(password == null || password.length==0){
                         oneWarning=true;//4698046
                         addWarningDetails(result, compName);

@@ -378,6 +378,7 @@ public class SecurityHandler {
 
             attrs = new HashMap<String, Object>();
             attrs.put("id", userid);
+            // Converting the password back to string as this is passed directly as payload in REST request
             attrs.put("userpassword", new String(password));
             attrs.put("target", configName);
             if (grouplist != null && grouplist.contains(","))
