@@ -81,6 +81,7 @@ import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
+import org.glassfish.common.util.InputValidationUtil;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.AfterServiceListener;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -616,10 +617,10 @@ public class CoyoteAdapter extends HttpHandler {
             // END CR 6590921
             // Issue a permanent redirect
             // Validating the redirectPath for header injection
-            if (ResponseUtil.validateStringforCRLF(redirectPath)) {
+            if (InputValidationUtil.validateStringforCRLF(redirectPath)) {
                 response.sendError(403, "Forbidden");
             } else {
-                response.sendRedirect(ResponseUtil.removeLinearWhiteSpaces(redirectPath),
+                response.sendRedirect(InputValidationUtil.removeLinearWhiteSpaces(redirectPath),
                         false);
             }
 

@@ -79,7 +79,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.ResponseUtil;
+import org.glassfish.common.util.InputValidationUtil;
 import org.glassfish.grizzly.WriteHandler;
 import org.glassfish.grizzly.http.util.ByteChunk;
 
@@ -609,8 +609,8 @@ public class OutputBuffer extends Writer
     private Cookie getSafeCookie(String name, String value) {
         Cookie cookie = null;
         try {
-            String safeName = ResponseUtil.getSafeHeaderName(name);
-            String safeValue = ResponseUtil.getSafeCookieHeaderValue(value);
+            String safeName = InputValidationUtil.getSafeHeaderName(name);
+            String safeValue = InputValidationUtil.getSafeCookieHeaderValue(value);
             cookie = new Cookie(safeName, safeValue);
         } catch (Exception e) {
             try {
