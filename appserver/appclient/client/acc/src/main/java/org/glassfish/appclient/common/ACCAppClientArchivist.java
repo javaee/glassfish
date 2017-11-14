@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import org.glassfish.hk2.api.PerLookup;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * AppClientArchivist that does not warn if both the GlassFish and the
@@ -80,7 +80,7 @@ public class ACCAppClientArchivist extends AppClientArchivist implements PostCon
     IterableProvider<ExtensionsArchivist> allExtensionArchivists;
 
     @Override
-    public void readRuntimeDeploymentDescriptor(ReadableArchive archive, ApplicationClientDescriptor descriptor) throws IOException, SAXParseException {
+    public void readRuntimeDeploymentDescriptor(ReadableArchive archive, ApplicationClientDescriptor descriptor) throws IOException, SAXException {
         super.readRuntimeDeploymentDescriptor(archive, descriptor, false);
     }
 

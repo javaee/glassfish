@@ -66,7 +66,7 @@
     </sun:textField>
 </sun:property>
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}"  helpText="$resource{i18n.deploy.statusHelp}">
-	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.rar['enabled']}" selectedValue="true" >
+	<sun:checkbox  selected="#{pageSession.rar['enabled']}" selectedValue="true" >
         <!beforeCreate
             mapPut(map="#{pageSession.rar}", key="enabled", value="true" );
         />
@@ -74,7 +74,7 @@
 </sun:property>
 
 <sun:property id="implicitCdi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.implicitCdi}" helpText="$resource{i18n.deploy.implicitCdiHelp}">
-    <sun:checkbox id="implicitCdi" label="$resource{i18n.common.Enabled}" selected="#{pageSession.rar['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
+    <sun:checkbox id="implicitCdi"  selected="#{pageSession.rar['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">

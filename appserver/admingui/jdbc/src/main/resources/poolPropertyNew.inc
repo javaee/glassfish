@@ -85,7 +85,7 @@
     </sun:property>
 
     <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.ping}" helpText="$resource{i18njdbc.jdbcPool.pingHelp}">
-        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{sessionScope.wizardMap.ping}" selectedValue="true" />
+        <sun:checkbox  selected="#{sessionScope.wizardMap.ping}" selectedValue="true" />
    </sun:property>
     <sun:property id="descProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
         <sun:textField id="desc" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{sessionScope.wizardMap.Description}" />
@@ -130,7 +130,7 @@
 <sun:propertySheetSection id="transactionPropertySheet" label="$resource{i18njdbc.jdbcPool.transIsolationSection}">
 
     <sun:property id="nonTransProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.nonTransConnection}" helpText="$resource{i18njdbc.jdbcPool.nonTransConnectionHelp}">
-        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{sessionScope.wizardMap.nonTransactionalConnections}" selectedValue="true" />
+        <sun:checkbox  selected="#{sessionScope.wizardMap.nonTransactionalConnections}" selectedValue="true" />
    </sun:property>
 
     <sun:property id="transProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.transIsolation}" helpText="$resource{i18njdbc.jdbcPool.transIsolationHelp}" >

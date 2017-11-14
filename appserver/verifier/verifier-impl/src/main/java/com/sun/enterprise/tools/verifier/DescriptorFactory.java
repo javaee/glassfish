@@ -65,7 +65,7 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,7 +157,7 @@ public class DescriptorFactory
             try {
                 application = applicationFactory.openArchive(
                         appName, archivist, archive, true);
-            } catch(SAXParseException e) {
+            } catch(SAXException e) {
                 throw new IOException(e);
             }
             if (application != null) {

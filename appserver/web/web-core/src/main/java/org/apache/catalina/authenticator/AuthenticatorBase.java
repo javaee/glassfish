@@ -58,13 +58,14 @@
 
 package org.apache.catalina.authenticator;
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.web.valve.GlassFishValve;
-
+import java.security.SecureRandom;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +74,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.text.MessageFormat;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -191,13 +191,13 @@ public abstract class AuthenticatorBase
     /**
      * A random number generator to use when generating session identifiers.
      */
-    protected Random random = null;
+    protected SecureRandom random = null;
     
     /**
      * The Java class name of the random number generator class to be used
      * when generating session identifiers.
      */
-    protected String randomClass = java.security.SecureRandom.class.getName();
+    protected String randomClass = SecureRandom.class.getName();
         
     /**
      * The SingleSignOn implementation in our request processing chain,
@@ -474,7 +474,7 @@ public abstract class AuthenticatorBase
                          ((HttpServletRequest) request.getRequest()).getMethod() + " " +
                          ((HttpServletRequest) request.getRequest()).getRequestURI();
 
-            log.log(Level.FINE, msg);
+            log.log(Level.FINE, neutralizeForLog(msg));
         }
         LoginConfig config = this.context.getLoginConfig();
         
@@ -492,7 +492,7 @@ public abstract class AuthenticatorBase
                                          session.getAuthType() +
                                          " for principal " +
                                          session.getPrincipal();
-                            log.log(Level.FINE, msg);
+                            log.log(Level.FINE, neutralizeForLog(msg));
                         }
                         hrequest.setAuthType(session.getAuthType());
                         hrequest.setUserPrincipal(principal);
@@ -744,12 +744,12 @@ public abstract class AuthenticatorBase
      * generating session identifiers.  If there is no such generator
      * currently defined, construct and seed a new one.
      */
-    protected synchronized Random getRandom() {
+    protected synchronized SecureRandom getRandom() {
         
         if (this.random == null) {
             try {
                 Class clazz = Class.forName(randomClass);
-                this.random = (Random) clazz.newInstance();
+                this.random = (SecureRandom) clazz.newInstance();
                 long seed = System.currentTimeMillis();
                 char entropy[] = getEntropy().toCharArray();
                 for (int i = 0; i < entropy.length; i++) {
@@ -758,7 +758,7 @@ public abstract class AuthenticatorBase
                 }
                 this.random.setSeed(seed);
             } catch (Exception e) {
-                this.random = new java.util.Random();
+                this.random = new SecureRandom();
             }
         }
         
@@ -801,6 +801,7 @@ public abstract class AuthenticatorBase
      * @param message Message to be logged
      */
     protected void log(String message) {
+        message = neutralizeForLog(message);
         org.apache.catalina.Logger logger = context.getLogger();
         if (logger != null) {
             logger.log("Authenticator[" + context.getPath() + "]: " +
@@ -820,6 +821,7 @@ public abstract class AuthenticatorBase
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
+        message = neutralizeForLog(message);
         org.apache.catalina.Logger logger = context.getLogger();
         if (logger != null) {
             logger.log("Authenticator[" + context.getPath() + "]: " +
@@ -853,7 +855,7 @@ public abstract class AuthenticatorBase
             String pname = ((principal != null) ? principal.getName() : "[null principal]");
             String msg = "Authenticated '" + pname + "' with type '"
                          + authType + "'";
-            log.log(Level.FINE, msg);
+            log.log(Level.FINE, neutralizeForLog(msg));
         }
         // Cache the authentication information in our request
         request.setAuthType(authType);
@@ -986,7 +988,7 @@ public abstract class AuthenticatorBase
             if (!authenticate(hrequest, hresponse, config)) {
                 if (log.isLoggable(Level.FINE)) {
                     String msg = " Failed authenticate() test ??" + requestURI;
-                    log.log(Level.FINE, msg);
+                    log.log(Level.FINE, neutralizeForLog(msg));
                 }
                 return END_PIPELINE;
             }

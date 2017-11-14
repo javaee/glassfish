@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.web;
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
@@ -57,6 +58,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.web.LogFacade;
 
@@ -81,6 +84,12 @@ public class VirtualServerPipeline extends StandardPipeline {
     private ArrayList<RedirectParameters> redirects;
 
     private ConcurrentLinkedQueue<CharChunk> locations;
+
+    public static final String CRLF_ENCODED_STRING_LOWER = "%0d%0a";
+    public static final String CRLF_ENCODED_STRING_UPPER = "%0D%0A";
+    public static final String CR_ENCODED_STRING_LOWER = "%0d";
+    public static final String CR_ENCODED_STRING_UPPER = "%0D";
+    public static final String CRLF_STRING = "\"\\r\\n\"";
 
     /**
      * Constructor.
@@ -109,7 +118,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_OFF);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, msg);
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_NOT_FOUND,
@@ -118,7 +127,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_DISABLED);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, msg);
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_FORBIDDEN,
@@ -295,12 +304,12 @@ public class VirtualServerPipeline extends StandardPipeline {
                     if (redirectMatch.validURI) {
                         logger.log(Level.WARNING,
                             LogFacade.INVALID_REDIRECTION_LOCATION,
-                            location);
+                                neutralizeForLog(location));
                     } else {
                         if (logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE,
                                 LogFacade.INVALID_REDIRECTION_LOCATION,
-                                location);
+                                    neutralizeForLog(location));
                         }
                     }
                 } finally {
@@ -311,13 +320,42 @@ public class VirtualServerPipeline extends StandardPipeline {
                 }
             }
 
-            hres.sendRedirect(location);
+            // Validate the URL for extra spaces before redirection.
+            if(validateStringforCRLF(location)) {
+                hres.sendError(403, "Forbidden");
+            } else {
+                hres.sendRedirect(removeLinearWhiteSpaces(location));
+            }
             return true;
         }
 
         return false;
     }
 
+    public static boolean validateStringforCRLF (String input) {
+        if (input != null && (input.contains(CRLF_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_STRING))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     Remove extra white spaces in String and convert into lowercase.
+
+     @param input Input String
+     @return		string
+     */
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
 
     /**
      * Class representing redirect parameters

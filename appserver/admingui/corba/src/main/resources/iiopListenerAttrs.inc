@@ -59,10 +59,10 @@
             <sun:textField id="ListenerPort" styleClass="required port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.iiopListener.listPort']}" text="#{pageSession.valueMap['port']}" required="#{true}" />
         </sun:property>
         <sun:property id="ListenerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.listenerLabel}" helpText="$resource{i18n_corba.iiopListener.listenerHelp}" >
-            <sun:checkbox label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.iiopListener.securityEnable}" >
-            <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+            <sun:checkbox id="Security"  selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
     </sun:propertySheetSection>
 </sun:propertySheet>    

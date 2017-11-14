@@ -43,6 +43,7 @@ package org.glassfish.admingui.common.util;
 import java.io.ByteArrayInputStream;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -75,6 +76,8 @@ public class MiscUtil {
     public static Document getDocument(String input) {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setValidating(true);
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new ByteArrayInputStream(input.getBytes()));
             return doc;

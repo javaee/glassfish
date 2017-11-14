@@ -133,7 +133,7 @@
         <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation.version>2.0.0.Final</javax.validation.version>
-        <hibernate-validator.version>6.0.2.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.0.3.Final</hibernate-validator.version>
         <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
         <javax.el-api.version>3.0.1-b04</javax.el-api.version>
@@ -142,7 +142,7 @@
         <hk2.plugin.version>2.5.0-b44</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
-        <trilead-ssh2.version>2.1.3</trilead-ssh2.version>
+        <jsch.version>0.1.55</jsch.version>
         <pfl.version>4.0.1-b001</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
         <antlr.version>2.7.7</antlr.version>
@@ -178,6 +178,7 @@
         <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
+	<jmockit.version>1.35</jmockit.version>
     </properties>
 
     <modules>
@@ -964,11 +965,6 @@
                 <version>${pfl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kohsuke.metainf-services</groupId>
-                <artifactId>metainf-services</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.10</version>
@@ -979,9 +975,9 @@
                 <version>6.5.2</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.jmockit</groupId>
+                <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
-                <version>0.999.15</version>
+                <version>${jmockit.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -1015,8 +1011,8 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>trilead-ssh2</artifactId>
-                <version>${trilead-ssh2.version}</version>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.shoal</groupId>

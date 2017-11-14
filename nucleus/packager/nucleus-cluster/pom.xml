@@ -98,9 +98,8 @@
 -->
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>trilead-ssh2</artifactId>
-            <version>${trilead-ssh2.version}</version>
-	    <optional>true</optional>
+            <artifactId>jsch</artifactId>
+            <version>${jsch.version}</version>
         </dependency>
     </dependencies>
 </project>

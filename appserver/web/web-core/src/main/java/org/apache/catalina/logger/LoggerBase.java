@@ -68,7 +68,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.LifecycleSupport;
-
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import java.beans.PropertyChangeListener;
@@ -338,7 +338,7 @@ public class LoggerBase
      * @param throwable The <code>Throwable</code> error or exception
      */
     public void log(String msg, Throwable throwable) {
-
+        msg = neutralizeForLog(msg);
         CharArrayWriter buf = new CharArrayWriter();
         PrintWriter writer = new PrintWriter(buf);
         writer.println(msg);
@@ -367,7 +367,7 @@ public class LoggerBase
      * @param verbosity Verbosity level of this message
      */
     public void log(String message, int verbosity) {
-
+        message = neutralizeForLog(message);
         if (this.verbosity >= verbosity)
             log(message);
 
@@ -385,7 +385,7 @@ public class LoggerBase
      * @param verbosity Verbosity level of this message
      */
     public void log(String message, Throwable throwable, int verbosity) {
-
+        message = neutralizeForLog(message);
         if (this.verbosity >= verbosity)
             log(message, throwable);
 
@@ -509,12 +509,12 @@ public class LoggerBase
             ObjectName oname = createObjectName();   
             try {
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Registering logger " + oname);
+                    log.log(Level.FINE, neutralizeForLog("Registering logger " + oname));
                 }
             } catch( Exception ex ) {
                 String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_REGISTER_LOGGER_EXCEPTION),
                                                   oname);
-                log.log(Level.SEVERE, msg, ex);
+                log.log(Level.SEVERE, neutralizeForLog(msg), ex);
             }      
         }     
 
@@ -536,12 +536,12 @@ public class LoggerBase
             ObjectName oname = createObjectName();   
             try {
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Unregistering logger " + oname);
+                    log.log(Level.FINE, neutralizeForLog("Unregistering logger " + oname));
                 }
             } catch( Exception ex ) {
                 String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_REGISTER_LOGGER_EXCEPTION),
                         oname);
-                log.log(Level.SEVERE, msg, ex);
+                log.log(Level.SEVERE, neutralizeForLog(msg), ex);
             }      
         }  
     }

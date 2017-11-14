@@ -72,8 +72,8 @@ public class BaseSeleniumTestClass {
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
     public static final boolean IS_SECURE_ADMIN_ENABLED = Boolean.parseBoolean(System.getProperty("secureAdmin"));
-    protected static final int TIMEOUT = 90;
-    protected static final int BUTTON_TIMEOUT = 750;
+    protected static final int TIMEOUT = 300;
+    protected static final int BUTTON_TIMEOUT = 300;
     protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     protected static Selenium selenium;
     protected static WebDriver driver;
@@ -148,7 +148,7 @@ public class BaseSeleniumTestClass {
         } catch (FileNotFoundException fnfe) {
             //
         } catch (Exception ex) {
-            Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
+            //Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
     }
 
@@ -383,6 +383,11 @@ public class BaseSeleniumTestClass {
     protected int generateRandomNumber(int max) {
         Random r = new Random();
         return Math.abs(r.nextInt(max - 1)) + 1;
+    }
+
+    protected int generateRandomNumber(int min, int max) {
+        Random r = new Random();
+        return Math.abs(r.nextInt(max + 1 - min)) + min;
     }
 
     protected <T> T selectRandomItem(T... items) {
@@ -1202,11 +1207,10 @@ public class BaseSeleniumTestClass {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
             try {
                 String attr =
-                        elementFinder.findElement(By.id(buttonId), TIMEOUT) //                        driver.findElement(By.id(buttonId))
-                        .getAttribute("disabled"); // WebDriver-backed Selenium
+                        driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
                 return (Boolean.parseBoolean(attr) == desiredState);
             } catch (Exception ex) {
-                return true;// ???
+                return false;
             }
         }
     }

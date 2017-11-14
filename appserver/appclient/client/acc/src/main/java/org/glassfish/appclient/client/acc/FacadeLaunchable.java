@@ -69,7 +69,7 @@ import java.util.logging.Logger;
 import javax.xml.stream.XMLStreamException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Represents a generated JAR created during deployment corresponding to
@@ -212,7 +212,7 @@ public class FacadeLaunchable implements Launchable {
             final String callerSuppliedMainClassName,
             final String callerSuppliedAppName)
                 throws IOException, BootException, URISyntaxException,
-                XMLStreamException, SAXParseException, UserError {
+                XMLStreamException, SAXException, UserError {
         Manifest mf = facadeRA.getManifest();
         if (mf == null) {
             throw new UserError(MessageFormat.format(
@@ -270,9 +270,9 @@ public class FacadeLaunchable implements Launchable {
      * @param loader
      * @return
      * @throws java.io.IOException
-     * @throws org.xml.sax.SAXParseException
+     * @throws org.xml.sax.SAXException
      */
-    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXParseException {
+    public ApplicationClientDescriptor getDescriptor(final URLClassLoader loader) throws IOException, SAXException {
         if (acDesc == null) {
             /*
              * To support managed beans, perform anno processing which requires
@@ -334,7 +334,7 @@ public class FacadeLaunchable implements Launchable {
             final URI groupFacadeURI, final ArchiveFactory af,
             final String groupURIs, final String callerSpecifiedMainClassName,
             final String callerSpecifiedAppClientName,
-            final String anchorDir) throws IOException, BootException, URISyntaxException, SAXParseException, UserError {
+            final String anchorDir) throws IOException, BootException, URISyntaxException, SAXException, UserError {
         String[] archiveURIs = groupURIs.split(" ");
         /*
          * Search the app clients in the group in order, checking each for
