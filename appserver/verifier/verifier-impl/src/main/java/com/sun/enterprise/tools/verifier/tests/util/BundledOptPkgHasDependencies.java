@@ -47,9 +47,9 @@
 package com.sun.enterprise.tools.verifier.tests.util;
 
 import com.sun.enterprise.tools.verifier.Result;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
