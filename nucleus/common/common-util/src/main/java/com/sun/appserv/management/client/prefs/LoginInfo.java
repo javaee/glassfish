@@ -96,7 +96,6 @@ public final class LoginInfo implements Comparable<LoginInfo> {
     public int hashCode() {
         return ( (int) 31 * host.hashCode() + 23 * port + 53 * user.hashCode() + 13 * Arrays.hashCode(password) );
     }
-    
     private void init(final String host, final int port, final String user, final char[] password) {
         this.host     = host;
         this.port     = port;
@@ -105,7 +104,7 @@ public final class LoginInfo implements Comparable<LoginInfo> {
     }
     
     public String toString() {
-        return ( host + port + user + password != null ? new String(password) : null);
+        return ( host + port + user + (password != null ? new String(password) : null));
     }
 
     public int compareTo(final LoginInfo that) {

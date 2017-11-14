@@ -76,8 +76,7 @@ public class LoginCommand extends CLICommand {
         programOpts.setInteractive(true);       // force it
         adminUser = getAdminUser();
         programOpts.setUser(adminUser);
-        adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD != null ?
-                SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD.toCharArray() : null;
+        adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD.toCharArray();
         programOpts.setPassword(adminPassword,
             ProgramOptions.PasswordLocation.DEFAULT);
         boolean interactive = programOpts.isInteractive();      // save value

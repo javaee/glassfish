@@ -1051,7 +1051,7 @@ public abstract class CLICommand implements PostConstruct {
                     msg = strings.get("missingPasswordAdvice", name, passwordName(opt));
                 throw new CommandValidationException(msg);
             }
-            options.set(pwdname, pwd != null ? new String(pwd) : null);
+            options.set(pwdname, new String(pwd));
         }
     }
 
@@ -1133,8 +1133,8 @@ public abstract class CLICommand implements PostConstruct {
             if (newpassword == null)
                 newpassword = "".toCharArray();
             if (newpassword.length == 0) {
-                newpassword = defaultPassword != null ? defaultPassword.toCharArray() : null;
-                passwords.put(passwordName, newpassword != null ? new String(newpassword) : null);
+                newpassword = defaultPassword.toCharArray();
+                passwords.put(passwordName, new String(newpassword));
                 return newpassword;
             }
         }
