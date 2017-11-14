@@ -69,6 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -292,8 +293,12 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                 if ((origRequest == null) || "/favicon.ico".equals(origRequest)) {
                     origRequest = "/index.jsf";
                 }
-                logger.log(Level.INFO, "Redirecting to {0}", origRequest);
-                response.sendRedirect(response.encodeRedirectURL(origRequest));
+                logger.log(Level.INFO, "Redirecting to {0}", neutralizeForLog(origRequest));
+                if (GuiUtil.validateStringforCRLF(origRequest)) {
+                    response.sendError(403,"Forbidden");
+                }
+                response.sendRedirect(
+                        response.encodeRedirectURL(GuiUtil.removeLinearWhiteSpaces(origRequest)));
             } catch (Exception ex) {
                 AuthException ae = new AuthException();
                 ae.initCause(ex);

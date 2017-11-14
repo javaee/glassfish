@@ -122,7 +122,7 @@ public class RoundRobinPolicy {
     private static final String SSL = "SSL" ;
     private static final String CLEAR_TEXT = "CLEAR_TEXT" ;
 
-    private static java.util.Random rand = new java.util.Random();
+    private static java.security.SecureRandom rand = new java.security.SecureRandom();
 
     private List<ClusterInstanceInfo> endpointsList = 
 	 new LinkedList<ClusterInstanceInfo>();

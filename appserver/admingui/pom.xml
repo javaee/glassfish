@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.admingui</groupId>
@@ -118,10 +118,8 @@
         <module>ejb-lite</module>
         <module>corba</module>
         <module>full</module>
-        <module>updatecenter</module>
         <module>war</module>
         <module>dist-fragment</module>
-        <module>updatecenter-l10n</module>
         <module>full-l10n</module>
         <module>common-l10n</module>
         <module>corba-l10n</module>

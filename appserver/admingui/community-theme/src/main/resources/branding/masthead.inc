@@ -40,6 +40,10 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="theme" bundle="org.glassfish.admingui.community-theme.Strings");
+/>
+
 <sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/community-theme/images/masthead-product_name_open.png" 
               style="border-width: 0px"
               productImageDescription="$resource{theme.productName}"
@@ -53,14 +57,14 @@
 
 
     <!facet consoleLink>
-        <sun:hyperlink id="homeLink" toolTip="$resource{i18n.homeLinkTooltip}" target="_top" text="$resource{i18n.masthead.Home}" url="#{request.contextPath}/common/index.jsf" />
+        <sun:hyperlink id="homeLink" toolTip="$resource{i18n.homeLinkTooltip}" target="_top" text="$resource{i18n.masthead.Home}" url="#{request.contextPath}/common/index.jsf" style="background: rgb(84, 123, 150);" />
     </facet>
     <!facet versionLink>
         <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}"
-            onClick="javascript: var versionWin = window.open('#{request.contextPath}/common/version.jsf','VersionWindow','scrollbars,resizable,width=800,height=740,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
+            onClick="javascript: var versionWin = window.open('#{request.contextPath}/common/version.jsf','VersionWindow','scrollbars,resizable,width=800,height=740,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" style="background: rgb(84, 123, 150);" />
     </facet>
     <!facet helpLink>
-        <sun:button id="helpLink" rendered="true" toolTip="$resource{i18n.helpWindowTooltip}" target="help_window" text="$resource{i18n.masthead.Help}" onClick="admingui.help.launchHelp(this); return false;" />
+        <sun:button id="helpLink" rendered="true" toolTip="$resource{i18n.helpWindowTooltip}" target="help_window" text="$resource{i18n.masthead.Help}" onClick="admingui.help.launchHelp(this); return false;" style="background: rgb(84, 123, 150);" />
     </facet>
     <!facet logoutLink>
         <sun:button id="logoutLink" rendered="#{showLogoutButton}" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"

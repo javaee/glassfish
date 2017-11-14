@@ -68,7 +68,7 @@
 </sun:property>
 
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}"  helpText="$resource{i18n.deploy.statusHelp}">
-	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['enabled']}" selectedValue="true" >
+	<sun:checkbox  selected="#{pageSession.ear['enabled']}" selectedValue="true" >
         <!beforeCreate
             mapPut(map="#{pageSession.ear}", key="enabled", value="true" );
         />
@@ -76,15 +76,15 @@
 </sun:property>
 
 <sun:property id="implicitCdi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.implicitCdi}" helpText="$resource{i18n.deploy.implicitCdiHelp}">
-    <sun:checkbox id="implicitCdi" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
+    <sun:checkbox id="implicitCdi"  selected="#{pageSession.ear['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="availability"  rendered="#{!pageSession.onlyDASExist}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['availabilityEnabled']}" selectedValue="true" />
+    <sun:checkbox id="availability"  selected="#{pageSession.ear['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
-	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}']}" selectedValue="true" />
+	<sun:checkbox id="jwc"  selected="#{pageSession.ear['PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">

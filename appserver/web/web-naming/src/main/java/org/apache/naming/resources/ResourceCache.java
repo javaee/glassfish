@@ -59,8 +59,7 @@
 package org.apache.naming.resources;
 
 import java.util.HashMap;
-import java.util.Random;
-
+import java.security.SecureRandom;
 /**
  * Implements a special purpose cache.
  * 
@@ -83,7 +82,7 @@ public class ResourceCache {
     /**
      * Random generator used to determine elements to free.
      */
-    protected Random random = new Random();
+    protected SecureRandom random = new SecureRandom();
     
     
     /**

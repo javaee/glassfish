@@ -66,7 +66,7 @@
         </sun:property>
 
         <sun:property id="ssoCookieHttpOnly"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.ssoCookieHttpOnly}" helpText="$resource{i18n_web.vs.ssoCookieHttpOnlyHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ssoCookieHttpOnly']}"  selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['ssoCookieHttpOnly']}"  selectedValue="true" />
         </sun:property>
 
         <sun:property id="nwProps"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.NetworkListeners}" helpText="$resource{i18n_web.vs.NetworkListenersHelp}">

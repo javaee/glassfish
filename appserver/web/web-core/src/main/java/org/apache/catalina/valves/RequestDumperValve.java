@@ -60,6 +60,7 @@ package org.apache.catalina.valves;
 
 
 import org.apache.catalina.*;
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -244,6 +245,7 @@ public class RequestDumperValve extends ValveBase {
      * @param message Message to be logged
      */
     protected void log(String message) {
+        message = neutralizeForLog(message);
         Logger logger = container.getLogger();
         if (logger != null) {
             logger.log(this.toString() + ": " + message);
@@ -260,6 +262,7 @@ public class RequestDumperValve extends ValveBase {
      * @param t Associated exception
      */
     protected void log(String message, Throwable t) {
+        message = neutralizeForLog(message);
         Logger logger = container.getLogger();
         if (logger != null) {
             logger.log(this.toString() + ": " + message, t,

@@ -225,10 +225,10 @@ public class SetupSshTest extends SshBaseDevTest {
         removePasswords("ALIAS");
 
         addPassword("${ALIAS=foo}", PasswordType.SSH_PASS);
-        report("setup-ssh-invalid-alias", !asadmin("setup-ssh", "--generatekey", remoteHost));
+        report("setup-ssh-invalid-alias", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
 
         addPassword("${ALIAS=" + SSH_ALIAS_PASS + "}", PasswordType.SSH_PASS);
-        report("setup-ssh-with-alias", asadmin("setup-ssh", "--generatekey", remoteHost));
+        report("setup-ssh-with-alias", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
         deleteDirectory(new File(SSH_DIRECTORY));
         removePasswords("SSH");
 

@@ -50,7 +50,7 @@
         
 
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
+            <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}"  selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
             <sun:staticText id="statusText" rendered="#{!pageSession.onlyDASExist}" text="#{pageSession.status}" />
         </sun:property>
 
@@ -87,16 +87,16 @@
         </sun:property>
 
         <sun:property id="implicitCdi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.implicitCdi}" helpText="$resource{i18n.deploy.implicitCdiHelp}">
-            <sun:checkbox id="implicitCdi" disabled="true" label="$resource{i18n.common.Enabled}" selected="#{pageSession.implicitCdiEnabled}" selectedValue="true" />
+            <sun:checkbox id="implicitCdi" disabled="true"  selected="#{pageSession.implicitCdiEnabled}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="availability" rendered="#{pageSession.finalShowAvail}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-            <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
+            <sun:checkbox id="availability"  selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
         </sun:property>
 
 
         <sun:property id="jw" rendered="#{pageSession.showJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.edit.JavaWebStartHelp}">
-            <sun:checkbox id="jwc" disabled="true" label="$resource{i18n.common.Enabled}" selected="#{pageSession.javaWebStartEnabled}" selectedValue="true" >
+            <sun:checkbox id="jwc" disabled="true"  selected="#{pageSession.javaWebStartEnabled}" selectedValue="true" >
             </sun:checkbox>
         </sun:property>
 

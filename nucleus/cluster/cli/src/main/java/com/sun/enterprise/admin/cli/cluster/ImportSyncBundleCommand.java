@@ -48,6 +48,7 @@ import java.io.IOException;
 
 //import java.net.InetAddress;
 //import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
@@ -356,7 +357,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
     private void backupInstanceDir() throws CommandException {
         File f = getServerDirs().getServerDir();
         if (f != null && f.isDirectory()) {
-            Random r = new Random();
+            SecureRandom r = new SecureRandom();
             setBackupDir(r.nextInt());
             File backup = getBackupDir();
             if (!f.renameTo(backup)) {

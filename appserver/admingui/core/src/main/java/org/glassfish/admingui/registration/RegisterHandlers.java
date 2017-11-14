@@ -62,7 +62,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import com.sun.enterprise.registration.impl.RelayService;
 import com.sun.enterprise.registration.glassfish.RegistrationUtil;
@@ -92,7 +92,7 @@ public class RegisterHandlers {
         int maxImageCount = 25+1; //the # of images we have under images/square
         List result = new ArrayList();
         int cnt = ((Integer) handlerCtx.getInputValue("count")).intValue();
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
         for(int i=0; i < cnt; i++){
             for(;;){
                 int num = Math.abs(random.nextInt() % maxImageCount);
