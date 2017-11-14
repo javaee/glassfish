@@ -57,10 +57,6 @@
 
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/create-node-ssh");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}",  valueMap="#{pageSession.valueMap}");
-	gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/validate-dcom",    valueMap="#{requestScope.vMap}");
-        mapPut(map="#{requestScope.vMap}", key="remotetestdir" value="C:\\");
-        mapPut(map="#{pageSession.valueMap}", key="windowsuser" value="#{requestScope.dcMap['windowsuser']}");
-        mapPut(map="#{pageSession.valueMap}", key="remotetestdir" value="#{requestScope.vMap['remotetestdir']}");
         mapPut(map="#{pageSession.valueMap}", key="type" value="SSH");
         mapPut(map="#{pageSession.valueMap}", key="installdirConfig" value="");
         mapPut(map="#{pageSession.valueMap}", key="setupSsh" value="false");
