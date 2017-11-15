@@ -42,6 +42,7 @@ package org.glassfish.admingui.common.security;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -248,7 +249,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
         Response resp = target.request(RESPONSE_TYPE).post(Entity.entity(payLoad, MediaType.APPLICATION_FORM_URLENCODED), Response.class);
         RestResponse restResp = RestResponse.getRestResponse(resp);
-
+        Arrays.fill(password, ' ');
         // Check to see if successful..
         if (restResp.isSuccess()) {
             // Username and Password sent in... validate them!

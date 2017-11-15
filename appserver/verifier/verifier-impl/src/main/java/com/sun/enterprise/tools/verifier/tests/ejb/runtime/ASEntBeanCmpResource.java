@@ -49,6 +49,8 @@ import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
 import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
 
+import java.util.Arrays;
+
 /** enterprise-bean
  *    cmp-resource ?
  *        jndi-name [String]
@@ -130,6 +132,7 @@ public class ASEntBeanCmpResource extends EjbTest implements EjbCheck {
                         result.passed(smh.getLocalString(getClass().getName()+".passed2",
                             "PASSED [AS-EJB default-resource-principal] : password is  {0}",new Object[]{new String(password)}));
                     }
+                    Arrays.fill(password,' ');
                 }else{
                     addNaDetails(result, compName);
                     result.notApplicable(smh.getLocalString(getClass().getName()+".notApplicable",
