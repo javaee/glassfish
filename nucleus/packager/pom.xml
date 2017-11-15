@@ -110,6 +110,15 @@
 
     <build>
         <outputDirectory>${temp.dir}</outputDirectory>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>config-generator</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -196,6 +205,14 @@
                 <artifactId>glassfishbuild-maven-plugin</artifactId>
                 <configuration>
                     <dir>${project.build.directory}/${stage.dir.name}</dir>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <configuration>
+                    <excludes>**/.ade_path/**</excludes>
+                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
                 </configuration>
             </plugin>
         </plugins>

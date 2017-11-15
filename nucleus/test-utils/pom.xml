@@ -68,7 +68,22 @@
                         <skip>true</skip>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>config-generator</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <configuration>
+                    <excludes>**/.ade_path/**</excludes>
+                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>    
 </project>

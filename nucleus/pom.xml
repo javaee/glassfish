@@ -368,11 +368,6 @@
                     <version>2.4</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>config-generator</artifactId>
-                    <version>2.5.0-b53</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.7</version>
@@ -547,14 +542,6 @@
                 <configuration>
                     <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
                     <skip>${deploy.skip}</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
                 </configuration>
             </plugin>
             <plugin>

@@ -39,4 +39,4 @@
 #
 
 -exportcontents: \
-                        org.jvnet.hk2.config.types; version=${project.version}
+                        org.jvnet.hk2.config.types; version=${project.osgi.version}

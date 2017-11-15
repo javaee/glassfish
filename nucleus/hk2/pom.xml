@@ -53,7 +53,31 @@
     <artifactId>glassfish-nucleus-hk2</artifactId>
     <packaging>pom</packaging>
     <name>Glassfish Nucleus HK2 Modules</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <version>2.5.0-b53</version>
+                <executions>
+                    <execution>
+                        <id>default-generate-test-injectors</id>
+                        <phase/>
+                        <goals/>
+                    </execution>
+                    <execution>
+                        <id>default-generate-injectors</id>
+                        <phase/>
+                        <goals/>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <modules>
         <module>hk2-config</module>
+        <module>config-generator</module>
+        <module>config-types</module>
+        <module>examples</module>
     </modules>
 </project>

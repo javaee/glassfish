@@ -57,6 +57,7 @@
     <properties>
         <javax.validation.version.upperbound>3</javax.validation.version.upperbound>
         <hibernate-validator.version.upperbound>7</hibernate-validator.version.upperbound>
+        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
     </properties>
     
     <build>
@@ -136,7 +137,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.2.4.Final</version>
+            <version>${hibernate-validator.version}</version>
         </dependency>
 
         <!-- hk2-config tests use hibernate-validator which requires javax.el-api -->

@@ -53,6 +53,19 @@
     <artifactId>scattered-archive-api</artifactId>
     <packaging>glassfish-jar</packaging>
     
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <excludes>**/.ade_path/**</excludes>
+                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <name>Scattered Archive APIs of Glassfish</name>
 </project>
 

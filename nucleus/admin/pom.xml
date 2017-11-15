@@ -53,9 +53,29 @@
     <artifactId>nucleus-admin</artifactId>
     <packaging>pom</packaging>
     <name>Admin Modules</name>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>config-generator</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <configuration>
+                    <excludes>**/.ade_path/**</excludes>
+                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <modules>
         <module>config-api</module>
-        <module>hk2</module>
         <module>server-mgmt</module>
         <module>util</module>    
         <module>cli</module>
