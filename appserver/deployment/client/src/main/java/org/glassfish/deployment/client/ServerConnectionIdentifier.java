@@ -240,7 +240,7 @@ public class ServerConnectionIdentifier {
     }
 
     public String toString() {
-        return getUserName()+"("+ getPassword()+")@(" + getHostName() 
+        return getUserName()+"("+ new String(getPassword())+")@(" + getHostName()
             + "):(" + getHostPort()+")" + ":" + getProtocol();
     }
 }
