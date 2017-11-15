@@ -145,7 +145,7 @@ test_run_servlet_tck(){
 	java -version
 	# Java EE 8 servlet tck.
 	if [[ -z ${SERVELT_TCK_URL} ]]; then
-		SERVELT_TCK=${JENKINS_URL}job/gf-cts-promotion/lastSuccessfulBuild/artifact/
+		SERVELT_TCK=${JENKINS_URL}job/gf-cts-promotion/lastStableBuild/artifact/
 	else
 		SERVELT_TCK=${SERVELT_TCK_URL}
 	fi
