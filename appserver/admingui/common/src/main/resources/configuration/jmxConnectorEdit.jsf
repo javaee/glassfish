@@ -99,7 +99,7 @@
                 />
             </sun:property>
             <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.securityLabel}" >
-                <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+                <sun:checkbox id="Security"  selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
             </sun:property>
             <sun:property id="AddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.addressLabel}" helpText="$resource{i18n.edJmxConnector.addressHelp}" >
                 <sun:textField id="Address" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.address']}" text="#{pageSession.valueMap['address']}" required="#{true}" />

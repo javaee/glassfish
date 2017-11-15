@@ -54,6 +54,7 @@ import javax.faces.context.FacesContext;
 // FIXME: 7-31-08 -- FIX by importing woodstock api's:
 //import com.sun.webui.jsf.model.Option;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
@@ -72,10 +73,13 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.io.File;
 
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -771,9 +775,60 @@ public class GuiUtil {
     }
 
 
+    /**
+     Remove extra white spaces in String and convert into lowercase.
+
+     @param input Input String
+     @return		string
+     */
+    public static String removeLinearWhiteSpaces(String input) {
+        if (input != null) {
+            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+        }
+        return input;
+    }
+
+    public static void setHeaderNameValue(HttpServletResponse resp,
+                                            String headerName, String headerValue) throws IOException {
+        headerName = removeLinearWhiteSpaces(headerName);
+        headerValue = removeLinearWhiteSpaces(headerValue);
+        if (validateStringforCRLF(headerName)) {
+            resp.sendError(403, "Forbidden");
+            return;
+        }
+        if (validateStringforCRLF(headerValue)) {
+            resp.sendError(403, "Forbidden");
+            return;
+        }
+        resp.addHeader(headerName, headerValue);
+    }
+
+    /**
+     Validate the String for Header Injection Attack.
+
+     @param input	String to be validate
+     @return		boolean
+     */
+    public static boolean validateStringforCRLF (String input) {
+        if (input != null && (input.contains(CRLF_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_UPPER)
+                || input.contains(CR_ENCODED_STRING_LOWER)
+                || input.contains(CRLF_STRING))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";
     public static final Locale guiLocale = new Locale("UTF-8");
+    public static final String CRLF_ENCODED_STRING_LOWER = "%0d%0a";
+    public static final String CRLF_ENCODED_STRING_UPPER = "%0D%0A";
+    public static final String CR_ENCODED_STRING_LOWER = "%0d";
+    public static final String CR_ENCODED_STRING_UPPER = "%0D";
+    public static final String CRLF_STRING = "\"\\r\\n\"";
 }

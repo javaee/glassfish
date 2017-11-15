@@ -71,11 +71,11 @@
     <!-- Virtual Server doesn't apply to lifecycle module. refer to issue# 13620 -->
 
     <sun:property id="statusNew" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-        <sun:checkbox id="status" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+        <sun:checkbox id="status"   selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
     </sun:property>
 
     <sun:property id="statusEdit"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-        <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+        <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}"  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
         <sun:staticText id="statusText" rendered="#{!pageSession.onlyDASExist}" text="#{pageSession.status}" />
     </sun:property>
 

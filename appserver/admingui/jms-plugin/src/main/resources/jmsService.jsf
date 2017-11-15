@@ -162,7 +162,7 @@
                                 <sun:textField id="Arguments" columns="$int{35}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Arguments']}" text="#{pageSession.valueMap['startArgs']}"/>
                             </sun:property>
                             <sun:property id="reconnectProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Reconnect}" helpText="$resource{i18njms.jms.ReconnectHelp}">
-                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['reconnectEnabled']}" selectedValue="true"/>
+                                <sun:checkbox  selected="#{pageSession.valueMap['reconnectEnabled']}" selectedValue="true"/>
                             </sun:property>
                             <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Interval}" helpText="$resource{i18njms.jms.IntervalHelp}">
                                 <sun:textField id="Interval" styleClass="intAllowMinusOne" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jms.Interval']}" text="#{pageSession.valueMap['reconnectIntervalInSeconds']}" />

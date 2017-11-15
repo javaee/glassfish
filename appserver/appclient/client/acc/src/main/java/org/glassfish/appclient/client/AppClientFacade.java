@@ -95,7 +95,6 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 /**
@@ -180,7 +179,7 @@ public class AppClientFacade {
     public static void launch(String[] args) throws NoSuchMethodException,
             ClassNotFoundException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException,
-            IOException, SAXParseException, InjectionException, UserError {
+            IOException, SAXException, InjectionException, UserError {
         acc.launch(args);
     }
 

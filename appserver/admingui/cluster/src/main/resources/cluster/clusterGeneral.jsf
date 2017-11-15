@@ -166,7 +166,7 @@
             </sun:property>
 
             <sun:property id="gmsEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.GMS}" helpText="$resource{i18ncs.cluster.GMSHelp}">
-                <sun:checkbox id="gmscb" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['gmsEnabled']}" selectedValue="true" />
+                <sun:checkbox id="gmscb"  selected="#{pageSession.valueMap['gmsEnabled']}" selectedValue="true" />
             </sun:property>
 
            <sun:property id="gmsMulticastPort"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.gmsMulticastPort}" helpText="$resource{i18ncs.cluster.gmsMulticastPortHelp}">
