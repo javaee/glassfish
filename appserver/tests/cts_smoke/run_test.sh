@@ -56,7 +56,7 @@ archive_cts(){
 test_run_cts_smoke(){
 	TS_HOME=$WORKSPACE/javaee-smoke
 	if [[ -z ${CTS_SMOKE_URL} ]]; then
-		CTS_SMOKE=${JENKINS_URL}job/gf-cts-promotion/lastSuccessfulBuild/artifact
+		CTS_SMOKE=${JENKINS_URL}job/gf-cts-promotion/lastStableBuild/artifact
 	else
 		CTS_SMOKE=${CTS_SMOKE_URL}
 	fi
