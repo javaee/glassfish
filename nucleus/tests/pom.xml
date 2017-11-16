@@ -98,7 +98,7 @@
                     <excludes>**/.ade_path/**</excludes>
                     <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
                 </configuration>
-            </plugin
+            </plugin>
         </plugins>
     </build>
 
