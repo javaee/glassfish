@@ -131,14 +131,21 @@
                                 <duplicate>preserve</duplicate>
                                 <filesets>
                                     <fileset>
+                                        <fileMode>640</fileMode>
                                         <dir>${stage.dir}</dir>
-                                        <fileMode>755</fileMode>
-                                        <includes>**/bin/*</includes>
-                                        <includes>**/bin/*.bat</includes>
-                                        <includes>**/lib/nadmin*</includes>
+                                        <includes>**/bin/*.1m</includes>
                                     </fileset>
                                     <fileset>
                                         <dir>${stage.dir}</dir>
+                                        <fileMode>750</fileMode>                                       
+                                        <includes>**/bin/*</includes>
+                                        <includes>**/bin/*.bat</includes>
+                                        <includes>**/lib/nadmin*</includes>
+                                        <excludes>**/bin/*.1m</excludes>
+                                    </fileset>
+                                    <fileset>
+                                        <fileMode>640</fileMode>
+                                        <dir>${stage.dir}</dir>                                        
                                         <excludes>**/bin/*</excludes>
                                         <excludes>**/bin/*.bat</excludes>
                                         <excludes>**/lib/nadmin*</excludes>
