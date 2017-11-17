@@ -106,7 +106,7 @@
     </sun:property>
 
     <sun:property id="EnableSnoop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.EnableSnoop}"  helpText="$resource{i18n_web.transport.EnableSnoopHelp}" >
-        <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enableSnoop']}" selectedValue="true" />
+        <sun:checkbox  selected="#{pageSession.valueMap['enableSnoop']}" selectedValue="true" />
     </sun:property>
 
      <sun:property id="TcpNoDelay"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.TcpNoDelay}" helpText="$resource{i18n_web.transport.TcpNoDelayHelp}">

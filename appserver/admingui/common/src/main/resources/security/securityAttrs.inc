@@ -47,7 +47,7 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.SecurityManager}"  helpText="$resource{i18nc.security.SecurityManagerHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.securityManagerStatus}" selectedValue="true"  >
+            <sun:checkbox  selected="#{pageSession.securityManagerStatus}" selectedValue="true"  >
             <!beforeCreate
                 setPageSessionAttribute(key="jvmOptionsUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/java-config/jvm-options");
                 getSecurityManagerValue(endpoint="#{pageSession.jvmOptionsUrl}" value="#{pageSession.securityManagerStatus}")
@@ -55,7 +55,7 @@
             </sun:checkbox>
         </sun:property>
         <sun:property id="auditLoggingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.AuditLogging}" helpText="$resource{i18nc.security.AuditLoggingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['auditEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['auditEnabled']}" selectedValue="true" />
         </sun:property>
 
       <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.DefaultRealm}" helpText="$resource{i18nc.security.DefaultRealmHelp}">
@@ -95,7 +95,7 @@
             </sun:listbox>
         </sun:property>
        <sun:property id="roleMappingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.RoleMapping}" helpText="$resource{i18nc.security.RoleMappingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['activateDefaultPrincipalToRoleMapping']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['activateDefaultPrincipalToRoleMapping']}" selectedValue="true" />
         </sun:property>
         <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.MappedPrincipalClass}" helpText="$resource{i18nc.security.MappedPrincipalClassHelp}">
             <sun:textField id="MappedPrincipalClass" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.security.MappedPrincipalClass']}" text="#{pageSession.valueMap['mappedPrincipalClass']}"/>

@@ -50,7 +50,7 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 import com.sun.logging.LogDomains;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -241,7 +241,7 @@ public class ConnectorDDTransformUtils {
             _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_read_error", moduleDir);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
-        } catch (SAXParseException ex) {
+        } catch (SAXException ex) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(
                     "Failed to parse the connector deployment descriptors");
             cre.initCause(ex);
@@ -296,7 +296,7 @@ public class ConnectorDDTransformUtils {
                 _logger.log(Level.FINE, "Error while trying to read connector" +
                     "descriptor to get resource-adapter properties", e);
             }
-        } catch (SAXParseException e) {
+        } catch (SAXException e) {
             _logger.info(e.getMessage());
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Error while trying to read connector" +

@@ -68,7 +68,7 @@
 </sun:property>
 
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}"  helpText="$resource{i18n.deploy.statusHelp}">
-	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['enabled']}" selectedValue="true" >
+	<sun:checkbox  selected="#{pageSession.war['enabled']}" selectedValue="true" >
         <!beforeCreate
             mapPut(map="#{pageSession.war}", key="enabled", value="true" );
         />
@@ -76,11 +76,11 @@
 </sun:property>
 
 <sun:property id="implicitCdi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.implicitCdi}" helpText="$resource{i18n.deploy.implicitCdiHelp}">
-    <sun:checkbox id="implicitCdi" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
+    <sun:checkbox id="implicitCdi"  selected="#{pageSession.war['PROPERTY-implicitCdiEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="availability" rendered="#{!pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['availabilityEnabled']}" selectedValue="true" />
+    <sun:checkbox id="availability"  selected="#{pageSession.war['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
