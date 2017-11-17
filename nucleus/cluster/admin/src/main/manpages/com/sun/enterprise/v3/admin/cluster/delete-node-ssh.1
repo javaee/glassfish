@@ -18,10 +18,6 @@ DESCRIPTION
        communication over SSH. The subcommand for deleting other types of
        nodes depends on the type of the node:
 
-       *   A node that is enabled for communication over the Distributed
-           Component Object Model (DCOM) remote protocol must be deleted by
-           using the delete-node-dcom(1) subcommand.
-
        *   A node that is not enabled for remote communication must be deleted
            by using the delete-node-config(1) subcommand.
 
@@ -103,11 +99,11 @@ EXIT STATUS
            error in executing the command
 
 SEE ALSO
-       create-node-dcom(1), create-node-ssh(1), delete-node-config(1),
-       delete-node-dcom(1), delete-instance(1), delete-local-instance(1),
-       install-node(1), install-node-dcom(1), install-node-ssh(1),
-       list-nodes(1), uninstall-node(1), uninstall-node-dcom(1),
-       uninstall-node-ssh(1), update-node-dcom(1), update-node-ssh(1)
+       create-node-ssh(1), delete-node-config(1),
+       delete-instance(1), delete-local-instance(1),
+       install-node(1), install-node-ssh(1),
+       list-nodes(1), uninstall-node(1),
+       uninstall-node-ssh(1), update-node-ssh(1)
 
        asadmin(1M)
 
