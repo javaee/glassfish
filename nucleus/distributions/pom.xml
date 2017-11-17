@@ -130,13 +130,15 @@
                     <filesets>
                         <fileset>
                             <dir>${stage.dir}</dir>
-                            <fileMode>755</fileMode>
+                            <fileMode>750</fileMode>
                             <includes>**/bin/*</includes>
                             <includes>**/bin/*.bat</includes>
                             <includes>**/lib/nadmin</includes>
+                            <excludes>**/bin/*.jar</excludes>
                         </fileset>
                         <fileset>
                             <dir>${stage.dir}</dir>
+                            <fileMode>640</fileMode>
                         </fileset>
                     </filesets>
                     <!-- exec configuration -->

@@ -86,7 +86,11 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <unzip src="target/admingui.war" dest="target/temp" />
+                                <unzip src="target/admingui.war" dest="target/temp" >
+                                  <patternset>
+                                    <exclude name="**/.gitkeep_empty_dir"/>
+                                  </patternset>
+                                </unzip>
                                 <delete file="target/admingui.war" />
                                 <mkdir dir="target/temp/WEB-INF/extra" />
                                 <move todir="target/temp/WEB-INF/extra">
