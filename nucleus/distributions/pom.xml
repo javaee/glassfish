@@ -134,6 +134,7 @@
                             <includes>**/bin/*</includes>
                             <includes>**/bin/*.bat</includes>
                             <includes>**/lib/nadmin</includes>
+                            <excludes>**/bin/*.jar</excludes>
                         </fileset>
                         <fileset>
                             <dir>${stage.dir}</dir>
