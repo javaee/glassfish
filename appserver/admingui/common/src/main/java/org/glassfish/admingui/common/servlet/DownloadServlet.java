@@ -41,6 +41,7 @@
 package org.glassfish.admingui.common.servlet;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.common.util.InputValidationUtil;
 
 import java.io.IOException;
 import java.io.BufferedInputStream;
@@ -267,7 +268,7 @@ public class DownloadServlet extends HttpServlet {
 		contentType = DEFAULT_CONTENT_TYPE;
 	    }
 	}
-	GuiUtil.setHeaderNameValue((HttpServletResponse) resp, "Content-type", contentType);
+	setHeaderNameValue((HttpServletResponse) resp, "Content-type", contentType);
 	
 	// Write additional headers
 	Object o = context.getAttribute(HEADERS);
@@ -281,6 +282,21 @@ public class DownloadServlet extends HttpServlet {
 	// TODO: log warning
 	
     }
+
+	private void setHeaderNameValue(HttpServletResponse resp,
+										  String headerName, String headerValue) throws IOException {
+		headerName = InputValidationUtil.removeLinearWhiteSpaces(headerName);
+		headerValue = InputValidationUtil.removeLinearWhiteSpaces(headerValue);
+		if (InputValidationUtil.validateStringforCRLF(headerName)) {
+			resp.sendError(403, "Forbidden");
+			return;
+		}
+		if (InputValidationUtil.validateStringforCRLF(headerValue)) {
+			resp.sendError(403, "Forbidden");
+			return;
+		}
+		resp.addHeader(headerName, headerValue);
+	}
 
     /**
      *	<p> This method is responsible for copying the data from the given
