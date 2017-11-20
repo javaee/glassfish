@@ -19,21 +19,6 @@ DESCRIPTION
        host where the subcommand is run and on each host where the GlassFish
        Server software is being uninstalled.
 
-           Note
-           +----------------------------------------+
-           |           This subcommand is           |
-           |           equivalent to the            |
-           |           uninstall-node(1)            |
-           |           subcommand. To uninstall     |
-           |           GlassFish Server software    |
-           |           from hosts that use the      |
-           |           Distributed Component Object |
-           |           Model (DCOM) remote          |
-           |           protocol, use the            |
-           |           uninstall-node-dcom(1)       |
-           |           subcommand.                  |
-           +----------------------------------------+
-
        By default, if any node except the predefined node localhost-domain
        resides on any host from which GlassFish Server software is being
        uninstalled, the subcommand fails. To uninstall the GlassFish Server
@@ -179,7 +164,6 @@ EXIT STATUS
 
 SEE ALSO
        install-node(1), install-node-ssh(1), uninstall-node(1),
-       uninstall-node-dcom(1)
 
        asadmin(1M)
 

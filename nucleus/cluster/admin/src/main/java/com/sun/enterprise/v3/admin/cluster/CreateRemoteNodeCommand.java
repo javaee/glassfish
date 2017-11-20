@@ -145,7 +145,7 @@ public abstract class CreateRemoteNodeCommand implements AdminCommand {
         catch (CommandValidationException e) {
             String m1 = Strings.get("node.ssh.invalid.params");
             if (!force) {
-                String m2 = Strings.get("create.node.ssh.or.dcom.not.created", getType().toString());
+                String m2 = Strings.get("create.node.ssh.not.created", getType().toString());
                 msg.append(StringUtils.cat(NL, m1, m2, e.getMessage()));
                 report.setMessage(msg.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

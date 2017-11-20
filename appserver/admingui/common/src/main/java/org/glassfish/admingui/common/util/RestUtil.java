@@ -1004,7 +1004,6 @@ public class RestUtil {
     private static final List<String> pswdAttrList =
             Arrays.asList(
             "sshpassword", /* create-node-ssh , setup-ssh , update-node, update-node-ssh */
-            "windowspassword", /* create-node-dcom, validate-dcom, update-node-dcom,  */
             "dbpassword", /* jms-availability-service */
             "jmsdbpassword", /* configure-jms-cluster */
             "password", /* change-admin-password */

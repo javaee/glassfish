@@ -169,6 +169,7 @@
                             <outputDirectory>${temp.dir}</outputDirectory>
                             <includeTypes>zip</includeTypes>
                             <excludes>${zip.excludes}</excludes>
+                            <excludes>**/.gitkeep_empty_dir</excludes>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>true</excludeTransitive>
