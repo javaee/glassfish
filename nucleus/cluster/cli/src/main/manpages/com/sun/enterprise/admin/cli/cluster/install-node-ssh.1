@@ -21,20 +21,6 @@ DESCRIPTION
        where the subcommand is run and on each host where the GlassFish Server
        software is being installed.
 
-           Note
-           +---------------------------------------+
-           |           This subcommand is          |
-           |           equivalent to the           |
-           |           install-node(1) subcommand. |
-           |           To install GlassFish Server |
-           |           software on hosts that use  |
-           |           the Distributed Component   |
-           |           Object Model (DCOM) remote  |
-           |           protocol, use the           |
-           |           install-node-dcom(1)        |
-           |           subcommand.                 |
-           +---------------------------------------+
-
        If necessary, the subcommand creates a ZIP archive of the GlassFish
        Server software from the installation where this subcommand is run. The
        archive does not contain the domains directory or the nodes directory.
@@ -200,8 +186,7 @@ EXIT STATUS
            error in executing the command
 
 SEE ALSO
-       install-node(1), install-node-dcom(1), uninstall-node(1),
-       uninstall-node-ssh(1)
+       install-node(1), uninstall-node(1), uninstall-node-ssh(1)
 
        asadmin(1M)
 

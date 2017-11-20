@@ -45,14 +45,11 @@
 <h4><a id="sthref233" name="sthref233"></a>To Test if a Node Is Reachable</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>To create or start GlassFish Server instances on a node that represents a remote host, the DAS must be able to contact the node. Before attempting to create or start instances on such a node, test that the DAS can contact the node.</p>
-<p>The type of the node that you are testing must be DCOM or SSH. You cannot test a node of type CONFIG because a node of type CONFIG is not enabled for remote communication.</p>
+<p>The type of the node that you are testing must be SSH. You cannot test a node of type CONFIG because a node of type CONFIG is not enabled for remote communication.</p>
 <a id="sthref234" name="sthref234"></a>
 <h5>Before You Begin</h5>
 <p>Ensure that the appropriate protocol for the type of the node is configured on the host that the node represents. The node is enabled for remote communication over this protocol.</p>
 <ul>
-<li>
-<p>If the type of the node is DCOM, the Distributed Component Object Model (DCOM) protocol must be configured.</p>
-</li>
 <li>
 <p>If the type of the node is SSH, the secure shell (SSH) protocol must be configured.</p>
 <ol>

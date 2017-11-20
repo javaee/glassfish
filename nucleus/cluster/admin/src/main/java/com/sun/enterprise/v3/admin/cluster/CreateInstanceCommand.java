@@ -73,7 +73,7 @@ import javax.inject.Inject;
 /**
  * Remote AdminCommand to create an instance.  This command is run only on DAS.
  *  1. Register the instance on DAS
- *  2. Create the file system on the instance node via ssh, DCOM, node agent, or other
+ *  2. Create the file system on the instance node via ssh, node agent, or other
  *  3. Bootstrap a minimal set of config files on the instance for secure admin.
  *
  * @author Jennifer Chou
@@ -556,9 +556,6 @@ public class CreateInstanceCommand implements AdminCommand {
             return false;
 
         if(theNode.getType().equals("SSH"))
-            return false;
-
-        if(theNode.getType().equals("DCOM"))
             return false;
 
         return true;

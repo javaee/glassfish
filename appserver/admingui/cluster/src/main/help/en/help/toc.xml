@@ -106,13 +106,11 @@
     </tocitem>
     <tocitem target="task-group-nodes" text="Creating, Deleting, and Editing GlassFish Server Nodes" expand="false">
       <tocitem target="task-createnode" text="To Create a Node" expand="false"></tocitem>
-      <tocitem target="task-nodenewdcom" text="To Finish the Creation of a DCOM Node" expand="false"></tocitem>
       <tocitem target="task-nodenewssh" text="To Finish the Creation of an SSH Node" expand="false"></tocitem>
       <tocitem target="task-deletenode" text="To Delete Nodes" expand="false"></tocitem>
       <tocitem target="task-listnodes" text="To List All Nodes in the Current Domain" expand="false"></tocitem>
       <tocitem target="task-pingnode" text="To Test if a Node Is Reachable" expand="false"></tocitem>
       <tocitem target="task-editnode" text="To Edit a Node" expand="false"></tocitem>
-      <tocitem target="task-nodeupdatedcom" text="To Finish the Update of a DCOM Node" expand="false"></tocitem>
       <tocitem target="task-nodeeditssh" text="To Finish the Update of an SSH Node" expand="false"></tocitem>
     </tocitem>
     <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">

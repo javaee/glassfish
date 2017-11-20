@@ -44,16 +44,7 @@
 
 <h4><a id="sthref236" name="sthref236"></a>To Edit a Node</h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Editing a node updates configuration data of a GlassFish Server node. Editing a node also enables you to change the type of the node from CONFIG to DCOM or SSH to enable remote communication for the node.</p>
-<p>If you change the type of the node from CONFIG to DCOM, default values are applied if any of the following fields is left empty:</p>
-<ul>
-<li>
-<p>Windows Domain</p>
-</li>
-<li>
-<p>Windows User</p>
-</li>
-</ul>
+<p>Editing a node updates configuration data of a GlassFish Server node. Editing a node also enables you to change the type of the node from CONFIG to SSH to enable remote communication for the node.</p>
 <p>If you change the type of the node from CONFIG to SSH, default values are applied if any of the following fields is left empty:</p>
 <ul>
 <li>
@@ -78,14 +69,11 @@
 <p>From the Type drop-down list, select the type of the updated node.</p>
 <ul>
 <li>
-<p>To enable the node to support communication over the Distributed Component Object Model (DCOM) remote protocol, select DCOM.</p>
-</li>
-<li>
 <p>To enable the node to support communication over secure shell (SSH), select SSH.</p>
 </li>
 <li>
 <p>To remove support for remote configuration from the node, select CONFIG.</p>
-<p>If you select CONFIG, no options for SSH configuration or DCOM configuration are displayed. If the current type of the node is DCOM or SSH and you select CONFIG, DCOM configuration data or SSH configuration data is removed from the node's configuration when you save your changes.</p>
+<p>If you select CONFIG, no options for SSH configuration is displayed. If the current type of the node is SSH and you select CONFIG, SSH configuration data is removed from the node's configuration when you save your changes.</p>
 </li>
 </ul>
 </li>
@@ -97,7 +85,7 @@
 <p>If the type of the node is CONFIG, the name of the host may be omitted. The name of the host can be determined when instances that reside on the node are created.</p>
 </li>
 <li>
-<p>If the type of the node is DCOM or SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
+<p>If the type of the node is SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
 </li>
 </ul>
 </li>
@@ -115,9 +103,6 @@
 <p>If the type of the node is CONFIG, click Save.</p>
 </li>
 <li>
-<p>If the type of the node is DCOM, follow the instructions in <a href="task-nodeupdatedcom.html">To Finish the Update of a DCOM Node</a>.</p>
-</li>
-<li>
 <p>If the type of the node is SSH, follow the instructions in <a href="task-nodeeditssh.html">To Finish the Update of an SSH Node</a>.</p>
 </li>
 </ol>
@@ -126,9 +111,6 @@
 <a id="sthref237" name="sthref237"></a>
 <h5>See Also</h5>
 <ul>
-<li>
-<p><a href="task-nodeupdatedcom.html">To Finish the Update of a DCOM Node</a></p>
-</li>
 <li>
 <p><a href="task-nodeeditssh.html">To Finish the Update of an SSH Node</a></p>
 </li>
