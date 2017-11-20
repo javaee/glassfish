@@ -73,7 +73,7 @@ public class ServerConnectionIdentifier {
     /**
      * Holds value of property password.
      */
-    private char[] password;
+    private String password;
     
     /**
      * Holds value of property protocol.
@@ -92,7 +92,7 @@ public class ServerConnectionIdentifier {
             String hostName,
             int hostPort,
             String userName,
-            char[] password,
+            String password,
             boolean secure
             ) {
         this.hostName = hostName;
@@ -154,7 +154,7 @@ public class ServerConnectionIdentifier {
      * Getter for property password.
      * @return Value of property password.
      */
-    public char[] getPassword() {
+    public String getPassword() {
         return this.password;
     }
 
@@ -162,7 +162,7 @@ public class ServerConnectionIdentifier {
      * Setter for property password.
      * @param password New value of property password.
      */
-    public void setPassword(char[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
     
@@ -240,7 +240,7 @@ public class ServerConnectionIdentifier {
     }
 
     public String toString() {
-        return getUserName()+"("+ new String(getPassword())+")@(" + getHostName()
+        return getUserName()+"("+ getPassword()+")@(" + getHostName()
             + "):(" + getHostPort()+")" + ":" + getProtocol();
     }
 }

@@ -86,7 +86,7 @@ public class TestDeploy {
         sci.setHostName("localhost");
         sci.setHostPort(4848); // 8080 for the REST client
         sci.setUserName("admin");
-        sci.setPassword("".toCharArray());
+        sci.setPassword("");
         
         df.connect(sci);
         
@@ -128,7 +128,7 @@ public class TestDeploy {
         sci.setHostName("localhost");
         sci.setHostPort(4848); 
         sci.setUserName("admin");
-        sci.setPassword("".toCharArray());
+        sci.setPassword("");
         
         df.connect(sci);
         
