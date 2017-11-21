@@ -71,11 +71,20 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>package-tests</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
