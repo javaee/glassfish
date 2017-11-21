@@ -42,6 +42,7 @@ package org.glassfish.admingui.common.security;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -214,7 +215,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
         // See if the username / password has been passed in...
         String username = request.getParameter("j_username");
-        String password = request.getParameter("j_password");
+        char[] password = request.getParameter("j_password") != null
+                ? request.getParameter("j_password").toCharArray() : null;
         if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
             // Not passed in, show the login page...
             String origPath = request.getRequestURI();
@@ -244,13 +246,13 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
         Client client2 = RestUtil.initialize(ClientBuilder.newBuilder()).build();
         WebTarget target = client2.target(restURL);
-        target.register(HttpAuthenticationFeature.basic(username, password));
+        target.register(HttpAuthenticationFeature.basic(username, new String(password)));
         MultivaluedMap payLoad = new MultivaluedHashMap();
         payLoad.putSingle("remoteHostName", request.getRemoteHost());
 
         Response resp = target.request(RESPONSE_TYPE).post(Entity.entity(payLoad, MediaType.APPLICATION_FORM_URLENCODED), Response.class);
         RestResponse restResp = RestResponse.getRestResponse(resp);
-
+        Arrays.fill(password, ' ');
         // Check to see if successful..
         if (restResp.isSuccess()) {
             // Username and Password sent in... validate them!
