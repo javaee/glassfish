@@ -167,7 +167,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility {
         po.setPort(targetDAS.getHostPort());
         po.setUser(targetDAS.getUserName());
         po.setSecure(targetDAS.isSecure());
-        po.setPassword(new String(getTargetDAS().getPassword()), ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+        po.setPassword(getTargetDAS().getPassword(), ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
         po.setOptionsSet(true);
         return po;
     }
