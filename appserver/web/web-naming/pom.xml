@@ -85,6 +85,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.annotation</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <!-- Needed to register URLStreamHandler -->
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
