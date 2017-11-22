@@ -748,8 +748,10 @@ public class BundleProvisioner {
         PrintStream out = new PrintStream(new FileOutputStream(args[1], true));
         long t0 = System.currentTimeMillis();
         Framework f = null;
+        Map<String, String> mm = new HashMap<String, String>();
+        props.putAll(mm);
         for (FrameworkFactory ff : ServiceLoader.load(FrameworkFactory.class)) {
-            f = ff.newFramework(props);
+            f = ff.newFramework(mm);
             System.out.println("framework = " + f);
             break;
         }

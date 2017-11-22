@@ -48,6 +48,9 @@ import org.glassfish.embeddable.spi.RuntimeBuilder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
+import java.util.Dictionary;
+import java.util.Properties;
+
 /**
  * This {@link org.glassfish.embeddable.spi.RuntimeBuilder} is responsible for setting up a {@link GlassFishRuntime}
  * when user has a regular installation of GlassFish and they want to embed GlassFish in an existing OSGi runtime.
@@ -73,7 +76,11 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         configureBundles(bsProps);
         provisionBundles(bsProps);
         GlassFishRuntime gfr = new EmbeddedOSGiGlassFishRuntime(getBundleContext());
-        getBundleContext().registerService(GlassFishRuntime.class.getName(), gfr, bsProps.getProperties());
+        Properties props = bsProps.getProperties();
+        Dictionary properties = new Properties();
+        for (final String name: props.stringPropertyNames())
+            properties.put(name, props.getProperty(name));
+        getBundleContext().registerService(GlassFishRuntime.class.getName(), gfr, properties);
         return gfr;
     }
 

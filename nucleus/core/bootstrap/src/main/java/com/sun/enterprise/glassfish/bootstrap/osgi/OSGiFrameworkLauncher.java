@@ -47,6 +47,8 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
@@ -73,8 +75,12 @@ public class OSGiFrameworkLauncher {
             // Locate an OSGi framework and initialize it
             ServiceLoader<FrameworkFactory> frameworkFactories =
                     ServiceLoader.load(FrameworkFactory.class, getClass().getClassLoader());
+            Map<String, String> mm = new HashMap<String, String>();
+            for (Map.Entry<Object, Object> e: properties.entrySet()) {
+                mm.put((String)e.getKey(), (String)e.getValue());
+            }
             for (FrameworkFactory ff : frameworkFactories) {
-                framework = ff.newFramework(properties);
+                framework = ff.newFramework(mm);
                 break;
             }
             if (framework == null) {
