@@ -156,7 +156,6 @@
         <jbi.version>1.0</jbi.version>
         <glassfish-management-api.version>3.2.1-b002</glassfish-management-api.version>
         <btrace.version>1.0.5</btrace.version>
-        <opendmk.version>1.0-b01-ea</opendmk.version>
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.51</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
@@ -901,11 +900,6 @@
                 <groupId>com.sun.tools.btrace</groupId>
                 <artifactId>btrace-boot</artifactId>
                 <version>${btrace.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.external</groupId>
-                <artifactId>opendmk_jmxremote_optional_jar</artifactId>
-                <version>${opendmk.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.corba</groupId>
