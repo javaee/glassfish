@@ -10,15 +10,11 @@ SYNOPSIS
 DESCRIPTION
        The delete-node-config subcommand deletes a node that is not enabled
        for remote communication from the domain. This subcommand does not
-       require the Distributed Component Object Model (DCOM) remote protocol
-       or secure shell (SSH) to be configured.
+       require the secure shell (SSH) to be configured.
 
        This subcommand can delete only a node that is not enabled for remote
        communication. The subcommand for deleting other types of nodes depends
        on the type of the node:
-
-       *   A node that is enabled for remote communication over DCOM must be
-           deleted by using the delete-node-dcom(1) subcommand.
 
        *   A node that is enabled for remote communication over SSH must be
            deleted by using the delete-node-ssh(1) subcommand.
@@ -48,7 +44,7 @@ OPTIONS
 OPERANDS
        node-name
            The name of the node to delete. The node must not be enabled for
-           communication over DCOM or SSH. Otherwise, an error occurs.
+           communication over SSH. Otherwise, an error occurs.
 
 EXAMPLES
        Example 1, Deleting a Node That Is Not Enabled for Remote Communication
@@ -67,11 +63,11 @@ EXIT STATUS
            error in executing the command
 
 SEE ALSO
-       create-node-config(1), create-node-dcom(1), delete-node-ssh(1),
+       create-node-config(1), delete-node-ssh(1),
        delete-instance(1), delete-local-instance(1), install-node(1),
-       install-node-dcom(1), install-node-ssh(1), list-nodes(1),
-       uninstall-node(1), uninstall-node-dcom(1), uninstall-node-ssh(1),
-       update-node-config(1), update-node-dcom(1), update-node-ssh(1)
+       install-node-ssh(1), list-nodes(1),
+       uninstall-node(1), uninstall-node-ssh(1),
+       update-node-config(1), update-node-ssh(1)
 
        asadmin(1M)
 

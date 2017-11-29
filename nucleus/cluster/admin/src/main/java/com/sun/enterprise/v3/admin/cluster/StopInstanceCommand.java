@@ -43,46 +43,34 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.admin.remote.RemoteRestAdminCommand;
-import com.sun.enterprise.util.cluster.windows.process.WindowsException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sun.enterprise.admin.remote.ServerRemoteRestAdminCommand;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.StopServer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.CommandLock;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.hk2.api.IterableProvider;
-import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.util.SystemPropertyConstants;
-
-import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFile;
 import org.glassfish.api.admin.*;
-import javax.inject.Inject;
-
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PostConstruct;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
-import org.glassfish.cluster.ssh.util.DcomInfo;
+import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.annotations.Service;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * AdminCommand to stop the instance
@@ -135,7 +123,6 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private Server instance;
     File pidFile = null;
     SFTPClient ftpClient=null;
-    private WindowsRemoteFile wrf;
 
     public void execute(AdminCommandContext context) {
         report = context.getActionReport();
@@ -217,18 +204,6 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                 if (ftpClient != null) {
                     ftpClient.close();
                 }
-            }
-        } else if (node.getType().equals("DCOM")) {
-            DcomInfo info;
-            try {
-                info = new DcomInfo(node);
-                String path = info.getRemoteNodeRootDirectory() + "\\config\\pid";
-                wrf = new WindowsRemoteFile(info.getCredentials(), path);
-                if(wrf.exists())
-                    errorMessage = pollForRealDeath("DCOM");
-
-            }catch (WindowsException ex) {
-                //could not get to other host
             }
         }
         if (errorMessage != null) {
@@ -358,9 +333,6 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                     }
                 }else if (mode.equals("SSH")){
                     if (!ftpClient.exists(pidFile.toString()))
-                        return null;
-                }else if (mode.equals("DCOM")){
-                    if (wrf == null || !wrf.exists())
                         return null;
                 }
 

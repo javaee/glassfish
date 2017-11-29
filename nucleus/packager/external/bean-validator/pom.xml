@@ -138,6 +138,7 @@
                             javax.interceptor.*; resolution:=optional,
                             com.thoughtworks.paranamer.*; resolution:=optional,
                             javafx.beans.value.*; resolution:=optional,
+                            javafx.beans.property.*; resolution:=optional,
                             javafx.application; resolution:=optional,
                             org.apache.logging.log4j.*; resolution:=optional,
                             org.hibernate.validator.*; version=${hibernate-validator.version},

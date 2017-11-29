@@ -56,7 +56,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * Remote AdminCommand to validate the connection to an SSH node.
- * Refactored for DCOM Sept 2011 by Byron Nevins
  * @author Joe Di Pol
  * @author Byron Nevins
  */

@@ -59,6 +59,7 @@
 package org.apache.catalina.core;
 
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.*;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.deploy.*;
@@ -1070,6 +1071,7 @@ public class NamingContextListener
      * @param message Message to be logged
      */
     protected void log(String message) {
+        message = neutralizeForLog(message);
         if (!(container instanceof Container)) {
             if (log.isLoggable(Level.INFO)) {
                 // Did not localize this message
@@ -1097,6 +1099,7 @@ public class NamingContextListener
      * @param t Related exception
      */
     protected void log(String message, Throwable t) {
+        message = neutralizeForLog(message);
         if (!(container instanceof Container)) {
             log.log(Level.WARNING, logName() + ": " + message, t);
             return;

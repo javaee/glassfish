@@ -64,7 +64,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
     static enum PasswordType {
 
-        SSH_PASS, KEY_PASS, DCOM_PASS, ALIAS_PASS
+        SSH_PASS, KEY_PASS, ALIAS_PASS
     };
 
     @Override
@@ -500,9 +500,6 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
             out = new BufferedWriter(new FileWriter(f, true));
             out.newLine();
             switch (passType) {
-                case DCOM_PASS:
-                    out.write("AS_ADMIN_DCOMPASSWORD=" + value);
-                    break;
                 case SSH_PASS:
                     out.write("AS_ADMIN_SSHPASSWORD=" + value);
                     break;

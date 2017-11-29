@@ -130,15 +130,36 @@
                             <configuration>
                                 <duplicate>preserve</duplicate>
                                 <filesets>
-                                    <fileset>
+                                     <fileset>
+                                        <fileMode>600</fileMode>
                                         <dir>${stage.dir}</dir>
-                                        <fileMode>755</fileMode>
-                                        <includes>**/bin/*</includes>
-                                        <includes>**/bin/*.bat</includes>
-                                        <includes>**/lib/nadmin*</includes>
+                                        <includes>**/*.jks</includes>
+                                        <includes>**/admin-keyfile</includes>
+                                        <includes>**/domain-passwords</includes>
+                                        <includes>**/keyfile</includes>
+                                    </fileset>             
+                                    <fileset>
+                                        <fileMode>640</fileMode>
+                                        <dir>${stage.dir}</dir>
+                                        <includes>**/bin/*.1m</includes>
+                                        <includes>**/bin/*.jar</includes>
                                     </fileset>
                                     <fileset>
                                         <dir>${stage.dir}</dir>
+                                        <fileMode>750</fileMode>                                       
+                                        <includes>**/bin/*</includes>
+                                        <includes>**/bin/*.bat</includes>
+                                        <includes>**/config/*.bat</includes>
+                                        <includes>**/config/*.conf</includes>
+                                        <includes>**/lib/nadmin*</includes>
+                                        <includes>**/imq</includes>
+                                        <includes>**/imqinit</includes>
+                                        <excludes>**/bin/*.1m</excludes>
+                                        <excludes>**/bin/*.jar</excludes>
+                                    </fileset>
+                                    <fileset>
+                                        <fileMode>640</fileMode>
+                                        <dir>${stage.dir}</dir>                                        
                                         <excludes>**/bin/*</excludes>
                                         <excludes>**/bin/*.bat</excludes>
                                         <excludes>**/lib/nadmin*</excludes>

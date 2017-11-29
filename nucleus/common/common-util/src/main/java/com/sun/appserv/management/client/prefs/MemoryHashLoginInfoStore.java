@@ -43,6 +43,8 @@ package com.sun.appserv.management.client.prefs;
 import com.sun.enterprise.security.store.AsadminSecurityUtil;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
+import com.sun.enterprise.util.Utility;
+
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -256,7 +258,7 @@ public class MemoryHashLoginInfoStore implements LoginInfoStore {
             final String host     = uri.getHost();
             final int port        = uri.getPort();
             final String user     = uri.getUserInfo();
-            final String password = new String(decoder.decodeBuffer(encp));
+            final char[] password = Utility.convertByteArrayToCharArray(decoder.decodeBuffer(encp), null);
             return ( new LoginInfo(host, port, user, password) );
         }
         static String login2Line(final LoginInfo login) throws IOException, URISyntaxException {
@@ -265,8 +267,8 @@ public class MemoryHashLoginInfoStore implements LoginInfoStore {
             final int port        = login.getPort();
             final String user     = login.getUser();
             final URI uri         = new URI(scheme, user, host, port, null, null, null);
-            final String password = login.getPassword();
-            final String encp     = encoder.encode(password.getBytes());
+            final char[] password = login.getPassword();
+            final String encp     = encoder.encode(Utility.convertCharArrayToByteArray(password,null));
             final String line     = uri.toString() + ' ' + encp;
 
             return ( line );
