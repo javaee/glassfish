@@ -1042,7 +1042,7 @@
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>ddl</artifactId>
-                <version>RELEASE65</version>
+                <version>RELEASE82</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.tyrus</groupId>
