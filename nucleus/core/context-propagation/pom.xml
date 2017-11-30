@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>auto-depends</artifactId>
-            <version>1.1.0</version>
+            <version>1.6.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
