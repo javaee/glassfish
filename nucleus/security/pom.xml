@@ -57,7 +57,5 @@
         <module>core</module>
         <module>ssl-impl</module>
         <module>services</module>
-        <module>core-l10n</module>
-        <module>services-l10n</module>
   </modules>
 </project>

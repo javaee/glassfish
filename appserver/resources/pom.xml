@@ -56,6 +56,5 @@
         <module>resources-connector</module>
         <module>resources-runtime</module>
         <module>javamail</module>
-        <module>resources-connector-l10n</module>
   </modules>
 </project>

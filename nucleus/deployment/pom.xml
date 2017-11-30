@@ -59,8 +59,5 @@
         <module>autodeploy</module>
         <module>dtds</module>
         <module>schemas</module>
-        <module>common-l10n</module>
-        <module>admin-l10n</module>
-        <module>autodeploy-l10n</module>
     </modules>
 </project>
