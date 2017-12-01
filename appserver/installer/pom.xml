@@ -116,20 +116,6 @@
            <groupId>com.sun.pkg</groupId>
            <artifactId>pkg-bootstrap</artifactId>
          </dependency>
-         <dependency>
-           <groupId>com.sun.pkg</groupId>
-           <artifactId>pkg-client</artifactId>
-	</dependency> 
-	<dependency>
-            <groupId>org.glassfish.main.registration</groupId>
-            <artifactId>registration-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.registration</groupId>
-            <artifactId>registration-impl</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
     </dependencies>
 </project>
 

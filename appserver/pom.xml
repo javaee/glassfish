@@ -101,7 +101,6 @@
         <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
 
         <jsftemplating.version>2.1.2</jsftemplating.version>
-        <uc-pkg-client.version>1.122-57.2889</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
         <webservices.version>2.4.0</webservices.version>
         <woodstox.version>4.4.1</woodstox.version>
@@ -162,7 +161,6 @@
         <module>featuresets</module>
         <module>distributions</module>
         <module>security</module>
-        <module>registration</module>
         <module>tests</module>
         <module>osgi-platforms</module>
         <module>flashlight</module>
@@ -719,11 +717,6 @@
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se-shaded</artifactId>
                 <version>${weld.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.pkg</groupId>
-                <artifactId>pkg-client</artifactId>
-                <version>${uc-pkg-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.pkg</groupId>
