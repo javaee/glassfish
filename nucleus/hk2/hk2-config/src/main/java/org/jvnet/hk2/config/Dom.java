@@ -1167,7 +1167,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         StringBuilder buf = new StringBuilder(name.length()+5);
         for(String t : TOKENIZER.split(name)) {
             if(buf.length()>0)  buf.append('-');
-            buf.append(t.toLowerCase());
+            buf.append(t.toLowerCase(Locale.ENGLISH));
         }
         return buf.toString();        
     }
@@ -1210,7 +1210,6 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
      */
     @SuppressWarnings("unchecked")
     protected Creator createCreator(Class c) {
-        Map<String, List<String>> metadata = getMetadata();
         Creator creator = new CreatorImpl(c, getServiceLocator());
         
         return (ConfigBeanProxy.class.isAssignableFrom(c) ?

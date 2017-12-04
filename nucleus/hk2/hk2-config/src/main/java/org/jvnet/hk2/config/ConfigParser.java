@@ -237,8 +237,7 @@ public class ConfigParser {
                 children.add(new Dom.LeafChild(name,in.getElementText()));
             } else {
                 Dom child = handleElement(in, document, dom, ((ConfigModel.Node) a).model);
-                if(child!=null)
-                    children.add(new Dom.NodeChild(name, child));
+                children.add(new Dom.NodeChild(name, child));
             }
         }
 

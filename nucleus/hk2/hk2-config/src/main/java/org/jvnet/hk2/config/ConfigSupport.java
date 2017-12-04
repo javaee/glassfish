@@ -774,7 +774,6 @@ public class ConfigSupport implements ConfigurationUtilities {
         WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
         Class parentProxyType = parent.getProxyType();
 
-        Class<?> targetClass = null;
         // first we need to find the element associated with this type
         ConfigModel.Property element = null;
         for (ConfigModel.Property e : parent.model.elements.values()) {
@@ -797,7 +796,6 @@ public class ConfigSupport implements ConfigurationUtilities {
                     final Class<?> tempClass = elementModel.classLoaderHolder.loadClass(elementModel.targetTypeName);
                     if ( tempClass.isAssignableFrom( childType ) ) {
                         element = e;
-                        targetClass = tempClass;
                         break;
                     }
                 } catch (Exception ex ) { 

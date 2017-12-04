@@ -166,4 +166,8 @@ public class DomDescriptor<T>
         }
         return false;
     }
+
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
 }

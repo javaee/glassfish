@@ -100,7 +100,7 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
     /**
      * Flag indicating whether this interpolator should chance some of the interpolation steps.
      */
-    private final boolean cacheMessages = true;
+    private static final boolean cacheMessages = true;
 
     public MessageInterpolatorImpl() { }
 

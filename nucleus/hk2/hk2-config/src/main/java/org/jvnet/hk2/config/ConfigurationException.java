@@ -55,7 +55,7 @@ public class ConfigurationException extends HK2RuntimeException {
      */
     private static final long serialVersionUID = -5739251253923553480L;
     
-    private Location location;
+    private transient Location location = null;
 
     public ConfigurationException(String message) {
         super(message);

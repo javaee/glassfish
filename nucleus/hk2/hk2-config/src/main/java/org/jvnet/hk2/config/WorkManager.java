@@ -92,7 +92,7 @@ public class WorkManager implements Executor {
   }
   
   public void awaitCompletion() {
-    synchronized (workInProgressCount) {
+    //synchronized (workInProgressCount) {
       if (workInProgressCount.get() > 0) {
         try {
           workInProgressCount.wait();
@@ -100,13 +100,13 @@ public class WorkManager implements Executor {
           throw new ExecutionException(e);
         }
       }
-      
+
       awaitCompletionResults();
-    }
+    //}
   }
 
   public void awaitCompletion(long timeout, TimeUnit unit) throws TimeoutException {
-    synchronized (workInProgressCount) {
+    //synchronized (workInProgressCount) {
       if (workInProgressCount.get() > 0) {
         try {
           workInProgressCount.wait(unit.convert(timeout, TimeUnit.MILLISECONDS));
@@ -119,7 +119,7 @@ public class WorkManager implements Executor {
       }
       
       awaitCompletionResults();
-    }
+    //}
   }
   
   private void awaitCompletionResults() {
@@ -136,7 +136,7 @@ public class WorkManager implements Executor {
   protected void completed(Watcher<?> watcher, Exception e) {
 //    System.out.print(watcher.toString() + " mark completed on thread " + Thread.currentThread() + "...");
     assert(null != watcher);
-    synchronized (workInProgressCount) {
+    //synchronized (workInProgressCount) {
       if (null != e) {
         if (null == errors) {
           errors = new ArrayList<Exception>();
@@ -150,7 +150,7 @@ public class WorkManager implements Executor {
       }
       
 //      System.out.println("done: " + val);
-    }
+    //}
   }
   
   @SuppressWarnings("unchecked")
@@ -194,7 +194,7 @@ public class WorkManager implements Executor {
   @SuppressWarnings({ "unused", "unchecked" })
   public <V> Future<V> submit(Callable<V> task) {
     assert(null != task);
-    int work = workInProgressCount.incrementAndGet();
+    workInProgressCount.incrementAndGet();
 
     //    System.out.print("adding more: " + task + "; count=" + work);
     
@@ -259,8 +259,8 @@ public class WorkManager implements Executor {
   
   @SuppressWarnings("serial")
   public static final class ExecutionException extends ConfigurationException {
-    protected List<? extends Throwable> cause;
-    
+    private List<? extends Throwable> cause;
+
     public ExecutionException(Throwable t) {
       super(t.getMessage(), t);
       this.cause = Collections.singletonList(t);

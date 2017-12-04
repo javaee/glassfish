@@ -177,7 +177,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return null;
     }
 
-    public Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
+    public synchronized Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
         Object value =  bean._getter(property, t);
         if (value instanceof List) {
             if (!changedCollections.containsKey(property.xmlName())) {
@@ -190,7 +190,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return value;
     }
 
-    public void setter(ConfigModel.Property property,
+    public synchronized void setter(ConfigModel.Property property,
         Object newValue, java.lang.reflect.Type t)  {
         
         // are we still in a transaction
@@ -208,10 +208,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         // Following is a check to avoid duplication of elements with same key
         // attribute values. See Issue 7956
         if (property instanceof ConfigModel.AttributeLeaf) {
-
-            // First check if the key leaf attribute is being set
-            ConfigModel.AttributeLeaf al =
-                (ConfigModel.AttributeLeaf)property;
 
             ConfigBean master = getMasterView();
             String key = master.model.key;
@@ -541,7 +537,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             }
         }
         WriteableView writableView = (WriteableView) h;
-        writableView.isDeleted = true;
+        synchronized (writableView) {
+            writableView.isDeleted = true;
+        }
         boolean removed = false;
         for (Property property : writableView.bean.model.elements.values()) {
             if (property.isCollection()) {
@@ -770,7 +768,7 @@ private class ProtectedList extends AbstractList {
             sb.setCharAt(0,Character.toUpperCase(startChar));
             camelCaseName.append(sb);
         }
-        return camelCaseName.toString();
+        return (camelCaseName == null) ? null : camelCaseName.toString();
     }
     
     private void handleValidation(ConfigModel.Property property, Object value)

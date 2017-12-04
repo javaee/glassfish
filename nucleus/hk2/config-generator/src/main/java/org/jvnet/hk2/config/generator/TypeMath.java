@@ -55,6 +55,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Defines several type arithemetic operations.
@@ -133,7 +134,7 @@ class TypeMath {
         @Override
         public JExpression visitPrimitive(PrimitiveType type, JExpression param) {
             String kind = type.getKind().toString();
-            return JExpr.invoke("as" + kind.charAt(0) + kind.substring(1).toLowerCase()).arg(param);
+            return JExpr.invoke("as" + kind.charAt(0) + kind.substring(1).toLowerCase(Locale.ENGLISH)).arg(param);
         }
 
         @Override

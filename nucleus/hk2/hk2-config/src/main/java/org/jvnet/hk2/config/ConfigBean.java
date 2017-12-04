@@ -139,6 +139,18 @@ public class ConfigBean extends Dom implements ConfigView {
         return (T) new ConfigBean(this, parent);
     }
 
+    public boolean equals(Object o) {
+        if (super.equals(o)) {
+            if(((ConfigBean)o).objectName == this.objectName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
 
     /**
      * Returns an optional feature of the ConfigBean. Optional features are implemented
@@ -193,7 +205,6 @@ public class ConfigBean extends Dom implements ConfigView {
     protected Object getter(ConfigModel.Property target, Type t) {
         final Object value = _getter(target, t);
         if (value instanceof List) {
-            final ConfigBean myself = this;
             final List valueList = (List) value;
 
             // we need to protect this list as it was obtained from a readable view...

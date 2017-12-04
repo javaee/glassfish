@@ -117,12 +117,16 @@ public class ServiceAnnotationProcessor extends AbstractProcessor {
         if (!outDir.exists()) {
             return;
         }
-        for (File file : outDir.listFiles()) {
+        File[] listFiles = outDir.listFiles();
+        if (listFiles == null || listFiles.length == 0) return;
+        for (File file : listFiles) {
             if(file.isDirectory())  continue;
             Set<String> entries = new HashSet<String>();
+            FileReader reader = null;
+            LineNumberReader lineReader = null;
             try {
-                FileReader reader = new FileReader(file);
-                LineNumberReader lineReader = new LineNumberReader(reader);
+                reader = new FileReader(file);
+                lineReader = new LineNumberReader(reader);
                 String line = lineReader.readLine();
                 while (line != null) {
                     entries.add(line);
@@ -130,6 +134,13 @@ public class ServiceAnnotationProcessor extends AbstractProcessor {
                 }
             } catch (IOException e) {
                 printError(e.getMessage());
+            } finally {
+                try {
+                    if (lineReader != null) lineReader.close();
+                    if (reader != null) reader.close();
+                } catch(IOException ioe) {
+
+                }
             }
             ServiceFileInfo info = new ServiceFileInfo(file.getName(), entries);
             serviceFiles.put(file.getName(), info);

@@ -83,14 +83,14 @@ public final class Transactions implements PostConstruct, PreDestroy {
             private final CountDownLatch initialized = new CountDownLatch(1);
 
             public ConfigListenerNotifier get() {
-                synchronized(initialized) {
+                //synchronized(initialized) {
                     if (initialized.getCount()>0) {
                         configListenerNotifier.start();
                         initialized.countDown();
                     }
 
                 return configListenerNotifier;
-            }
+            //}
         }
     };
 
@@ -285,7 +285,8 @@ public final class Transactions implements PostConstruct, PreDestroy {
                         }), listener);
                     }
                     List<UnprocessedChangeEvents> unprocessed = new ArrayList<UnprocessedChangeEvents>(futures.size());
-                    for (Future<UnprocessedChangeEvents> future : futures.keySet()) {
+                    for (Map.Entry<Future<UnprocessedChangeEvents>, ConfigListener> futureEntry : futures.entrySet()) {
+                        Future<UnprocessedChangeEvents> future = futureEntry.getKey();
                         try {
                             UnprocessedChangeEvents result = future.get(200, TimeUnit.SECONDS);
                             if (result!=null && result.getUnprocessed()!=null && result.getUnprocessed().size()>0) {
@@ -299,7 +300,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
                         } catch (ExecutionException e) {
                             Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interrupted", e);
                         } catch (TimeoutException e) {
-                            ConfigListener cl = futures.get(future);
+                            ConfigListener cl = futureEntry.getValue();
                             Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener " + cl.getClass() + " notification took too long", e);
                         }
                     }
@@ -445,12 +446,12 @@ public final class Transactions implements PostConstruct, PreDestroy {
                 final CountDownLatch initialized = new CountDownLatch(1);
 
                 public ListenerNotifier<TransactionListener, PropertyChangeEvent, Void> get() {
-                    synchronized(initialized) {
+                    //synchronized(initialized) {
                         if (initialized.getCount()>0) {
                             tsListener.start();
                             initialized.countDown();
                         }
-                    }
+                    //}
                     return tsListener;
                 }
             });

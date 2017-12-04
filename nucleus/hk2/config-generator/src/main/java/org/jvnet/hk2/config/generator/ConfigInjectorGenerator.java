@@ -155,6 +155,8 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                     }
                     break;
                 }
+                default:
+                    break;
             }
             return null;
         }
@@ -314,6 +316,8 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                         case METHOD: {
                             generate(new Property.Method((ExecutableElement) child));
                         }
+                        default:
+                            continue;
                     }
                 }
 

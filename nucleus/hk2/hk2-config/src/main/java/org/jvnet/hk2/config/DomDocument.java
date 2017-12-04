@@ -181,7 +181,7 @@ public class DomDocument<T extends Dom> {
                 String value = list.get(0) ;
                 
                 // No need to synchronize on cache, it is already synchronized
-                cache.put(value, (ActiveDescriptor<? extends ConfigInjector<?>>) d);
+                cache.put(value, (ActiveDescriptor<? extends ConfigInjector<?>>) habitat.reifyDescriptor(d));
                 
                 if (value.equals(targetName)) {
                     return true;

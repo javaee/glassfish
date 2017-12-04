@@ -86,12 +86,13 @@ public class InjectionManager {
      */    
     public void inject(Object component, ExecutorService es, InjectionResolver... targets) {
       try {
-        if (null == es) {
+        syncDoInject(component, component.getClass(), targets);
+        /*if (null == es) {
           syncDoInject(component, component.getClass(), targets);
         } else {
           syncDoInject(component, component.getClass(), targets);
           // syncDoInject(new InjectContext(component, onBehalfOf, component.getClass(), es, targets));
-        }
+        }*/
       } catch (Exception e) {
         // we do this to bolster debugging
         if (e instanceof MultiException) {
@@ -104,17 +105,17 @@ public class InjectionManager {
     
     protected static class InjectContext {
       public final Object component;
-      public final Class<?> type;
+      //public final Class<?> type;
       public final ExecutorService es;
       public final InjectionResolver[] targets;
 
       public InjectContext(final Object component,
-          final Class type,
+          //final Class type,
           final ExecutorService es,
           final InjectionResolver[] targets) {
         assert(null != component);
         this.component = component;
-        this.type = type;
+        //this.type = type;
         this.es = es;
         this.targets = targets;
       }
@@ -168,7 +169,13 @@ public class InjectionManager {
                         try {
                             Object value = target.getValue(component, field, genericType, fieldType);
                             if (value != null) {
-                                field.setAccessible(true);
+                                AccessController.doPrivileged(new PrivilegedAction<Field>() {
+                                    @Override
+                                    public Field run() {
+                                        field.setAccessible(true);
+                                        return field;
+                                    }
+                                });
                                 field.set(component, value);
                                 injected = true;
                                 break;
@@ -218,7 +225,13 @@ public class InjectionManager {
                                 if (1 == paramTypes.length) {
                                   Object value = target.getValue(component, method, genericParamTypes[0], paramTypes[0]);
                                   if (value != null) {
-                                      setter.setAccessible(true);
+                                      AccessController.doPrivileged(new PrivilegedAction<Method>() {
+                                          @Override
+                                          public Method run() {
+                                              setter.setAccessible(true);
+                                              return setter;
+                                          }
+                                      });
                                       setter.invoke(component, value);
                                   } else {
                                       if (!target.isOptional(method, inject)) {
@@ -227,8 +240,14 @@ public class InjectionManager {
                                   }
                                 } else {
                                   // multi params
-                                  setter.setAccessible(true);
-                                  
+                                  AccessController.doPrivileged(new PrivilegedAction<Method>() {
+                                    @Override
+                                    public Method run() {
+                                      setter.setAccessible(true);
+                                      return setter;
+                                    }
+                                  });
+
                                   Type gparamType[] = setter.getGenericParameterTypes();
                                   
                                   Object params[] = new Object[paramTypes.length]; 
@@ -416,7 +435,13 @@ public class InjectionManager {
         try {
           Object value = target.getValue(ic.component, field, genericType, fieldType);
           if (value != null) {
-            field.setAccessible(true);
+            AccessController.doPrivileged(new PrivilegedAction<Field>() {
+              @Override
+              public Field run() {
+                field.setAccessible(true);
+                return field;
+              }
+            });
             field.set(ic.component, value);
           } else {
             if (!target.isOptional(field, inject)) {
@@ -464,7 +489,13 @@ public class InjectionManager {
             if (1 == paramTypes.length) {
               Object value = target.getValue(ic.component, method, null, paramTypes[0]);
               if (value != null) {
-                setter.setAccessible(true);
+                AccessController.doPrivileged(new PrivilegedAction<Method>() {
+                    @Override
+                    public Method run() {
+                        setter.setAccessible(true);
+                        return setter;
+                    }
+                });
                 setter.invoke(ic.component, value);
               } else {
                 if (!target.isOptional(method, inject)) {
@@ -473,7 +504,13 @@ public class InjectionManager {
               }
             } else {
               // multi params
-              setter.setAccessible(true);
+              AccessController.doPrivileged(new PrivilegedAction<Method>() {
+                @Override
+                public Method run() {
+                  setter.setAccessible(true);
+                  return setter;
+                }
+              });
 
               Type gparamType[] = setter.getGenericParameterTypes();
               Object params[] = new Object[paramTypes.length];

@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -323,7 +324,7 @@ public final class ConfigModel {
             }
         }
         // lowecase first letter.
-        return name.toLowerCase().charAt(0) + name.substring(1);
+        return name.toLowerCase(Locale.ENGLISH).charAt(0) + name.substring(1);
 
     }
 
@@ -333,7 +334,7 @@ public final class ConfigModel {
         StringBuilder buf = new StringBuilder(camelCase.length()+5);
         for(String t : Dom.TOKENIZER.split(camelCase)) {
             if(buf.length()>0)  buf.append('-');
-            buf.append(t.toLowerCase());
+            buf.append(t.toLowerCase(Locale.ENGLISH));
         }
         return buf.toString();
     }
@@ -652,7 +653,7 @@ public final class ConfigModel {
             }
 
             parent = parent.getSymbolSpaceRoot(v);
-            Dom dom = parent==null?null:parent.resolveReference(v,returnType.getName());
+            Dom dom = parent.resolveReference(v,returnType.getName());
             if (dom!=null) {
                 return returnType.cast(dom.get());
             } else {

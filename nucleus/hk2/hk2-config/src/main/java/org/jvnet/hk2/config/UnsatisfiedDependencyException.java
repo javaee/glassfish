@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
+import java.util.Locale;
 
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
@@ -81,14 +82,14 @@ public class UnsatisfiedDependencyException extends ConfigurationException {
 
     static String injection_failed_msg(Object t, Annotation inject, Throwable cause) {
       String name = null;
-      name = (null == name || name.isEmpty()) ? null : name;
+      //name = (null == name || name.isEmpty()) ? null : name;
       String msg;
       if (Field.class.isInstance(t)) {
         Field target = Field.class.cast(t);
         msg = "injection failed on " + target.getDeclaringClass().getName() + "." + 
-            target.getName() + " with " + target.getGenericType() + (null == name ? "" : " and name '" + name + "'");
+            target.getName() + " with " + target.getGenericType() + "";
       } else {
-        msg = "injection failed on " + t + (null == name ? "" : " with name '" + name + "'");
+        msg = "injection failed on " + t + "";
       }
       return msg;
     }
@@ -104,7 +105,7 @@ public class UnsatisfiedDependencyException extends ConfigurationException {
     public String getUnsatisfiedName() {
         String name = (member instanceof Member) ? ((Member)member).getName() : member.toString();
         if (isMethod()) {
-            return name.substring(3).toLowerCase();
+            return name.substring(3).toLowerCase(Locale.ENGLISH);
         }
         return name;
     }

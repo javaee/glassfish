@@ -40,6 +40,7 @@
 
 package org.jvnet.hk2.config;
 
+import java.lang.StringBuffer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,15 +74,15 @@ public final class UnprocessedChangeEvents {
     public int size() { return mUnprocessed == null ? 0 : mUnprocessed.size(); }
     
     public String toString() {
-        String result = "UnprocessedChangeEvents: " + size();
+        StringBuffer result = new StringBuffer("UnprocessedChangeEvents: " + size());
         if ( size() != 0 ) {
-            result = result + " {";
+            result.append(" {");
             for( final UnprocessedChangeEvent e : mUnprocessed )
             {
-                result = result + e + ", ";
+                result.append(e).append(", ");
             }
-            result = result + "}";
+            result.append("}");
         }
-        return result;
+        return result.toString();
     }
 }

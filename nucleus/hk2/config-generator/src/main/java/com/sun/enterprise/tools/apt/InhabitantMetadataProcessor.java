@@ -161,9 +161,9 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
     /**
      * Checks if the given annotation mirror has the given meta-annotation on it.
      */
-    private boolean hasMetaAnnotation(AnnotationMirror a, Class<? extends Annotation> type) {
+    /*private boolean hasMetaAnnotation(AnnotationMirror a, Class<? extends Annotation> type) {
         return a.getAnnotationType().asElement().getAnnotation(type) != null;
-    }
+    }*/
 
     private Model getModel(DeclaredType type) {
         Model model = models.get(type);
