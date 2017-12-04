@@ -82,7 +82,7 @@ public class InputValidationUtil {
      */
     public static String removeLinearWhiteSpaces(String input) {
         if (input != null) {
-            input = Pattern.compile("//s").matcher(input).replaceAll(" ");
+            input = Pattern.compile("\\s").matcher(input).replaceAll(" ");
         }
         return input;
     }
