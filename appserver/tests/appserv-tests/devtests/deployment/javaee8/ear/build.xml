@@ -62,7 +62,7 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="webModule" destdir="${build}" debug="on" failonerror="true">
+        <javac srcdir="web" destdir="${build}" debug="on" failonerror="true">
          <classpath refid="gfv3.classpath"/>
          </javac>
         <javac srcdir="client" destdir="${build}" debug="on" failonerror="true">
@@ -73,7 +73,7 @@
     <target name="assemble" depends="compile">
         <war destfile="${web.war}" needxmlfile="false">
             <classes dir="${build}" excludes="**/*.jar,**/*Client.class"/>
-            <fileset dir="webModule/WebContent">
+            <fileset dir="web/resources">
             </fileset>
         </war>
 
