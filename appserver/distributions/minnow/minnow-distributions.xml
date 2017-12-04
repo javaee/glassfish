@@ -64,7 +64,6 @@
         <install.package name="glassfish-web"/>
 	<install.package name="glassfish-jdbc"/>
 	<install.package name="glassfish-jmx"/>
-        <install.package name="pkg-java"/>
     </target>
 
     <target name="install-l10n-packages">
