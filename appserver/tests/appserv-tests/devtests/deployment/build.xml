@@ -100,6 +100,9 @@
         <ant dir="${testsRoot}/ear/earwithall2" target="depl-order">
             <property name="build" value="${build}/ear/earwithall2"/>
         </ant>
+        <ant dir="javaee8" target="private-all">
+             <property name="build" value="${build}/javaee8"/>
+        </ant>
     </target>
 
     <target name="clobber" depends="clean">

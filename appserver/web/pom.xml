@@ -73,12 +73,6 @@
         <module>web-embed</module>
         <module>web-ha</module>
         <module>web-sse</module>
-        <module>gui-plugin-common-l10n</module>
-        <module>admin-l10n</module>
-        <module>war-util-l10n</module>
-        <module>web-core-l10n</module>
-        <module>web-glue-l10n</module>
-        <module>web-naming-l10n</module>
         <module>cdi-api-fragment</module>
     </modules>
 

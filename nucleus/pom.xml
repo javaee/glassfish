@@ -157,9 +157,6 @@
         <glassfish-management-api.version>3.2.1-b002</glassfish-management-api.version>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>4.1</v3-docs.version>
-        <v3-docs-l10n.version>4.0-b07</v3-docs-l10n.version>
-        <l10n.version>3.1-b41</l10n.version>
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.51</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
@@ -198,7 +195,6 @@
         <module>test-utils</module>
         <module>diagnostics</module>
         <module>resources</module>
-        <module>resources-l10n</module>
     </modules>
 
     <build>
@@ -974,7 +970,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.10</version>
+                <version>4.12</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -1090,18 +1086,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
                 <version>2.0.10</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-remote-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-interactive-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-                <type>zip</type>
             </dependency>
             <!-- This is currently used by osgi-shell cmd, but can be used for others as well -->
             <dependency>
