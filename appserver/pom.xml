@@ -111,8 +111,8 @@
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
-        <dbschema.version>6.6-SNAPSHOT</dbschema.version>
-        <schema2beans.version>6.6-SNAPSHOT</schema2beans.version>
+        <dbschema.version>6.6</dbschema.version>
+        <schema2beans.version>6.6</schema2beans.version>
         <mq.version>5.1.1-b06</mq.version>
         <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
