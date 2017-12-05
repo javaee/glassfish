@@ -99,10 +99,7 @@
         <module>jdbc-ra</module>
         <module>admin</module>
 	<module>templates</module>
-	<module>admin-l10n</module>
 	<module>jdbc-config</module>
-	<module>jdbc-config-l10n</module>
 	<module>jdbc-runtime</module>
-	<module>jdbc-runtime-l10n</module>
     </modules>
 </project>

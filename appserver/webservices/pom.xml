@@ -60,8 +60,6 @@
         <module>jsr109-impl</module>
         <module>soap-tcp</module>
         <module>webservices-scripts</module>
-        <module>connector-l10n</module>
-        <module>jsr109-impl-l10n</module>
     </modules>
 </project>
 

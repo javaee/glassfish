@@ -78,7 +78,5 @@
     <modules>
 	<module>concurrent-connector</module>
 	<module>concurrent-impl</module>
-	<module>concurrent-connector-l10n</module>
-	<module>concurrent-impl-l10n</module>
     </modules>
 </project>

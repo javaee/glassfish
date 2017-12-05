@@ -57,6 +57,5 @@
     	<module>orb-enabler</module>
         <module>orb-connector</module>
         <module>orb-iiop</module>
-        <module>orb-connector-l10n</module>
     </modules>
 </project>
