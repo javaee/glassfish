@@ -255,7 +255,7 @@ public class AppServerStartupTest {
      * the run level services are constructed and destroyed at the proper
      * run levels.
      */
-    //Ignored these tests as it has been failing after moving hk2 code to Glassfish. Will raise an issue for this and will update here.
+    //Ignored these tests and raised an issue(#22374) to track.
     @Ignore
     @Test
     public void testRunLevelServices() {
