@@ -61,7 +61,5 @@
         <module>ejb-full-container</module>
         <module>ejb-timer-databases</module>
         <module>ejb-timer-service-app</module>
-        <module>ejb-connector-l10n</module>
-        <module>ejb-container-l10n</module>
     </modules>
 </project>
