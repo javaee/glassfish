@@ -120,8 +120,8 @@
 		
 		<dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>jmxremote_optional</artifactId>
-            <version>1.0-b01-ea</version>
+            <artifactId>jmxremote_optional-repackaged</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency> 
         
