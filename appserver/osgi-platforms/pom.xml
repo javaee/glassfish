@@ -56,7 +56,6 @@
     <modules>
         <module>felix-webconsole-extension</module>
         <module>glassfish-osgi-console-plugin</module>
-        <module>glassfish-osgi-console-plugin-l10n</module>
     </modules>
 </project>
 

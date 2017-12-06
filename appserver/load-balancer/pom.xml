@@ -55,7 +55,5 @@
     <modules>
         <module>admin</module>
         <module>gf-load-balancer-connector</module>
-        <module>admin-l10n</module>
-        <module>gf-load-balancer-connector-l10n</module>
   </modules>
 </project>

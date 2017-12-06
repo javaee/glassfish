@@ -59,8 +59,6 @@
         <module>api-exporter</module>
         <module>extra-jre-packages</module>
         <module>logging</module>
-        <module>logging-l10n</module>
-        <module>kernel-l10n</module>
         <module>context-propagation</module>
     </modules>
 </project>
