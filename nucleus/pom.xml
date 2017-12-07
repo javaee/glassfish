@@ -902,9 +902,9 @@
                 <artifactId>btrace-boot</artifactId>
                 <version>${btrace.version}</version>
             </dependency>
-            <dependency>
+            <dependency> 
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>opendmk_jmxremote_optional_jar</artifactId>
+                <artifactId>jmxremote_optional</artifactId>
                 <version>${opendmk.version}</version>
             </dependency>
             <dependency>
