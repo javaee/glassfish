@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.core</groupId>
         <artifactId>nucleus-core</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>kernel</artifactId>
@@ -108,35 +108,11 @@
                     <include>**/*.1</include>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+		    <include>**/services/*</include>
                 </includes>
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                   <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-dependency-plugin</artifactId>
-                   <executions>
-                       <execution>
-                           <id>unpack</id>
-                           <phase>process-classes</phase>
-                           <goals>
-                             <goal>unpack</goal>
-                           </goals>
-                           <configuration>
-                               <artifactItems>
-                                   <artifactItem>
-                                       <groupId>org.glassfish.docs.man</groupId>
-                                       <artifactId>kernel-manpage</artifactId>
-                                       <version>${v3-docs.version}</version>
-                                       <type>zip</type>
-                                       <overWrite>true</overWrite>
-                                       <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                   </artifactItem>
-                                </artifactItems>
-                           </configuration>
-                      </execution>
-                   </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -155,11 +131,6 @@
     </build>
     
     <dependencies>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax.validation.version.lowerbound}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>glassfish-api</artifactId>
@@ -224,11 +195,6 @@
             <groupId>org.glassfish.main.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kohsuke.metainf-services</groupId>
-            <artifactId>metainf-services</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
 	    <groupId>org.glassfish.external</groupId>

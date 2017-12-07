@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.admingui</groupId>
@@ -118,26 +118,8 @@
         <module>ejb-lite</module>
         <module>corba</module>
         <module>full</module>
-        <module>updatecenter</module>
         <module>war</module>
         <module>dist-fragment</module>
-        <module>updatecenter-l10n</module>
-        <module>full-l10n</module>
-        <module>common-l10n</module>
-        <module>corba-l10n</module>
-        <module>jts-l10n</module>
-        <module>community-theme-l10n</module>
-        <module>web-l10n</module>
-        <module>jms-plugin-l10n</module>
-        <module>jdbc-l10n</module>
-        <module>ejb-l10n</module>
-        <module>cluster-l10n</module>
-        <module>jca-l10n</module>
-        <module>ejb-lite-l10n</module>
-        <module>core-l10n</module>
-        <module>concurrent-l10n</module>
-        <module>webui-jsf-plugin-l10n</module>
-        <module>webui-jsf-suntheme-plugin-l10n</module>
     </modules>
     <build>
         <plugins>
@@ -151,7 +133,7 @@
                   <goal>unpack-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.glassfish.docs.help,org.glassfish.docs-l10n.help-l10n</includeGroupIds>
+                  <includeGroupIds>org.glassfish.docs.help</includeGroupIds>
                   <excludeTransitive>true</excludeTransitive>
                   <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
@@ -159,6 +141,18 @@
             </executions>
           </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/*.jar</exclude>
+                    <exclude>**/.gitkeep_empty_dir</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/help</directory>
+            </resource>
+      </resources>
       </build>
 
     <dependencies>

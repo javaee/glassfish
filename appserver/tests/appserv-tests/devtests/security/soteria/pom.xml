@@ -45,13 +45,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.main</groupId>
-        <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <artifactId>glassfish-parent</artifactId>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <groupId>org.glassfish.soteria.test</groupId>
     <artifactId>soteria</artifactId>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>Soteria ${project.version} Integration tests and examples</name>
@@ -77,7 +77,9 @@
         <module>app-multiple-store</module>
         <module>app-multiple-store-backup</module>
         <module>app-no-role-mapping</module>
-        
+        <module>app-bundled-ham-basic-login-config-form</module>
+        <module>app-caller-principal</module> 
+        <module>app-no-application-caller-principal</module>
     </modules>
     
     <dependencyManagement>
@@ -101,7 +103,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>            
         </dependency>      
         <dependency>
@@ -113,13 +114,13 @@
         <dependency>
             <groupId>javax.security.enterprise</groupId>
             <artifactId>javax.security.enterprise-api</artifactId>
-            <version>1.0-b09</version>
+            <version>${javax.security.enterprise-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
             <artifactId>javax.security.enterprise</artifactId>
-            <version>1.0-b10</version>
+            <version>${javax.security.enterprise.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

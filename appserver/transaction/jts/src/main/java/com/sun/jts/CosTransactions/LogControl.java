@@ -818,42 +818,43 @@ public class LogControl {
 
         File directory = new File(logDir);
         String[] allFiles = directory.list();
+        if (allFiles != null) {
+            for (int i = 0; i < allFiles.length; i++) {
 
-        for( int i = 0; i < allFiles.length; i++ ) {
-
-            // Determine if the file is actually a log subdirectory.  If so, use it's name
-            // to delete all associated log files.
-            if( allFiles[i].endsWith(LOG_EXTENSION) ) {
-                //Start IASRI 4720539
-                final File logFileDir = new File(directory,allFiles[i]);
-                if( logFileDir.isDirectory() ) {
-                    final String[] logFiles = logFileDir.list();
+                // Determine if the file is actually a log subdirectory.  If so, use it's name
+                // to delete all associated log files.
+                if (allFiles[i].endsWith(LOG_EXTENSION)) {
+                    //Start IASRI 4720539
+                    final File logFileDir = new File(directory, allFiles[i]);
+                    if (logFileDir.isDirectory()) {
+                        final String[] logFiles = logFileDir.list();
                     /*
                     for( int j = 0; j < logFiles.length; j++ )
                         new File(logFileDir,logFiles[j]).delete();
                     logFileDir.delete();
-                    */                                        
-                    java.security.AccessController.doPrivileged(
-                        new java.security.PrivilegedAction() {
-                            public Object run(){
-                                for( int j = 0; j < logFiles.length; j++ ){
-                                    new File(logFileDir,logFiles[j]).delete();                                    
+                    */
+                        java.security.AccessController.doPrivileged(
+                                new java.security.PrivilegedAction() {
+                                    public Object run() {
+                                        for (int j = 0; j < logFiles.length; j++) {
+                                            new File(logFileDir, logFiles[j]).delete();
+                                        }
+                                        return null;
+                                    }
                                 }
-                                return null;
-                            }
-                        }
-                    );                    
-                    java.security.AccessController.doPrivileged(
-                        new java.security.PrivilegedAction() {
-                            public Object run(){
-                                logFileDir.delete();
-                                return null;
-                            }
-                        }
-                    );                    
+                        );
+                        java.security.AccessController.doPrivileged(
+                                new java.security.PrivilegedAction() {
+                                    public Object run() {
+                                        logFileDir.delete();
+                                        return null;
+                                    }
+                                }
+                        );
+                    }
+                    //End IASRI 4720539
                 }
-                //End IASRI 4720539
-            }            
+            }
         }
 
     }

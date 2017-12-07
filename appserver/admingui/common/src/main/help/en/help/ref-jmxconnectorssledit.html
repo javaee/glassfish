@@ -1,0 +1,105 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-jmxconnectorssledit" name="ref-jmxconnectorssledit"></a><a id="GHCOM00128" name="GHCOM00128"></a></p>
+
+<h4><a id="sthref237" name="sthref237"></a><a id="sthref238" name="sthref238"></a><a id="sthref239" name="sthref239"></a>SSL</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the SSL page to modify the SSL settings for the JMX connector.</p>
+<p>The settings on this page are meaningful only if security is enabled for the JMX connector on the Edit JMX Connector page.</p>
+<p>The SSL page contains the following options.</p>
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
+</dd>
+<dt>SSL3</dt>
+<dd>
+<p>If this checkbox is selected, the SSL3 protocol is enabled for the JMX connector. This option is enabled by default.</p>
+</dd>
+<dt>TLS</dt>
+<dd>
+<p>If this checkbox is selected, the TLS protocol is enabled for the JMX connector. This option is enabled by default.</p>
+</dd>
+<dt>Client Authentication</dt>
+<dd>
+<p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p>
+</dd>
+<dt>Certificate Nickname</dt>
+<dd>
+<p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <i>tokenname</i><code>:</code><i>nickname</i>. Including the <i>tokenname</i><code>:</code> part of the name in this attribute is optional.</p>
+</dd>
+<dt>Key Store</dt>
+<dd>
+<p>The name of the keystore file (for example, <code>keystore.jks</code>).</p>
+</dd>
+<dt>Trust Algorithm</dt>
+<dd>
+<p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p>
+</dd>
+<dt>Max Certificate Length</dt>
+<dd>
+<p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p>
+</dd>
+<dt>Trust Store</dt>
+<dd>
+<p>The name of the truststore file (for example, <code>cacerts.jks</code>).</p>
+</dd>
+<dt>Cipher Suites</dt>
+<dd>
+<p>An area where you can add or remove cipher suites. If you do not add any cipher suites, all cipher suites will be used.</p>
+</dd>
+</dl>
+<a id="GHCOM473" name="GHCOM473"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-jmxconnectoredit.html">To Edit the JMX Connector</a></p>
+</li>
+<li>
+<p><a href="task-jmxconnectorssledit.html">To Edit SSL Settings for the JMX Connector</a></p>
+</li>
+</ul>
+
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

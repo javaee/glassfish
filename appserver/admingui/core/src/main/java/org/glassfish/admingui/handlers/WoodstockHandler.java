@@ -70,7 +70,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class WoodstockHandler {
             try {
                 //createTempFile requires min. of 3 char for prefix.
                 if (prefix.length() <= 2) {
-                    prefix = prefix + new Random().nextInt(100000);
+                    prefix = prefix + new SecureRandom().nextInt(100000);
                 }
                 tmpFile = File.createTempFile(prefix, suffix);
                 tmpFile.deleteOnExit();

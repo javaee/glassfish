@@ -109,4 +109,41 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
         //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
     }
+
+    @Test
+    public void testSSLIiopListener() {
+        final String iiopName = "testIiopListener" + generateRandomString();
+        final String networkAddress = "0.0.0.0";
+        final String listenerPort = Integer.toString(generateRandomNumber(32768));;
+        final String certName = "s1as";
+
+        clickAndWait("treeForm:tree:configurations:server-config:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_IIOP_LISTENER);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:IiopNameTextProp:IiopNameText", iiopName);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr", networkAddress);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort", listenerPort);
+
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_IIOP_LISTENERS);
+        assertTrue(isTextPresent(iiopName));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", iiopName), TRIGGER_EDIT_IIOP_LISTENER);
+        assertEquals(networkAddress, getFieldValue("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr"));
+        assertEquals(listenerPort, getFieldValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort"));
+
+        assertTableRowCount("propertyForm:basicTable", count);
+
+        // access the SSL Page
+        clickAndWait("propertyForm:iiopTab:sslEdit", TRIGGER_EDIT_IIOP_SSL);
+        setFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", certName);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
+        assertEquals(certName, getFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
+
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_IIOP_LISTENERS);
+
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", iiopName);
+    }
 }

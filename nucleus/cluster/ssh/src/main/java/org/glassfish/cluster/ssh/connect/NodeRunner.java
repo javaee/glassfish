@@ -84,16 +84,6 @@ public class NodeRunner {
         return node.getType().equals("SSH");
     }
 
-    public boolean isDcomNode(Node node) {
-
-        if (node == null) {
-            throw new IllegalArgumentException("Node is null");
-        }
-        if (node.getType() == null)
-            return false;
-        return node.getType().equals("DCOM");
-    }
-
     /**
      * Run an asadmin command on a Node. The node may be local or remote. If
      * it is remote then SSH is used to execute the command on the node.
@@ -227,13 +217,7 @@ public class NodeRunner {
             return result;
         }
 
-        if ("DCOM".equals(type)) {
-            NodeRunnerDcom nrd = new NodeRunnerDcom(logger);
-            nrd.runAdminCommandOnRemoteNode(node, output, args, stdinLines);
-            return determineStatus(args, output);
-        }
-
-        throw new UnsupportedOperationException("Node is not of type SSH or DCOM");
+        throw new UnsupportedOperationException("Node is not of type SSH");
     }
 
     private void trace(String s) {

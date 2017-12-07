@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.cluster</groupId>
@@ -95,12 +95,6 @@
         <module>gms-bootstrap</module>
         <module>gms-adapter</module>
         <module>ssh</module>
-        <module>gms-bootstrap-l10n</module>
-        <module>cli-l10n</module>
-        <module>ssh-l10n</module>
-        <module>common-l10n</module>
-        <module>admin-l10n</module>
-        <module>uc-l10n</module>
     </modules>
 </project>
 

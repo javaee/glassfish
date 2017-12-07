@@ -140,11 +140,11 @@
         </sun:property>
 
         <sun:property id="statusWithHelp"  rendered="#{readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}" helpText="$resource{i18n_web.common.secureAdminHelp}" >
-            <sun:checkbox disabled="#{readOnly}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+            <sun:checkbox disabled="#{readOnly}"  selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="status"  rendered="#{!readOnly}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol.securityEnabled}"  >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
+            <sun:checkbox  selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
         </sun:property>
 </sun:propertySheetSection>
     </sun:propertySheet>

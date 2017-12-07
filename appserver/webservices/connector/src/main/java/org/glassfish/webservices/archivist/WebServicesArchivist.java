@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.ArrayList;
 import org.glassfish.hk2.api.PerLookup;
 
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Extension Archivist for webservices.
@@ -95,7 +95,7 @@ public class WebServicesArchivist extends ExtensionsArchivist {
     }
 
     @Override
-    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
+    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXException {
         BundleDescriptor bundleDescriptor =
             BundleDescriptor.class.cast(super.open(main, archive, descriptor));
 

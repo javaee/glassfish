@@ -1,0 +1,107 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-threadpoolnew" name="ref-threadpoolnew"></a><a id="GHWEB00028" name="GHWEB00028"></a></p>
+
+<h4><a id="sthref173" name="sthref173"></a>New Thread Pool</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New Thread Pool page to create a thread pool.</p>
+<p>The New Thread Pool page contains the following options.</p>
+<dl>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
+</dd>
+<dt>Name</dt>
+<dd>
+<p>The name of the thread pool.</p>
+</dd>
+<dt>Class Name</dt>
+<dd>
+<p>The fully qualified name of the class that implements the thread pool. The default value is <code>com.sun.grizzly.http.StatsThreadPool</code>.</p>
+</dd>
+<dt>Max Queue Size</dt>
+<dd>
+<p>The maximum number of messages that can be queued until threads are available to process them. A value of -1 indicates that there is no limit to the queue size. The default value is 4096.</p>
+</dd>
+<dt>Max Thread Pool Size</dt>
+<dd>
+<p>The maximum number of threads in the thread pool. The default value is 5. This is the recommended value for network listener thread pools.</p>
+</dd>
+<dt>Min Thread Pool Size</dt>
+<dd>
+<p>The minimum number of threads in the thread pool. The default value is 2.</p>
+</dd>
+<dt>Idle Thread Timeout</dt>
+<dd>
+<p>The maximum amount of time, in seconds, that a thread can remain idle in the pool. After this time expires, the thread is removed from the pool. The default value is 900.</p>
+</dd>
+</dl>
+<a id="sthref174" name="sthref174"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-threadpoolnew.html">To Create a Thread Pool</a></p>
+</li>
+<li>
+<p><a href="task-threadpooledit.html">To Edit a Thread Pool</a></p>
+</li>
+<li>
+<p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p>
+</li>
+</ul>
+<a id="sthref175" name="sthref175"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00060"><code>create-threadpool</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00204"><code>list-threadpools</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00111"><code>delete-threadpool</code>(1)</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

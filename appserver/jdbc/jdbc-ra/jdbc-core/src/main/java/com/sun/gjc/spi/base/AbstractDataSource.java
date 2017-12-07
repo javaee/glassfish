@@ -142,7 +142,7 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
      */
     public Connection getConnection(String user, String pwd) throws SQLException {
         try {
-            ConnectionRequestInfoImpl info = new ConnectionRequestInfoImpl(user, pwd);
+            ConnectionRequestInfoImpl info = new ConnectionRequestInfoImpl(user, pwd.toCharArray());
             ConnectionHolder con = (ConnectionHolder)
                     cm.allocateConnection(mcf, info);
             setConnectionType(con);
@@ -213,7 +213,7 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
      */
     public Connection getNonTxConnection(String user, String password) throws SQLException {
         try {
-            ConnectionRequestInfoImpl cxReqInfo = new ConnectionRequestInfoImpl(user, password);
+            ConnectionRequestInfoImpl cxReqInfo = new ConnectionRequestInfoImpl(user, password.toCharArray());
             ConnectionHolder con = (ConnectionHolder)
                     ((com.sun.appserv.connectors.internal.spi.ConnectionManager)
                             cm).allocateNonTxConnection(mcf, cxReqInfo);
@@ -330,7 +330,8 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
 
     private void setConnectionType(ConnectionHolder con, boolean isNonTx) {
         con.setConnectionType(conType_);
-        if (conType_ == ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE) {
+        if (conType_ == ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE &&
+                cm instanceof javax.resource.spi.LazyAssociatableConnectionManager) {
             con.setLazyAssociatableConnectionManager(
                     (javax.resource.spi.LazyAssociatableConnectionManager) cm);
         } else if (conType_ == ConnectionHolder.ConnectionType.LAZY_ENLISTABLE) {
@@ -338,7 +339,7 @@ public abstract class AbstractDataSource implements javax.sql.DataSource, java.i
                 //if this is a getNonTxConnection call on the DataSource, we
                 //should not LazyEnlist
                 con.setConnectionType(ConnectionHolder.ConnectionType.STANDARD);
-            } else {
+            } else if(cm instanceof javax.resource.spi.LazyEnlistableConnectionManager) {
                 con.setLazyEnlistableConnectionManager(
                         (javax.resource.spi.LazyEnlistableConnectionManager) cm);
             }

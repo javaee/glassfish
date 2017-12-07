@@ -105,6 +105,8 @@ import javax.servlet.http.WebConnection;
 
 import com.sun.appserv.ProxyHandler;
 import javax.servlet.http.MappingMatch;
+
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.Context;
 import org.apache.catalina.LogFacade;
 import org.apache.catalina.Globals;
@@ -126,10 +128,7 @@ import org.apache.catalina.fileupload.Multipart;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardSession;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.ParameterMap;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.StringParser;
+import org.apache.catalina.util.*;
 import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
@@ -148,6 +147,7 @@ import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.web.valve.GlassFishValve;
 import javax.servlet.http.HttpServletMapping;
+import static com.sun.logging.LogCleanerUtil.getSafeHeaderValue;
 
 /**
  * Wrapper object for the Coyote request.
@@ -3781,7 +3781,7 @@ public class Request
              */
             if (jvmRoute == null) {
                 Cookie newCookie = new Cookie(
-                        getContext().getSessionCookieName(), session.getId());
+                        getSafeHeaderValue(getContext().getSessionCookieName()), getSafeHeaderValue(session.getId()));
                 configureSessionCookie(newCookie);
                 ((HttpResponse)response).addSessionCookieInternal(newCookie);
             }

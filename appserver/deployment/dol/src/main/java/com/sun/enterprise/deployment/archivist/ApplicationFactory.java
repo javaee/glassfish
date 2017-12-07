@@ -55,7 +55,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import javax.inject.Inject;
 
 import org.jvnet.hk2.annotations.Service;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class ApplicationFactory {
      * @return the application object
      */
     public Application openArchive(URI jarFile, String archiveType)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         return openArchive(jarFile, archiveType, false);
     }
@@ -113,7 +113,7 @@ public class ApplicationFactory {
      * @return the application object
      */
     public Application openArchive(Archivist archivist, URI jarFile, boolean handleRuntimeInfo)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         // never read the runtime deployment descriptor before the
         // module type is found and the application object created
@@ -136,7 +136,7 @@ public class ApplicationFactory {
      */
 
     public Application openArchive(Archivist archivist, ReadableArchive in, boolean handleRuntimeInfo)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
 
         return openArchive(in.getURI().getSchemeSpecificPart(), archivist, in, handleRuntimeInfo);
     }
@@ -154,7 +154,7 @@ public class ApplicationFactory {
      */
 
     public Application openArchive(String appName, Archivist archivist, ReadableArchive in, boolean handleRuntimeInfo)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         // we are not reading the runtime deployment descriptor now...
         archivist.setHandleRuntimeInfo(false);
 
@@ -199,7 +199,7 @@ public class ApplicationFactory {
      * @param archive the archive for the application
      */
     public Application createApplicationFromStandardDD(
-        ReadableArchive archive, String archiveType) throws IOException, SAXParseException {
+        ReadableArchive archive, String archiveType) throws IOException, SAXException {
         Archivist archivist = archivistFactory.getArchivist(archiveType, null);
         String xmlValidationLevel = dasConfig.getDeployXmlValidation();
         archivist.setXMLValidationLevel(xmlValidationLevel);
@@ -227,7 +227,7 @@ public class ApplicationFactory {
      */
     public Application openWith(Application application, 
         ReadableArchive archive, Archivist archivist)
-        throws IOException, SAXParseException {
+        throws IOException, SAXException {
         archivist.openWith(application, archive);
         // validate
         if (application.isVirtual()) {
@@ -249,7 +249,7 @@ public class ApplicationFactory {
      * @return the application object
      */
     public Application openArchive(URI jarFile, String archiveType, boolean handleRuntimeInfo)
-            throws IOException, SAXParseException {
+            throws IOException, SAXException {
         Archivist archivist = archivistFactory.getArchivist(archiveType);
         return openArchive(archivist, jarFile, handleRuntimeInfo);
     }

@@ -1,0 +1,126 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-serverinstappsconfig" name="ref-serverinstappsconfig"></a><a id="GHCOM00053" name="GHCOM00053"></a></p>
+
+<h4><a id="sthref124" name="sthref124"></a><a id="sthref125" name="sthref125"></a><a id="sthref126" name="sthref126"></a><a id="sthref127" name="sthref127"></a><a id="sthref128" name="sthref128"></a>Applications Configuration</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Applications Configuration page to set properties that help ensure that changes to deployed applications are detected and that the modified classes are reloaded.</p>
+<p>The Applications Configuration page contains the following options.</p>
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
+</dd>
+<dt>Reload</dt>
+<dd>
+<p>If this option is enabled, modified classes are reloaded dynamically. The server periodically checks for changes in the deployment directory and redeploys the application, automatically and dynamically, with the changes. This is useful in a development environment, because it allows code changes to be tested quickly. In a production environment, however, dynamic reloading might degrade performance. In addition, whenever a reload is done, the sessions at that transit time become invalid. The client must restart the session. This option is enabled by default.</p>
+</dd>
+<dt>Reload Poll Interval</dt>
+<dd>
+<p>Identifies how often the server should check for code changes in the deployed applications and modules. The default value is 2.</p>
+</dd>
+<dt>Admin Session Timeout</dt>
+<dd>
+<p>Identifies the number of minutes of inactivity before the Administration Console times out and you have to log in again. The default value is 60.</p>
+</dd>
+<dt>Auto Deploy</dt>
+<dd>
+<p>If this option is enabled, applications in the auto-deploy directory are deployed automatically. This option is enabled by default.</p>
+</dd>
+<dt>Auto Deploy Poll Interval</dt>
+<dd>
+<p>Specifies how often the server should check the auto-deploy directory for application or module changes. Changing the poll interval does not affect the time taken for deploying an application or module. The default value is 2.</p>
+</dd>
+<dt>Auto Deploy Retry Timeout</dt>
+<dd>
+<p>Specifies the number of seconds that a partially copied file can remain unchanged in size before an error occurs. The default value is 4.</p>
+<p>If a file is copied slowly into the auto-deploy directory, the file can appear before the entire file is copied. As a result, the attempt to automatically deploy the application fails. If an attempt to automatically deploy an application fails for this reason, the GlassFish Server tries to deploy the application again. If the size of the partially copied file remains unchanged for the specified period of time, an error occurs.</p>
+</dd>
+<dt>Auto Deploy Directory</dt>
+<dd>
+<p>Identifies the directory to monitor for automatic deployment of applications. The default value is <i>domain-dir</i><code>/autodeploy</code>.</p>
+</dd>
+<dt>XML Validation</dt>
+<dd>
+<p>Specifies the type of XML validation to be performed on standard and GlassFish Server deployment descriptors. The type may be any of the following:</p>
+<dl>
+<dt>Full</dt>
+<dd>
+<p>If XML validation fails, deployment fails. This value is the default.</p>
+</dd>
+<dt>Parsing</dt>
+<dd>
+<p>XML validation errors are reported, but deployment occurs.</p>
+</dd>
+<dt>None</dt>
+<dd>
+<p>No XML validation is performed.</p>
+</dd>
+</dl>
+</dd>
+<dt>Verifier</dt>
+<dd>
+<p>If this option is enabled, the verifier is run before autodeployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+</dd>
+<dt>Precompile</dt>
+<dd>
+<p>If this option is enabled, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+</dd>
+<dt>Additional Properties</dt>
+<dd>
+<p>Additional properties for applications. The GlassFish Server does not define any additional properties for applications.</p>
+</dd>
+</dl>
+<a id="GHCOM339" name="GHCOM339"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-setadvanceappconfig.html">To Set the Applications Configuration</a></p>
+</li>
+<li>
+<p><a href="task-setadvancedomainattributes.html">To Set the Domain Attributes</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

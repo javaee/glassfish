@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>        
     </parent>
     <groupId>org.glassfish.main.security</groupId>
@@ -63,8 +63,5 @@
 	<module>ejb.security</module>
         <module>appclient.security</module>
         <module>jaspic-provider-framework</module>
-        <module>core-ee-l10n</module>
-        <module>webservices.security-l10n</module>
-        <module>security-dol-l10n</module>
   </modules>
 </project>

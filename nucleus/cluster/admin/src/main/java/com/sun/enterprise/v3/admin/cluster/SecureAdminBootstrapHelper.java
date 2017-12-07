@@ -40,13 +40,11 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.sun.enterprise.util.cluster.RemoteType;
 import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.util.cluster.windows.process.WindowsException;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFile;
-import com.sun.enterprise.util.cluster.windows.io.WindowsRemoteFileSystem;
-import com.trilead.ssh2.SFTPv3FileAttributes;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -56,14 +54,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
-import org.glassfish.cluster.ssh.util.DcomInfo;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -95,7 +89,7 @@ public abstract class SecureAdminBootstrapHelper {
      * @param node Node from the domain configuration for the target node
      * @param logger
      * @return the remote helper
-     * @throws IOException
+     * @throws BootstrapException
      */
     public static SecureAdminBootstrapHelper getRemoteHelper(
             final ServiceLocator habitat,
@@ -119,14 +113,6 @@ public abstract class SecureAdminBootstrapHelper {
         switch (type) {
             case SSH:
                 return new SSHHelper(
-                        habitat,
-                        DASInstanceDir,
-                        remoteNodeDir,
-                        instance,
-                        node,
-                        logger);
-            case DCOM:
-                return new DCOMHelper(
                         habitat,
                         DASInstanceDir,
                         remoteNodeDir,
@@ -313,8 +299,8 @@ public abstract class SecureAdminBootstrapHelper {
          * @param milliseconds normal Java time (in milliseconds)
          * @return
          */
-        Integer secondsSince_01_Jan_1970(final long milliseconds) {
-            return Integer.valueOf((int) (milliseconds) / 1000);
+        int secondsSince_01_Jan_1970(final long milliseconds) {
+            return (int) (milliseconds) / 1000;
         }
     }
 
@@ -337,7 +323,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient = launcher.getSFTPClient();
             }
-            catch (IOException ex) {
+            catch (JSchException ex) {
                 throw new BootstrapException(launcher, ex);
             }
         }
@@ -349,9 +335,9 @@ public abstract class SecureAdminBootstrapHelper {
                     remoteDir);
             Integer instanceDirPermissions;
             try {
-                instanceDirPermissions = ftpClient.lstat(remoteNodeDir).permissions;
+                instanceDirPermissions = ftpClient.getSftpChannel().lstat(remoteNodeDir).getPermissions();
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteNodeDir, ex);
             }
             logger.log(Level.FINE, "Creating remote bootstrap directory "
@@ -360,7 +346,7 @@ public abstract class SecureAdminBootstrapHelper {
             try {
                 ftpClient.mkdirs(remoteDir, instanceDirPermissions);
             }
-            catch (IOException ex) {
+            catch (SftpException ex) {
                 throw new IOException(remoteDir, ex);
             }
         }
@@ -374,16 +360,11 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         void writeToFile(final String path, final InputStream content) throws IOException {
-            final OutputStream os = new BufferedOutputStream(ftpClient.writeToFile(path));
-            int bytesRead;
-            final byte[] buffer = new byte[1024];
             try {
-                while ((bytesRead = content.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
+                ftpClient.getSftpChannel().put(content, path);
             }
-            finally {
-                os.close();
+            catch (SftpException ex) {
+                throw new IOException(ex);
             }
         }
         /* bnevins -- this method had to be made abstract ONLY because of the
@@ -407,87 +388,11 @@ public abstract class SecureAdminBootstrapHelper {
             /*
              * Times over ssh are expressed as seconds since 01 Jan 1970.
              */
-            final SFTPv3FileAttributes attrs = ftpClient.stat(path);
-            attrs.mtime = secondsSince_01_Jan_1970(when);
-            ftpClient.setstat(path, attrs);
-        }
-    }
-
-    private static class DCOMHelper extends RemoteHelper {
-        final WindowsRemoteFileSystem wrfs;
-        final DcomInfo info;
-
-        DCOMHelper(
-                final ServiceLocator habitat,
-                final File dasInstanceDir,
-                String remoteNodeDir,
-                final String instance,
-                final Node node,
-                final Logger logger) throws BootstrapException {
-            super(habitat, dasInstanceDir, remoteNodeDir, instance, node, logger);
             try {
-                info = new DcomInfo(node);
-                wrfs = new WindowsRemoteFileSystem(info.getHost(), info.getUser(), info.getPassword());
+                ftpClient.getSftpChannel().setMtime(path, secondsSince_01_Jan_1970(when));
+            } catch (SftpException e) {
+                throw new IOException(e);
             }
-            catch (WindowsException ex) {
-                throw new BootstrapException(ex);
-            }
-        }
-
-        @Override
-        protected void close() {
-            // DCOM doesn't need to do anything...
-        }
-
-        @Override
-        protected void mkdirs(String subdir) throws IOException {
-            String remoteDir = remoteInstanceDir + subdir;
-            logger.log(Level.FINE, "Trying to create directories for remote path {0}",
-                    remoteDir);
-            try {
-                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, remoteDir);
-                f.mkdirs();
-
-                if (!f.exists())
-                    throw new IOException(Strings.get("no.mkdir", f.getPath()));
-            }
-            catch (WindowsException ex) {
-                throw new IOException(ex.getMessage(), ex);
-            }
-        }
-
-        @Override
-        void writeToFile(String path, InputStream content) throws IOException {
-            try {
-                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, path);
-                f.copyFrom((BufferedInputStream)content);
-            }
-            catch (WindowsException ex) {
-                throw new IOException(ex.getMessage(), ex);
-            }
-        }
-
-        @Override
-        void setLastModified(String path, long when) throws IOException {
-            try {
-                WindowsRemoteFile f = new WindowsRemoteFile(wrfs, path);
-                f.setLastModified(when);
-            }
-            catch (WindowsException ex) {
-                throw new IOException(ex.getMessage(), ex);
-            }
-        }
-
-        @Override
-        protected void backdateInstanceDomainXML() throws BootstrapException {
-            final String remoteDomainXML = remoteInstanceDir + DOMAIN_XML_PATH;
-            try {
-                setLastModified(remoteDomainXML, 0);
-            }
-            catch (IOException ex) {
-                throw new BootstrapException(ex);
-            }
-            logger.log(Level.FINE, "Backdated the instance's copy of domain.xml");
         }
     }
 

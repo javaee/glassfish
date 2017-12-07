@@ -63,7 +63,7 @@ import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -1003,7 +1003,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message) {
-        log.log(Level.INFO, message);
+        log.log(Level.INFO, neutralizeForLog(message));
     }
 
 
@@ -1015,7 +1015,7 @@ public abstract class ManagerBase implements Manager {
      * @deprecated
      */
     protected void log(String message, Throwable throwable) {
-        log.log(Level.INFO, message, throwable);
+        log.log(Level.INFO, neutralizeForLog(message), throwable);
     }
 
 
@@ -1197,9 +1197,12 @@ public abstract class ManagerBase implements Manager {
     public String getSessionAttribute( String sessionId, String key ) {
         Session s = sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return null;
         }
         Object o=s.getSession().getAttribute(key);
@@ -1211,9 +1214,12 @@ public abstract class ManagerBase implements Manager {
     public void expireSession( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return;
         }
         s.expire();
@@ -1223,9 +1229,12 @@ public abstract class ManagerBase implements Manager {
     public String getLastAccessedTimeMillis( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
+            /*
+            Do not log session ID
             if (log.isLoggable(Level.INFO)) {
                 log.log(Level.INFO, LogFacade.SESSION_NOT_FOUND, sessionId);
             }
+            */
             return "";
         }
         return new Date(s.getLastAccessedTime()).toString();

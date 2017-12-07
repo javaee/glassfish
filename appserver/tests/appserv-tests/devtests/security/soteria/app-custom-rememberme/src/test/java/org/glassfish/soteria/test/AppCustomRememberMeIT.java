@@ -77,17 +77,17 @@ public class AppCustomRememberMeIT extends ArquillianBase {
 
 
     @Test
-    public void testHttpOnlyIsFalse() {
+    public void testHttpOnlyIsTrue() {
         readFromServer("/servlet?name=reza&password=secret1&rememberme=true");
 
-        assertTrue(getWebClient().getCookieManager().getCookie("JREMEMBERMEID").isHttpOnly());
+        assertTrue(getWebClient().getCookieManager().getCookie("GLASSFISHCOOKIE").isHttpOnly());
     }
 
     @Test
     public void testSecureOnlyIsFalse() {
         readFromServer("/servlet?name=reza&password=secret1&rememberme=true");
 
-        assertFalse(getWebClient().getCookieManager().getCookie("JREMEMBERMEID").isSecure());
+        assertFalse(getWebClient().getCookieManager().getCookie("GLASSFISHCOOKIE").isSecure());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class AppCustomRememberMeIT extends ArquillianBase {
         //    remember me cookie
         
         for (Cookie cookie : getWebClient().getCookieManager().getCookies()) {
-            if (!"JREMEMBERMEID".equals(cookie.getName())) {
+            if (!"GLASSFISHCOOKIE".equals(cookie.getName())) {
                 getWebClient().getCookieManager().removeCookie(cookie);
             }
         }

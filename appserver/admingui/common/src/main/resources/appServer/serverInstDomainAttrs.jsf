@@ -106,7 +106,7 @@
         
         <sun:property id="loadOnStartup"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}"
                       label="$resource{i18nc.domain.loadOnStartup}"  helpText="$resource{i18nc.domain.loadOnStartupHelp}">
-            <sun:checkbox  label="$resource{i18n.common.Enabled}" selected="#{pageSession.loadOnStartup}" selectedValue="true"  >
+            <sun:checkbox   selected="#{pageSession.loadOnStartup}" selectedValue="true"  >
                 <!beforeCreate
                     setPageSessionAttribute(key="loadOnStartup" value="false");
                     setPageSessionAttribute(key="origLoadOnStartup" value="false");

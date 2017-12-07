@@ -1,0 +1,109 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-transactionservice" name="ref-transactionservice"></a><a id="GHJTS00002" name="GHJTS00002"></a></p>
+
+<h4><a id="sthref14" name="sthref14"></a>Transaction Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the Transaction Service page to configure transaction recovery, timeouts, and logging.</p>
+<p>The Transaction Service page contains the following options.</p>
+<dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
+</dd>
+<dt>Configuration Name</dt>
+<dd>
+<p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
+</dd>
+<dt>On Restart</dt>
+<dd>
+<p>If the Enabled checkbox is selected, the GlassFish Server attempts to recover incomplete transactions when the server is restarted. This option is disabled by default.</p>
+</dd>
+<dt>Transaction Timeout</dt>
+<dd>
+<p>Number of seconds the server waits before rolling back a transaction that has not completed. The default value is 0, meaning that the server waits indefinitely for a transaction to complete.</p>
+</dd>
+<dt>Retry Timeout</dt>
+<dd>
+<p>Number of seconds the GlassFish Server tries to connect to an unreachable server. The default value is 600 (10 minutes).</p>
+</dd>
+<dt>Transaction Log Location</dt>
+<dd>
+<p>The directory where server logs are kept. Transaction logs are kept in the <code>tx</code> subdirectory of the directory specified by this field. The default value is the directory specified by the Log Root field of the Domain Attributes page, which is located under the Advanced tab of the GlassFish Server node.</p>
+</dd>
+<dt>Heuristic Decision</dt>
+<dd>
+<p>Whether transactions that involve unreachable servers are to be committed or rolled back. The default value is Rollback. Committing indeterminate transactions can compromise the data integrity of your application.</p>
+</dd>
+<dt>Keypoint Interval</dt>
+<dd>
+<p>The number of transactions between keypoint operations, which compress the transaction log file. The default value is 65,536.</p>
+</dd>
+<dt>Additional Properties</dt>
+<dd>
+<p>Additional properties for the Transaction Service.</p>
+<p>For a description of available properties, see <a href="ref-transactionsvcproperties.html">Properties Specific to the Transaction Service</a>.</p>
+</dd>
+</dl>
+<a id="sthref15" name="sthref15"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
+</li>
+<li>
+<p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
+</li>
+<li>
+<p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
+</li>
+<li>
+<p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+</li>
+<li>
+<p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

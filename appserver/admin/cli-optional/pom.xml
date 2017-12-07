@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.admin</groupId>
         <artifactId>admin</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>cli-optional</artifactId>
     <packaging>glassfish-jar</packaging>
@@ -105,36 +105,11 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                               <Class-Path>../../modules/backup.jar ../../modules/common-util.jar ../../modules/glassfish-api.jar ../../modules/config-api.jar ../../modules/internal-api.jar ../../modules/config-types.jar ../../modules/grizzly-config.jar cli-optional-l10n.jar</Class-Path>
+                               <Class-Path>../../modules/backup.jar ../../modules/common-util.jar ../../modules/glassfish-api.jar ../../modules/config-api.jar ../../modules/internal-api.jar ../../modules/config-types.jar ../../modules/grizzly-config.jar </Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
-               <plugin>
-                   <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-dependency-plugin</artifactId>
-                   <executions>
-                       <execution>
-                           <id>unpack</id>
-                           <phase>process-classes</phase>
-                           <goals>
-                             <goal>unpack</goal>
-                           </goals>
-                           <configuration>
-                               <artifactItems>
-                                   <artifactItem>
-                                       <groupId>org.glassfish.docs.man</groupId>
-                                       <artifactId>cli-optional-manpage</artifactId>
-                                       <version>${v3-docs.version}</version>
-                                       <type>zip</type>
-                                       <overWrite>true</overWrite>
-                                       <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                   </artifactItem>
-                                </artifactItems>
-                           </configuration>
-                      </execution>
-                   </executions>
-              </plugin>
         </plugins>
         <resources>
             <resource>

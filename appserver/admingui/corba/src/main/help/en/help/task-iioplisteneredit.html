@@ -1,0 +1,139 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="task-iioplisteneredit" name="task-iioplisteneredit"></a><a id="GHCOR00008" name="GHCOR00008"></a></p>
+
+<h4><a id="sthref7" name="sthref7"></a>To Edit an IIOP Listener</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the tree component, expand the Configuration node.</p>
+</li>
+<li>
+<p>Select the instance to configure:</p>
+<ul>
+<li>
+<p>To configure a particular instance, select the instance's config node. For example, for the default instance, <code>server</code>, select the <code>server-config</code> node.</p>
+</li>
+<li>
+<p>To configure the default settings for future instances that use a copy of <code>default-config</code>, select the <code>default-config</code> node.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Under the Configuration node, expand the ORB node.</p>
+</li>
+<li>
+<p>Select the IIOP Listeners node.</p>
+<p>The IIOP Listeners page opens.</p>
+</li>
+<li>
+<p>In the table, click the name of the listener to be edited.</p>
+<p>The Edit IIOP Listener page opens.</p>
+</li>
+<li>
+<p>In the Network Address field, type the network address of the listener.</p>
+<p>You can type an IP address or a DNS resolvable host name.</p>
+</li>
+<li>
+<p>In the Listener Port field, type the port number upon which the IIOP listener is to listen.</p>
+</li>
+<li>
+<p>Select the Listener Enabled checkbox to enable ORB IIOP inbound connections to the GlassFish Server.</p>
+<p>This option is enabled by default.</p>
+</li>
+<li>
+<p>Select the Security Enabled checkbox to enable SSL for the IIOP listener.</p>
+<p>This option is disabled by default.</p>
+</li>
+<li>
+<p>In the Additional Properties section, specify additional properties.</p>
+<p>The GlassFish Serverdoes not define any additional properties for IIOP listeners.</p>
+<ul>
+<li>
+<p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>
+</li>
+<li>
+<p>To modify a property, edit that property's Value field.</p>
+</li>
+<li>
+<p>To delete a property, select the checkbox to the left of the Name field of the property that you are deleting, then click the Delete Properties button.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Click Save.</p>
+
+<hr>
+<p><b>Tip:</b></p>
+<p>To return to the default settings, click the Load Defaults button, then click Save.</p>
+
+<hr>
+
+</li>
+<li>
+<p>If the Security Enabled checkbox is selected, click the SSL tabbed pane to modify the Secure Socket Layer settings of this IIOP listener.</p>
+<p>See<a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a> for details.</p>
+</li>
+<li>
+<p>If you changed the port number of the listener, restart the GlassFish Server.</p>
+</li>
+</ol>
+<a id="sthref8" name="sthref8"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-orb.html">To Configure the ORB</a></p>
+</li>
+<li>
+<p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
+</li>
+<li>
+<p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
+</li>
+<li>
+<p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

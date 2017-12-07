@@ -40,6 +40,9 @@
 
 package org.glassfish.admingui.common.servlet;
 
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.common.util.InputValidationUtil;
+
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -236,7 +239,8 @@ public class DownloadServlet extends HttpServlet {
      *	<p> This method is responsible for setting the response header
      *	    information.</p>
      */
-    protected void writeHeader(DownloadServlet.ContentSource source, DownloadServlet.Context context) {
+    protected void writeHeader(DownloadServlet.ContentSource source, DownloadServlet.Context context)
+			throws IOException {
 	ServletResponse resp = context.getServletResponse();
 	if (!(resp instanceof HttpServletResponse)) {
 	    // This implementation is only valid for HttpServletResponse
@@ -264,7 +268,7 @@ public class DownloadServlet extends HttpServlet {
 		contentType = DEFAULT_CONTENT_TYPE;
 	    }
 	}
-	((HttpServletResponse) resp).setHeader("Content-type", contentType);
+	setHeaderNameValue((HttpServletResponse) resp, "Content-type", contentType);
 	
 	// Write additional headers
 	Object o = context.getAttribute(HEADERS);
@@ -279,6 +283,21 @@ public class DownloadServlet extends HttpServlet {
 	
     }
 
+	private void setHeaderNameValue(HttpServletResponse resp,
+										  String headerName, String headerValue) throws IOException {
+		headerName = InputValidationUtil.removeLinearWhiteSpaces(headerName);
+		headerValue = InputValidationUtil.removeLinearWhiteSpaces(headerValue);
+		if (InputValidationUtil.validateStringforCRLF(headerName)) {
+			resp.sendError(403, "Forbidden");
+			return;
+		}
+		if (InputValidationUtil.validateStringforCRLF(headerValue)) {
+			resp.sendError(403, "Forbidden");
+			return;
+		}
+		resp.addHeader(headerName, headerValue);
+	}
+
     /**
      *	<p> This method is responsible for copying the data from the given
      *	    <code>InputStream</code> to the <code>ServletResponse</code>'s
@@ -286,59 +305,46 @@ public class DownloadServlet extends HttpServlet {
      *	    the from the {@link DownloadServlet#ContentSource}.</p>
      */
     protected void writeContent(DownloadServlet.ContentSource source, DownloadServlet.Context context) {
-	// Get the InputStream
-	InputStream in = source.getInputStream(context);
+      // Get the InputStream
+      InputStream in = source.getInputStream(context);
 
-	// Get the OutputStream
-	ServletResponse resp = context.getServletResponse();
-	if(in == null) {
-	    //nothing to write
-	    String jspPage = (String)context.getAttribute("JSP_PAGE_SERVED"); 
-	    if(jspPage != null && (jspPage.equals("false")))  {
-		try {
-		    //Mainly to take care of javahelp2, bcz javahelp2 code needs an Exception to be thrown for FileNotFound.
-		    //We may have to localize this message.
-		    ((HttpServletResponse)resp).sendError(404, "File Not Found");
-		} catch (IOException ex) {
-		    //squelch it, just return.
-		}
-	    }
-	    return;
-	}
-        InputStream stream = null;
-	try {
-	    javax.servlet.ServletOutputStream out = resp.getOutputStream();
+      // Get the OutputStream
+      ServletResponse resp = context.getServletResponse();
+      if (in == null) {
+        //nothing to write
+        String jspPage = (String) context.getAttribute("JSP_PAGE_SERVED");
+        if (jspPage != null && (jspPage.equals("false"))) {
+          try {
+            //Mainly to take care of javahelp2, bcz javahelp2 code needs an Exception to be thrown for FileNotFound.
+            //We may have to localize this message.
+            ((HttpServletResponse) resp).sendError(404, "File Not Found");
+          } catch (IOException ex) {
+            //squelch it, just return.
+          }
+        }
+        return;
+      }
 
-	    // Get the InputStream
-	    stream = new BufferedInputStream(in);
+      try (InputStream stream = new BufferedInputStream(in)) {
+        javax.servlet.ServletOutputStream out = resp.getOutputStream();
 
-	    // Write the header
-	    writeHeader(source, context);
+        // Write the header
+        writeHeader(source, context);
 
-	    // Copy the data to the ServletOutputStream
-	    byte [] buf = new byte[512]; // Set our buffer at 512 bytes
-	    int read = stream.read(buf, 0, 512);
-	    while (read != -1) {
-		// Write data from the OutputStream to the InputStream
-		out.write(buf, 0, read);
+        // Copy the data to the ServletOutputStream
+        byte[] buf = new byte[512]; // Set our buffer at 512 bytes
+        int read = stream.read(buf, 0, 512);
+        while (read != -1) {
+          // Write data from the OutputStream to the InputStream
+          out.write(buf, 0, read);
 
-		// Read more...
-		read = stream.read(buf, 0, 512);
-	    }
-    
-	} catch (IOException ex) {
-	    throw new RuntimeException(ex);
-	} finally {
-            if (stream != null) {
-                try {
-                    // Close the Stream
-                    stream.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
+          // Read more...
+          read = stream.read(buf, 0, 512);
         }
 
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
     }
 
 

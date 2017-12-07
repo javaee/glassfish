@@ -90,7 +90,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Embeddable Glassfish app client container (ACC).
@@ -299,7 +299,7 @@ public class AppClientContainer {
             final boolean isTextAuth) throws InstantiationException,
                 IllegalAccessException, InjectionException, ClassNotFoundException,
                 IOException,
-                SAXParseException {
+                SAXException {
         secHelper.init(targetServers, msgSecConfigs, containerProperties, clientCredential,
                 callerSuppliedCallbackHandler, classLoader, client.getDescriptor(classLoader),
                 isTextAuth);
@@ -315,7 +315,7 @@ public class AppClientContainer {
 
     public void prepare(final Instrumentation inst) throws NamingException, 
             IOException, InstantiationException, IllegalAccessException,
-            InjectionException, ClassNotFoundException, SAXParseException,
+            InjectionException, ClassNotFoundException, SAXException,
             NoSuchMethodException, UserError {
         completePreparation(inst);
     }
@@ -353,7 +353,7 @@ public class AppClientContainer {
     private void completePreparation(final Instrumentation inst) throws 
             NamingException, IOException, InstantiationException,
             IllegalAccessException, InjectionException, ClassNotFoundException,
-            SAXParseException, NoSuchMethodException, UserError {
+            SAXException, NoSuchMethodException, UserError {
         if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
@@ -428,7 +428,7 @@ public class AppClientContainer {
             IllegalArgumentException,
             InvocationTargetException,
             IOException,
-            SAXParseException,
+            SAXException,
             InjectionException,
             UserError {
 
@@ -515,7 +515,7 @@ public class AppClientContainer {
     }
     
     private Method getMainMethod() throws NoSuchMethodException,
-           ClassNotFoundException, IOException, SAXParseException,
+           ClassNotFoundException, IOException, SAXException,
            InjectionException, UserError {
 	    // determine the main method using reflection
 	    // verify that it is public static void and takes

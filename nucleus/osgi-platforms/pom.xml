@@ -51,7 +51,7 @@
     <parent>
       <groupId>org.glassfish.main</groupId>
       <artifactId>glassfish-nucleus-parent</artifactId>
-      <version>5.0-SNAPSHOT</version>
+      <version>5.0.1-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
@@ -63,8 +63,6 @@
         <module>osgi-cli-remote</module>
         <module>osgi-cli-interactive</module>
         <module>osgi-container</module>
-        <module>osgi-cli-interactive-l10n</module>
-        <module>osgi-cli-remote-l10n</module>
     </modules>
 </project>
 

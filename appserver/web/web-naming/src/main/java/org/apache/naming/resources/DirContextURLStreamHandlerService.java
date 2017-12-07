@@ -49,6 +49,7 @@ import org.osgi.service.url.URLStreamHandlerService;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Dictionary;
 import java.util.Properties;
 
 /**
@@ -92,7 +93,7 @@ public class DirContextURLStreamHandlerService
     }
 
     public void start(BundleContext context) throws Exception {
-        Properties p = new Properties();
+        Dictionary p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL,
                 new String[]{"jndi"});
         context.registerService(

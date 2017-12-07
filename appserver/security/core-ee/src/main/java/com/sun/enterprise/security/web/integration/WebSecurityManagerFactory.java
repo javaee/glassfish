@@ -43,6 +43,7 @@ package com.sun.enterprise.security.web.integration;
 import java.util.HashMap;
 import java.util.Map;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.security.web.integration.LogUtils;
 import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.factory.SecurityManagerFactory;
@@ -66,7 +67,7 @@ import javax.inject.Singleton;
 public class WebSecurityManagerFactory extends SecurityManagerFactory {
 
     private static Logger logger =
-            Logger.getLogger(LogDomains.SECURITY_LOGGER);
+            LogUtils.getLogger();
     private WebSecurityDeployerProbeProvider probeProvider = new WebSecurityDeployerProbeProvider();
     public WebSecurityManagerFactory() {
         registerPolicyHandlers();

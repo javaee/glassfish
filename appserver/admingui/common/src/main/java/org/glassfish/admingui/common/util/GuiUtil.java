@@ -54,6 +54,7 @@ import javax.faces.context.FacesContext;
 // FIXME: 7-31-08 -- FIX by importing woodstock api's:
 //import com.sun.webui.jsf.model.Option;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
@@ -76,6 +77,7 @@ import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -769,7 +771,6 @@ public class GuiUtil {
 
         return (causes[causes.length - 1]);
     }
-
 
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";

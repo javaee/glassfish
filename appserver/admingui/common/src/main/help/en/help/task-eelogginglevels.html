@@ -1,0 +1,142 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="task-eelogginglevels" name="task-eelogginglevels"></a><a id="GHCOM00178" name="GHCOM00178"></a></p>
+
+<h4><a id="sthref72" name="sthref72"></a><a id="sthref73" name="sthref73"></a>To Configure Log Levels</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<ol>
+<li>
+<p>In the navigation tree, expand the Configurations node.</p>
+</li>
+<li>
+<p>Under the Configuration node, click the server instance or cluster configuration for which you want to configure Logger Settings.</p>
+<p>The Configuration page opens.</p>
+</li>
+<li>
+<p>On the Configuration page, click Logger Settings.</p>
+<p>The Logger Settings page for the selected configuration target opens.</p>
+</li>
+<li>
+<p>On the Logger Settings page, click the Log Levels tab.</p>
+<p>The Module Log Levels page opens.</p>
+</li>
+<li>
+<p>On the Module Log Levels page, change log levels for one or more modules as follows.</p>
+<ul>
+<li>
+<p>To change the log level for an individual module, select a new value from the drop-down list opposite the module whose log level you want to change.</p>
+</li>
+<li>
+<p>To change the log level for a group of modules:</p>
+<ol type="a">
+<li>
+<p>Select the checkboxes next to the names of the modules whose log levels you want to change.</p>
+</li>
+<li>
+<p>Select a value from the drop-down list at the top of the table.</p>
+</li>
+<li>
+<p>Click the Change Level button.</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>Messages at the selected level or higher appear in the log. Choose any of the following values (listed from highest to lowest):</p>
+<ul>
+<li>
+<p><code>EMERGENCY</code></p>
+</li>
+<li>
+<p><code>ALERT</code></p>
+</li>
+<li>
+<p><code>SEVERE</code></p>
+</li>
+<li>
+<p><code>WARNING</code></p>
+</li>
+<li>
+<p><code>INFO</code></p>
+</li>
+<li>
+<p><code>CONFIG</code></p>
+</li>
+<li>
+<p><code>FINE</code></p>
+</li>
+<li>
+<p><code>FINER</code></p>
+</li>
+<li>
+<p><code>FINEST</code></p>
+</li>
+<li>
+<p><code>OFF</code></p>
+</li>
+</ul>
+<p>For details about the meanings of the log levels, see <a href="ref-eelogginglevels.html">Module Log Levels</a>. The default level is <code>INFO</code>, so by default the log will contain messages of <code>INFO</code>, <code>WARNING</code>, or <code>SEVERE</code> levels.</p>
+</li>
+<li>
+<p>Click Save.</p>
+<p>Changes to the Log Level settings take effect immediately. They are also saved for use when the server restarts.</p>
+</li>
+</ol>
+<a id="GHCOM277" name="GHCOM277"></a>
+<h5>See Also</h5>
+<ul>
+<li>
+<p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+</li>
+<li>
+<p><a href="task-logging-max-logfiles.html">To Change the Limit on the Number of Rotated Log Files</a></p>
+</li>
+<li>
+<p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
+</li>
+<li>
+<p><a href="task-collectdomainlogs.html">To Collect and Download Domain Logs</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

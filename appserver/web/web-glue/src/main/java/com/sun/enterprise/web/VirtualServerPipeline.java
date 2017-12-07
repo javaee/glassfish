@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.web;
 
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
@@ -57,6 +58,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.common.util.InputValidationUtil;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.web.LogFacade;
 
@@ -109,7 +112,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_OFF);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, msg);
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_NOT_FOUND,
@@ -118,7 +121,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             String msg = rb.getString(LogFacade.VS_VALVE_DISABLED);
             msg = MessageFormat.format(msg, new Object[] { vs.getName() });
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, msg);
+                logger.log(Level.FINE, neutralizeForLog(msg));
             }
             ((HttpServletResponse) response.getResponse()).sendError(
                                             HttpServletResponse.SC_FORBIDDEN,
@@ -295,12 +298,12 @@ public class VirtualServerPipeline extends StandardPipeline {
                     if (redirectMatch.validURI) {
                         logger.log(Level.WARNING,
                             LogFacade.INVALID_REDIRECTION_LOCATION,
-                            location);
+                                neutralizeForLog(location));
                     } else {
                         if (logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE,
                                 LogFacade.INVALID_REDIRECTION_LOCATION,
-                                location);
+                                    neutralizeForLog(location));
                         }
                     }
                 } finally {
@@ -311,13 +314,17 @@ public class VirtualServerPipeline extends StandardPipeline {
                 }
             }
 
-            hres.sendRedirect(location);
+            // Validate the URL for extra spaces before redirection.
+            if(InputValidationUtil.validateStringforCRLF(location)) {
+                hres.sendError(403, "Forbidden");
+            } else {
+                hres.sendRedirect(InputValidationUtil.removeLinearWhiteSpaces(location));
+            }
             return true;
         }
 
         return false;
     }
-
 
     /**
      * Class representing redirect parameters

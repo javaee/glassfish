@@ -96,10 +96,10 @@ public class ApplicationTest extends BaseSeleniumTestClass {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        assertEquals("test", getFieldValue(ELEMENT_CONTEXT_ROOT));
+        assertEquals("", getFieldValue(ELEMENT_CONTEXT_ROOT));
         assertEquals("test", getFieldValue(ELEMENT_APP_NAME));
 
-        setFieldValue(ELEMENT_CONTEXT_ROOT, applicationName);
+        setFieldValue(ELEMENT_CONTEXT_ROOT, "");
         setFieldValue(ELEMENT_APP_NAME, applicationName);
 
         clickAndWait(ELEMENT_UPLOAD_BUTTON, TRIGGER_APPLICATIONS);

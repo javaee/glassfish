@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.jms</groupId>
@@ -57,9 +57,5 @@
         <module>admin</module>
         <module>gf-jms-connector</module>
         <module>gf-jms-injection</module>
-        <module>jms-core-l10n</module>
-        <module>admin-l10n</module>
-        <module>gf-jms-connector-l10n</module>
-        <module>gf-jms-injection-l10n</module>
   </modules>
 </project>

@@ -41,7 +41,7 @@
 -->
 
 <sun:property id="ctxInfoEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncon.contextInfoLabel}">
-            <sun:checkbox id="ctxInfoEnabled"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['contextInfoEnabled']}" selectedValue="true"
+            <sun:checkbox id="ctxInfoEnabled"   selected="#{pageSession.valueMap['contextInfoEnabled']}" selectedValue="true"
                  //onChange="javascript:   webui.suntheme.dropDown.setDisabled('#{pageSession.ctxInfoCompId}', !this.checked); "
              />
         </sun:property>

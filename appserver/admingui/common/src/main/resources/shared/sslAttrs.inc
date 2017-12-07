@@ -65,7 +65,7 @@
      />
      
      <sun:property id="SSL3Prop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.ssl3Label}" >
-        <sun:checkbox id="SSL3" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['ssl3Enabled']}" selectedValue="true" />
+        <sun:checkbox id="SSL3"  selected="#{pageSession.valueMap['ssl3Enabled']}" selectedValue="true" />
      </sun:property>
      <!--
      <sun:property id="SSL2Prop"  rendered="#{ssl2}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.ssl2Label}" >
@@ -73,11 +73,11 @@
      </sun:property>
      -->
      <sun:property id="TLSProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.tlsLabel}" >
-        <sun:checkbox id="TLS" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['tlsEnabled']}" selectedValue="true"/>
+        <sun:checkbox id="TLS"  selected="#{pageSession.valueMap['tlsEnabled']}" selectedValue="true"/>
      </sun:property>
 
      <sun:property id="ClientAuthProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.clientAuthLabel}" helpText="$resource{i18n.ssl.clientAuthHelp}" >
-        <sun:checkbox id="ClientAuth" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['clientAuthEnabled']}" selectedValue="true" />
+        <sun:checkbox id="ClientAuth"  selected="#{pageSession.valueMap['clientAuthEnabled']}" selectedValue="true" />
      </sun:property>
      <sun:property id="CertNicknameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.certNicknameLabel}" helpText="$resource{i18n.ssl.certNicknameHelp}" >
         <sun:textField id="CertNickname" styleClass="required" required="#{true}" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ssl.certNickname']}" text="#{pageSession.valueMap['certNickname']}" />

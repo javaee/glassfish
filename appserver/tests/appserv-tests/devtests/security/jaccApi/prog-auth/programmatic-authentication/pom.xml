@@ -47,7 +47,7 @@
     <parent>
         <groupId>org.glassfish.jaccApi.test</groupId>
         <artifactId>prog-auth</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>programmatic-authentication-jacc-api</artifactId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.glassfish.jaccApi.test</groupId>
             <artifactId>jaccApi-common</artifactId>
-            <version>5.0-SNAPSHOT</version>
+            <version>5.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

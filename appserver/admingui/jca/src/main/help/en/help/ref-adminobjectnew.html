@@ -1,0 +1,112 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-adminobjectnew" name="ref-adminobjectnew"></a><a id="GHJCA00051" name="GHJCA00051"></a></p>
+
+<h4><a id="sthref100" name="sthref100"></a>New Admin Object Resource</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>Use the New Admin Object Resource page to create a new administered object resource.</p>
+<p>The New Admin Object Resource page contains the following options.</p>
+<dl>
+<dt>JNDI Name</dt>
+<dd>
+<p>A unique name that identifies the administered object resource.</p>
+</dd>
+<dt>Resource Adapter</dt>
+<dd>
+<p>The resource adapter for the administered object resource.</p>
+</dd>
+<dt>Resource Type</dt>
+<dd>
+<p>The Java type for the administered object resource (or example, <code>javax.jms.Topic</code>).</p>
+</dd>
+<dt>Class Name</dt>
+<dd>
+<p>The implementation class name associated with the resource type.</p>
+</dd>
+<dt>Description</dt>
+<dd>
+<p>A description of the administered object resource.</p>
+</dd>
+<dt>Status</dt>
+<dd>
+<p>If this option is selected, the administered object resource is enabled. This option is enabled by default.</p>
+</dd>
+<dt>Additional Properties</dt>
+<dd>
+<p>Additional properties for the administered object resource. Available properties depend upon the resource adapter for the connector connection pool. The name-value pairs specified in this table can be used to override the default values for the properties defined by the resource-adapter vendor.</p>
+</dd>
+<dt>Targets</dt>
+<dd>
+<p>(This option is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>Clusters and standalone instances for resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
+</dd>
+</dl>
+<a id="sthref101" name="sthref101"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-adminobjectnew.html">To Create an Administered Object Resource</a></p>
+</li>
+<li>
+<p><a href="task-adminobjectedit.html">To Edit an Administered Object Resource</a></p>
+</li>
+<li>
+<p><a href="task-administeredobjectresourcedelete.html">To Delete an Administered Object Resource</a></p>
+</li>
+</ul>
+<a id="sthref102" name="sthref102"></a>
+<h5>Related asadmin Commands</h5>
+<ul>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00012"><code>create-admin-object</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00146"><code>list-admin-objects</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00063"><code>delete-admin-object</code>(1)</a></p>
+</li>
+</ul>
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

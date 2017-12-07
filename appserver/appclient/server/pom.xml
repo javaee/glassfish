@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>appclient</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.appclient</groupId>
@@ -56,7 +56,6 @@
     <modules>
        <module>connector</module>
        <module>core</module>
-       <module>core-l10n</module>
 <!--       <module>jws</module> -->
     </modules>
 </project>

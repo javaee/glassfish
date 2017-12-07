@@ -84,7 +84,7 @@
 #include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18njms.availability.jmsAvailabilityInfoHelp}">
-                    <sun:checkbox id="avail" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
+                    <sun:checkbox id="avail"  selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
                 </sun:property>
                 <sun:property id="ConfigStoreTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.configStoreType}" helpText="$resource{i18njms.availability.configStoreTypeHelp}">
                     <sun:dropDown id="ConfigStoreType" selected="#{pageSession.valueMap['configStoreType']}" labels={"masterbroker" , "shareddb"} />

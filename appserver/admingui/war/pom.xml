@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.main.admingui</groupId>
@@ -86,7 +86,11 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <unzip src="target/admingui.war" dest="target/temp" />
+                                <unzip src="target/admingui.war" dest="target/temp" >
+                                  <patternset>
+                                    <exclude name="**/.gitkeep_empty_dir"/>
+                                  </patternset>
+                                </unzip>
                                 <delete file="target/admingui.war" />
                                 <mkdir dir="target/temp/WEB-INF/extra" />
                                 <move todir="target/temp/WEB-INF/extra">

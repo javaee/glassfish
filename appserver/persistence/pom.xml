@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.main.persistence</groupId>
     <artifactId>persistence</artifactId>
@@ -60,7 +60,5 @@
         <module>eclipselink-wrapper</module>
         <module>cmp</module>
         <module>entitybean-container</module>
-        <module>jpa-container-l10n</module>
-        <module>cmp-l10n</module>
     </modules>
 </project>

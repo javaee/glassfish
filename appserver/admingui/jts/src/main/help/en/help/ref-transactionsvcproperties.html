@@ -1,0 +1,90 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2005-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<p><a id="ref-transactionsvcproperties" name="ref-transactionsvcproperties"></a><a id="GHJTS00003" name="GHJTS00003"></a></p>
+
+<h4><a id="sthref16" name="sthref16"></a><a id="sthref17" name="sthref17"></a>Properties Specific to the Transaction Service</h4>
+<a name="BEGIN" id="BEGIN"></a>
+<p>The following properties are available for configuring the Transaction Service.</p>
+<dl>
+<dt><code>oracle-xa-recovery-workaround</code></dt>
+<dd>
+<p>If set to <code>true</code>, the Oracle XA Resource workaround is used in transaction recovery. The default value is <code>true</code>.</p>
+</dd>
+<dt><code>disable-distributed-transaction-logging</code></dt>
+<dd>
+<p>If set to <code>true</code>, disables transaction logging, which might improve performance. If the On Restart Enabled checkbox is selected, this property is ignored. The default value is <code>false</code>.</p>
+</dd>
+<dt><code>xaresource-txn-timeout</code></dt>
+<dd>
+<p>Changes the <code>XAResource</code> timeout. In some cases, the <code>XAResource</code> default timeout can cause transactions to be aborted, so it is desirable to change it. The default value is specific to the <code>XAResource</code> used.</p>
+</dd>
+<dt><code>pending-txn-cleanup-interval</code></dt>
+<dd>
+<p>Specifies the interval, in seconds, at which an asynchronous thread checks for pending transactions and completes them. If this property is not specified, there is no default. If this property is present but has no value, the default value is 60.</p>
+</dd>
+<dt><code>use-last-agent-optimization</code></dt>
+<dd>
+<p>If set to <code>true</code>, enables last agent optimization, which improves the throughput of transactions. If one non-XA resource is used with XA resources in the same transaction, the non-XA resource is the last agent. The default value is <code>true</code>.</p>
+</dd>
+<dt><code>delegated-recovery</code></dt>
+<dd>
+<p>If set to <code>true</code>, cluster-wide delegated recovery is enabled. The default value is false.</p>
+</dd>
+<dt><code>wait-time-before-recovery-insec</code></dt>
+<dd>
+<p>Specifies the wait time, in seconds, after which an instance starts the recovery for a dead instance.</p>
+</dd>
+<dt><code>db-logging-resource</code></dt>
+<dd>
+<p>Specifies the JNDI name of the JDBC resource for the database to which transactions are logged. For more information, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSDVG00018">Chapter 17, <i>Using the Transaction Service,</i> in <i>Oracle GlassFish Server Application Development Guide</i></a>. There is no default value.</p>
+</dd>
+<dt><code>xa-servername</code></dt>
+<dd>
+<p>Specifies the host name that the transaction service uses to identify transactions being managed by the installed GlassFish Server. This can sometimes be useful for recovering transactions from the log file that was created on a different host running the GlassFish Server.</p>
+</dd>
+</dl>
+
+
+
+
+<small>Copyright &#169; 2005, 2017, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

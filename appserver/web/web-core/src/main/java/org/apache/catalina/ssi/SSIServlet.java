@@ -60,7 +60,7 @@ package org.apache.catalina.ssi;
 
 
 import org.apache.catalina.Globals;
-
+import static com.sun.logging.LogCleanerUtil.neutralizeForLog;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -185,19 +185,19 @@ public class SSIServlet extends HttpServlet {
         if (debug > 0)
             log("SSIServlet.requestHandler()\n" + "Serving "
                     + (buffered?"buffered ":"unbuffered ") + "resource '"
-                    + path + "'");
+                    + neutralizeForLog(path) + "'");
         // Exclude any resource in the /WEB-INF and /META-INF subdirectories
         // (the "toUpperCase()" avoids problems on Windows systems)
         if (path == null || path.toUpperCase(Locale.ENGLISH).startsWith("/WEB-INF")
                 || path.toUpperCase(Locale.ENGLISH).startsWith("/META-INF")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't serve file: " + path);
+            log("Can't serve file: " + neutralizeForLog(path));
             return;
         }
         URL resource = servletContext.getResource(path);
         if (resource == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-            log("Can't find file: " + path);
+            log("Can't find file: " + neutralizeForLog(path));
             return;
         }
         String resourceMimeType = servletContext.getMimeType(path);
@@ -231,28 +231,29 @@ public class SSIServlet extends HttpServlet {
         }
 
         URLConnection resourceInfo = resource.openConnection();
-        InputStream resourceInputStream = resourceInfo.getInputStream();
-        String encoding = resourceInfo.getContentEncoding();
-        if (encoding == null) {
-            encoding = inputEncoding;
-        }
-        InputStreamReader isr;
-        if (encoding == null) {
-            isr = new InputStreamReader(resourceInputStream);
-        } else {
-            isr = new InputStreamReader(resourceInputStream, encoding);
-        }
-        BufferedReader bufferedReader = new BufferedReader(isr);
-
-        long lastModified = ssiProcessor.process(bufferedReader,
-                resourceInfo.getLastModified(), printWriter);
-        if (lastModified > 0) {
-            res.setDateHeader("last-modified", lastModified);
-        }
-        if (buffered) {
-            printWriter.flush();
-            String text = stringWriter.toString();
-            res.getWriter().write(text);
+        try (InputStream resourceInputStream = resourceInfo.getInputStream()) {
+            String encoding = resourceInfo.getContentEncoding();
+            if (encoding == null) {
+                encoding = inputEncoding;
+            }
+            InputStreamReader isr;
+            if (encoding == null) {
+                isr = new InputStreamReader(resourceInputStream);
+            } else {
+                isr = new InputStreamReader(resourceInputStream, encoding);
+            }
+            try (BufferedReader bufferedReader = new BufferedReader(isr)) { //this should clode isr as well
+                long lastModified = ssiProcessor.process(bufferedReader,
+                  resourceInfo.getLastModified(), printWriter);
+                if (lastModified > 0) {
+                    res.setDateHeader("last-modified", lastModified);
+                }
+                if (buffered) {
+                    printWriter.flush();
+                    String text = stringWriter.toString();
+                    res.getWriter().write(text);
+                }
+            }
         }
     }
 }

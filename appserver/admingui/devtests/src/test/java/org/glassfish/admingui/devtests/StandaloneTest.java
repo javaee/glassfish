@@ -174,16 +174,20 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_STANDALONE_TYPE);
     }
 
-    public void createStandAloneInstance(String instanceName){
+    public void createStandAloneInstance(String instanceName, String nodeName){
         gotoStandaloneInstancesPage();
         clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
         setFieldValue(ID_INSTANCE_NAME_TEXT, instanceName);
-        selectDropdownOption(ID_INSTANCE_NODE_TEXT, NODE_NAME);
+        selectDropdownOption(ID_INSTANCE_NODE_TEXT, nodeName);
         selectDropdownOption(ID_INSTANCE_CONFIG_SELECT, "default-config");
         markCheckbox(ID_INSTANCE_CONFIG_OPTION);
         clickAndWait(ID_INSTANCE_NEW_PAGE_BUTTON, TRIGGER_INSTANCES_PAGE);
         String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
         assertTrue(isTextPresent(instanceName));
+    }
+
+    public void createStandAloneInstance(String instanceName){
+        createStandAloneInstance(instanceName, NODE_NAME);
     }
 
     public void deleteStandAloneInstance(String instanceName) {

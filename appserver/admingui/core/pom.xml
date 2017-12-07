@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-core</artifactId>
@@ -217,12 +217,6 @@
         <dependency> <!-- for FindBugs -->
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <scope>provided</scope>
-        </dependency> 
-        <dependency> <!-- for FindBugs -->
-            <groupId>com.sun.pkg</groupId>
-            <artifactId>pkg-java</artifactId>
-            <version>1.0.0-alpha-1</version>
             <scope>provided</scope>
         </dependency> 
 

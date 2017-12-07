@@ -18,7 +18,7 @@ cts_smoke_all
 servlet_tck_all
 findbugs_all
 findbugs_low_priority_all
-embedded_publisher_all
+embedded_all
 copyright
 jdbc_all
 jms_all
@@ -26,3 +26,4 @@ persistence_all
 webservice_all
 naming_all
 batch_all
+connector_all

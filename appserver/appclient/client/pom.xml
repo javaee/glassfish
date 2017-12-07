@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>appclient</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.main.appclient</groupId>
     <artifactId>client</artifactId>
@@ -56,9 +56,7 @@
         <module>appclient-scripts</module>
         <module>acc-config</module>
         <module>acc</module>
-        <module>acc-l10n</module>
         <module>acc-standalone</module>
-        <module>acc-standalone-l10n</module>
         <!--  JWS support is not yet implemented
         <module>jws</module>
         -->

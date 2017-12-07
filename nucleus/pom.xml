@@ -52,7 +52,7 @@
 
     <groupId>org.glassfish.main</groupId>
     <artifactId>glassfish-nucleus-parent</artifactId>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>GlassFish Nucleus Parent Project</name>
 
@@ -126,18 +126,14 @@
         <stax-api.version>1.0-2</stax-api.version>
         <slf4j.version>1.7.21</slf4j.version>
         <javax.validation.osgi.version>2.0.0</javax.validation.osgi.version>
-        <javax.validation.osgi.version.lowerbound>1.1.0</javax.validation.osgi.version.lowerbound>
         <management-api.version>1.1-rev-1</management-api.version>
-        <servlet-api.version>4.0.0-b07</servlet-api.version>
-        <grizzly.version>2.4.0</grizzly.version>
+        <servlet-api.version>4.0.0</servlet-api.version>
+        <grizzly.version>2.4.1</grizzly.version>
         <grizzly.npn.version>1.7</grizzly.npn.version>
         <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
-        <javax.validation.version>2.0.0.CR3</javax.validation.version>
-        <javax.validation.version.lowerbound>1.1.0.Final</javax.validation.version.lowerbound>
-        <hibernate-validator.version>6.0.0.CR3</hibernate-validator.version>
-        <hibernate-validator.version.lowerbound>5.2.4.Final</hibernate-validator.version.lowerbound>
-        <fasterxml.classmate.version>1.3.1</fasterxml.classmate.version>
+        <javax.validation.version>2.0.0.Final</javax.validation.version>
+        <hibernate-validator.version>6.0.5.Final</hibernate-validator.version>
         <javassist.version>3.22.0-CR2</javassist.version>
         <javax.el.version>3.0.1-b08</javax.el.version>
         <javax.el-api.version>3.0.1-b04</javax.el-api.version>
@@ -146,39 +142,41 @@
         <hk2.plugin.version>2.5.0-b44</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
-        <trilead-ssh2.version>2.1.2</trilead-ssh2.version>
+        <jsch.version>0.1.55</jsch.version>
         <pfl.version>4.0.1-b001</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
         <antlr.version>2.7.7</antlr.version>
         <ant.version>1.10.1</ant.version>
-        <jersey.version>2.26-b08</jersey.version>
-        <jackson.version>2.8.4</jackson.version>
-        <jettison.version>1.3.3</jettison.version>
+        <jersey.version>2.26</jersey.version>
+        <jackson.version>2.8.9</jackson.version>
+        <jettison.version>1.3.7</jettison.version>
         <jax-rs-api.spec.version>2.1</jax-rs-api.spec.version>
-        <jax-rs-api.impl.version>2.1-m09</jax-rs-api.impl.version>
+        <jax-rs-api.impl.version>2.1</jax-rs-api.impl.version>
         <mimepull.version>1.9.7</mimepull.version>
         <jbi.version>1.0</jbi.version>
         <glassfish-management-api.version>3.2.1-b002</glassfish-management-api.version>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>4.1</v3-docs.version>
-        <v3-docs-l10n.version>4.0-b07</v3-docs-l10n.version>
-        <l10n.version>3.1-b41</l10n.version>
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.51</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
         <glassfishbuild.version>3.2.24</glassfishbuild.version>
         <source-annotation-processor.version>1.0</source-annotation-processor.version>
         <logging-annotation-processor.version>1.7</logging-annotation-processor.version>
-        <command-security-plugin.version>1.0.7</command-security-plugin.version>
+        <command-security-plugin.version>1.0.8</command-security-plugin.version>
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>
         <mail.version>1.6.0</mail.version>
         <javax.annotation-api.version>1.3</javax.annotation-api.version>
         <copyright-plugin.version>1.42</copyright-plugin.version>
+        <testng.version>6.11</testng.version>
         <jdk.version>1.7.0-09</jdk.version>
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
         <javadoc.skip>false</javadoc.skip>
         <deploy.skip>false</deploy.skip>
+        <replacer.plugin.version>1.5.3</replacer.plugin.version>
+        <javaee.version.old>7</javaee.version.old>
+        <javaee.version.new>8</javaee.version.new>
+	<jmockit.version>1.35</jmockit.version>
     </properties>
 
     <modules>
@@ -186,6 +184,7 @@
         <module>cluster</module>
         <module>common</module>
         <module>core</module>
+        <module>docs</module>
         <module>admin</module>
         <module>flashlight</module>
         <module>grizzly</module>
@@ -414,6 +413,9 @@
                             <pattern>.log</pattern>
                             <pattern>.bin</pattern>
                             <pattern>.bat</pattern>
+                            <pattern>.1</pattern>
+                            <pattern>.1m</pattern>
+                            <pattern>.5asc</pattern>
                             <pattern>/TODO</pattern>
                             <pattern>/MANIFEST.MF</pattern>
                             <pattern>/manifest.mf</pattern>
@@ -428,8 +430,13 @@
                             <pattern>admin/cli/src/main/resources/supported-legacy-command-names</pattern>
                             <pattern>/readme</pattern>
                             <pattern>cluster/cli/src/test/resources/fake_gf_install_dir/junk</pattern>
-                        </exclude> 
+                        </exclude>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.code.maven-replacer-plugin</groupId>
+                    <artifactId>replacer</artifactId>
+                    <version>${replacer.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -463,6 +470,28 @@
                 </executions>
             </plugin>
 	    -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/manpages</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>glassfishbuild-maven-plugin</artifactId>
@@ -698,16 +727,6 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate-validator.version.lowerbound}</version>
-            </dependency>
-           <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator-cdi</artifactId>
-                <version>${hibernate-validator.version.lowerbound}</version>
-            </dependency>
            <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
@@ -790,35 +809,41 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>4.2.0</version>
+                <version>5.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.annotation</artifactId>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>4.2.0</version>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
-                <version>4.2.0</version>
+                <version>5.0.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
-                <version>4.2.1</version>
+                <version>5.6.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.webconsole</artifactId>
-                <version>3.1.2</version>
+                <version>4.3.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
-                <version>1.2.8</version>
+                <version>1.4.10</version>
             </dependency>
 
             <dependency>
@@ -948,24 +973,19 @@
                 <version>${pfl.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.kohsuke.metainf-services</groupId>
-                <artifactId>metainf-services</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.10</version>
+                <version>4.12</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.5.2</version>
+                <version>${testng.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.jmockit</groupId>
+                <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>
-                <version>0.999.15</version>
+                <version>${jmockit.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -999,8 +1019,8 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>trilead-ssh2</artifactId>
-                <version>${trilead-ssh2.version}</version>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.shoal</groupId>
@@ -1035,72 +1055,48 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.shell</artifactId>
-                <version>1.4.1</version>
+                <version>1.4.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.gogo.runtime</artifactId>
-                <version>0.8.0</version>
+                <version>1.0.10</version>
             </dependency>
             <dependency>
                <groupId>org.apache.felix</groupId>
                <artifactId>org.apache.felix.gogo.shell</artifactId>
-               <version>0.8.0</version>
+               <version>1.0.0</version>
             </dependency>
             <dependency>
                <groupId>org.apache.felix</groupId>
                <artifactId>org.apache.felix.gogo.command</artifactId>
-               <version>0.8.0</version>
+               <version>1.0.2</version>
             </dependency>
             <dependency>
                <groupId>org.apache.felix</groupId>
                <artifactId>org.apache.felix.fileinstall</artifactId>
-               <version>3.1.10</version>
+               <version>3.6.4</version>
             </dependency>
             <dependency>
                <groupId>org.apache.felix</groupId>
                <artifactId>org.apache.felix.configadmin</artifactId>
-               <version>1.2.4</version>
+               <version>1.8.16</version>
             </dependency>
             <dependency>
                <groupId>org.apache.felix</groupId>
                <artifactId>org.apache.felix.scr</artifactId>
-               <version>1.4.0</version>
+               <version>2.0.12</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.6.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.man</groupId>
-                <artifactId>osgi-cli-remote-manpage</artifactId>
-                <version>${v3-docs.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs.man</groupId>
-                <artifactId>osgi-cli-interactive-manpage</artifactId>
-                <version>${v3-docs.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-remote-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-interactive-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-                <type>zip</type>
+                <version>2.0.10</version>
             </dependency>
             <!-- This is currently used by osgi-shell cmd, but can be used for others as well -->
             <dependency>
                 <groupId>jline</groupId>
                 <artifactId>jline</artifactId>
-                <version>2.9</version>
+                <version>2.14.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -1235,6 +1231,40 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>edit-manPages-javaEEVersion</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <basedir>${project.basedir}</basedir>
+                            <includes>
+                                <include>**/*.1</include>
+                                <include>**/*.1m</include>
+                                <include>**/*.5asc</include>
+                            </includes>
+                            <replacements>
+                                <replacement>
+                                    <token>Java EE ${javaee.version.old}</token>
+                                    <value>Java EE ${javaee.version.new}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <dependencies>

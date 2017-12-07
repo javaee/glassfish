@@ -46,14 +46,14 @@
     <parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
-        <version>3</version>
+        <version>5</version>
         <relativePath/>
     </parent>
     <groupId>org.glassfish.quicklook</groupId>
     <artifactId>quicklook</artifactId>
     <name>Glassfish Quicklook Bundle</name>
     <packaging>jar</packaging>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <description>This pom describes how to run QuickLook tests on the Glassfish Bundle</description>
     <properties>
         <jruby-all.version>1.5.4</jruby-all.version>
@@ -172,7 +172,7 @@
                     <dependency>
                         <groupId>org.glassfish.external</groupId>
                         <artifactId>jmxremote_optional-repackaged</artifactId>
-                        <version>5.0-SNAPSHOT</version>
+                        <version>5.0.1-SNAPSHOT</version>
                     </dependency>
               		    -->
                     <dependency>
@@ -183,8 +183,7 @@
                     <dependency>
                         <groupId>org.testng</groupId>
                         <artifactId>testng</artifactId>
-                        <version>5.6</version>
-                        <classifier>jdk15</classifier>
+                        <version>6.11</version>
                     </dependency>
                     <dependency>
                         <groupId>com.sun.jsftemplating</groupId>
@@ -203,13 +202,6 @@
                         <classifier>${jruby-all.classifier}</classifier>
                         <scope>test</scope>
                         <type>zip</type>
-                    </dependency>-->
-<!--                    <dependency>
-                        <groupId>org.testng</groupId>
-                        <artifactId>testng</artifactId>
-                        <version>5.7</version>
-                        <classifier>jdk15</classifier>
-                        <scope>compile</scope>
                     </dependency>-->
                     <dependency>
                         <groupId>org.apache.ant</groupId>

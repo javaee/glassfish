@@ -186,9 +186,8 @@ public class TranslatedConfigView implements ConfigView {
            propName = propName.substring(starter.length() );
            int lastIdx = propName.length() - 1;
            if (lastIdx > 1) {
-              propName = propName.substring(0,lastIdx);
-              if (propName!=null)
-                 aliasName = propName.trim();
+               propName = propName.substring(0, lastIdx);
+               aliasName = propName.trim();
            }
        }
        return aliasName;
