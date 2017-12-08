@@ -181,6 +181,7 @@
 
     <modules>
         <module>hk2</module>
+        <module>../nucleus</module>
     </modules>
 
     <build>
