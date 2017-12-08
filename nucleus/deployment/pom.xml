@@ -53,27 +53,6 @@
     <artifactId>nucleus-deployment</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Nucleus Deployment Related Modules</name>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>config-generator</artifactId>
-                    <version>${project.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>common</module>
         <module>admin</module>

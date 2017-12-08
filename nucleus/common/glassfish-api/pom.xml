@@ -72,19 +72,6 @@
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <version>${project.version}</version>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>

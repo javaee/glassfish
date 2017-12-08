@@ -53,27 +53,6 @@
     <packaging>pom</packaging>
     <name>Nucleus Security Parent</name>
     <description>Security Infrastructure and Technology Integration Modules</description>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>config-generator</artifactId>
-                    <version>${project.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>core</module>
         <module>ssl-impl</module>

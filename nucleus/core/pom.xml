@@ -53,27 +53,6 @@
     <artifactId>nucleus-core</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Nucleus Core modules</name>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>config-generator</artifactId>
-                    <version>${project.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>bootstrap</module>
         <module>kernel</module>

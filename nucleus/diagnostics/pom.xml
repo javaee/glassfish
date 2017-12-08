@@ -52,27 +52,6 @@
     <artifactId>nucleus-diagnostics</artifactId>
     <packaging>pom</packaging>
     <name>Diagnostics</name>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>config-generator</artifactId>
-                    <version>${project.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>config-generator</artifactId>
-                <configuration>
-                    <excludes>**/.ade_path/**</excludes>
-                    <supportedProjectTypes>jar,glassfish-jar</supportedProjectTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>diagnostics-api</module>
         <module>context</module>
