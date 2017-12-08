@@ -65,7 +65,6 @@
     </properties>
 
     <modules>
-        <module>jmxremote_optional</module>
         <module>ldapbp</module>
         <module>bean-validator</module>
         <module>bean-validator-cdi</module>

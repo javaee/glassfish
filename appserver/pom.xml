@@ -111,10 +111,8 @@
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
-        <dbschema.version>3.1.1</dbschema.version>
-        <dbschema.osgi.version>6.0</dbschema.osgi.version>
-        <schema2beans.version>3.1.1</schema2beans.version>
-        <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
+        <dbschema.version>6.6</dbschema.version>
+        <schema2beans.version>6.6</schema2beans.version>
         <mq.version>5.1.1-b06</mq.version>
         <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
@@ -774,7 +772,7 @@
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>json</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
@@ -943,12 +941,12 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>dbschema-repackaged</artifactId>
+                <artifactId>dbschema</artifactId>
                 <version>${dbschema.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>schema2beans-repackaged</artifactId>
+                <artifactId>schema2beans</artifactId>
                 <version>${schema2beans.version}</version>
             </dependency>
             <dependency>
@@ -978,7 +976,7 @@
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>ddl</artifactId>
-                <version>RELEASE65</version>
+                <version>RELEASE82</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.tyrus</groupId>
