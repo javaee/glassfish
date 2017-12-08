@@ -498,7 +498,7 @@
                         </spec>
                     </specs>
                 </configuration>
-            </plugin>
+            </plugin>             
         </plugins>
         <pluginManagement>
             <plugins>
