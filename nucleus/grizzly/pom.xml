@@ -52,7 +52,7 @@
     <groupId>org.glassfish.main.grizzly</groupId>
     <artifactId>nucleus-grizzly</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Nucleus Grizzly modules</name>
+    <name>GlassFish Nucleus Grizzly modules</name> 
     <modules>
         <module>config</module>
         <module>nucleus-grizzly-all</module>
