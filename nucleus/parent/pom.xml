@@ -155,10 +155,6 @@
 	    <jmockit.version>1.35</jmockit.version>
     </properties>
 
-    <modules>
-        <module>../hk2</module>
-    </modules>
-
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
