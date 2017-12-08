@@ -47,7 +47,7 @@
         <groupId>org.glassfish.main</groupId>
         <artifactId>nucleus-parent</artifactId>
         <version>5.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>glassfish-nucleus-hk2</artifactId>
