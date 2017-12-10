@@ -139,6 +139,7 @@
     </properties>
 
     <modules>
+        <module>parent</module>
         <module>hk2</module>
         <module>osgi-platforms</module>
         <module>cluster</module>
