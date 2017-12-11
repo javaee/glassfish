@@ -155,7 +155,7 @@
         <mimepull.version>1.9.7</mimepull.version>
         <jbi.version>1.0</jbi.version>
         <glassfish-management-api.version>3.2.1-b002</glassfish-management-api.version>
-        <btrace.version>1.0.5</btrace.version>
+        <btrace.version>1.2.3</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.51</shoal.version>
