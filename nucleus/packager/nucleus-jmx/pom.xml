@@ -68,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>jmxremote_optional</artifactId>
+            <artifactId>jmxremote_optional</artifactId>            
             <optional>true</optional>
         </dependency>
     </dependencies>
