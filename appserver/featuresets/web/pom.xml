@@ -729,6 +729,7 @@
           </dependency>
 
         <!-- glassfish-jca -->
+        <!--
         <dependency>
             <groupId>org.glassfish.main.connectors</groupId>
             <artifactId>connectors-schemas</artifactId>
@@ -765,6 +766,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      -->
         <dependency>
             <groupId>org.glassfish.main.connectors</groupId>
             <artifactId>gf-connectors-connector</artifactId>
@@ -1197,6 +1199,7 @@
         </dependency>
 
         <!-- glassfish-jdbc -->
+        <!--
         <dependency>
             <groupId>org.glassfish.main.jdbc</groupId>
             <artifactId>jdbc-templates</artifactId>
@@ -1209,6 +1212,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.glassfish.main.jdbc</groupId>
             <artifactId>vendor-mapping-properties</artifactId>
@@ -1269,6 +1273,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <dependency>
            <groupId>org.glassfish.main.jdbc</groupId>
            <artifactId>jdbc-admin</artifactId>
@@ -1660,7 +1665,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-cdi</artifactId>
             <exclusions>
                 <exclusion>
@@ -1683,16 +1688,6 @@
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>cdi-api-fragment</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -1778,6 +1773,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.glassfish.main.admingui</groupId>
             <artifactId>admingui-war</artifactId>
@@ -1790,6 +1786,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      -->
         <!-- glassfish-gui plugins -->
         <dependency>
             <groupId>org.glassfish.main.admingui</groupId>

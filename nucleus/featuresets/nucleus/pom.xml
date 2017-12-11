@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.featuresets</groupId>
         <artifactId>nucleus-featuresets</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>nucleus</artifactId>
     <name>Glassfish Nucleus Featureset</name>
@@ -193,7 +193,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>trilead-ssh2</artifactId>
+            <artifactId>jsch</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

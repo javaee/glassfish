@@ -775,6 +775,7 @@
                 </exclusion>
             </exclusions>
        </dependency>
+       <!--
        <dependency>
            <groupId>org.glassfish.main.jms</groupId>
            <artifactId>jmsra</artifactId>
@@ -787,6 +788,7 @@
                 </exclusion>
             </exclusions>
        </dependency>
+     -->
        <dependency>
            <groupId>javax.jms</groupId>
            <artifactId>javax.jms-api</artifactId>
