@@ -378,7 +378,7 @@
             <dependency>
                 <groupId>javax.help</groupId>
                 <artifactId>javahelp</artifactId>
-                <version>2.0.02</version>
+                <version>2.0.05</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.tools.btrace</groupId>
@@ -392,7 +392,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>opendmk_jmxremote_optional_jar</artifactId>
+                <artifactId>jmxremote_optional</artifactId>
                 <version>${opendmk.version}</version>
             </dependency>
             <dependency>

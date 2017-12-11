@@ -87,7 +87,6 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>jmxremote_optional</artifactId>
-            <version>${opendmk.version}</version>
         </dependency> 
         
         <dependency>
