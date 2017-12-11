@@ -101,7 +101,6 @@
         <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
 
         <jsftemplating.version>2.1.2</jsftemplating.version>
-        <uc-pkg-client.version>1.122-57.2889</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
         <webservices.version>2.4.0</webservices.version>
         <woodstox.version>4.4.1</woodstox.version>
@@ -109,11 +108,11 @@
         <jaxb.version>2.3.0</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
-        <eclipselink.version>2.7.0-RC1</eclipselink.version>
-        <javax-persistence-api.version>2.2.0-RC1</javax-persistence-api.version>
-        <dbschema.version>6.5</dbschema.version>
-        <schema2beans.version>6.5</schema2beans.version>
-        <mq.version>5.1.1-b05</mq.version>
+        <eclipselink.version>2.7.0</eclipselink.version>
+        <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
+        <dbschema.version>6.6</dbschema.version>
+        <schema2beans.version>6.6</schema2beans.version>
+        <mq.version>5.1.1-b06</mq.version>
         <derby.version>10.13.1.1</derby.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>3.0.0.Final</weld.version>
@@ -159,7 +158,6 @@
         <module>featuresets</module>
         <module>distributions</module>
         <module>security</module>
-        <module>registration</module>
         <module>tests</module>
         <module>osgi-platforms</module>
         <module>flashlight</module>
@@ -722,11 +720,6 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.pkg</groupId>
-                <artifactId>pkg-client</artifactId>
-                <version>${uc-pkg-client.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.pkg</groupId>
                 <artifactId>pkg-bootstrap</artifactId>
                 <version>${uc-pkg-bootstrap.version}</version>
             </dependency>
@@ -978,7 +971,7 @@
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>ddl</artifactId>
-                <version>RELEASE65</version>
+                <version>RELEASE82</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.tyrus</groupId>
