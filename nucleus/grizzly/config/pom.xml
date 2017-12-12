@@ -98,6 +98,16 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>config-types</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.annotations</groupId>
             <artifactId>logging-annotation-processor</artifactId>
             <optional>true</optional>
