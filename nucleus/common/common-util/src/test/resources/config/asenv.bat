@@ -1,4 +1,4 @@
-REM
+REM 
 REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 REM
 REM Copyright (c) 2004-2017 Oracle and/or its affiliates. All rights reserved.
@@ -36,7 +36,7 @@ REM its licensees as provided above.  However, if you add GPL Version 2 code
 REM and therefore, elected the GPL Version 2 license, then the option applies
 REM only if the new code is made subject to such option by the copyright
 REM holder.
-REM
+
 
 set AS_IMQ_LIB=..\..\mq\lib
 set AS_IMQ_BIN=..\..\mq\bin
