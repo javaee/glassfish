@@ -97,7 +97,6 @@
         <module>shoal</module>
         <module>glassfish-cluster</module>
         <module>glassfish-javahelp</module>
-        <module>glassfish-registration</module>
         <module>glassfish-management</module>
         <module>glassfish-grizzly-full</module>
         <module>glassfish-ha</module>
