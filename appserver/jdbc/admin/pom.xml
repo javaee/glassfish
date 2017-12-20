@@ -126,6 +126,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.main.admin</groupId>
             <artifactId>admin-util</artifactId>
             <version>${project.version}</version>
