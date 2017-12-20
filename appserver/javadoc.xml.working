@@ -1,0 +1,682 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!--JavaTM Enterprise Edition 8 JavaDocs  -->
+<project name="GlassFish JavaEE8 JavaDocs" default="default" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+  <property file="${basedir}/javadoc.properties"/>
+  <property name="external.dir" value="${basedir}/external" />
+  <property name="build.javadocs" value="${basedir}/javadocs"/>
+  <property name="destfile.name" value="javadocee8.jar"/>
+  <property name="Name" value="Java&lt;sup&gt;&lt;font size=-2&gt;TM&lt;/font&gt;&lt;/sup&gt; Platform, Enterprise Edition 8 " />
+  <!-- set empty if non-DRAFT -->
+  <property name="DRAFT" value="" />
+  <property name="Title" value="Java EE 8 ${DRAFT}" />
+  <property name="remote.repository" value="http://gf-maven.us.oracle.com/nexus/content/groups/internal-gf-nexus" />
+  <property name="maven.repo.local" value="${user.home}/.m2/repository" />
+  <tstamp>
+      <format property="TODAY" pattern="d-MMMM-yyyy hh:mm" locale="en,US"/>
+  </tstamp>
+
+  <property name="build.v5.javadocs" value="${basedir}/build/v5/javadocs"/>
+  <property name="v5.Name" value="GlassFish 5.0" />
+  <property name="v5.Title" value="GlassFish 5.0  ${DRAFT}" />
+
+  <path id="src.dir">
+    <dirset dir="${basedir}">
+
+      <include name="javaee-api/**/src/main/java/**"/>
+      <include name="common/glassfish-ee-api/src/main/java/**"/>
+      <include name="security/core-ee/src/main/java/**"/>
+      <include name="persistence/entitybean-container/src/main/java/**"/>
+      <include name="deployment/**/src/main/java/**"/>
+      <include name="admin/**/src/main/java/**"/>
+      <include name="connectors/**/src/main/java/**"/>
+      <include name="transaction/**/src/main/java/**"/>
+      <include name="web/**/src/main/java/**"/>
+
+      <include name="external/javamail/**"/>
+      <include name="external/jsf/**"/>
+      <include name="external/jsp/**"/>
+      <include name="external/jsr311/**"/>
+      <include name="external/jstl-api/**"/>
+      <include name="external/mq-distribution/mq/src/share/java/**"/>
+      <include name="external/eclipse.persistence/**"/>
+      <include name="external/uel/**"/>
+      <include name="external/validation-api/**"/>
+      <include name="external/weld-osgi-bundle/**"/>
+<!--
+     All these are part of Java SE
+      <include name="external/jaxr-api/**"/>
+      <include name="external/jaxr-ri/**"/>
+      <include name="external/jaxrpc-api/src/**"/>
+      <include name="external/jaxb-api/**"/>
+      <include name="external/jaxr/java/**"/>
+      <include name="external/jaxws-api/**"/>
+      <include name="external/jsr181/**"/>
+      <include name="external/saaj-api/**" />
+-->
+    </dirset>
+  </path>
+
+  <path id="v5.src.path">
+    <dirset dir="${basedir}">
+      <include name="external/hk2/hk2-api/src/main/java/**"/>
+      <include name="external/hk2/hk2-locator/src/main/java/**"/>
+      <include name="external/hk2/hk2-utils/src/main/java/**"/>
+      <include name="external/hk2/hk2-runlevel/src/main/java/**"/>
+      <include name="external/hk2/guice-bridge/src/main/java/**"/>
+      <include name="external/hk2/spring-bridge/src/main/java/**"/>
+      <include name="external/hk2/hk2-testing/hk2-junitrunner/src/main/java/**"/>
+      <include name="external/hk2/hk2-testing/collections/src/main/java/**"/>
+      <include name="external/hk2/hk2-inhabitant-generator/src/main/java/**"/>
+      <include name="external/hk2/hk2-configuration/manager/src/main/java/src/main/java/**"/>
+      <include name="external/hk2/hk2-configuration/hk2-integration/src/main/java/src/main/java/**"/>
+      <include name="external/hk2/hk2-configuration/persistence/property-file/src/main/java/src/main/java/**"/>
+      <include name="external/hk2/hk2-configuration/persistence/hk2-xml/src/main/java/src/main/java/**"/>
+      <include name="external/hk2/hk2-extras/src/main/java/src/main/java/**"/>
+
+      <include name="external/org.osgi.core/**"/>
+      <!--
+      <include name="common/amx-javaee/src/main/java/**"/>
+-->
+      <include name="web/web-embed/api/src/main/java/**"/>
+      <include name="external/appclient-tmp/**"/>
+    </dirset>
+    <dirset dir="${basedir}/../nucleus">
+      <include name="security/core/src/main/java/**"/>
+      <include name="flashlight/framework/src/main/java/**"/>
+      <include name="common/internal-api/src/main/java/**"/>
+      <include name="common/glassfish-api/src/main/java/**"/>
+      <include name="common/amx-core/src/main/java/**"/>
+    </dirset>
+    <path refid="src.dir"/>
+  </path>
+
+
+  <target name="default" description="Default target">
+      <antcall target="checkout.source" />
+      <antcall target="create-javadocs" />
+      <antcall target="copy-jsf-image-files" />
+      <antcall target="jar-javadoc" />
+  </target>
+
+  <target name="v5-javadocs" description="all javadocs including
+                         GlassFish specific javadocs"
+                         depends="checkout.source,appclient-source">
+      <antcall target="create-v5-javadocs" />
+      <antcall target="copy-jsf-image-files">
+        <param name="build.javadocs" value="${build.v5.javadocs}"/>
+      </antcall>
+      <antcall target="jar-javadoc" >
+        <param name="build.javadocs" value="${build.v5.javadocs}"/>
+        <param name="destfile.name" value="glassfish-all.jar"/>
+      </antcall>
+      <antcall target="clean-javadocs-dir">
+        <param name="build.javadocs" value="${external.dir}/appclient-tmp"/>
+      </antcall>
+  </target>
+
+
+  <target name="initialize.maven">
+        <get
+          src="http://repo1.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar"
+           dest="${basedir}/maven-ant-tasks-2.1.3.jar"
+           verbose="true"
+           usetimestamp="true"/>
+        <path id="maven-ant-tasks.classpath" path="${basedir}/maven-ant-tasks-2.1.3.jar" />
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
+                 classpathref="maven-ant-tasks.classpath" />
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9">
+        <artifact:remoteRepository id="nexus.repository" url="${remote.repository}" />
+        <artifact:localRepository path="${maven.repo.local}"/>
+        </artifact:install-provider>
+  </target>
+
+  <target name="checkout.source" description="Checkout JavaEE8 source" depends="init">
+      <antcall target="javamail.download" />
+      <antcall target="jsf.download" />
+      <antcall target="jsr311.download" />
+      <antcall target="eclipse-persistence.download" />
+      <antcall target="bean-validator.download" />
+      <antcall target="weld-osgi-bundle.download" />
+      <antcall target="mq.download" />
+
+      <!--
+      <antcall target="jaxr-api.checkout" />
+      <antcall target="jaxrpc.checkout" />
+      <antcall target="jaxb-api.download" />
+      <antcall target="jaxr.download" />
+      <antcall target="jaxws-api.download" />
+      <antcall target="jsr181.download" />
+-->
+      <antcall target="jsp.download" />
+      <antcall target="jstl-api.download" />
+      <antcall target="uel.download" />
+      <!--
+      <antcall target="hk2.svn.checkout" />
+      <antcall target="org.osgi.core-svn.checkout" />
+-->
+  </target>
+
+  <target name="init">
+      <mkdir dir="${external.dir}"/>
+  </target>
+
+  <!-- Unused target -->
+  <target name="v5.checkout" description="Checkout v5 workspace"> 
+      <echo message="checkout v5 from ${v5.svn.url}."/>
+      <!-- checkout v5 source -->
+      <exec executable="git" dir="${basedir}" failonerror="true" >
+	  <arg line="clone" />
+          <arg line="--branch" />
+          <arg line="5.0" />
+          <arg line="${v5.svn.url}" />
+	</exec>
+  </target>
+
+  <target name="jaxr-api.checkout" description="Checkout JAXR-API and JAXR-RI"> 
+      <echo message="checkout jaxr-api from ${jaxr-api.svn.location}."/>
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+          <arg line="checkout" />
+          <arg line="${jaxr-api.svn.location}" />
+          <arg line="jaxr-api" />
+      </exec>
+      <echo message="checkout jaxr-ri from ${jaxr-ri.svn.location}."/>
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+          <arg line="checkout" />
+          <arg line="${jaxr-ri.svn.location}" />
+          <arg line="jaxr-ri" />
+      </exec>
+  </target>
+
+  <target name="javamail.download" description="Download JavaMail 1.6.0" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.javamail">
+          <dependency groupId="com.sun.mail" artifactId="javax.mail" version="1.6.0">
+              <exclusion groupId="javax.activation" artifactId="activation" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/javamail" />
+      <copy todir="${external.dir}/javamail" verbose="true">
+          <fileset refid="sources.dependency.javamail" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/javamail"  >
+          <fileset dir="${external.dir}/javamail">
+              <include name="**/*.jar"/>
+          </fileset>
+<!--
+fileset refid of artifact:dependencies does not work in unjar
+          <fileset refid="sources.dependency.javamail"/>
+          <mapper type="flatten" />
+-->
+      </unjar>
+  </target>
+
+
+  <target name="jaxrpc.checkout" description="Checkout JAXRPC-API"> 
+      <echo message="checkout jaxrpc-api from ${sfbay.cvsroot}."/>
+      <exec executable="cvs" dir="${external.dir}"  >
+	  <arg line="-d" />
+          <arg line="${sfbay.cvsroot}" />
+          <arg line="co" />
+	  <arg line="-r" />
+	  <arg line="${jaxrpc.api.cvs.branch}" />
+	  <arg line="${jaxrpc.api.cvs.location}" />
+	</exec>
+  </target>
+
+  <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
+<!-- using previous version 2.2.1 since the new version 2.2.2-promoted-b94 does not have the source artifact
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.1" classifier="sources" />
+-->
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.2" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/jaxb-api" />
+      <copy todir="${external.dir}/jaxb-api" verbose="true">
+          <fileset refid="sources.dependency.jaxb-api" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jaxb-api"  >
+          <fileset dir="${external.dir}/jaxb-api">
+              <include name="**/jaxb-api*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="jaxr.download" description="Download JAXR" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.webservices-extra-api">
+          <dependency groupId="org.glassfish.metro" artifactId="webservices-extra-api" version="2.1-b27" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/jaxr" />
+      <copy todir="${external.dir}/jaxr" verbose="true">
+          <fileset refid="sources.dependency.webservices-extra-api" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jaxr"  >
+          <fileset dir="${external.dir}/jaxr">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="jaxws-api.download" description="Download JAXWS-API" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jaxws-api">
+          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2.3-promoted-b07">
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+              <exclusion groupId="javax.activation" artifactId="activation" />
+              <exclusion groupId="javax.xml.soap" artifactId="saaj-api" />
+              <exclusion groupId="javax.xml.stream" artifactId="stax-api" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+       </artifact:dependencies>
+      <mkdir dir="${external.dir}/jaxws-api" />
+      <copy todir="${external.dir}/jaxws-api" verbose="true">
+          <fileset refid="sources.dependency.jaxws-api" />
+           <mapper type="flatten" />
+       </copy>
+      <unjar dest="${external.dir}/jaxws-api"  >
+          <fileset dir="${external.dir}/jaxws-api">
+               <include name="**/*.jar"/>
+          </fileset>
+       </unjar>
+  </target>
+
+  <target name="jsf.download" description="Download JSF" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
+          <dependency groupId="javax.faces" artifactId="javax.faces-api" version="2.3"/>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/jsf" />
+      <copy todir="${external.dir}/jsf" verbose="true">
+          <fileset refid="sources.dependency.jsf" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jsf"  >
+          <fileset dir="${external.dir}/jsf">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="jsp.download" description="Download JSP" depends="initialize.maven">
+        <mkdir dir="${external.dir}/jsp" />
+        <get
+          src="https://github.com/javaee/javaee-jsp-api/archive/javax.servlet.jsp-2.3.3-b02.zip"
+          dest="${external.dir}/jsp/javax.servlet.jsp-2.3.3-b02.zip"
+          verbose="true"
+          usetimestamp="true"/>
+        <unzip src="${external.dir}/jsp/javax.servlet.jsp-2.3.3-b02.zip" dest="${external.dir}/jsp"  overwrite="true">
+          <mapper>
+            <globmapper from="javaee-jsp-api-javax.servlet.jsp-2.3.3-b02/*" to="*"/>
+          </mapper>
+        </unzip>
+        <delete file="${external.dir}/jsp/javax.servlet.jsp-2.3.3-b02.zip" />
+  </target>
+
+  <target name="jsr181.download" description="Download JSR 181" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jsr181">
+          <dependency groupId="javax.jws" artifactId="jsr181-api" version="1.0-MR1"/>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/jsr181" />
+      <copy todir="${external.dir}/jsr181" verbose="true">
+          <fileset refid="sources.dependency.jsr181" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jsr181"  >
+          <fileset dir="${external.dir}/jsr181">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="jsr311.download" description="Download JSR 311" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jsr311">
+          <dependency groupId="javax.ws.rs" artifactId="jsr311-api" version="1.1.1"/>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/jsr311" />
+      <copy todir="${external.dir}/jsr311" verbose="true">
+          <fileset refid="sources.dependency.jsr311" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/jsr311"  >
+          <fileset dir="${external.dir}/jsr311">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="jstl-api.download" description="Download JSTL-API" depends="initialize.maven">
+        <mkdir dir="${external.dir}/jstl-api" />
+        <get
+          src="https://github.com/javaee/jstl-api/archive/1.2.5-b03.zip"
+          dest="${external.dir}/jstl-api/1.2.5-b03.zip"
+          verbose="true"
+          usetimestamp="true"/>
+        <unzip src="${external.dir}/jstl-api/1.2.5-b03.zip" dest="${external.dir}/jstl"  overwrite="true">
+          <mapper>
+            <globmapper from="jstl-api-1.2.5-b03/*" to="*"/>
+          </mapper>
+        </unzip>
+        <delete file="${external.dir}/jstl-api/1.2.5-b03.zip" />
+  </target>
+
+  <target name="mq.download" description="Download MQ" depends="initialize.maven" >
+        <mkdir dir="${external.dir}/mq-distribution" />
+        <get
+          src="https://github.com/javaee/openmq/archive/MQ5.1.1_b06.zip"
+          dest="${external.dir}/mq-distribution/MQ5.1.1_b06.zip"
+          verbose="true"
+          usetimestamp="true"/>
+        <unzip src="${external.dir}/mq-distribution/MQ5.1.1_b06.zip" dest="${external.dir}/mq-distribution"  overwrite="true">
+          <mapper>
+            <globmapper from="openmq-MQ5.1.1_b06/*" to="*"/>
+          </mapper>
+        </unzip>
+        <delete file="${external.dir}/mq-distribution/MQ5.1.1_b06.zip" />
+        <!-- delete examples directory since it was causing error in javadoc.  not able to use exclude dirset  -->
+        <echo message="delete examples directory" />
+        <delete dir="${external.dir}/mq-distribution/mq/src/share/java/examples" />
+  </target>
+
+
+  <target name="eclipse-persistence.download" description="Download Eclipse Persistence source" depends="initialize.maven" > 
+      <artifact:dependencies sourcesFilesetId="sources.dependency.eclipse-persistence">
+          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.2.0"/>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/eclipse.persistence" />
+      <copy todir="${external.dir}/eclipse.persistence" verbose="true">
+          <fileset refid="sources.dependency.eclipse-persistence" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/eclipse.persistence"  >
+          <fileset dir="${external.dir}/eclipse.persistence">
+              <include name="**/javax.persistence*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="uel.download" description="Download UEL-API" depends="initialize.maven" >
+        <mkdir dir="${external.dir}/uel" />
+        <get
+          src="https://github.com/javaee/uel-ri/archive/javax.el-api-3.0.1-b04.zip"
+          dest="${external.dir}/uel/javax.el-api-3.0.1-b04.zip"
+          verbose="true"
+          usetimestamp="true"/>
+        <unzip src="${external.dir}/uel/javax.el-api-3.0.1-b04.zip" dest="${external.dir}/uel"  overwrite="true">
+          <mapper>
+            <globmapper from="uel-ri-javax.el-api-3.0.1-b04/*" to="*"/>
+          </mapper>
+        </unzip>
+        <delete file="${external.dir}/uel/javax.el-api-3.0.1-b04.zip" />
+  </target>
+
+  <target name="bean-validator.download" description="Download javax.validator" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.bean-validator" >
+          <dependency groupId="javax/validation" artifactId="validation-api" version="2.0.0.Final" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/validation-api" />
+      <copy todir="${external.dir}/validation-api" verbose="true">
+          <fileset refid="sources.dependency.bean-validator" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/validation-api"  >
+          <fileset dir="${external.dir}/validation-api">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="weld-osgi-bundle.download" description="Download Weld OSGI Bundle" depends="initialize.maven" >
+      <!-- temporary using the older version since new version does not have the source artifact -->
+      <artifact:dependencies sourcesFilesetId="sources.dependency.weld-osgi-bundle" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="3.0.0.Final" classifier="sources" >
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/weld-osgi-bundle" />
+      <copy todir="${external.dir}/weld-osgi-bundle" verbose="true">
+          <fileset refid="sources.dependency.weld-osgi-bundle" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/weld-osgi-bundle"  >
+          <fileset dir="${external.dir}/weld-osgi-bundle">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+      <!-- remove javax.annoation sources since it's bundled in the weld-osgi-bundle sources -->
+      <!-- and we don't want to use this class to generate the javadoc.                      -->
+      <delete dir="${external.dir}/weld-osgi-bundle/javax/annotation" />
+  </target>
+
+  <target name="hk2.svn.checkout" description="Checkout hk2 sources" >
+      <echo message="checkout hk2 from ${hk2.svn.url}."/>
+      <!-- checkout hk2 source -->
+      <exec executable="git" dir="${external.dir}" failonerror="true" >
+	  <arg line="clone" />
+          <arg line="--branch" />
+          <arg line="2.5.0-b44" />
+          <arg line="${hk2.svn.url}" />
+	</exec>
+  </target>
+
+  <!-- need to checkout org.osgi.core sources since there are some
+  annotation tags from hk2 -->
+  <!-- referencing classes in org.osgi.core.  Without this, the javadoc an ClassCastException --> 
+  <!-- is thrown.  see:  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6442982           -->
+  <!-- the workaround is either adding the jar or sources in the classpath.                   -->
+  <target name="org.osgi.core-svn.checkout" description="Checkout org.osgi.core  sources" >
+      <echo message="checkout hk2 from ${org.osgi.core-svn.url}."/>
+      <!-- checkout hk2 source -->
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+	  <arg line="checkout" />
+          <arg line="${org.osgi.core-svn.url}" />
+          <arg line="--username" />
+          <arg line="guest" />
+          <arg line="org.osgi.core" />
+	</exec>
+  </target>
+
+
+  <!-- cannot use hk2 maven artifact since some of the sources are not published to maven repo -->
+  <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="2.5.0-b44" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/hk2" />
+      <copy todir="${external.dir}/hk2" verbose="true">
+          <fileset refid="sources.dependency.hk2" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/hk2"  >
+          <fileset dir="${external.dir}/hk2">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="appclient-source">
+    <mkdir dir="${external.dir}/appclient-tmp"/>
+    <copy
+    todir="${external.dir}/appclient-tmp/" overwrite="true">
+    <fileset dir="${basedir}/appclient/client/acc-config/target/generated-sources/xjc/">
+        <exclude name="**/Adapter*.java"/>
+      </fileset>
+    </copy>
+    <copy todir="${external.dir}/appclient-tmp/org/glassfish/appclient/client/acc" overwrite="true"
+      file="${basedir}/appclient/client/acc/src/main/java/org/glassfish/appclient/client/acc/AppClientContainer.java"/>
+  </target>
+
+  <target name="clean-javadocs-dir" description="Delete JavaDocs directory">
+          <delete dir="${build.javadocs}" quiet="true" />
+  </target>
+
+  <target name="create-javadocs" description="Creates JavaEE 8 JavaDocs">
+    <antcall target="clean-javadocs-dir" />
+    <mkdir dir="${build.javadocs}"/>
+             <!--
+             -->
+    <javadoc sourcepathref="src.dir"
+             destdir="${build.javadocs}"
+	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javassist.*,ch."
+             maxmemory="2048m"
+             author="true"
+             version="true"
+             source="1.8"
+             encoding="ISO-8859-1"
+             windowtitle="${Title}"
+             doctitle="&lt;h1&gt;${Name} &lt;br&gt;API Specification&lt;/h1&gt;&lt;p&gt;This document is the API specification for version 8 of the Java&lt;sup&gt;TM&lt;/sup&gt; Platform, Enterprise Edition."
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009-2017, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;https://oss.oracle.com/licenses/CDDL+GPL-1.1&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             Header="${DRAFT}" 
+             Footer="${DRAFT}" >
+    </javadoc>
+  </target>
+
+  <target name="create-v5-javadocs" description="Creates GlassFish v5 JavaDocs">
+    <antcall target="clean-javadocs-dir">
+      <param name="build.javadocs" value="${build.v5.javadocs}"/>
+    </antcall>
+    <mkdir dir="${build.v5.javadocs}"/>
+    <javadoc 
+             destdir="${build.v5.javadocs}"
+             Verbose="true"
+             maxmemory="2048m"
+             author="false"
+             version="true"
+             source="1.8"
+             encoding="ISO-8859-1"
+             windowtitle="${v5.Title}"
+             doctitle="&lt;h1&gt;${v5.Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish 5.0"
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009-2017, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;https://oss.oracle.com/licenses/CDDL+GPL-1.1&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             Header="${DRAFT}" 
+             Footer="${DRAFT}" >
+
+       <group title="Java EE 8 Platform Packages" packages="javax.*"/>
+       <group title="GlassFish specific, Non-platform Packages"
+          packages="com.sun.*:org.jvnet.*:org.glassfish.*"/>
+       <link href="http://java.sun.com/javase/6/docs/api/"/>
+       <sourcepath refid="v5.src.path"/>
+
+       <!--
+       -->
+       <package name="javax.*"/>
+       <package name="com.sun.appserv.*"/>
+       <package name="com.sun.enterprise.module.*"/>
+       <package name="com.sun.enterprise.security.audit.*"/>
+       <package name="org.jvnet.*"/>
+       <package name="org.glassfish.api.*"/>
+       <package name="org.glassfish.api.admin.*"/>
+       <package name="org.glassfish.api.admin.cli"/>
+       <package name="org.glassfish.api.amx.*"/>
+       <package name="org.glassfish.api.event"/>
+       <package name="org.glassfish.api.invocation"/>
+       <package name="org.glassfish.api.deployment.*"/>
+       <package name="org.glassfish.external.probe.provider.*"/>
+       <package name="org.glassfish.external.statistics"/>
+       <package name="org.glassfish.external.statistics.annotations"/>
+       <package name="org.glassfish.api.embedded.*"/>
+       <package name="org.glassfish.flashlight.provider"/>
+       <package name="org.glassfish.flashlight.cli"/>
+       <package name="org.glassfish.flashlight.client"/>
+       <package name="org.glassfish.appclient.client.acc.*"/>
+       <package name="org.glassfish.external.amx.*"/>
+       <package name="org.glassfish.admin.amx.*"/>
+
+       <excludepackage name="org.apache.*"/>
+       <excludepackage name="org.glassfish.api.jdbc.validation.*"/>
+       <excludepackage name="sample.*"/>
+       <excludepackage name="killer.*"/>
+       <excludepackage name="testing.*"/>
+       <excludepackage name="javax.xml.messaging.*"/>
+       <excludepackage name="javax.xml.registry.samples.*"/>
+       <excludepackage name="javax.xml.namespace.*"/>
+       <excludepackage name="com.sun.appserv.connectors.internal.*"/>
+       <excludepackage name="com.sun.appserv.connectors.spi.*"/>
+       <excludepackage name="com.sun.enterprise.module.common_impl.*"/>
+       <excludepackage name="com.sun.enterprise.module.impl.*"/>
+       <excludepackage name="org.glassfish.api.virtualization.*"/>
+       <excludepackage name="org.glassfish.admin.amx.impl.*"/>
+       <excludepackage name="org.osgi.*"/>
+
+    </javadoc>
+  </target>
+
+  <target name="copy-jsf-image-files" description="Copy JSF image files" >
+      <copy todir="${build.javadocs}/javax/faces">
+          <fileset dir="${external.dir}/jsf/javax/faces" includes="**/*.jpg"/>
+      </copy>
+      <copy todir="${build.javadocs}">
+<!--
+Per Ed Burns' request to not include drop the color coding for JSF docs so removing jsf-api.css file.
+Also removed 'stylesheetfile="jsf/jsf-api/jsf-api.css"' when generating the javadoc. 
+-->
+          <fileset dir="${external.dir}/jsf" includes="**/*.css,**/*.png"/>
+      </copy>
+  </target>
+
+  <target name="jar-javadoc" description="Bundle JavaEE8 jar" >
+      <jar destfile="${build.javadocs}/${destfile.name}" basedir="${build.javadocs}"/>
+  </target>
+</project>
+
