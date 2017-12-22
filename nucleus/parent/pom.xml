@@ -682,14 +682,38 @@
                 <version>${jboss.logging.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging-annotations</artifactId>
+                <version>${jboss.logging.annotation.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml</groupId>
                 <artifactId>classmate</artifactId>
                 <version>${fasterxml.classmate.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-bom</artifactId>
+                <version>${grizzly.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
                 <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.stream</groupId>
+                <artifactId>sjsxp</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>
@@ -700,6 +724,26 @@
                 <groupId>javax.xml.stream</groupId>
                 <artifactId>stax-api</artifactId>
                 <version>${stax-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>antlr</groupId>
+                <artifactId>antlr</artifactId>
+                <version>${antlr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jbi</groupId>
+                <artifactId>jbi</artifactId>
+                <version>${jbi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>management-api</artifactId>
+                <version>${glassfish-management-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.gmbal</groupId>
+                <artifactId>gmbal</artifactId>
+                <version>${gmbal.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -757,9 +801,115 @@
                 <version>${javax.el.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jettison</groupId>
+                <artifactId>jettison</artifactId>
+                <version>${jettison.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jvnet.mimepull</groupId>
+                <artifactId>mimepull</artifactId>
+                <version>${mimepull.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.help</groupId>
                 <artifactId>javahelp</artifactId>
                 <version>2.0.05</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.tools.btrace</groupId>
+                <artifactId>btrace-agent</artifactId>
+                <version>${btrace.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.tools.btrace</groupId>
+                <artifactId>btrace-boot</artifactId>
+                <version>${btrace.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>jmxremote_optional</artifactId>
+                <version>${opendmk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-orb</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-csiv2-idl</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-internal-api</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>javax.mail-api</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-basic</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-dynamic</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-basic-tools</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-asm</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-tf</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-tf-tools</artifactId>
+                <version>${pfl.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -770,6 +920,16 @@
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${jmockit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.5</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
@@ -787,9 +947,44 @@
                 <version>${servlet-api.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.sun</groupId>
+                <artifactId>ldapbp</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm-commons</artifactId>
                 <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-gms-api</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-gms-impl</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.shoal</groupId>
+                <artifactId>shoal-cache</artifactId>
+                <version>${shoal.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.ha</groupId>
+                <artifactId>ha-api</artifactId>
+                <version>${ha-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.4</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.annotations</groupId>
@@ -835,6 +1030,12 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
                 <version>2.0.10</version>
+            </dependency>
+            <!-- This is currently used by osgi-shell cmd, but can be used for others as well -->
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>2.14.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>

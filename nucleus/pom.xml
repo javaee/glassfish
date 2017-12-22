@@ -174,7 +174,7 @@
         </plugins>
     </build>
 
-    <dependencyManagement>
+    <!--<dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
@@ -547,9 +547,9 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
                 <version>2.0.10</version>
-            </dependency>
+            </dependency>-->
             <!-- This is currently used by osgi-shell cmd, but can be used for others as well -->
-            <dependency>
+            <!--<dependency>
                 <groupId>jline</groupId>
                 <artifactId>jline</artifactId>
                 <version>2.14.5</version>
@@ -725,5 +725,5 @@
             <scope>test</scope>
             <optional>true</optional>
         </dependency>
-    </dependencies>
+    </dependencies>-->
 </project>

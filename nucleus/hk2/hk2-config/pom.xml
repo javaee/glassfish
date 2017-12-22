@@ -54,11 +54,6 @@
     <description>${project.name}</description>
     <packaging>glassfish-jar</packaging>
 
-    <properties>
-        <javax.validation.version.upperbound>3</javax.validation.version.upperbound>
-        <hibernate-validator.version.upperbound>7</hibernate-validator.version.upperbound>
-    </properties>
-    
     <build>
         <plugins>
             <plugin>
@@ -109,9 +104,8 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.validation.*;resolution:=optional;version="${range;[==,${javax.validation.version.upperbound});${javax.validation.version}}
-",
-                            org.hibernate.validator.*;resolution:=optional;version="${range;[==,${hibernate-validator.version.upperbound});${hibernate-validator.version}}",
+                            javax.validation.*;resolution:=optional;version="${javax.validation.version}",
+                            org.hibernate.validator.*;resolution:=optional;version="${hibernate-validator.version}",
                             *
                         </Import-Package>
                     </instructions>
