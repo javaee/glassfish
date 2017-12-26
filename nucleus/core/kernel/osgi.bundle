@@ -62,5 +62,6 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
 Import-Package: \
     com.sun.enterprise.server.logging.*; resolution:=optional, \
     org.hibernate.validator.*;resolution:=optional;version="${hibernate-validator.version}", \
+    com.sun.enterprise.admin.progress.*; resolution:=optional;version="[5.0,6.0]", \
     *
 

@@ -10,12 +10,12 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-    or packager/legal/LICENSE.txt.  See the License for the specific
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
     When distributing the software, include this License Header Notice in each
-    file and include the License file at packager/legal/LICENSE.txt.
+    file and include the License file at LICENSE.txt.
 
     GPL Classpath Exception:
     Oracle designates this particular file as subject to the "Classpath"
@@ -742,9 +742,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      -->
         <dependency>
             <groupId>org.glassfish.main.connectors</groupId>
-            <artifactId>connectors-dtds</artifactId>
+            <artifactId>descriptors</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <exclusions>
@@ -754,6 +755,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.glassfish.main.connectors</groupId>
             <artifactId>connectors-custom-descriptors</artifactId>
@@ -1199,10 +1201,9 @@
         </dependency>
 
         <!-- glassfish-jdbc -->
-        <!--
         <dependency>
             <groupId>org.glassfish.main.jdbc</groupId>
-            <artifactId>jdbc-templates</artifactId>
+            <artifactId>templates</artifactId>
             <version>${project.parent.version}</version>
             <type>zip</type>
             <exclusions>
@@ -1212,7 +1213,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+<!--
         <dependency>
             <groupId>org.glassfish.main.jdbc</groupId>
             <artifactId>vendor-mapping-properties</artifactId>
@@ -1225,11 +1226,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      -->
         <dependency>
           <groupId>org.glassfish.main.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>__cp_jdbc_ra</artifactId>
+            <artifactId>jdbc-ra</artifactId>
             <version>${project.version}</version>
-            <type>rar</type>
+            <type>zip</type>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -1237,43 +1239,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-          <groupId>org.glassfish.main.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>__ds_jdbc_ra</artifactId>
-            <version>${project.version}</version>
-            <type>rar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.glassfish.main.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>__dm_jdbc_ra</artifactId>
-            <version>${project.version}</version>
-            <type>rar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.glassfish.main.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>__xa_jdbc_ra</artifactId>
-            <version>${project.version}</version>
-            <type>rar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
         <dependency>
            <groupId>org.glassfish.main.jdbc</groupId>
            <artifactId>jdbc-admin</artifactId>
@@ -1773,10 +1738,9 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--
         <dependency>
             <groupId>org.glassfish.main.admingui</groupId>
-            <artifactId>admingui-war</artifactId>
+            <artifactId>war</artifactId>
             <version>${project.version}</version>
             <type>war</type>
             <exclusions>
@@ -1786,7 +1750,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-      -->
         <!-- glassfish-gui plugins -->
         <dependency>
             <groupId>org.glassfish.main.admingui</groupId>

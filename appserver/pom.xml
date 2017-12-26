@@ -1006,11 +1006,6 @@
                 <version>${derby.version}</version>
                 <type>zip</type>
            </dependency>
-           <dependency>
-                <groupId>org.glassfish.external</groupId>
-                <artifactId>libpam4j</artifactId>
-                <version>${libpam4j.version}</version>
-           </dependency>
       </dependencies>
     </dependencyManagement>
 
