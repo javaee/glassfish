@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="wsit_jaxws_tests" failures="0" tests="2" time="2.183" errors="0">
-  <properties/>
-  <testcase name="testAddNumbers" time="0.102" classname="fromjava.client.CheckTesterUITestNG"/>
-  <testcase name="testTesterUI" time="1.657" classname="fromjava.client.CheckTesterUITestNG"/>
-</testsuite>

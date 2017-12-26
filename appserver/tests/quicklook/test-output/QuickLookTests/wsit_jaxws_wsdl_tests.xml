@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="wsit_jaxws_wsdl_tests" failures="0" tests="2" time="1.036" errors="0">
-  <properties/>
-  <testcase name="testAddNumbers_JaxwsFromWsdl" time="0.787" classname="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
-  <testcase name="testAddNumbersException_JaxwsFromWsdl" time="0.237" classname="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
-</testsuite>

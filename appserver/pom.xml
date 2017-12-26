@@ -981,7 +981,7 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>org.hibernate.validator</groupId>
+                <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
