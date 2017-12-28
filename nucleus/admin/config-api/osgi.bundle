@@ -44,6 +44,7 @@ Import-Package: \
     *
 
 -exportcontents: \
+    com.sun.enterprise.config.serverbeans; \
     com.sun.enterprise.config.serverbeans.customvalidators; \
     org.glassfish.config.support.datatypes; \
     com.sun.enterprise.config.util; \
@@ -51,5 +52,4 @@ Import-Package: \
     com.sun.enterprise.config.modularity; \
     com.sun.enterprise.config.modularity.customization; \
     com.sun.enterprise.config.modularity.parser; \
-    org.glassfish.config.support; version=${project.osgi.version}, \
-    com.sun.enterprise.config.serverbeans; version=5.0.0 \
+    org.glassfish.config.support; version=${project.osgi.version}

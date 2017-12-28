@@ -116,20 +116,12 @@
             <outputDirectory>${install.dir.name}/lib/monitor</outputDirectory>
         </fileSet>
 
-        <!-- lib/ -->
-        <fileSet>
-            <directory>${temp.dir}</directory>
-            <includes>
-                <include>grizzly-npn-bootstrap.jar</include>
-            </includes>
-            <outputDirectory>${install.dir.name}/lib</outputDirectory>
-        </fileSet>
-
         <!-- modules/endorsed -->
         <fileSet>
             <directory>${temp.dir}</directory>
             <includes>
                 <include>javax.annotation-api.jar</include>
+                <include>grizzly-npn-bootstrap.jar</include>
             </includes>
             <outputDirectory>${install.dir.name}/modules/endorsed</outputDirectory>
         </fileSet>
@@ -172,6 +164,7 @@
                 <exclude>felix.jar</exclude>
                 <exclude>nucleus-domain.jar</exclude>
                 <exclude>javax.annotation-api.jar</exclude>
+                <exclude>grizzly-npn-bootstrap.jar</exclude>
             </excludes>
             <outputDirectory>${install.dir.name}/modules</outputDirectory>
         </fileSet>

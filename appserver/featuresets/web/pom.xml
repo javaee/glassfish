@@ -1199,6 +1199,26 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.soteria</groupId>
+            <artifactId>javax.security.enterprise</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- glassfish-jdbc -->
         <dependency>
@@ -1619,9 +1639,29 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.jboss.classfilewriter</groupId>
+            <artifactId>jboss-classfilewriter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>weld-integration-fragment</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -1682,7 +1722,26 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>javax.json.bind</groupId>
+            <artifactId>javax.json.bind-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>yasson</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- glassfish-gui -->
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>

@@ -193,7 +193,6 @@
             <includes>
                 <include>javaee.jar</include>
                 <include>appserv-rt.jar</include>
-                <include>grizzly-npn-bootstrap.jar</include>
             </includes>
             <outputDirectory>${install.dir.name}/glassfish/lib</outputDirectory>
         </fileSet>
@@ -203,6 +202,7 @@
             <directory>${temp.dir}</directory>
             <includes>
                 <include>javax.annotation-api.jar</include>
+                <include>grizzly-npn-bootstrap.jar</include>
             </includes>
             <outputDirectory>${install.dir.name}/glassfish/modules/endorsed</outputDirectory>
         </fileSet>
@@ -273,6 +273,7 @@
                 <exclude>nucleus-domain.jar</exclude>
                 <exclude>appserver-domain.jar</exclude>
                 <exclude>javax.annotation-api.jar</exclude>
+                <exclude>grizzly-npn-bootstrap.jar</exclude>
                 <exclude>cli-optional.jar</exclude>
                 <exclude>appserver-cli.jar</exclude>
                 <exclude>cluster-cli.jar</exclude>

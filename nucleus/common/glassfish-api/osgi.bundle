@@ -50,6 +50,8 @@
                         org.glassfish.api.amx; \
                         org.glassfish.api.container; \
                         org.glassfish.api.content; \
+                        org.glassfish.api.deployment; \
+                        org.glassfish.api.deployment.archive; \
                         org.glassfish.api.event; \
                         org.glassfish.api.invocation; \
                         org.glassfish.api.jdbc; \
@@ -60,6 +62,4 @@
                         org.glassfish.api.naming; \
                         org.glassfish.api.virtualization; \
                         org.glassfish.api.web; \
-                        org.glassfish.api.branding; version=${project.osgi.version}, \
-                        org.glassfish.api.deployment; version=5.0.0, \
-                        org.glassfish.api.deployment.archive; version=5.0.0
+                        org.glassfish.api.branding; version=${project.version}

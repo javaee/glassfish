@@ -46,6 +46,7 @@
                         com.sun.enterprise.security.auth.login; \
                         com.sun.enterprise.security.factory; \
                         com.iplanet.ias.security.auth.realm; \
+                        com.sun.enterprise.security.auth.realm; \
                         com.sun.enterprise.security.auth.realm.certificate; \
                         com.sun.enterprise.security.auth.realm.file; \
                         com.sun.enterprise.security.auth.realm.ldap; \
@@ -53,11 +54,10 @@
                         com.sun.enterprise.security.util; \
                         com.sun.enterprise.common.iiop.security; \
                         com.sun.enterprise.security.auth.digest.api; \
+                        com.sun.enterprise.security.auth.login.common; \
+                        com.sun.enterprise.security.common; \
                         com.sun.logging.enterprise.system.core.security; \
-                        com.sun.enterprise.security.ssl; version=${project.osgi.version}, \
-                        com.sun.enterprise.security.auth.realm; version=5.0.0, \
-                        com.sun.enterprise.security.common; version=5.0.0, \
-                        com.sun.enterprise.security.auth.login.common; version=5.0.0 \
+                        com.sun.enterprise.security.ssl; version=${project.osgi.version}
 Bundle-NativeCode: \
         libsolsparcauth.so ; \
         osname=SunOS ; \
