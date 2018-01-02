@@ -471,7 +471,7 @@
             <dependency>
                 <groupId>org.glassfish.external</groupId>
                 <artifactId>ldapbp</artifactId>
-                <version>1.0</version>
+                <version>${ldapbp.version}</version>
             </dependency>
             <dependency>
                 <groupId>asm</groupId>
