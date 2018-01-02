@@ -128,7 +128,7 @@
                                 <copyTypes>jar,war</copyTypes>
                                 <unpackTypes>zip,rar,war</unpackTypes>
                                 <silent>true</silent>
-                                <copyExcludes>admingui-war</copyExcludes>
+                                <copyExcludes>war</copyExcludes>
                                 <mappings>
                                     <mapping>
                                         <artifactId>org.apache.felix.main</artifactId>
@@ -151,7 +151,7 @@
                                         <includes>**/admin-keyfile</includes>
                                         <includes>**/domain-passwords</includes>
                                         <includes>**/keyfile</includes>
-                                    </fileset>             
+                                    </fileset>
                                     <fileset>
                                         <fileMode>640</fileMode>
                                         <dir>${stage.dir}</dir>
@@ -160,7 +160,7 @@
                                     </fileset>
                                     <fileset>
                                         <dir>${stage.dir}</dir>
-                                        <fileMode>750</fileMode>                                       
+                                        <fileMode>750</fileMode>
                                         <includes>**/bin/*</includes>
                                         <includes>**/bin/*.bat</includes>
                                         <includes>**/config/*.bat</includes>
@@ -173,7 +173,7 @@
                                     </fileset>
                                     <fileset>
                                         <fileMode>640</fileMode>
-                                        <dir>${stage.dir}</dir>                                        
+                                        <dir>${stage.dir}</dir>
                                         <excludes>**/bin/*</excludes>
                                         <excludes>**/bin/*.bat</excludes>
                                         <excludes>**/lib/nadmin*</excludes>

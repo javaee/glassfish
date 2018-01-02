@@ -117,7 +117,7 @@
                         <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <copy todir="${project.build.outputDirectory}" flatten="true">
+                              <copy todir="${project.build.outputDirectory}/glassfish/lib/schemas" flatten="true">
                                     <fileset dir="${jpa.schema.temp.location}/javax/persistence" />
                                 </copy>
                             </tasks>

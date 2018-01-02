@@ -733,8 +733,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.main.external</groupId>
             <artifactId>ldapbp-repackaged</artifactId>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

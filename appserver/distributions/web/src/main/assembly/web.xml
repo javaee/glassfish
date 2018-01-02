@@ -71,7 +71,7 @@
 
         <!-- javadb -->
         <fileSet>
-            <directory>${temp.dir}/javadb</directory>
+            <directory>${temp.dir}/derby-distribution/derby-distribution-${derby.version}-bin</directory>
             <excludes>
                 <exclude>demo/**</exclude>
                 <exclude>docs/**</exclude>
@@ -83,56 +83,59 @@
 
         <!-- lib/dtds -->
        <fileSet>
-            <directory>${temp.dir}/appserver-dtds</directory>
+            <directory>${temp.dir}/appserver-dtds/glassfish/lib/dtds</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/nucleus-dtds</directory>
+            <directory>${temp.dir}/nucleus-dtds/lib/dtds</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/connectors-dtds</directory>
+            <directory>${temp.dir}/descriptors/glassfish/lib/dtds</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
         </fileSet>
 
         <!-- lib/schemas -->
         <fileSet>
-            <directory>${temp.dir}/nucleus-schemas</directory>
+            <directory>${temp.dir}/nucleus-schemas/lib/schemas</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/appserver-schemas</directory>
+            <directory>${temp.dir}/appserver-schemas/glassfish/lib/schemas</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/connectors-schemas</directory>
+            <directory>${temp.dir}/descriptors/glassfish/lib/schemas</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
         </fileSet>
 
         <!-- lib/install/ -->
         <fileSet>
-            <directory>${temp.dir}</directory>
-            <includes>
-                <include>__*_jdbc_ra/**</include>
-            </includes>
-            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications</outputDirectory>
+          <directory>${temp.dir}/jdbc-ra/glassfish/lib/install/applications</directory>
+          <includes>
+              <include>__cp_jdbc_ra/**</include>
+              <include>__dm_jdbc_ra/**</include>
+              <include>__ds_jdbc_ra/**</include>
+              <include>__xa_jdbc_ra/**</include>
+          </includes>
+          <outputDirectory>${install.dir.name}/glassfish/lib/install/applications</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/vendor-mapping-properties</directory>
+            <directory>${temp.dir}/templates/glassfish/lib/install/databases/dbvendormapping</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/install/databases/dbvendormapping</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/jdbc-templates</directory>
+            <directory>${temp.dir}/templates/glassfish/lib/install/templates/resources/jdbc</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/install/templates/resources/jdbc</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/connectors-custom-descriptors</directory>
+            <directory>${temp.dir}/descriptors/glassfish/lib/install/templates/resources/custom</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/install/templates/resources/custom</outputDirectory>
         </fileSet>
 
         <!-- admingui -->
         <fileSet>
-            <directory>${temp.dir}/admingui-war</directory>
+            <directory>${temp.dir}/war</directory>
             <outputDirectory>${install.dir.name}/glassfish/lib/install/applications/__admingui</outputDirectory>
         </fileSet>
 
