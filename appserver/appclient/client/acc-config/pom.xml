@@ -118,7 +118,7 @@
                       <artifactItems>
                         <artifactItem>
                           <groupId>org.glassfish.main.deployment</groupId>
-                          <artifactId>dtds</artifactId>
+                          <artifactId>appserver-dtds</artifactId>
                           <version>${project.version}</version>
                           <type>zip</type>
                           <includes>**/${config-dtd-file}</includes>
@@ -212,7 +212,7 @@
         <dependency>
             <scope>provided</scope>
             <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>dtds</artifactId>
+            <artifactId>appserver-dtds</artifactId>
             <type>zip</type>
             <version>${project.version}</version>
         </dependency>
