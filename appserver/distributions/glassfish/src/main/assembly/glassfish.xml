@@ -71,7 +71,7 @@
 
         <!-- appclient-scripts -->
         <fileSet>
-            <directory>${temp.dir}/appclient-scripts/bin</directory>
+            <directory>${temp.dir}/appclient-scripts/glassfish/bin</directory>
             <fileMode>755</fileMode>
             <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
         </fileSet>
@@ -82,14 +82,14 @@
 
         <!-- webservices-scripts -->
         <fileSet>
-            <directory>${temp.dir}/webservices-scripts</directory>
+            <directory>${temp.dir}/webservices-scripts/glassfish/bin</directory>
             <fileMode>755</fileMode>
             <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
         </fileSet>
 
         <!-- cmp-scripts -->
         <fileSet>
-            <directory>${temp.dir}/cmp-scripts</directory>
+            <directory>${temp.dir}/cmp-scripts/glassfish/bin</directory>
             <fileMode>755</fileMode>
             <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
         </fileSet>
