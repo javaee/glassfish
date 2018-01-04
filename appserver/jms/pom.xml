@@ -57,5 +57,6 @@
         <module>admin</module>
         <module>gf-jms-connector</module>
         <module>gf-jms-injection</module>
+        <module>jmsra</module>
   </modules>
 </project>
