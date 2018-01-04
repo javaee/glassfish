@@ -776,7 +776,7 @@
             </exclusions>
        </dependency>
        <dependency>
-           <groupId>org.glassfish.main.external</groupId>
+           <groupId>org.glassfish.main.jms</groupId>
            <artifactId>jmsra</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
