@@ -123,6 +123,8 @@
         <module>flashlight</module>
         <module>grizzly</module>
         <module>deployment</module>
+        <module>bean-validator</module>
+        <module>bean-validator-cdi</module>
         <module>distributions</module>
         <module>security</module>
         <module>test-utils</module>
