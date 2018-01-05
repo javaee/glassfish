@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -54,12 +54,6 @@
     <description>${project.name}</description>
     <packaging>glassfish-jar</packaging>
 
-    <properties>
-        <javax.validation.version.upperbound>3</javax.validation.version.upperbound>
-        <hibernate-validator.version.upperbound>7</hibernate-validator.version.upperbound>
-        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-    </properties>
-    
     <build>
         <plugins>
             <plugin>
@@ -110,9 +104,8 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.validation.*;resolution:=optional;version="${range;[==,${javax.validation.version.upperbound});${javax.validation.version}}
-",
-                            org.hibernate.validator.*;resolution:=optional;version="${range;[==,${hibernate-validator.version.upperbound});${hibernate-validator.version}}",
+                            javax.validation.*;resolution:=optional;version="${javax.validation.version}",
+                            org.hibernate.validator.*;resolution:=optional;version="${hibernate-validator.version}",
                             *
                         </Import-Package>
                     </instructions>
@@ -139,11 +132,6 @@
             <version>${hk2.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jvnet</groupId>
-            <artifactId>tiger-types</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
@@ -153,6 +141,11 @@
         <dependency>
           <groupId>javax.el</groupId>
           <artifactId>javax.el-api</artifactId>
+          <scope>test</scope>
+       </dependency>
+       <dependency>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.el</artifactId>
           <scope>test</scope>
        </dependency>
     </dependencies>
