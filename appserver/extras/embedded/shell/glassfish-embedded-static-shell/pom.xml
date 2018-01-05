@@ -145,6 +145,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>antlr</artifactId>
+            <version>${antlr.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -969,6 +970,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>ldapbp</artifactId>
+            <version>${ldapbp.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

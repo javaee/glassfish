@@ -713,6 +713,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>ldapbp</artifactId>
+            <version>${ldapbp.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

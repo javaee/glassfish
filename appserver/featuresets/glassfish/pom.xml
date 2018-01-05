@@ -398,6 +398,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>antlr</artifactId>
+           <version>${antlr.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
