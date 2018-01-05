@@ -48,7 +48,7 @@
         <artifactId>nucleus-distributions</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>nucleus</artifactId>
+    <artifactId>nucleus-new</artifactId>
     <name>Nucleus Distribution</name>
     <packaging>glassfish-distribution</packaging>
 
