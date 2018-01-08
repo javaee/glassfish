@@ -57,8 +57,5 @@
         <module>acc-config</module>
         <module>acc</module>
         <module>acc-standalone</module>
-        <!--  JWS support is not yet implemented
-        <module>jws</module>
-        -->
     </modules>
 </project>

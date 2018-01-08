@@ -239,7 +239,7 @@
         <fileSet>
             <directory>${temp.dir}</directory>
             <includes>
-                <include>weld-se-core.jar</include>
+                <include>weld-se-shaded.jar</include>
             </includes>
             <outputDirectory>${install.dir.name}/glassfish/lib/appclient</outputDirectory>
         </fileSet>
@@ -373,6 +373,7 @@
                 <exclude>gf-client.jar</exclude>
                 <exclude>mejb.jar</exclude>
                 <exclude>weld-se-core.jar</exclude>
+                <exclude>weld-se-shaded.jar</exclude>
                 <exclude>jaxb-api.jar</exclude>
                 <exclude>webservices-api-osgi.jar</exclude>
             </excludes>

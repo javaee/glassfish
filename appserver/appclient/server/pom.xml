@@ -56,6 +56,5 @@
     <modules>
        <module>connector</module>
        <module>core</module>
-<!--       <module>jws</module> -->
     </modules>
 </project>
