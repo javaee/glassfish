@@ -340,6 +340,7 @@
             <groupId>org.glassfish.main.deployment</groupId>
             <artifactId>sun-as-jsr88-dm-frag</artifactId>
             <version>${project.version}</version>
+            <type>zip</type>
             <optional>true</optional>
         </dependency>
         <dependency>
