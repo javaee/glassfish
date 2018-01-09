@@ -197,6 +197,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.main.persistence.cmp</groupId>
+            <artifactId>cmp-scripts</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>dbschema</artifactId>
             <optional>true</optional>
@@ -262,6 +269,12 @@
         <!-- nucleus-cluster -->
         <dependency>
             <groupId>org.glassfish.main.cluster</groupId>
+            <artifactId>cluster-cli</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.cluster</groupId>
             <artifactId>cluster-admin</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
@@ -324,6 +337,26 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>sun-as-jsr88-dm-frag</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.common</groupId>
+            <artifactId>mejb-frag</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+       </dependency>
+        <dependency>
+            <groupId>jaxr-ra</groupId>
+            <artifactId>jaxr-ra</artifactId>
+            <version>${jaxr.version}</version>
+            <type>rar</type>
+            <optional>true</optional>
+       </dependency>
+        <dependency>
             <groupId>org.glassfish.main.batch</groupId>
             <artifactId>glassfish-batch-commands</artifactId>
             <version>${project.version}</version>
@@ -335,6 +368,13 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+           <groupId>org.glassfish.main.batch</groupId>
+           <artifactId>batch-databases</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+           <optional>true</optional>
+       </dependency>
         <dependency>
             <groupId>javax.batch</groupId>
             <artifactId>javax.batch-api</artifactId>
