@@ -1657,6 +1657,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.glassfish.main.bean-validator</groupId>
             <artifactId>bean-validator</artifactId>
@@ -1679,6 +1680,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      -->
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>

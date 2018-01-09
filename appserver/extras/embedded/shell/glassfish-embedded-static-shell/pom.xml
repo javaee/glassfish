@@ -230,6 +230,35 @@
             <artifactId>shoal-gms-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>dtds</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>schemas</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+        <!-- nucleus-common -->
+        <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>nucleus-dtds</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.deployment</groupId>
+            <artifactId>nucleus-schemas</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
         <!-- nucleus-cluster -->
         <dependency>
             <groupId>org.glassfish.main.cluster</groupId>
@@ -285,19 +314,6 @@
         <dependency>
             <groupId>org.glassfish.main.concurrent</groupId>
             <artifactId>concurrent-impl</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <!-- Why do we need gui artifacts?? -->
-        <dependency>
-            <groupId>org.glassfish.main.admingui</groupId>
-            <artifactId>console-common-full-plugin</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.admingui</groupId>
-            <artifactId>console-concurrent-plugin</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
