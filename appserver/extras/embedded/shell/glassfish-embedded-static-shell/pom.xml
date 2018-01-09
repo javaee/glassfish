@@ -232,14 +232,14 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>dtds</artifactId>
+            <artifactId>appserver-dtds</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>schemas</artifactId>
+            <artifactId>appserver-schemas</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>
