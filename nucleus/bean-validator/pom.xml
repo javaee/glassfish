@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -224,7 +224,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -237,7 +237,7 @@
             <dependency>-->
             <!--
                 Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
-                bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
+                bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some
                 constant pool entries referring to google classes, so we need to package google jtype classes as well.
                 I have asked Emmanuel Bernard about this. It appears to be a bug in shade plugin or HV.
                 Because of shade-plugin, the dependency is remove from hibernate-validator pom, so we need to add it
@@ -252,11 +252,11 @@
             <artifactId>jboss-logging</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- 
+        <!--
             Remove this once HK2 config bean generation issue is fixed when using 2.0.0 based version of javax.validation APIs.
             Maven bundle plugin while determining dependencies of hibernate-validator will find javax.validation.validation-api in its
-            dependencies list and pick the version value based on the javax.validation.validation-api dependency defined 
-            in parent project i.e., nuclues' pom.xml. 
+            dependencies list and pick the version value based on the javax.validation.validation-api dependency defined
+            in parent project i.e., nuclues' pom.xml.
             Hence explicitly adding the required version as we use different version for compilation purposes.
         -->
         <dependency>
@@ -317,4 +317,3 @@
         </profile>
     </profiles>
 </project>
-

@@ -63,10 +63,12 @@
 
     <target name="create.distribution" depends="get.distribution.type">
         <antcall target="makeJarDir"/>
+        <!--
         <antcall target="removeJarsNotNeeded"/>
 	<antcall target="addDtds"/>
    	<antcall target="addRars"/>
 	<antcall target="addEjbTimer"/>
+-->
         <antcall target="rejar"/>
         <attachArtifact file="${finaljar}"/>
      </target>
@@ -110,8 +112,8 @@
 
     <target name="addDtds" unless="nucleus.distribution">
         <echo message="adding dtds"/>
-        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/${install.dir.name}/glassfish/lib" includes="dtds/**/*"/>
-	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/${install.dir.name}/glassfish/lib" includes="schemas/**/*"/>
+        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfish/lib" includes="dtds/**/*"/>
+	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfish/lib" includes="schemas/**/*"/>
     </target>
     
     <target name="rejar">

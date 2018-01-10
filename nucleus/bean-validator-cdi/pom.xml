@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -148,7 +148,7 @@
                                 </artifact>
                             </artifacts>
                         </configuration>
-                    </execution>-->                      
+                    </execution>-->
                 </executions>
             </plugin>
             <plugin>
@@ -199,7 +199,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
@@ -209,8 +209,8 @@
     </dependencies>
 
     <!--
-    This module repackages various maven artifacts and artifacts like hibernate-validator 
-    and hibernate-validator-cdi does not have java-docs published. Hence, we cannot 
+    This module repackages various maven artifacts and artifacts like hibernate-validator
+    and hibernate-validator-cdi does not have java-docs published. Hence, we cannot
     repackage the java-docs. We skip java-doc generation and use empty java-doc plugin
     to make Nexus release job succeed.
     -->
@@ -253,4 +253,3 @@
         </profile>
     </profiles>
 </project>
-
