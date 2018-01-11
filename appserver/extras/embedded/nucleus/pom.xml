@@ -339,6 +339,12 @@
           <optional>true</optional>
       </dependency>
       <dependency>
+          <groupId>org.glassfish.main.admin</groupId>
+          <artifactId>server-mgmt</artifactId>
+          <version>${project.version}</version>
+          <optional>true</optional>
+      </dependency>
+      <dependency>
           <groupId>org.glassfish.main.core</groupId>
           <artifactId>kernel</artifactId>
           <version>${project.version}</version>
