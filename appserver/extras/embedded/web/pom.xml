@@ -1141,6 +1141,11 @@
         <optional>true</optional>
     </dependency>
     <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-osgi-bundle</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
         <groupId>org.jboss.classfilewriter</groupId>
         <artifactId>jboss-classfilewriter</artifactId>
         <optional>true</optional>
