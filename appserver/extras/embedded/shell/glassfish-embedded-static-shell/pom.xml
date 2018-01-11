@@ -611,6 +611,12 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-npn-bootstrap</artifactId>
+            <version>${grizzly.npn.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-npn-osgi</artifactId>
             <version>${grizzly.npn.version}</version>
             <optional>true</optional>
