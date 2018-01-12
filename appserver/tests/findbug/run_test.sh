@@ -40,7 +40,7 @@
 #
 
 findbugs_run(){
-	M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
+	M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.3.3
 	MAVEN_OPTS="-Xmx512m -Xms256m -XX:MaxPermSize=1024m"; export MAVEN_OPTS
 	MAVEN_REPO=$WORKSPACE/repository
 	MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
@@ -59,7 +59,7 @@ findbugs_run(){
 }
 
 findbugs_low_priority_all_run(){
-  M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
+  M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.3.3
   MAVEN_OPTS="-Xmx512m -Xms256m -XX:MaxPermSize=1024m"; export MAVEN_OPTS
   MAVEN_REPO=$WORKSPACE/repository
   MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
