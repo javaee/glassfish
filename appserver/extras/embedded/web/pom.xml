@@ -406,6 +406,11 @@
         <artifactId>mimepull</artifactId>
         <optional>true</optional>
     </dependency>
+    <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <optional>true</optional>
+    </dependency>
     <!-- glassfish-common -->
     <dependency>
         <groupId>org.glassfish.main.common</groupId>
