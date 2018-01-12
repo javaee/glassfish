@@ -64,9 +64,7 @@
     <target name="create.distribution" depends="get.distribution.type">
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
-        <!--
 	<antcall target="addDtds"/>
--->
    	<antcall target="addRars"/>
 	<antcall target="addEjbTimer"/>
         <antcall target="rejar"/>
@@ -86,7 +84,18 @@
             <fileset dir="${zipdir}">
                 <include name="*.zip"/>
                 <exclude name="mq**.zip"/>
+                <exclude name="derby**.zip"/>
             </fileset>
+        </unzip>
+
+        <unzip dest="${jardir}/javadb">
+            <fileset dir="${zipdir}">
+                <include name="derby**.zip"/>
+            </fileset>
+            <patternset>
+                <include name="**/lib/**"/>
+                <include name="**/bin/**"/>
+            </patternset>
         </unzip>
 
 	<mkdir dir="${rootdir}/temp"/>
@@ -94,29 +103,10 @@
      </target>
 
      <target name="removeJarsNotNeeded">
-       <!--
-	<delete file="${modulesdir}/javahelp.jar"/>
-	<delete file="${modulesdir}/upgrade-tool.jar"/>
-	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
-          <delete file="${jardir}/ant**.jar" failonerror="true"/>
-          <delete file="${jardir}/weld-se-shaded**.jar" failonerror="true"/>
--->
 	<delete verbose="true" failonerror="true">
 	  <fileset dir="${jardir}" includes="ant-**.jar"/>
 	  <fileset dir="${jardir}" includes="weld-se-shaded**.jar"/>
 	</delete>
-          <!--
-	<delete verbose="true" failonerror="false">
-	  <fileset dir="${modulesdir}" includes="console-**-help.jar"/>
-	  <fileset dir="${modulesdir}" includes="console-**-plugin.jar"/>
--->
-	  <!-- skip the domain creation template jar files viz., nucleus-domain.jar, appserver-domain.jar -->
-          <!--
-	  <fileset dir="${gfdir}" includes="**/appserver-domain.jar"/>
-	  <fileset dir="${gfdir}" includes="**/nucleus-domain.jar"/>
-	  <fileset dir="${jardir}" includes="**/weld-se-shaded.jar"/>
-	</delete>
--->
 	<delete file="${modulesdir}/autostart/osgi-cdi.jar" failonerror="false"/>
      </target>
 
@@ -125,6 +115,8 @@
         <echo message="adding dtds"/>
         <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfish/lib" includes="dtds/**/*"/>
 	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfish/lib" includes="schemas/**/*"/>
+        <jar jarfile="${jardir}/nucleus-dtds.jar" basedir="${jardir}/lib" includes="dtds/**/*"/>
+	<jar jarfile="${jardir}/nucleus-schemas.jar" basedir="${jardir}/lib" includes="schemas/**/*"/>
     </target>
     
     <target name="rejar">
@@ -163,14 +155,7 @@
 
         <jar jarfile="${jardir}/jmsra.rar" basedir="${jardir}/glassfish" includes="lib/install/applications/jmsra/**/*"/>
 
-        <unzip dest="${rootdir}/temp">
-            <fileset dir="${zipdir}">
-                <include name="jaxr-ra**.rar"/>
-            </fileset>
-            <patternset>
-                <include name="jaxr-ra.rar"/>
-            </patternset>
-        </unzip>
+        <copy file="${zipdir}/jaxr-ra-JAXR_RA_20091012.rar" tofile= "${rootdir}/temp/jaxr-ra.rar"/>
         <!--
         <jar jarfile="${jardir}/jaxr-ra.rar" basedir="${jardir}/${install.dir.name}/glassfish" includes="lib/install/applications/jaxr-ra/**/*"/>
 -->
@@ -183,9 +168,9 @@
         <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
         <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
 	<copy todir="${rootdir}/temp">
-  		<fileset dir="${jardir}">
-    			<include name="*.rar"/>
-  		</fileset>
+          <fileset dir="${jardir}">
+    	    <include name="*.rar"/>
+  	  </fileset>
         </copy>
    <!--     <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>  -->
     </target>
@@ -197,6 +182,5 @@
         <jar jarfile="${finaljar}" update="true"  basedir="${jardir}/glassfish5/glassfish/lib/install/applications" includes="ejb-timer-service-app.war"/>
 -->
    </target>
-
 
 </project>

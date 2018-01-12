@@ -814,14 +814,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.connectors</groupId>
-            <artifactId>descriptors</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-            <classifier>resources</classifier>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.connectors</groupId>
             <artifactId>connectors-admin</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
