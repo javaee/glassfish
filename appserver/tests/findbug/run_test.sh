@@ -43,7 +43,7 @@ findbugs_run(){
 	M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.3.3
 	MAVEN_OPTS="-Xmx512m -Xms256m -XX:MaxPermSize=1024m"; export MAVEN_OPTS
 	MAVEN_REPO=$WORKSPACE/repository
-	MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
+	MAVEN_SETTINGS=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3/settings-nexus.xml
 
 	CLASSPATH=$WORKSPACE/findbugstotext; export CLASSPATH
 	PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
@@ -62,7 +62,7 @@ findbugs_low_priority_all_run(){
   M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.3.3
   MAVEN_OPTS="-Xmx512m -Xms256m -XX:MaxPermSize=1024m"; export MAVEN_OPTS
   MAVEN_REPO=$WORKSPACE/repository
-  MAVEN_SETTINGS=$M2_HOME/settings-nexus.xml
+  MAVEN_SETTINGS=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3/settings-nexus.xml
 
   CLASSPATH=$WORKSPACE/findbugstotext; export CLASSPATH
   PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
