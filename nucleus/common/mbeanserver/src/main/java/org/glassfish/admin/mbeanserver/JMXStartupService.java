@@ -312,11 +312,6 @@ public final class JMXStartupService implements PostConstruct {
                         protocol, securityEnabled, habitat,
                         listener, ssl);
                 server = ((RMIConnectorStarter) starter).start();
-            } else if (protocol.equals("jmxmp")) {
-                starter = new JMXMPConnectorStarter(mMBeanServer, address, port,
-                        securityEnabled,
-                        habitat, listener);
-                server = ((JMXMPConnectorStarter) starter).start();
             } else {
                 throw new IllegalArgumentException("JMXStartupService.startConnector(): Unknown protocol: " + protocol);
             }
