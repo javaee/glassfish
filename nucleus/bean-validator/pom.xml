@@ -54,6 +54,10 @@
     <name>javax.validation:${javax.validation.version} as OSGi bundle</name>
     <description>JSR 380's RI, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</description>
 
+    <properties>
+        <findbugs.skip>true</findbugs.skip>
+    </properties>
+
     <developers>
         <developer>
             <id>ss141213</id>
