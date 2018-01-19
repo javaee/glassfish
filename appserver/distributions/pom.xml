@@ -74,6 +74,7 @@
     </developers>
 
     <properties>
+        <findbugs.skip>true</findbugs.skip>
         <stage.dir.name>stage</stage.dir.name>
         <stage.dir>${project.build.directory}/${stage.dir.name}</stage.dir>
         <temp.dir>${project.build.directory}/dependency</temp.dir>
