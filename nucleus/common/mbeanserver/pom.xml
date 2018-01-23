@@ -84,13 +84,6 @@
             <version>${project.version}</version>
         </dependency>  
         
-        <!--
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>jmxremote_optional</artifactId>            
-        </dependency> 
--->
-        
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api</artifactId>

@@ -66,13 +66,6 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>jmxremote_optional</artifactId>            
-            <optional>true</optional>
-        </dependency>
--->
     </dependencies>
 </project>
 
