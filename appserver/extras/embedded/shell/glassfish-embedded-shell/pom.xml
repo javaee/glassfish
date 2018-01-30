@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -62,7 +62,7 @@
         <plugins>
             <!--
                 Create a text file containing the generated class path.  This
-                file is used in the ant tasks when the original Class-Path is 
+                file is used in the ant tasks when the original Class-Path is
                 augmented.  Note: we force the path separator to be a colon
                 because the plug-in will use the platform-specific separator
                 otherwise.  The ant logic replaces colons with spaces to
@@ -122,7 +122,7 @@
                                   <property name="stage.dir" value="${project.build.directory}/stage" />
                                   <property name="classpath.file" value="${classpath.file}" />
                                   <property name="bundlename" value="org.glassfish.embedded.shell" />
-                                  <property name="install.dir.name" value="${install.dir.name}" />                                  
+                                  <property name="install.dir.name" value="${install.dir.name}" />
                               </ant>
                           </target>
                       </configuration>

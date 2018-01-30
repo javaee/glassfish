@@ -9,6 +9,7 @@ target/
 .idea
 nbactions.xml
 .classpath
+.DS_Store
 .project
 .settings/
 appserver/appclient/client/acc-config/temp/
