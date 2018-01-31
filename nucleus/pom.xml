@@ -123,12 +123,14 @@
         <module>flashlight</module>
         <module>grizzly</module>
         <module>deployment</module>
-        <module>packager</module>
+        <module>bean-validator</module>
+        <module>bean-validator-cdi</module>
         <module>distributions</module>
         <module>security</module>
         <module>test-utils</module>
         <module>diagnostics</module>
         <module>resources</module>
+        <module>featuresets</module>
     </modules>
 
     <build>
