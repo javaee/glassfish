@@ -848,11 +848,6 @@
                 <version>${btrace.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.external</groupId>
-                <artifactId>jmxremote_optional</artifactId>
-                <version>${opendmk.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish.corba</groupId>
                 <artifactId>glassfish-corba-orb</artifactId>
                 <version>${glassfish-corba.version}</version>
