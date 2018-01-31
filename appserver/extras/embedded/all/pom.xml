@@ -642,11 +642,6 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>jmxremote_optional</artifactId>
-            <optional>true</optional>
-        </dependency>
         <!-- glassfish-ejb-lite -->
         <dependency>
             <groupId>org.glassfish.main.ejb</groupId>
