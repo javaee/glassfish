@@ -75,6 +75,9 @@
             <include name="**/amx-javaee.jar"/>
             <include name="**/gf-client.jar"/>
         </fileset>
+	<fileset dir="${maven.repo.local}/com/beust/jcommander">
+	    <include name="**/1.72/jcommander-1.72.jar"/>
+	</fileset>
         <pathelement location="${class.output}"/>
         <pathelement location="${test.class.output}"/>
     </path>

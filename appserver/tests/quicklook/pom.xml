@@ -236,7 +236,12 @@
                         <version>1</version>
                         <scope>system</scope>
                         <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                    </dependency>                     
+                    </dependency>
+		    <dependency>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<version>1.72</version>
+		    </dependency>
                 </dependencies>
             </plugin>
         </plugins>
