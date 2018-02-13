@@ -54,7 +54,6 @@
     <packaging>pom</packaging>
     <name>Flashlight</name>  
     <modules>
-        <!---<module>btrace</module>-->
         <module>client</module>
     </modules>
 </project>
