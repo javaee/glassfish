@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@
     <artifactId>admin-cli</artifactId>
     <packaging>glassfish-jar</packaging>
     <name>admin-cli</name>
-    
+
     <developers>
         <developer>
             <id>bnevins</id>
@@ -61,7 +61,7 @@
             <roles>
                 <role>developer</role>
             </roles>
-        </developer>        
+        </developer>
         <developer>
             <id>tmueller</id>
             <name>Tom Mueller</name>
@@ -121,7 +121,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AdminMain</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <!-- adding bean-validator as explicit dependency 
+                            <!-- adding bean-validator as explicit dependency
                                  for admin cli as bean-validator repackaged module
                                  is now part of nucleus/packager/external/bean-validator -->
                             <Class-Path>bean-validator.jar</Class-Path>
@@ -148,13 +148,13 @@
                                 </links>
                                 <show>private</show>
                             </configuration>
-                        </plugin>                        
+                        </plugin>
                     </reportPlugins>
                 </configuration>
             </plugin>
         </plugins>
     </build>
- 
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
@@ -164,7 +164,7 @@
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>org.jvnet.mimepull</groupId>
             <artifactId>mimepull</artifactId>
@@ -172,7 +172,7 @@
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
-        </dependency>    
+        </dependency>
         <dependency>
             <groupId>org.glassfish.main.admin</groupId>
             <artifactId>launcher</artifactId>

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,9 +51,9 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>acc-config</artifactId>
     <packaging>glassfish-jar</packaging>
-    
+
     <name>ACC Config Classes (JAXB)</name>
-    
+
     <!--
         This module contains classes for the app client configuration
         XML, generated using JAXB from sun-application-client-container_x_y.dtd.
@@ -100,7 +100,7 @@
             <!--
                 Extracts the DTD(s) from the
                 deployment/dtds module into a temp file.
-                The "generate" phase will use it to create JAXB classes.  
+                The "generate" phase will use it to create JAXB classes.
                 Unit tests use both DTDs for parse testing.
             -->
             <plugin>
@@ -118,7 +118,7 @@
                       <artifactItems>
                         <artifactItem>
                           <groupId>org.glassfish.main.deployment</groupId>
-                          <artifactId>dtds</artifactId>
+                          <artifactId>appserver-dtds</artifactId>
                           <version>${project.version}</version>
                           <type>zip</type>
                           <includes>**/${config-dtd-file}</includes>
@@ -212,7 +212,7 @@
         <dependency>
             <scope>provided</scope>
             <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>dtds</artifactId>
+            <artifactId>appserver-dtds</artifactId>
             <type>zip</type>
             <version>${project.version}</version>
         </dependency>
