@@ -40,4 +40,4 @@
 
 --%>
 
-﻿<%@ page pageEncoding="UTF-16BE"%>
+<%@ page pageEncoding="UTF-16BE"%>
