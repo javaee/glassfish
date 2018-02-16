@@ -94,7 +94,6 @@
         <ant dir="security" target="all"/>
         <ant dir="admin-gui" target="all"/>
 	<ant dir="admin" target="all"/>
-	<ant dir="jbi" target="all"/>
     </target>
     
     <target name="run-pesqe-target" unless="ee">
@@ -108,7 +107,6 @@
         <antcall target="webservices"/>
         <antcall target="admin-gui"/>
         <antcall target="admin"/>
-        <antcall target="jbi"/>
 <!--
         <antcall target="transaction"/>
 -->
@@ -145,13 +143,7 @@
         <record name="web.output" action="start"/>
         <ant dir="web" target="${sqe-target-name}"/>
         <record name="web.output" action="stop"/>
-    </target>
-
-    <target name="jbi">
-         <record name="jbi.output" action="start"/>
-         <ant dir="jbi" target="${sqe-target-name}"/>
-         <record name="jbi.output" action="stop"/>
-     </target>   
+    </target>  
 
     <target name="jsfcomponents">
         <record name="jsfcomponents.output" action="start"/>
