@@ -184,7 +184,7 @@
         <record name="web.output" action="start"/>
         <ant dir="web" target="${sqe-target-name}"/>
         <record name="web.output" action="stop"/>
-    </target>   
+    </target>
 
     <target name="jsfcomponents">
         <record name="jsfcomponents.output" action="start"/>
