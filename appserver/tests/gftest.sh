@@ -82,7 +82,7 @@ run_test(){
 
 generate_platform(){
 	uname -nsp > /tmp/platform
-	#scp -o "StrictHostKeyChecking no" -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
+	scp -o "StrictHostKeyChecking no" -r /tmp/platform ${PARENT_NODE}:${PARENT_WS_PATH}/test-results/$TEST_ID
 }
 
 list_test_ids(){
