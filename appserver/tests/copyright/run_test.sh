@@ -56,7 +56,7 @@ copyright_run(){
 	# TODO move the copyright module in main and main's default reactor in a profile, in order to not trigger the default reactor.
 	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO -Dcopyright.normalize=true org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright > $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt
-	cat $WORKSPACE/copyright-files-temp-open.txt > copyright-files.txt
+	cat $WORKSPACE/copyright-files-temp-open.txt | sed s@$PWD/@@g > copyright-files.txt
 }
 
 generate_copyright_results(){
