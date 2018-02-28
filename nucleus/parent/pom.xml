@@ -167,7 +167,7 @@
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>
         <mail.version>1.6.1</mail.version>
         <javax.annotation-api.version>1.3</javax.annotation-api.version>
-        <copyright-plugin.version>1.42</copyright-plugin.version>
+        <copyright-plugin.version>1.48</copyright-plugin.version>
         <testng.version>6.11</testng.version>
         <jdk.version>1.7.0-09</jdk.version>
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
