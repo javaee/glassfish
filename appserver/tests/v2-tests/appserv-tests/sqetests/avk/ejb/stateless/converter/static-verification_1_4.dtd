@@ -1,73 +1,43 @@
 <!--
-Copyright 2000-2001 Sun Microsystems, Inc. 901 San Antonio Road,
-Palo Alto, CA  94303, U.S.A.  All rights reserved.
 
-This product or document is protected by copyright and distributed
-under licenses restricting its use, copying, distribution, and
-decompilation.  No part of this product or documentation may be
-reproduced in any form by any means without prior written authorization
-of Sun and its licensors, if any.
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Third party software, including font technology, is copyrighted and
-licensed from Sun suppliers.
+    Copyright (c) 2000-2018 Oracle and/or its affiliates. All rights reserved.
 
-Sun, Sun Microsystems, the Sun Logo, Solaris, Java, JavaServer Pages, Java
-Naming and Directory Interface, JDBC, JDK, JavaMail and Enterprise JavaBeans,
-are trademarks or registered trademarks of Sun Microsystems, Inc in the U.S.
-and other countries.
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
 
-All SPARC trademarks are used under license and are trademarks
-or registered trademarks of SPARC International, Inc.
-in the U.S. and other countries. Products bearing SPARC
-trademarks are based upon an architecture developed by Sun Microsystems, Inc.
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
 
-PostScript is a registered trademark of Adobe Systems, Inc.
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
 
-Federal Acquisitions: Commercial Software - Government Users Subject to
-Standard License Terms and Conditions.
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
 
-DOCUMENTATION IS PROVIDED "AS IS" AND ALL EXPRESS OR IMPLIED
-CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
-IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE OR NON-INFRINGEMENT, ARE DISCLAIMED, EXCEPT
-TO THE EXTENT THAT SUCH DISCLAIMERS ARE HELD TO BE LEGALLY
-INVALID.
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
 
-_________________________________________________________________________
-
-Copyright 2000-2001 Sun Microsystems, Inc.,
-901 San Antonio Road, Palo Alto, CA  94303, Etats-Unis.
-Tous droits re'serve's.
-
-
-Ce produit ou document est prote'ge' par un copyright et distribue' avec
-des licences qui en restreignent l'utilisation, la copie, la distribution,
-et la de'compilation.  Aucune partie de ce produit ou de sa documentation
-associe'e ne peut e^tre reproduite sous aucune forme, par quelque moyen
-que ce soit, sans l'autorisation pre'alable et e'crite de Sun et de ses
-bailleurs de licence, s'il y en a.
-
-Le logiciel de'tenu par des tiers, et qui comprend la technologie
-relative aux polices de caracte`res, est prote'ge' par un copyright
-et licencie' par des fournisseurs de Sun.
-
-Sun, Sun Microsystems, le logo Sun, Solaris, Java, JavaServer Pages, Java
-Naming and Directory Interface, JDBC, JDK, JavaMail, et Enterprise JavaBeans,
-sont des marques de fabrique ou des marques de'pose'es de Sun
-Microsystems, Inc. aux Etats-Unis et dans d'autres pays.
-
-Toutes les marques SPARC sont utilise'es sous licence et sont
-des marques de fabrique ou des marques de'pose'es de SPARC
-International, Inc. aux Etats-Unis et  dans
-d'autres pays. Les produits portant les marques SPARC sont
-base's sur une architecture de'veloppe'e par Sun Microsystems, Inc.
-
-Postcript est une marque enregistre'e d'Adobe Systems Inc.
-LA DOCUMENTATION EST FOURNIE "EN L'ETAT" ET TOUTES AUTRES CONDITIONS,
-DECLARATIONS ET GARANTIES EXPRESSES OU TACITES SONT FORMELLEMENT EXCLUES,
-DANS LA MESURE AUTORISEE PAR LA LOI APPLICABLE, Y COMPRIS NOTAMMENT
-TOUTE GARANTIE IMPLICITE RELATIVE A LA QUALITE MARCHANDE, A L'APTITUDE
-A UNE UTILISATION PARTICULIERE OU A L'ABSENCE DE CONTREFACON.
 -->
 
 <!--
