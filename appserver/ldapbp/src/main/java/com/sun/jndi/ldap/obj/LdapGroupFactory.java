@@ -178,7 +178,7 @@ public class LdapGroupFactory implements DirStateFactory, DirObjectFactory {
         String suffix = ctx.getNameInNamespace();
         String prefix = name.toString();
 
-        if (prefix == null || prefix.equals("")) {
+        if (prefix.equals("")) {
             return suffix;
         } else if (suffix == null || suffix.equals("")) {
             return prefix;

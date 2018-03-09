@@ -525,7 +525,6 @@ public class GroupOfNames implements Group {
      */
     public String toString() {
 	isBound(); // refresh attributes (if necessary)
-	String attributestoReturn = null;
 	if (groupDN != null) {
 	    StringBuffer buffer = new StringBuffer();
 	    buffer.append("{name: ").append(groupDN).append("}");
@@ -534,8 +533,7 @@ public class GroupOfNames implements Group {
 	    }
 	    return buffer.toString();
 	} else {	   
-	    attributestoReturn = (attributes == null) ? null : attributes.toString();
-	    return attributestoReturn;
+	    return attributes == null ? new String("") : attributes.toString();
 	}
     }
 

@@ -75,7 +75,7 @@ class LdapPrincipal implements Principal {
 	    ldapName = getLdapName(name);
 	}
 	if (object instanceof String) {
-	    return ldapName.equals(getLdapName((String)object));
+	    return ldapName.equals(getLdapName(object.toString()));
 	}
 	if (object instanceof Principal) {
 	    return ldapName.equals(getLdapName(((Principal)object).getName()));
