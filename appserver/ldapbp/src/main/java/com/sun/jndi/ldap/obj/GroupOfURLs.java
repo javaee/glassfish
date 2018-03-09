@@ -529,7 +529,7 @@ public class GroupOfURLs implements Group {
      */
     public String toString() {
 	isBound(); // refresh attributes (if necessary)
-
+	String attributestoReturn = null;
 	if (groupDN != null) {
 	    StringBuffer buffer = new StringBuffer();
 	    buffer.append("{name: ").append(groupDN).append("}");
@@ -538,7 +538,8 @@ public class GroupOfURLs implements Group {
 	    }
 	    return buffer.toString();
 	} else {
-	    return attributes == null ? null : attributes.toString();
+	    attributestoReturn = (attributes == null) ? null : attributes.toString();
+	    return attributestoReturn;
 	}
     }
 
@@ -981,7 +982,7 @@ class Members implements NamingEnumeration {
 		subgroupMembers = 
 		    (NamingEnumeration)((Group)subgroups.remove(0)).members();
 	    }
-	    if (subgroupMembers.hasMore()) {
+	    if (null != subgroupMembers && subgroupMembers.hasMore()) {
 		return true;
 	    } else if (! subgroups.isEmpty()) {
 		// Retrieve the next subgroup's members
@@ -1090,7 +1091,7 @@ class Members implements NamingEnumeration {
 		subgroupMembers = 
 		    (NamingEnumeration)((Group)subgroups.remove(0)).members();
 	    }
-	    if (subgroupMembers.hasMore()) {
+	    if (null != subgroupMembers && subgroupMembers.hasMore()) {
 		return subgroupMembers.next();
 	    } else if (! subgroups.isEmpty()) {
 		// Retrieve the next subgroup's members

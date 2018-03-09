@@ -154,7 +154,7 @@ public class AttrsToCorba implements DirObjectFactory {
 	    return null;
     }
 
-    private static ORB defaultOrb = null;
+    //private static ORB defaultOrb = null;
 
     /**
      * Return default ORB.
