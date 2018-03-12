@@ -537,7 +537,7 @@ public class GroupOfURLs implements Group {
 	    }
 	    return buffer.toString();
 	} else {
-	    return attributes == null ? new String("") : attributes.toString();
+	    return attributes == null ? new String() : attributes.toString();
 	}
     }
 
