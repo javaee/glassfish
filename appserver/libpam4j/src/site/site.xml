@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="libpam binding for Java">
+  <bannerLeft>
+    <name>libpam binding for Java</name>
+    <href>http://libpam4j.kohsuke.org/</href>
+  </bannerLeft>
+  <skin>
+    <groupId>org.kohsuke</groupId>
+    <artifactId>maven-skin</artifactId>
+    <version>1.2</version>
+  </skin>
+  
+  <body>
+    <menu name="libpam binding for Java">
+      <item name="Introduction"                   href="/index.html"/>
+      <item name="Download"               href="http://mvnrepository.com/artifact/${project.groupId}/${project.artifactId}"/>
+      <item name="Source code" href="https://github.com/kohsuke/${project.artifactId}"/>
+    </menu>
+
+    <menu name="References">
+      <item name="Javadoc" href="apidocs/index.html"/>
+    </menu>
+
+    <menu ref="reports"/>
+  </body>
+</project>
+
