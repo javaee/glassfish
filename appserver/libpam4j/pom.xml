@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   The MIT License
 
@@ -33,10 +34,6 @@
     <groupId>org.glassfish.main.libpam4j</groupId>
     <artifactId>libpam4j</artifactId>
     <name>Java binding for libpam.so</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <build>
         <resources>
