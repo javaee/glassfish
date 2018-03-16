@@ -74,9 +74,10 @@ class LdapPrincipal implements Principal {
 	if (ldapName == null) {
 	    ldapName = getLdapName(name);
 	}
-	if (object instanceof String) {
+	//this is a broken equals implementation. It doesnot have any dependency on Glassfish code
+	/*if (object instanceof String) {
 	    return ldapName.equals(getLdapName((String)object));
-	}
+	}*/
 	if (object instanceof Principal) {
 	    return ldapName.equals(getLdapName(((Principal)object).getName()));
 	}
