@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2017-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@ copyright_run(){
 	cd $WORKSPACE/main
 
 	# TODO move the copyright module in main and main's default reactor in a profile, in order to not trigger the default reactor.
-	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO -Dcopyright.normalize=true org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright | tee $WORKSPACE/copyright-files-temp-open.txt
+	mvn -e -s $MAVEN_SETTINGS -Dmaven.repo.local=$MAVEN_REPO --quiet -Dcopyright.normalize=true org.glassfish.copyright:glassfish-copyright-maven-plugin:copyright > $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt
 	cat $WORKSPACE/copyright-files-temp-open.txt | sed s@$PWD/@@g > copyright-files.txt
 }
