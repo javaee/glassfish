@@ -496,10 +496,10 @@
             <optional>true</optional>
        </dependency>
         <dependency>
-            <groupId>jaxr-ra</groupId>
+            <groupId>org.glassfish.main.jaxr-ra</groupId>
             <artifactId>jaxr-ra</artifactId>
-            <version>${jaxr.version}</version>
-            <type>rar</type>
+            <version>${project.version}</version>
+            <type>jar</type>
             <optional>true</optional>
        </dependency>
         <dependency>
