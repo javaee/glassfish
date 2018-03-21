@@ -77,7 +77,7 @@
         <javax.inject.version>1</javax.inject.version>
         <javax.resource-api.version>1.7</javax.resource-api.version>
         <javax.enterprise.deploy-api.version>1.6</javax.enterprise.deploy-api.version>
-        <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
+        <javax.security.jacc-api.version>1.6</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <!-- Ensure that nucleus/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation-api.version>2.0.0.Final</javax.validation-api.version>
@@ -107,7 +107,7 @@
         <jaxb-api.version>2.3.0</jaxb-api.version>
         <jaxb.version>2.3.0</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
-        <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
+        <javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
         <dbschema.version>6.6</dbschema.version>
