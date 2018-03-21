@@ -60,7 +60,7 @@ public interface CLibrary extends Library {
      * and my Mac OS X reveals that the structure of this field isn't very portable.
      * In particular, we cannot read the real name reliably.
      */
-    public class passwd extends Structure {
+    public class Passwd extends Structure {
         /**
          * User name.
          */
@@ -74,8 +74,8 @@ public interface CLibrary extends Library {
 
         // ... there are a lot more fields
 
-        public static passwd loadPasswd(String userName) throws PAMException {
-            passwd pwd = libc.getpwnam(userName);
+        public static Passwd loadPasswd(String userName) throws PAMException {
+            Passwd pwd = libc.getpwnam(userName);
             if (pwd == null) {
                 throw new PAMException("No user information is available");
             }
@@ -115,7 +115,7 @@ public interface CLibrary extends Library {
         }
     }
 
-    public class group extends Structure {
+    public class Group extends Structure {
         public String gr_name;
         // ... the rest of the field is not interesting for us
 
@@ -126,7 +126,7 @@ public interface CLibrary extends Library {
 
     Pointer calloc(int count, int size);
     Pointer strdup(String s);
-    passwd getpwnam(String username);
+    Passwd getpwnam(String username);
 
     /**
      * Lists up group IDs of the given user. On Linux and most BSDs, but not on Solaris.
@@ -139,8 +139,8 @@ public interface CLibrary extends Library {
      * See http://mail.opensolaris.org/pipermail/sparks-discuss/2008-September/000528.html
      */
     int _getgroupsbymember(String user, Memory groups, int maxgids, int numgids);
-    group getgrgid(int/*gid_t*/ gid);
-    group getgrnam(String name);
+    Group getgrgid(int/*gid_t*/ gid);
+    Group getgrnam(String name);
 
     // other user/group related functions that are likely useful
     // see http://www.gnu.org/software/libc/manual/html_node/Users-and-Groups.html#Users-and-Groups

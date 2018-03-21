@@ -43,7 +43,7 @@ package org.jvnet.libpam;
 import org.jvnet.libpam.impl.PAMLibrary.*;
 import static org.jvnet.libpam.impl.PAMLibrary.*;
 import org.jvnet.libpam.impl.PAMLibrary.pam_conv.PamCallback;
-import org.jvnet.libpam.impl.CLibrary.passwd;
+import org.jvnet.libpam.impl.CLibrary.Passwd;
 import static org.jvnet.libpam.impl.CLibrary.libc;
 import com.sun.jna.Pointer;
 import static com.sun.jna.Native.POINTER_SIZE;
@@ -146,7 +146,7 @@ public class PAM {
             PointerByReference r = new PointerByReference();
             check(libpam.pam_get_item(pht,PAM_USER,r),"pam_get_item failed");
             String userName = r.getValue().getString(0);
-            passwd pwd = libc.getpwnam(userName);
+            Passwd pwd = libc.getpwnam(userName);
             if(pwd==null)
                 throw new PAMException("Authentication succeeded but no user information is available");
             return new UnixUser(userName,pwd);

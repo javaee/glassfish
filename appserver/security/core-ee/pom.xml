@@ -180,17 +180,6 @@
              </execution>    
            </executions>
          </plugin>
-         <plugin>
-             <groupId>org.apache.felix</groupId>
-             <artifactId>maven-bundle-plugin</artifactId>
-             <extensions>true</extensions>
-             <configuration>
-                 <instructions>
-                     <Import-Package>!org.jvnet.libpam,!com.sun.jna.*,*</Import-Package>
-                     <Embed-Dependency>libpam4j</Embed-Dependency>
-                 </instructions>
-             </configuration>
-         </plugin> 
         </plugins> 
     </build>
     <dependencies>

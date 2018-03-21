@@ -109,7 +109,7 @@ public interface PAMLibrary extends Library {
          * Sets the response code.
          */
         public void setResp(String msg) {
-            this.resp = libc.strdup(msg);
+           this.resp = libc.strdup(msg);
         }
 
         protected List getFieldOrder() {

@@ -43,7 +43,7 @@ package org.jvnet.libpam.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.jvnet.libpam.impl.CLibrary.passwd;
+import org.jvnet.libpam.impl.CLibrary.Passwd;
 
 /**
  * Linux passwd
@@ -61,7 +61,7 @@ import org.jvnet.libpam.impl.CLibrary.passwd;
  *
  * @author Sebastian Sdorra
  */
-public class LinuxPasswd extends passwd {
+public class LinuxPasswd extends Passwd {
     /* Honeywell login info */
     public String pw_gecos;
 

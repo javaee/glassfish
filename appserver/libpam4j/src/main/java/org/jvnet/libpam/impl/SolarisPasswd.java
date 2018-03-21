@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jvnet.libpam.impl.CLibrary.passwd;
+import org.jvnet.libpam.impl.CLibrary.Passwd;
 
 /**
  * Solaris passwd
@@ -63,7 +63,7 @@ import org.jvnet.libpam.impl.CLibrary.passwd;
  *
  * @author Sebastian Sdorra
  */
-public class SolarisPasswd extends passwd {
+public class SolarisPasswd extends Passwd {
     public String pw_age;
 
     public String pw_comment;

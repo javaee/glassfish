@@ -43,7 +43,7 @@ package org.jvnet.libpam.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.jvnet.libpam.impl.CLibrary.passwd;
+import org.jvnet.libpam.impl.CLibrary.Passwd;
 
 /**
  * FreeeBSD, OpenBSD and MacOS passwd
@@ -63,7 +63,7 @@ import org.jvnet.libpam.impl.CLibrary.passwd;
  *
  * @author Sebastian Sdorra
  */
-public class BSDPasswd extends passwd {
+public class BSDPasswd extends Passwd {
     /* password change time */
     public long pw_change;
 

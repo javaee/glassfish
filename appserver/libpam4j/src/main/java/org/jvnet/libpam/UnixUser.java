@@ -43,8 +43,8 @@ package org.jvnet.libpam;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.IntByReference;
 import static org.jvnet.libpam.impl.CLibrary.libc;
-import org.jvnet.libpam.impl.CLibrary.passwd;
-import org.jvnet.libpam.impl.CLibrary.group;
+import org.jvnet.libpam.impl.CLibrary.Passwd;
+import org.jvnet.libpam.impl.CLibrary.Group;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,7 +60,7 @@ public class UnixUser {
     private final int uid,gid;
     private final Set<String> groups;
 
-    /*package*/ UnixUser(String userName, passwd pwd) throws PAMException {
+    /*package*/ UnixUser(String userName, Passwd pwd) throws PAMException {
         this.userName = userName;
         this.gecos = pwd.getPwGecos();
         this.dir = pwd.getPwDir();
@@ -92,7 +92,7 @@ public class UnixUser {
         groups = new HashSet<String>();
         for( int i=0; i<ngroups; i++ ) {
             int gid = m.getInt(i * sz);
-            group grp = libc.getgrgid(gid);
+            Group grp = libc.getgrgid(gid);
             if( grp == null ) {
             	 continue;
             }
@@ -101,7 +101,7 @@ public class UnixUser {
     }
 
     public UnixUser(String userName) throws PAMException {
-        this(userName, passwd.loadPasswd(userName));
+        this(userName, Passwd.loadPasswd(userName));
     }
 
     /**

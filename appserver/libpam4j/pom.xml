@@ -63,6 +63,43 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>
+                            *;scope=compile;inline=true
+                        </Embed-Dependency>
+                        <!-- Export everything from the embedded jar 
+                             in the final bundle 
+                        -->
+                        <!-- Exclude unnecessary imports -->
+                        <Export-Package>*;version=${project.version}</Export-Package>
+                        <Import-Package />
+                        <Private-Package>!*</Private-Package>
+                    </instructions>
+                    <!-- Maven uses the output directory (target/classes)
+                    rather than the final bundle, when compiling against
+                    projects in the same reactor (ie. the same build).
+                    Since this jar comprises of classes that come from
+                    some other jar and other modules depend on this
+                    artifact, we need to unpack.
+                    -->
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+       </plugins>
     </build>
 
     <dependencies>
