@@ -382,7 +382,8 @@
                             <pattern>admin/cli/src/main/resources/supported-legacy-command-names</pattern>
                             <pattern>/readme</pattern>
                             <pattern>cluster/cli/src/test/resources/fake_gf_install_dir/junk</pattern>
-                        </exclude> 
+                        </exclude>
+			<ignoreYear>true</ignoreYear> 
                     </configuration>
                 </plugin>
                 <plugin>
