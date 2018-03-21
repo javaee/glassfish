@@ -133,7 +133,7 @@ public class JaxrManagedConnection
   {
     checkIfDestroyed();
     this.log.fine("JAXRManagedConnection getting connection");
-    JaxrConnection localJaxrConnection = new JaxrConnection(this, this.supportsLocalTx);
+    JaxrConnection localJaxrConnection = new JaxrConnection(this);
     this.log.fine("JAXRManagedConnectiond created JAXRConnection");
     addJaxrConnection(localJaxrConnection);
     this.log.fine("JAXRMananagedConnection adding JAXRConnection to connection set");
