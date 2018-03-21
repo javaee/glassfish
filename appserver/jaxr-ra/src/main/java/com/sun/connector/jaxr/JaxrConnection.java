@@ -53,33 +53,32 @@ public class JaxrConnection
   implements Connection
 {
   private JaxrManagedConnection mc;
-  private boolean supportsLocalTx;
-  Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
-  public JaxrConnection(JaxrManagedConnection paramJaxrManagedConnection, boolean paramBoolean)
+  private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
+  
+  public JaxrConnection(JaxrManagedConnection paramJaxrManagedConnection)
   {
     this.mc = paramJaxrManagedConnection;
-    this.supportsLocalTx = paramBoolean;
   }
   
   public RegistryService getRegistryService()
     throws JAXRException
   {
-    this.log.fine("Getting RegistryService");
+    log.fine("Getting RegistryService");
     return getJaxrConnection().getRegistryService();
   }
   
   public void close()
     throws JAXRException
   {
-    this.log.fine("JAXRConnection close - delegating to managedConnection");
+    log.fine("JAXRConnection close - delegating to managedConnection");
     if (this.mc == null) {
       return;
     }
-    this.log.fine("ManagedConnection removing JAXR Connection");
+    log.fine("ManagedConnection removing JAXR Connection");
     this.mc.removeJaxrConnection(this);
-    this.log.fine("ManagedConnection sending connection closed Event");
-    this.log.fine("ManagedConnection - connection closed Event Sent");
+    log.fine("ManagedConnection sending connection closed Event");
+    log.fine("ManagedConnection - connection closed Event Sent");
     this.mc = null;
   }
   

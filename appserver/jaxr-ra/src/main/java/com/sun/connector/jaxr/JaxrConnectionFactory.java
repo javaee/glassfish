@@ -64,12 +64,12 @@ public class JaxrConnectionFactory
   private ConnectionManager cm;
   private Reference reference;
   private Properties properties;
-  Logger log = Logger.getLogger("com.sun.connector.jaxr");
+  private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public JaxrConnectionFactory(ManagedConnectionFactory paramManagedConnectionFactory, ConnectionManager paramConnectionManager)
   {
     this.mcf = paramManagedConnectionFactory;
-    this.log.fine("JAXRConnectionFactory constructor - ManagedConnectionFactory and ConnectionManager are parameters");
+    log.fine("JAXRConnectionFactory constructor - ManagedConnectionFactory and ConnectionManager are parameters");
     this.cm = new JaxrConnectionManager();
   }
   
@@ -82,7 +82,7 @@ public class JaxrConnectionFactory
       if (this.properties != null) {
         localJaxrConnectionRequestInfo = new JaxrConnectionRequestInfo(this.properties);
       }
-      this.log.fine("JAXRConnectionFactory getConnection - ConnectionManager calling allocateConnection");
+      log.fine("JAXRConnectionFactory getConnection - ConnectionManager calling allocateConnection");
       return (Connection)this.cm.allocateConnection(this.mcf, localJaxrConnectionRequestInfo);
     }
     catch (ResourceException localResourceException)
@@ -126,7 +126,7 @@ public class JaxrConnectionFactory
   public Connection createConnection()
     throws JAXRException
   {
-    this.log.fine("JAXRConnectionFactory createConnection calling getConnection -");
+    log.fine("JAXRConnectionFactory createConnection calling getConnection -");
     return getConnection();
   }
   

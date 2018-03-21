@@ -97,7 +97,7 @@ public class JaxrConnectionRequestInfo
   
   public int hashCode()
   {
-    return this.properties == null ? new String("").hashCode() : this.properties.hashCode();
+    return this.properties == null ? "".hashCode() : this.properties.hashCode();
   }
   
   private boolean isEqual(Object paramObject1, Object paramObject2)
