@@ -68,7 +68,7 @@ public class UnixUser {
         this.uid = pwd.getPwUid();
         this.gid = pwd.getPwGid();
 
-        int sz = 4; /*sizeof(gid_t)*/
+        long sz = 4; /*sizeof(gid_t)*/
 
         int ngroups = 64;
         Memory m = new Memory(ngroups*sz);
