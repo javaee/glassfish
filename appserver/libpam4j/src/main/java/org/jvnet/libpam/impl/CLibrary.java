@@ -113,6 +113,23 @@ public interface CLibrary extends Library {
         protected List getFieldOrder() {
             return Arrays.asList("pw_name", "pw_passwd", "pw_uid", "pw_gid");
         }
+        public void setPwName(String pw_name) {
+            this.pw_name = pw_name;
+        }  
+
+        public void setPwPasswd(String pw_passwd) {
+            this.pw_passwd = pw_passwd;
+        }
+
+        public void setPwUid(int pw_uid) {
+            this.pw_uid = pw_uid;
+        }
+
+        public void setPwGid(int pw_gid) {
+            this.pw_gid = pw_gid;
+        }
+
+
     }
 
     public class Group extends Structure {
@@ -122,6 +139,10 @@ public interface CLibrary extends Library {
         protected List getFieldOrder() {
             return Arrays.asList("gr_name");
         }
+
+       public void setGrName(String gr_name) {
+           this.gr_name = gr_name;
+       }
     }
 
     Pointer calloc(int count, int size);

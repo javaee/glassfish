@@ -53,25 +53,15 @@ import org.jvnet.libpam.impl.CLibrary.Passwd;
  * 	char	*pw_passwd;
  * 	uid_t	pw_uid;
  * 	gid_t	pw_gid;
- * 	time_t	pw_change;
- * 	char	*pw_class;
  * 	char	*pw_gecos;
  * 	char	*pw_dir;
  * 	char	*pw_shell;
- * 	time_t	pw_expire;
- * 	int	pw_fields;
  * };
  *
  * @author R. Tyler Croy
  */
 
 public class FreeBSDPasswd extends Passwd {
-    /* password change time */
-    public long pw_change;
-
-    /* user access class */
-    public String pw_class;
-
     /* Honeywell login info */
     public String pw_gecos;
 
@@ -80,12 +70,6 @@ public class FreeBSDPasswd extends Passwd {
 
     /* default shell */
     public String pw_shell;
-
-    /* account expiration */
-    public long pw_expire;
-
-    /* internal on FreeBSD? */
-    public int pw_fields;
 
     @Override
     public String getPwGecos() {
@@ -105,9 +89,21 @@ public class FreeBSDPasswd extends Passwd {
     @Override
     protected List getFieldOrder() {
         List fieldOrder = new ArrayList(super.getFieldOrder());
-        fieldOrder.addAll(Arrays.asList("pw_change", "pw_class", "pw_gecos",
-                "pw_dir", "pw_shell", "pw_expire", "pw_fields"));
+        fieldOrder.addAll(Arrays.asList("pw_gecos",
+                "pw_dir", "pw_shell"));
         return fieldOrder;
+    }
+
+    public void setPwGecos(String pw_gecos) {
+        this.pw_gecos = pw_gecos;
+    }
+
+    public void setPwDir(String pw_dir) {
+        this.pw_dir = pw_dir;
+    }
+
+    public void setPwShell(String pw_shell) {
+        this.pw_shell = pw_shell;
     }
 
 }

@@ -54,8 +54,6 @@ import org.jvnet.libpam.impl.CLibrary.Passwd;
  *   char    *pw_passwd;
  *   uid_t   pw_uid;
  *   gid_t   pw_gid;
- *   char    *pw_age;
- *   char    *pw_comment;
  *   char    *pw_gecos;
  *   char    *pw_dir;
  *   char    *pw_shell;
@@ -64,10 +62,6 @@ import org.jvnet.libpam.impl.CLibrary.Passwd;
  * @author Sebastian Sdorra
  */
 public class SolarisPasswd extends Passwd {
-    public String pw_age;
-
-    public String pw_comment;
-
     public String pw_gecos;
 
     public String pw_dir;
@@ -93,9 +87,21 @@ public class SolarisPasswd extends Passwd {
     @Override
     protected List getFieldOrder() {
         List fieldOrder = new ArrayList(super.getFieldOrder());
-        fieldOrder.addAll(Arrays.asList("pw_age", "pw_comment", "pw_gecos",
+        fieldOrder.addAll(Arrays.asList("pw_gecos",
                 "pw_dir", "pw_shell"));
         return fieldOrder;
+    }
+
+    public void setPwGecos(String pw_gecos) {
+        this.pw_gecos = pw_gecos;
+    }
+
+    public void setPwDir(String pw_dir) {
+        this.pw_dir = pw_dir;
+    }
+
+    public void setPwShell(String pw_shell) {
+        this.pw_shell = pw_shell;
     }
 
 }

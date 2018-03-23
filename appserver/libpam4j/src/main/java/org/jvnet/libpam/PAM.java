@@ -51,6 +51,7 @@ import com.sun.jna.ptr.PointerByReference;
 import java.util.Set;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * PAM authenticator.
@@ -89,7 +90,8 @@ public class PAM {
     public PAM(String serviceName) throws PAMException {
         pam_conv conv = new pam_conv(new PamCallback() {
             public int callback(int num_msg, Pointer msg, Pointer resp, Pointer _) {
-                LOGGER.fine("pam_conv num_msg="+num_msg);
+                if(LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine("pam_conv num_msg="+num_msg);
                 if(password==null)
                     return PAM_CONV_ERR;
 
@@ -99,7 +101,8 @@ public class PAM {
 
                 for( int i=0; i<num_msg; i++ ) {
                     pam_message pm = new pam_message(msg.getPointer(POINTER_SIZE*i));
-                    LOGGER.fine(pm.msg_style+":"+pm.msg);
+                    if(LOGGER.isLoggable(Level.FINE))
+                        LOGGER.fine(pm.msg_style+":"+pm.msg);
                     if(pm.msg_style==PAM_PROMPT_ECHO_OFF) {
                         pam_response r = new pam_response(m.share(pam_response.SIZE*i));
                         r.setResp(password);

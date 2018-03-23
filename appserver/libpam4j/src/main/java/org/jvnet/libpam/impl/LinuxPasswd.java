@@ -93,4 +93,16 @@ public class LinuxPasswd extends Passwd {
         return fieldOrder;
     }
 
+    public void setPwGecos(String pw_gecos) {
+        this.pw_gecos = pw_gecos;
+    }
+
+    public void setPwDir(String pw_dir) {
+        this.pw_dir = pw_dir;
+    }
+
+    public void setPwShell(String pw_shell) {
+        this.pw_shell = pw_shell;
+    }
+
 }

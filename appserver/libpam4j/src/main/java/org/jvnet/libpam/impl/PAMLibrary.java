@@ -80,6 +80,14 @@ public interface PAMLibrary extends Library {
         protected List getFieldOrder() {
             return Arrays.asList("msg_style", "msg");
         }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public void setMsgStyle(int msg_style) {
+            this.msg_style = msg_style;
+        }
     }
 
     class pam_response extends Structure {
@@ -93,8 +101,7 @@ public interface PAMLibrary extends Library {
          * libpam crashes.
          */
         public Pointer resp;
-        public int resp_retcode;
-
+        
         /**
          * Attach to the memory region pointed by the given memory.
          */
@@ -111,6 +118,11 @@ public interface PAMLibrary extends Library {
         public void setResp(String msg) {
            this.resp = libc.strdup(msg);
         }
+
+        protected Pointer getResp() {
+           return resp;
+        }
+
 
         protected List getFieldOrder() {
             return Arrays.asList("resp", "resp_retcode");
@@ -137,6 +149,9 @@ public interface PAMLibrary extends Library {
 
         protected List getFieldOrder() {
             return Arrays.asList("conv", "_");
+        }
+        protected PamCallback getConv(){
+            return conv;
         }
     }
 
