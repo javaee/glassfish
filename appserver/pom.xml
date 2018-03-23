@@ -70,7 +70,7 @@
         <woodstock.version>4.0.2.13</woodstock.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
         <javax.interceptor-api.version>1.2.2</javax.interceptor-api.version>
-        <javax.xml.rpc-api.version>1.1.1</javax.xml.rpc-api.version>
+        <javax.xml.rpc-api.version>1.1.2</javax.xml.rpc-api.version>
         <javax.transaction-api.version>1.2.1</javax.transaction-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <cdi-api.version>2.0</cdi-api.version>
