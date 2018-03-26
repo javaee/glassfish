@@ -71,41 +71,33 @@ public class JaxrManagedConnection
   private XAConnection xacon;
   private Connection con;
   private JaxrConnectionEventListener jaxrListener;
-  //private PasswordCredential passCred;
   private ManagedConnectionFactory mcf;
   private PrintWriter logWriter;
-  //private boolean supportsXA;
-  //private boolean supportsLocalTx;
   private boolean destroyed;
   private Properties properties;
   private Set connectionSet;
   @LogMessagesResourceBundle
   Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
-  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, /*PasswordCredential paramPasswordCredential,*/ XAConnection paramXAConnection, Connection paramConnection/*, boolean paramBoolean1, boolean paramBoolean2*/)
+  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, XAConnection paramXAConnection, Connection paramConnection)
   {
     this.mcf = paramManagedConnectionFactory;
-    //this.passCred = paramPasswordCredential;
     this.xacon = paramXAConnection;
     this.log.fine("JAXRManagedConnection has actual jaxr connection impl");
     this.con = paramConnection;
-    //this.supportsXA = paramBoolean1;
-    //this.supportsLocalTx = paramBoolean2;
     this.connectionSet = new HashSet();
     this.log.fine("Instantiating JAXRConnectionEventListener in JAXRManagedConnection constructor");
     this.jaxrListener = new JaxrConnectionEventListener(this);
     this.log.fine("End of JAXRManagedConnection constructor");
   }
   
-  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, Properties paramProperties, XAConnection paramXAConnection, Connection paramConnection/*, boolean paramBoolean1, boolean paramBoolean2*/)
+  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, Properties paramProperties, XAConnection paramXAConnection, Connection paramConnection)
   {
     this.mcf = paramManagedConnectionFactory;
     this.properties = paramProperties;
     this.xacon = paramXAConnection;
     this.log.fine("JAXRManagedConnection has actual jaxr connection impl");
     this.con = paramConnection;
-    //this.supportsXA = paramBoolean1;
-    //this.supportsLocalTx = paramBoolean2;
     this.connectionSet = new HashSet();
     this.log.fine("Instantiating JAXRConnectionEventListener in JAXRManagedConnection constructor");
     this.jaxrListener = new JaxrConnectionEventListener(this);

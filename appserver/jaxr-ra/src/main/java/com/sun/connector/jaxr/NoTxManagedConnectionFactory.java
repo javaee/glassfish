@@ -60,6 +60,7 @@ import javax.security.auth.Subject;
 import javax.xml.registry.Connection;
 import javax.xml.registry.ConnectionFactory;
 import org.glassfish.logging.annotation.LogMessagesResourceBundle;
+import java.util.logging.Level;
 
 public class NoTxManagedConnectionFactory
   implements ManagedConnectionFactory, Serializable
@@ -76,7 +77,7 @@ public class NoTxManagedConnectionFactory
   static final String USERNAME = "com.sun.xml.registry.userName";
   static final String PASSWORD = "com.sun.xml.registry.userPassword";
   static final String APPSERV_PROPERTY = "com.sun.appserv.uddi";
-  private ResourceAdapter ra;
+  transient private ResourceAdapter ra;
   private String queryManagerURL;
   private String lifeCycleManagerURL;
   private String httpProxyHost;
@@ -86,7 +87,7 @@ public class NoTxManagedConnectionFactory
   private String proxyUsername;
   private String proxyUserPassword;
   private Properties properties;
-  private PrintWriter out;
+  transient private PrintWriter out;
   private String userName;
   private String userPassword;
   private Boolean appserverUDDI = Boolean.valueOf(true);
@@ -95,9 +96,11 @@ public class NoTxManagedConnectionFactory
   
   public Object createConnectionFactory(ConnectionManager paramConnectionManager)
     throws ResourceException
-  {
-    log.fine("NoTxManagedConnectionFactory returing JAXRConnectionFactory with ConnectionManager");
-    log.fine("NoTxManagedConnectionFactory - ConnectionManager class is " + paramConnectionManager.getClass().getName());
+  { 
+    if (log.isLoggable(Level.FINE)) {
+    	log.fine("NoTxManagedConnectionFactory returing JAXRConnectionFactory with ConnectionManager");
+    	log.fine("NoTxManagedConnectionFactory - ConnectionManager class is " + paramConnectionManager.getClass().getName());
+    }
     return new JaxrConnectionFactory(this, paramConnectionManager);
   }
   
