@@ -136,9 +136,9 @@
     </properties>
 
     <modules>
-	<module>ldapbp</module>
-        <module>common</module>
-        <module>ha</module>
+	<module>common</module>
+	<module>ldapbp</module>        
+	<module>ha</module>
         <module>deployment</module>
         <module>admin</module>
         <module>core</module>
