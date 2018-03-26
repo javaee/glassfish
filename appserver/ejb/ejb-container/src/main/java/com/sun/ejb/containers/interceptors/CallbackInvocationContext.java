@@ -152,6 +152,7 @@ public class CallbackInvocationContext implements InvocationContext {
         return null;
     }
 
+    @Override
     public Constructor<?> getConstructor() {
         if (eventType == CallbackType.AROUND_CONSTRUCT) {
             return ctor;
