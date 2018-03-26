@@ -136,8 +136,9 @@
     </properties>
 
     <modules>
-	<module>jaxr-ra</module>
+	
         <module>common</module>
+	<module>jaxr-ra</module>
         <module>ha</module>
         <module>deployment</module>
         <module>admin</module>

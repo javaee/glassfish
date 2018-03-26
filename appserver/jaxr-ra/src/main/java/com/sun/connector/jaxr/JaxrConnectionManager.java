@@ -47,11 +47,13 @@ import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionFactory;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
 
 public class JaxrConnectionManager
   implements ConnectionManager, Serializable
 {
-  Logger log = Logger.getLogger("com.sun.connector.jaxr");
+  @LogMessagesResourceBundle
+  private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public Object allocateConnection(ManagedConnectionFactory paramManagedConnectionFactory, ConnectionRequestInfo paramConnectionRequestInfo)
     throws ResourceException

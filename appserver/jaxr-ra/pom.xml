@@ -69,7 +69,11 @@
     <artifactId>javax.xml.registry-api</artifactId>
     <version>1.0.5</version>
  </dependency>
-
+<dependency>
+            <groupId>org.glassfish.annotations</groupId>
+            <artifactId>logging-annotation-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
  </dependencies>
 
 </project>

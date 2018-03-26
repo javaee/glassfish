@@ -48,12 +48,14 @@ import javax.resource.spi.IllegalStateException;
 import javax.xml.registry.Connection;
 import javax.xml.registry.JAXRException;
 import javax.xml.registry.RegistryService;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
 
 public class JaxrConnection
   implements Connection
 {
   private JaxrManagedConnection mc;
-  
+
+  @LogMessagesResourceBundle
   private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public JaxrConnection(JaxrManagedConnection paramJaxrManagedConnection)

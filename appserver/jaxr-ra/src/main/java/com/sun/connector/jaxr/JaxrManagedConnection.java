@@ -70,7 +70,7 @@ public class JaxrManagedConnection
   private XAConnection xacon;
   private Connection con;
   private JaxrConnectionEventListener jaxrListener;
-  private PasswordCredential passCred;
+  //private PasswordCredential passCred;
   private ManagedConnectionFactory mcf;
   private PrintWriter logWriter;
   private boolean supportsXA;
@@ -80,10 +80,10 @@ public class JaxrManagedConnection
   private Set connectionSet;
   Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
-  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, PasswordCredential paramPasswordCredential, XAConnection paramXAConnection, Connection paramConnection, boolean paramBoolean1, boolean paramBoolean2)
+  JaxrManagedConnection(ManagedConnectionFactory paramManagedConnectionFactory, /*PasswordCredential paramPasswordCredential,*/ XAConnection paramXAConnection, Connection paramConnection, boolean paramBoolean1, boolean paramBoolean2)
   {
     this.mcf = paramManagedConnectionFactory;
-    this.passCred = paramPasswordCredential;
+    //this.passCred = paramPasswordCredential;
     this.xacon = paramXAConnection;
     this.log.fine("JAXRManagedConnection has actual jaxr connection impl");
     this.con = paramConnection;
