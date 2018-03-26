@@ -159,7 +159,9 @@ public class NoTxManagedConnectionFactory
       localJaxrManagedConnection.destroy();
       this.log.fine("NoTxManagedConnectionFactory mC - interate - got JaxrManagedconnection ");
       i++;
-      this.log.fine("NoTxManagedConnec - JaxrManagedconnection number " + i);
+      if (log.isLoggable(Level.FINE)) {
+          this.log.fine("NoTxManagedConnec - JaxrManagedconnection number " + i);
+      }    
     }
     paramSet.clear();
     this.log.fine("NoTxManagedConnec - returning noMantched Connections");
