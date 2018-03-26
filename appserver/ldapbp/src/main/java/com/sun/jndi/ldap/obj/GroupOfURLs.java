@@ -524,7 +524,7 @@ public class GroupOfURLs implements Group {
      *         the contents of the group's attribute set. See
      * {@link javax.naming.directory.BasicAttributes#toString()}
      *         for details. The name is omitted if the group is not bound in
-     *         the directory and null is returned if no attributes are 
+     *         the directory and empty string is returned if no attributes are 
      *         available.
      */
     public String toString() {
