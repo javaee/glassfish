@@ -59,6 +59,7 @@ import javax.resource.spi.ResourceAdapter;
 import javax.security.auth.Subject;
 import javax.xml.registry.Connection;
 import javax.xml.registry.ConnectionFactory;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
 
 public class NoTxManagedConnectionFactory
   implements ManagedConnectionFactory, Serializable
@@ -88,14 +89,15 @@ public class NoTxManagedConnectionFactory
   private PrintWriter out;
   private String userName;
   private String userPassword;
-  private Boolean appserverUDDI = new Boolean(true);
-  Logger log = Logger.getLogger("com.sun.connector.jaxr");
+  private Boolean appserverUDDI = Boolean.valueOf(true);
+  @LogMessagesResourceBundle
+  private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public Object createConnectionFactory(ConnectionManager paramConnectionManager)
     throws ResourceException
   {
-    this.log.fine("NoTxManagedConnectionFactory returing JAXRConnectionFactory with ConnectionManager");
-    this.log.fine("NoTxManagedConnectionFactory - ConnectionManager class is " + paramConnectionManager.getClass().getName());
+    log.fine("NoTxManagedConnectionFactory returing JAXRConnectionFactory with ConnectionManager");
+    log.fine("NoTxManagedConnectionFactory - ConnectionManager class is " + paramConnectionManager.getClass().getName());
     return new JaxrConnectionFactory(this, paramConnectionManager);
   }
   
@@ -131,7 +133,7 @@ public class NoTxManagedConnectionFactory
         localConnection.setCredentials(localHashSet);
       }
       this.log.fine("NoTxManagedConnectionFactory returning new JAXRManagedConnection");
-      return new JaxrManagedConnection(this, this.properties, null, localConnection, false, false);
+      return new JaxrManagedConnection(this, this.properties, null, localConnection);
     }
     catch (Exception localException)
     {
@@ -190,7 +192,7 @@ public class NoTxManagedConnectionFactory
   public int hashCode()
   {
     if (this.properties == null) {
-      return new String("").hashCode();
+      return "".hashCode();
     }
     return this.properties.hashCode();
   }

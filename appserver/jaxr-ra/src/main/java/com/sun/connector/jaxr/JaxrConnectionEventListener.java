@@ -46,12 +46,14 @@ import java.util.logging.Logger;
 import javax.resource.spi.ConnectionEvent;
 import javax.resource.spi.ConnectionEventListener;
 import javax.resource.spi.ManagedConnection;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
 
 public class JaxrConnectionEventListener
 {
   private Vector listeners = new Vector();
   private ManagedConnection mcon;
-  Logger log = Logger.getLogger("com.sun.connector.jaxr");
+  @LogMessagesResourceBundle
+  private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public JaxrConnectionEventListener(ManagedConnection paramManagedConnection)
   {

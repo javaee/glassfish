@@ -55,6 +55,7 @@ import javax.xml.registry.ConnectionFactory;
 import javax.xml.registry.FederatedConnection;
 import javax.xml.registry.JAXRException;
 import javax.xml.registry.UnsupportedCapabilityException;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
 
 public class JaxrConnectionFactory
   extends ConnectionFactory
@@ -64,6 +65,7 @@ public class JaxrConnectionFactory
   private ConnectionManager cm;
   private Reference reference;
   private Properties properties;
+  @LogMessagesResourceBundle
   private static final Logger log = Logger.getLogger("com.sun.connector.jaxr");
   
   public JaxrConnectionFactory(ManagedConnectionFactory paramManagedConnectionFactory, ConnectionManager paramConnectionManager)
