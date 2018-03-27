@@ -101,7 +101,8 @@ public interface PAMLibrary extends Library {
          * libpam crashes.
          */
         public Pointer resp;
-        
+        public int resp_retcode; 
+
         /**
          * Attach to the memory region pointed by the given memory.
          */
