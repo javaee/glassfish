@@ -123,7 +123,14 @@ public interface PAMLibrary extends Library {
         protected Pointer getResp() {
            return resp;
         }
+        
+        public void setRespCode(int resp_retcode) {
+            this.resp_retcode = resp_retcode;
+        }
 
+        public int getRespCode() {
+            return resp_retcode;
+        }
 
         protected List getFieldOrder() {
             return Arrays.asList("resp", "resp_retcode");
