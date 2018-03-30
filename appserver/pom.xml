@@ -136,8 +136,9 @@
     </properties>
 
     <modules>
-        <module>common</module>
-        <module>ha</module>
+	<module>common</module>
+	<module>ldapbp</module>        
+	<module>ha</module>
         <module>deployment</module>
         <module>admin</module>
         <module>core</module>
@@ -853,11 +854,6 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>genericra</artifactId>
                 <version>2.0-20081121</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>ldapbp</artifactId>
-                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>

@@ -213,9 +213,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.main.ldapbp</groupId>
             <artifactId>ldapbp</artifactId>
-            <version>${ldapbp.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
 	    <groupId>org.glassfish.external</groupId>
