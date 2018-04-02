@@ -54,6 +54,10 @@
     <artifactId>libpam4j</artifactId>
     <name>Java binding for libpam.so</name>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <resources>
             <resource>
