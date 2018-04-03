@@ -2,15 +2,15 @@
 REM
 REM  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 REM
-REM  Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+REM  Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 REM
 REM  The contents of this file are subject to the terms of either the GNU
 REM  General Public License Version 2 only ("GPL") or the Common Development
 REM  and Distribution License("CDDL") (collectively, the "License").  You
 REM  may not use this file except in compliance with the License.  You can
 REM  obtain a copy of the License at
-REM  https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-REM  or packager/legal/LICENSE.txt.  See the License for the specific
+REM  https://oss.oracle.com/licenses/CDDL+GPL-1.1
+REM  or LICENSE.txt.  See the License for the specific
 REM  language governing permissions and limitations under the License.
 REM
 REM  When distributing the software, include this License Header Notice in each

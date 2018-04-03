@@ -358,10 +358,10 @@
             <optional>true</optional>
        </dependency>
         <dependency>
-            <groupId>jaxr-ra</groupId>
+            <groupId>org.glassfish.main.jaxr-ra</groupId>
             <artifactId>jaxr-ra</artifactId>
-            <version>${jaxr.version}</version>
-            <type>rar</type>
+            <version>${project.version}</version>
+            <type>jar</type>
             <optional>true</optional>
        </dependency>
         <dependency>
@@ -1080,9 +1080,9 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.main.ldapbp</groupId>
             <artifactId>ldapbp</artifactId>
-            <version>${ldapbp.version}</version>
+            <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
