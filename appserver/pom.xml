@@ -135,8 +135,8 @@
     </properties>
 
     <modules>
-        <module>libpam4j</module>
         <module>common</module>
+        <module>libpam4j</module>
         <module>ha</module>
         <module>deployment</module>
         <module>admin</module>
