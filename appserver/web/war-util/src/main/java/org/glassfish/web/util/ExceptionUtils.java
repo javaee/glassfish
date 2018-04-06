@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2012-2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 1999-2018 The Apache Software Foundation
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
