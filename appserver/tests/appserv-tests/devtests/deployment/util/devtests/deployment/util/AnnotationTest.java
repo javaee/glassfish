@@ -59,10 +59,10 @@ import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 import org.glassfish.hk2.api.ServiceLocator;
 
 import junit.extensions.TestSetup;
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.TestCase;
+import org.junit.TestSuite;
 import junit.textui.TestRunner;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.tests.utils.Utils;
