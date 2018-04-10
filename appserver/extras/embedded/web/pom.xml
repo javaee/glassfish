@@ -677,9 +677,9 @@
         <optional>true</optional>
     </dependency>
     <dependency>
-        <groupId>org.glassfish.external</groupId>
+        <groupId>org.glassfish.main.libpam4j</groupId>
         <artifactId>libpam4j</artifactId>
-        <version>${libpam4j.version}</version>
+        <version>${project.version}</version>
         <optional>true</optional>
     </dependency>
     <dependency>
