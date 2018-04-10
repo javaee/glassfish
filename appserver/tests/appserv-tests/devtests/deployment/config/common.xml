@@ -63,8 +63,7 @@
 <property name="customtasks.src" value="${testsRoot}/util/customAntTasks"/>
 <property name="customtasks.dest" value="${testsRoot}/util/build/customAntTasks"/>
 <property name="customtasks.jar" value="${customtasks.dest}/customAntTasks.jar"/>
-<get src="http://central.maven.org/maven2/junit/junit/4.12/junit-4.12.jar" dest="${env.APS_HOME}/devtests/deployment/extlib/junit-4.12.jar"/>
-<property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/extlib/junit-4.12.jar" />
+<property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" />
 <property name="annotation.report.dir" value="${testsRoot}/annotation/report"/> 
 <property name="testDomain" value="depltest-domain"/>
 <property name="testServer" value="depltest-server"/>
@@ -104,6 +103,7 @@
 
         
 <target name="init" depends="init.os,init.tools,setAsadminArgs">
+    <get src="http://central.maven.org/maven2/junit/junit/4.12/junit-4.12.jar" dest="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" usetimestamp="true"/>
     <property name="root" value="${basedir}"/>
 
     <available property="cluster.exists" file="${s1as.home}/domains/${testDomain}"/>
