@@ -1,0 +1,4 @@
+The following jars have been removed as they do not seem to be a part of the CI test run :
+
+./monitoring/wsmonitoring/lib/errorhandler.jar
+./monitoring/wsmonitoring/lib/jsfcl.jar
