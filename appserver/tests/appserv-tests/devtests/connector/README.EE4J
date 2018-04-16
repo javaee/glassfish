@@ -1,0 +1,10 @@
+The following jars have been removed as they do not seem to be a part of the CI test run :
+
+./SunRaXml/lib/cciblackbox-tx.jar
+./SunRaXml/lib/cci-pb-proc.jar
+./lib/ojdbc14-1.0.jar
+./v3/installed-libraries-resources/rar/classes/blackbox.jar
+./v3/SunRaXml/lib/cci-derby-proc.jar
+./v3/SunRaXml/lib/cci-pb-proc.jar
+./v3/defaultConnectorResource-standalone-rar/ra/jdbc.jar
+./v3/securitymapweb/myds.jar
