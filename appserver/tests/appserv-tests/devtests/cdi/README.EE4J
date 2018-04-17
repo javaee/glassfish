@@ -1,0 +1,18 @@
+The following jars have been removed as they do not seem to be a part of the CI test run :
+
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib/lib/slf4j-simple-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib/lib/slf4j-api-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-extension-alternative/lib/slf4j-simple-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-extension-alternative/lib/slf4j-api-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-ordering-reversed/lib/slf4j-simple-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-ordering-reversed/lib/slf4j-api-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-ordering/lib/slf4j-simple-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-ordering/lib/slf4j-api-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-javaee-injection/lib/slf4j-simple-1.6.1.jar
+./javaee-integration/cdi-servlet-3.0-annotation-with-web-inf-lib-javaee-injection/lib/slf4j-api-1.6.1.jar
+./smoke-tests/slf4j-visibility/lib/slf4j-simple-1.6.1.jar
+./smoke-tests/slf4j-visibility/lib/slf4j-api-1.6.1.jar
+./smoke-tests/cdi-servlet-3.0-annotation/lib/slf4j-simple-1.6.1.jar
+./smoke-tests/cdi-servlet-3.0-annotation/lib/slf4j-api-1.6.1.jar
+./smoke-tests/optional-unbundled-beans/lib/slf4j-simple-1.6.1.jar
+./smoke-tests/optional-unbundled-beans/lib/slf4j-api-1.6.1.jar
