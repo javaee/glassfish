@@ -131,7 +131,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

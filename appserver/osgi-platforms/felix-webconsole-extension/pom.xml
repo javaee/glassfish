@@ -83,7 +83,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.cmpn</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
