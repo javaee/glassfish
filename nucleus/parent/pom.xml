@@ -765,7 +765,7 @@
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.enterprise</artifactId>
+                <artifactId>osgi.enterprise</artifactId>
                 <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
