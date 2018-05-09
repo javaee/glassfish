@@ -118,7 +118,6 @@
         <module>cluster</module>
         <module>common</module>
         <module>core</module>
-        <module>docs</module>
         <module>admin</module>
         <module>flashlight</module>
         <module>grizzly</module>
