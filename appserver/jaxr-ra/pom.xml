@@ -56,9 +56,8 @@
 	<name>JAXR-RA POM</name>
 	
 	 <modules>
-        <module>jaxr-ra-jar</module>
-	<module>jaxr-ra-rar</module>
-	<module>jaxr-ra-install</module>
+            <module>jaxr-ra-jar</module>
+	    <module>jaxr-ra-rar</module>	
 	</modules>	
 </project>
 
