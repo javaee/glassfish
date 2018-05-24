@@ -39,7 +39,6 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -48,7 +47,6 @@
 		<groupId>org.glassfish.main.jaxr-ra</groupId>
 		<artifactId>jaxr-ra-pom</artifactId>
 		<version>5.0.1-SNAPSHOT</version>
-
 	</parent>
 
 	<artifactId>jaxr-ra-rar</artifactId>
@@ -80,10 +78,8 @@
 					<includeDependencies>true</includeDependencies>
 					<archive>
 						<addMavenDescriptor>true</addMavenDescriptor>
-
 					</archive>
 					<includeJar>false</includeJar>
-
 				</configuration>
 			</plugin>
 		</plugins>
