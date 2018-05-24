@@ -188,11 +188,6 @@
         <class name="test.osgi.hello.HelloOSGITestNG" />
     </classes>
   </test>
-  <test name="wsit_jaxb_tests">
-    <classes>
-      <class name="jaxbosgi.JaxbOsgiTestNG"/>
-    </classes>
-  </test>
   <test name="cluster_setup">
     <classes>
         <class name="test.clustersetup.ClusterSetupTest"/>
