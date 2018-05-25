@@ -44,19 +44,45 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.glassfish.main</groupId>
-		<artifactId>glassfish-parent</artifactId>
+		<groupId>org.glassfish.main.jaxr-ra</groupId>
+		<artifactId>jaxr-ra-pom</artifactId>
 		<version>5.0.1-SNAPSHOT</version>
-
 	</parent>
-	<groupId>org.glassfish.main.jaxr-ra</groupId>
-	<artifactId>jaxr-ra-pom</artifactId>
-	<packaging>pom</packaging>
-	<name>JAXR-RA POM</name>
 
-	<modules>
-		<module>jaxr-ra-jar</module>
-		<module>jaxr-ra-rar</module>
-	</modules>
+	<artifactId>jaxr-ra-rar</artifactId>
+	<packaging>rar</packaging>
+	<version>5.0.1-SNAPSHOT</version>
+	<name>JAXR-RA RAR package</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.glassfish.main.jaxr-ra</groupId>
+			<artifactId>jaxr-ra</artifactId>
+			<version>5.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.registry</groupId>
+					<artifactId>javax.xml.registry-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-rar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<raXmlFile>ra.xml</raXmlFile>
+					<includeDependencies>true</includeDependencies>
+					<archive>
+						<addMavenDescriptor>true</addMavenDescriptor>
+					</archive>
+					<includeJar>false</includeJar>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
 

@@ -114,7 +114,6 @@
         <schema2beans.version>6.6</schema2beans.version>
         <mq.version>5.1.2-b01</mq.version>
         <derby.version>10.13.1.1</derby.version>
-        <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
@@ -130,8 +129,8 @@
         <com.ibm.jbatch.container.version>1.0.2</com.ibm.jbatch.container.version>
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
         <javax.management.j2ee-api.version>1.1.2</javax.management.j2ee-api.version>
-	      <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
-	      <easymock.version>3.5</easymock.version>
+	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <easymock.version>3.5</easymock.version>
     </properties>
 
     <modules>
