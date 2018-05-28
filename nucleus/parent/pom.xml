@@ -130,7 +130,7 @@
         <servlet-api.version>4.0.0</servlet-api.version>
         <grizzly.version>2.4.3</grizzly.version>
         <grizzly.npn.version>1.8</grizzly.npn.version>
-        <jboss.logging.annotation.version>2.0.1.Final</jboss.logging.annotation.version>
+        <jboss.logging.annotation.version>2.1.0.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
@@ -175,7 +175,7 @@
         <replacer.plugin.version>1.5.3</replacer.plugin.version>
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
-        <jmockit.version>1.35</jmockit.version>
+        <jmockit.version>1.36</jmockit.version>
     </properties>
 
     <build>
