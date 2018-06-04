@@ -187,11 +187,13 @@
      <property name="https.1.port" value="1${https.port}" />
      <property name="https.2.port" value="2${https.port}" />
  
+<!-- JDK 8 u172 - 3DES cipher suites disabled 
      <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
         <param name="https.port"         value="${https.2.port}"/>
       </antcall>
+-->
 
 <!-- Disable failing test cases (use of -Dsun.security.ssl.allowUnsafeRenegotiation=true has no impact)
       <antcall target="cipher-test">
