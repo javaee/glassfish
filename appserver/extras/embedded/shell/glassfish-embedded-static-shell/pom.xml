@@ -1429,11 +1429,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-extra-osgi</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <optional>true</optional>
