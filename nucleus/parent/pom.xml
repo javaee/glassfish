@@ -136,7 +136,7 @@
         <hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
         <javassist.version>3.22.0-GA</javassist.version>
         <javax.el.version>3.0.1-b10</javax.el.version>
-        <javax.el-api.version>3.0.1-b04</javax.el-api.version>
+        <javax.el-api.version>3.0.1-b06</javax.el-api.version>
         <saaj-api.version>1.4.0</saaj-api.version>
         <hk2.version>2.5.0-b60</hk2.version>
         <hk2.plugin.version>2.5.0-b57</hk2.plugin.version>
