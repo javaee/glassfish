@@ -43,12 +43,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish.main</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
-        <relativePath/>
-    </parent>
     <groupId>org.glassfish.soteria.test</groupId>
     <artifactId>soteria</artifactId>
     <version>5.0.1-SNAPSHOT</version>
@@ -72,7 +66,7 @@
         <module>app-securitycontext-auth-ejb</module>
         <module>app-double-ham</module>
         <module>app-ham-ordering</module>
-        <module>app-db</module>
+<!--        <module>app-db</module> -->
         <module>app-custom-identity-store-handler</module>
         <module>app-multiple-store</module>
         <module>app-multiple-store-backup</module>
@@ -103,6 +97,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.12</version>
             <scope>test</scope>            
         </dependency>      
         <dependency>
@@ -114,13 +109,13 @@
         <dependency>
             <groupId>javax.security.enterprise</groupId>
             <artifactId>javax.security.enterprise-api</artifactId>
-            <version>${javax.security.enterprise-api.version}</version>
+            <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
             <artifactId>javax.security.enterprise</artifactId>
-            <version>${javax.security.enterprise.version}</version>
+            <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
