@@ -143,7 +143,7 @@
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
         <jsch.version>0.1.55</jsch.version>
-        <pfl.version>4.0.1-b001</pfl.version>
+        <pfl.version>4.0.1-b003</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
         <antlr.version>2.7.7</antlr.version>
         <ant.version>1.10.1</ant.version>
