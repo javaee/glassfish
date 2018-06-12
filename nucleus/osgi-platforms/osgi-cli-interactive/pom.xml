@@ -62,13 +62,6 @@
         </developer>
     </developers>
 
-    <licenses>
-        <license>
-            <name>CDDL + GPL 1.1</name>
-            <url>http://glassfish.java.net/public/CDDL+GPL_1_1.html</url>
-        </license>
-    </licenses>
-
     <dependencies>
         <dependency>
             <groupId>org.glassfish.main.admin</groupId>
