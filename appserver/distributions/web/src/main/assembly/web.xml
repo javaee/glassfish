@@ -284,6 +284,8 @@
                 <exclude>glassfish-embedded-static-shell.jar</exclude>
                 <exclude>javaee.jar</exclude>
                 <exclude>appserv-rt.jar</exclude>
+                <exclude>descriptors.jar</exclude>
+                <exclude>templates.jar</exclude>
             </excludes>
             <outputDirectory>${install.dir.name}/glassfish/modules</outputDirectory>
         </fileSet>

@@ -561,8 +561,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.main.libpam4j</groupId>
             <artifactId>libpam4j</artifactId>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

@@ -155,10 +155,6 @@
 
         <jar jarfile="${jardir}/jmsra.rar" basedir="${jardir}/glassfish" includes="lib/install/applications/jmsra/**/*"/>
 
-         <!--<copy file="${zipdir}/jaxr-ra-JAXR_RA_20091012.rar" tofile= "${rootdir}/temp/jaxr-ra.rar"/>
-       
-        <jar jarfile="${jardir}/jaxr-ra.rar" basedir="${jardir}/${install.dir.name}/glassfish" includes="lib/install/applications/jaxr-ra/**/*"/>
--->
     </target>
 
     <target name="addRars" depends="addExtraRars" unless="nucleus.distribution">
