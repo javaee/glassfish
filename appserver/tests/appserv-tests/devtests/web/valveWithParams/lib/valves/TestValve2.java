@@ -48,7 +48,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 
-abstract class TestValve2 extends ValveBase
+public abstract class TestValve2 extends ValveBase
 {
   private String testProperty;
   
