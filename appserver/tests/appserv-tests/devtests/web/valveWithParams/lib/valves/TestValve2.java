@@ -48,7 +48,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 
-public abstract class TestValve2 extends ValveBase
+public class TestValve2 extends ValveBase
 {
   private String testProperty;
   
@@ -57,7 +57,6 @@ public abstract class TestValve2 extends ValveBase
     return getClass().getName();
   }
   
-  @Override
   public void invoke(org.apache.catalina.connector.Request request,
                      org.apache.catalina.connector.Response response)
             throws IOException, ServletException 
@@ -72,6 +71,12 @@ public abstract class TestValve2 extends ValveBase
     getNext().invoke(request, response);
   }
   
+  public int invoke(org.apache.catalina.Request request, org.apache.catalina.Response response)
+         throws IOException, ServletException {
+
+        return INVOKE_NEXT;
+  }
+
   public void setTestProperty(String val)
   {
     this.testProperty = val;
