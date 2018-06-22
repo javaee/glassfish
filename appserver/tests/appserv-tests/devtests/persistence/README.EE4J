@@ -1,0 +1,6 @@
+The following jars have been removed as they do not seem to be a part of the CI test run :
+
+./lib/drivers/oracle/inet/Oranxo.jar
+./lib/drivers/oracle/dd/oracle.jar
+./lib/drivers/oracle/ojdbc/ojdbc6.jar
+./lib/drivers/mysql/mysql-connector-java-5.1.7-bin.jar
