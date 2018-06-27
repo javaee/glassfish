@@ -39,7 +39,6 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -48,32 +47,16 @@
 		<groupId>org.glassfish.main</groupId>
 		<artifactId>glassfish-parent</artifactId>
 		<version>5.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+
 	</parent>
 	<groupId>org.glassfish.main.jaxr-ra</groupId>
-	<artifactId>jaxr-ra</artifactId>
+	<artifactId>jaxr-ra-pom</artifactId>
+	<packaging>pom</packaging>
+	<name>JAXR-RA POM</name>
 
-	<name>JAXR-RA</name>
-
-	<dependencies>
-		<dependency>
-			<groupId>javax.resource</groupId>
-			<artifactId>javax.resource-api</artifactId>
-			<version>1.7.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.xml.registry</groupId>
-			<artifactId>javax.xml.registry-api</artifactId>
-			<version>1.0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.annotations</groupId>
-			<artifactId>logging-annotation-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
-
+	<modules>
+		<module>jaxr-ra-jar</module>
+		<module>jaxr-ra-rar</module>
+	</modules>
 </project>
 

@@ -258,21 +258,6 @@
             <type>zip</type>
             <optional>true</optional>
         </dependency>
-        <!-- nucleus-common -->
-        <dependency>
-            <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>nucleus-dtds</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>nucleus-schemas</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
         <!-- nucleus-cluster -->
         <dependency>
             <groupId>org.glassfish.main.cluster</groupId>
@@ -359,9 +344,9 @@
        </dependency>
         <dependency>
             <groupId>org.glassfish.main.jaxr-ra</groupId>
-            <artifactId>jaxr-ra</artifactId>
+            <artifactId>jaxr-ra-rar</artifactId>
             <version>${project.version}</version>
-            <type>jar</type>
+            <type>rar</type>
             <optional>true</optional>
        </dependency>
         <dependency>
@@ -1441,11 +1426,6 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-extra-osgi</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,17 @@ test_run(){
 
   export HUDSON=true
   export ROOT=`pwd`
+
+  PROXY_HOST=`echo ${http_proxy} | cut -d':' -f2 | ${SED} 's/\/\///g'`
+  PROXY_PORT=`echo ${http_proxy} | cut -d':' -f3 | ${SED} 's/\///g'`
+  ANT_OPTS="${ANT_OPTS} \
+  -Dhttp.proxyHost=${PROXY_HOST} \
+  -Dhttp.proxyPort=${PROXY_PORT} \
+  -Dhttp.noProxyHosts='127.0.0.1|localhost|*.oracle.com' \
+  -Dhttps.proxyHost=${PROXY_HOST} \
+  -Dhttps.proxyPort=${PROXY_PORT} \
+  -Dhttps.noProxyHosts='127.0.0.1|localhost|*.oracle.com'"
+  export ANT_OPTS
 
   # The first command-line argument is the (optional) predecessor job from which
   # to get the revision under test and the glassfish.zip file to expand.
@@ -174,4 +185,3 @@ case $OPT in
     trap post_test_run EXIT
     run_test_id $TEST_ID ;;
 esac
-

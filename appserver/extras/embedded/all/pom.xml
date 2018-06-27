@@ -497,9 +497,9 @@
        </dependency>
         <dependency>
             <groupId>org.glassfish.main.jaxr-ra</groupId>
-            <artifactId>jaxr-ra</artifactId>
+            <artifactId>jaxr-ra-rar</artifactId>
             <version>${project.version}</version>
-            <type>jar</type>
+            <type>rar</type>
             <optional>true</optional>
        </dependency>
         <dependency>
@@ -1640,11 +1640,6 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-extra-osgi</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

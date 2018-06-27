@@ -65,7 +65,7 @@
         <jsp-impl.version>2.3.3-b02</jsp-impl.version>
         <jstl-impl.version>1.2.5-b03</jstl-impl.version>
         <jstl-api.version>1.2.1</jstl-api.version>
-        <mojarra.version>2.3.3.99</mojarra.version>
+        <mojarra.version>2.3.3.102</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.13</woodstock.version>
         <javax.ejb-api.version>3.2.2</javax.ejb-api.version>
@@ -102,10 +102,10 @@
 
         <jsftemplating.version>2.1.3</jsftemplating.version>
         <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
-        <webservices.version>2.4.0</webservices.version>
+        <webservices.version>2.4.1</webservices.version>
         <woodstox.version>4.4.1</woodstox.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
-        <jaxb.version>2.3.0</jaxb.version>
+        <jaxb.version>2.3.0.1</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
@@ -114,7 +114,6 @@
         <schema2beans.version>6.6</schema2beans.version>
         <mq.version>5.1.2-b01</mq.version>
         <derby.version>10.13.1.1</derby.version>
-        <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
@@ -130,8 +129,8 @@
         <com.ibm.jbatch.container.version>1.0.2</com.ibm.jbatch.container.version>
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
         <javax.management.j2ee-api.version>1.1.2</javax.management.j2ee-api.version>
-	      <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
-	      <easymock.version>3.5</easymock.version>
+	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <easymock.version>3.5</easymock.version>
     </properties>
 
     <modules>
@@ -663,11 +662,6 @@
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-osgi</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-extra-osgi</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
             <dependency>
