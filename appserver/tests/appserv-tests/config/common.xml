@@ -1496,28 +1496,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   </parallel>
 </target -->
 
-<target name="stopPB" depends="init-common">
-  <parallel>
-    <java classname="isql.ISQL" 
-          classpath="${db.classpath}:${env.APS_HOME}/lib/isql.jar" 
-          failonerror="false" fork="true">
-      <arg line="jdbc:pointbase:server://localhost:9092/sqe-samples,new"/>
-      <arg line="${db.user}"/>
-      <arg line="${db.pwd}"/>
-      <arg line="${db.driver}"/>
-      <arg line="${env.APS_HOME}/shutdownPbs.sql"/>
-    </java>
-    <java classname="isql.ISQL" 
-          classpath="${db.classpath}:${env.APS_HOME}/lib/isql.jar" 
-          failonerror="false" fork="true">
-      <arg line="jdbc:pointbase:server://localhost:9093/sun-appserv-samples,new"/>
-      <arg line="${db.user}"/>
-      <arg line="${db.pwd}"/>
-      <arg line="${db.driver}"/>
-      <arg line="${env.APS_HOME}/shutdownPbs.sql"/>
-    </java>
-  </parallel>
-</target>
 <condition property="aix">
     <os name="AIX"/>
 </condition>
