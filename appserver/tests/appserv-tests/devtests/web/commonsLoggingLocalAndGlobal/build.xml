@@ -124,7 +124,7 @@
     <target name="removeResources" depends="init-common">
         <delete failonerror="true">
             <fileset dir="${env.S1AS_HOME}/lib"
-                     includes="commons-logging.jar,log4j-1.2.13.jar,mytest.jar"/>
+                     includes="commons-logging.jar,log4j-1.2.17.jar,mytest.jar"/>
         </delete>
     </target>
 
