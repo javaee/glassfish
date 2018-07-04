@@ -63,7 +63,7 @@
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
             <param name="s1astest.classpath"
-                   value="lib/commons-logging-1.1.jar:${s1as.classpath}"/>
+                   value="lib/commons-logging-1.1.1.jar:${s1as.classpath}"/>
         </antcall>
     </target>
 
