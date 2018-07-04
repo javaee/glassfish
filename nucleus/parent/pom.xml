@@ -711,11 +711,6 @@
                 <version>1.0.1</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.stream</groupId>
-                <artifactId>sjsxp</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
                 <version>${jax-rs-api.impl.version}</version>
