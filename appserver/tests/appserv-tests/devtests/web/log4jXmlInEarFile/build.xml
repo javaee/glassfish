@@ -76,7 +76,7 @@
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
-            <param name="s1astest.classpath" value="${s1astest.classpath}:lib/commons-logging-1.2.jar"/>
+            <param name="s1astest.classpath" value="${s1astest.classpath}:lib/commons-logging-1.1.jar"/>
         </antcall>
         <javac srcdir="."
                classpath="${env.APS_HOME}/lib/reportbuilder.jar"
