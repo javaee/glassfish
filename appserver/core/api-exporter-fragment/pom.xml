@@ -338,9 +338,7 @@ org.glassfish.hk2.security.ssl; \
 com.sun.org.apache.xerces.internal.jaxp; \
 com.sun.org.apache.xalan.internal.xsltc.trax; \
 com.sun.org.apache.xerces.internal.parsers; \
-com.sun.pkg.client; \
 com.ctc.wstx.stax; \
-com.sun.jmx.remote.protocol.jmxmp; \
 org.glassfish.hk2.security.provider; \
 org.glassfish.hk2.security.auth.realm.file; \
 org.glassfish.hk2.security.auth.realm.certificate; \
