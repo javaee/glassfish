@@ -1,0 +1,73 @@
+To build:
+mvn clean install
+To run:
+java -jar $glassfish/modules/glassfish.jar or asadmin start-domain -v
+
+asadmin deploy --type=osgi lib/osgi-servlet.jar
+
+See the output/server.log. You will see something like this:
+
+[#|2012-06-15T14:25:16.733+0530|INFO|44.0|javax.enterprise.system.std.com.sun.enterprise.server.logging|_ThreadID=12;_ThreadName=admin-listener(2);|Registered servlet1 with mapping /aa/bb and servlet2 with mapping /aa|#]
+
+[#|2012-06-15T14:25:16.781+0530|INFO|44.0|javax.enterprise.system.std.com.sun.enterprise.server.logging|_ThreadID=12;_ThreadName=admin-listener(2);|<html><body>Servlet 1 </body></html>|#]
+
+[#|2012-06-15T14:25:16.781+0530|INFO|44.0|javax.enterprise.system.std.com.sun.enterprise.server.logging|_ThreadID=12;_ThreadName=admin-listener(2);|Unregistered servlet1|#]
+
+[#|2012-06-15T14:25:16.790+0530|INFO|44.0|javax.enterprise.system.std.com.sun.enterprise.server.logging|_ThreadID=12;_ThreadName=admin-listener(2);|java.io.FileNotFoundException: http://localhost:8080/osgi/aa/bb
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1434)
+	at java.net.URL.openStream(URL.java:1010)
+	at sahoo.osgihttp.test1.Activator.test(Activator.java:63)
+	at sahoo.osgihttp.test1.Activator$HttpServiceTracker.addingService(Activator.java:46)
+	at org.osgi.util.tracker.ServiceTracker$Tracked.customizerAdding(ServiceTracker.java:980)
+	at org.osgi.util.tracker.ServiceTracker$Tracked.customizerAdding(ServiceTracker.java:906)
+	at org.osgi.util.tracker.AbstractTracked.trackAdding(AbstractTracked.java:262)
+	at org.osgi.util.tracker.AbstractTracked.trackInitial(AbstractTracked.java:185)
+	at org.osgi.util.tracker.ServiceTracker.open(ServiceTracker.java:348)
+	at org.osgi.util.tracker.ServiceTracker.open(ServiceTracker.java:283)
+	at sahoo.osgihttp.test1.Activator.start(Activator.java:21)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:641)
+	at org.apache.felix.framework.Felix.activateBundle(Felix.java:1977)
+	at org.apache.felix.framework.Felix.startBundle(Felix.java:1895)
+	at org.apache.felix.framework.BundleImpl.start(BundleImpl.java:944)
+	at org.glassfish.extras.osgicontainer.OSGiDeployedBundle.startBundle(OSGiDeployedBundle.java:107)
+	at org.glassfish.extras.osgicontainer.OSGiDeployedBundle.resume(OSGiDeployedBundle.java:83)
+	at org.glassfish.extras.osgicontainer.OSGiDeployedBundle.start(OSGiDeployedBundle.java:67)
+	at org.glassfish.internal.data.EngineRef.start(EngineRef.java:122)
+	at org.glassfish.internal.data.ModuleInfo.start(ModuleInfo.java:269)
+	at org.glassfish.internal.data.ApplicationInfo.start(ApplicationInfo.java:301)
+	at com.sun.enterprise.v3.server.ApplicationLifecycle.deploy(ApplicationLifecycle.java:484)
+	at org.glassfish.deployment.admin.DeployCommand.execute(DeployCommand.java:418)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl$2.execute(CommandRunnerImpl.java:497)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:518)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl.doCommand(CommandRunnerImpl.java:1287)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl.access$1200(CommandRunnerImpl.java:111)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1557)
+	at com.sun.enterprise.v3.admin.CommandRunnerImpl$ExecutionContext.execute(CommandRunnerImpl.java:1520)
+	at com.sun.enterprise.v3.admin.AdminAdapter.doCommand(AdminAdapter.java:590)
+	at com.sun.enterprise.v3.admin.AdminAdapter.onMissingResource(AdminAdapter.java:236)
+	at org.glassfish.grizzly.http.server.StaticHttpHandler.service(StaticHttpHandler.java:298)
+	at com.sun.enterprise.v3.server.HK2Dispatcher.dispatch(HK2Dispatcher.java:113)
+	at com.sun.enterprise.v3.services.impl.ContainerMapper.service(ContainerMapper.java:236)
+	at org.glassfish.grizzly.http.server.HttpHandler.doHandle(HttpHandler.java:164)
+	at org.glassfish.grizzly.http.server.HttpServerFilter.handleRead(HttpServerFilter.java:169)
+	at org.glassfish.grizzly.filterchain.ExecutorResolver$9.execute(ExecutorResolver.java:119)
+	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeFilter(DefaultFilterChain.java:265)
+	at org.glassfish.grizzly.filterchain.DefaultFilterChain.executeChainPart(DefaultFilterChain.java:200)
+	at org.glassfish.grizzly.filterchain.DefaultFilterChain.execute(DefaultFilterChain.java:134)
+	at org.glassfish.grizzly.filterchain.DefaultFilterChain.process(DefaultFilterChain.java:112)
+	at org.glassfish.grizzly.ProcessorExecutor.execute(ProcessorExecutor.java:78)
+	at org.glassfish.grizzly.nio.transport.TCPNIOTransport.fireIOEvent(TCPNIOTransport.java:815)
+	at org.glassfish.grizzly.strategies.AbstractIOStrategy.fireIOEvent(AbstractIOStrategy.java:112)
+	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.run0(WorkerThreadIOStrategy.java:115)
+	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy.access$100(WorkerThreadIOStrategy.java:55)
+	at org.glassfish.grizzly.strategies.WorkerThreadIOStrategy$WorkerThreadRunnable.run(WorkerThreadIOStrategy.java:135)
+	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.doWork(AbstractThreadPool.java:567)
+	at org.glassfish.grizzly.threadpool.AbstractThreadPool$Worker.run(AbstractThreadPool.java:547)
+	at java.lang.Thread.run(Thread.java:662)
+|#]
+
+[#|2012-06-15T14:25:16.792+0530|INFO|44.0|javax.enterprise.system.std.com.sun.enterprise.server.logging|_ThreadID=12;_ThreadName=admin-listener(2);|Started sahoo.issue_18808 [270]|#]
+
+[#|2012-06-15T14:25:16.892+0530|INFO|44.0|javax.enterprise.system.tools.admin.org.glassfish.deployment.admin|_ThreadID=12;_ThreadName=admin-listener(2);|issue_18808 was successfully deployed in 1,755 milliseconds.|#]
+
+

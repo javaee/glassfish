@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -41,21 +40,48 @@
 
 -->
 
-<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
-	 xmlns:sch="http://www.ascc.net/xml/schematron"
-	 xmlns="http://relaxng.org/ns/structure/1.0"
-	 datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-
-  <start>
-    <element name="top">
-      <oneOrMore>
-	<element name="context-path">
-	  <data type="string">
-	    <param name="pattern">([a-zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&amp;|=)*(/([a-zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&amp;|=)*)*</param>
-	  </data>
-	</element>
-      </oneOrMore>
-    </element>
-  </start>
-  
-</grammar>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>sahoo</groupId>
+ <artifactId>osgi-servlet</artifactId>
+ <version>1.0-SNAPSHOT</version>
+ <packaging>bundle</packaging>
+ <build>
+  <finalName>osgi-servlet</finalName>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>maven-bundle-plugin</artifactId>
+      <version>3.5.1</version>
+      <extensions>true</extensions>
+      <configuration>
+        <instructions>
+          <Export-Package></Export-Package>
+          <Private-Package>sahoo.osgihttp.test1</Private-Package>
+          <Bundle-Activator>sahoo.osgihttp.test1.Activator</Bundle-Activator>
+        </instructions>
+      </configuration>
+    </plugin>
+  </plugins>
+ </build>
+ <dependencies>
+   <dependency>
+     <groupId>javax.servlet</groupId>
+     <artifactId>javax.servlet-api</artifactId>
+     <version>4.0.1</version>
+     <scope>provided</scope>
+   </dependency>
+   <dependency>
+     <groupId>org.osgi</groupId>
+     <artifactId>osgi.core</artifactId>
+     <version>6.0.0</version>
+     <scope>provided</scope>
+   </dependency>
+   <dependency>
+     <groupId>org.osgi</groupId>
+     <artifactId>osgi.enterprise</artifactId>
+     <version>6.0.0</version>
+     <scope>provided</scope>
+   </dependency>
+ </dependencies>
+</project>
