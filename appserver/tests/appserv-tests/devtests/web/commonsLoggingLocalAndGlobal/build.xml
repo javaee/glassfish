@@ -65,7 +65,7 @@
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
             <param name="s1astest.classpath"
-                   value="lib/commons-logging-1.1.jar:${s1as.classpath}"/>
+                   value="lib/commons-logging-1.1.1.jar:${s1as.classpath}"/>
         </antcall>
     </target>
 
@@ -124,7 +124,7 @@
     <target name="removeResources" depends="init-common">
         <delete failonerror="true">
             <fileset dir="${env.S1AS_HOME}/lib"
-                     includes="commons-logging.jar,log4j-1.2.13.jar,mytest.jar"/>
+                     includes="commons-logging.jar,log4j-1.2.17.jar,mytest.jar"/>
         </delete>
     </target>
 
