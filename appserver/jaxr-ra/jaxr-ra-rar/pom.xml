@@ -73,7 +73,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-rar-plugin</artifactId>
-                <version>${maven-rar-plugin.version}</version>
                 <configuration>
                     <raXmlFile>ra.xml</raXmlFile>
                     <includeDependencies>true</includeDependencies>
