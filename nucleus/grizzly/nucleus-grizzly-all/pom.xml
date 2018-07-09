@@ -150,7 +150,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal-api-only</artifactId>
+            <artifactId>gmbal</artifactId>
             <version>${gmbal.grizzly.version}</version>
             <scope>provided</scope>
         </dependency>        

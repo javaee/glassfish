@@ -101,10 +101,8 @@
         <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
 
         <jsftemplating.version>2.1.3</jsftemplating.version>
-        <uc-pkg-bootstrap.version>1.122-57.2889</uc-pkg-bootstrap.version>
         <webservices.version>2.4.1</webservices.version>
         <woodstox.version>4.4.1</woodstox.version>
-        <jaxb-api.version>2.3.0</jaxb-api.version>
         <jaxb.version>2.3.0.1</jaxb.version>
         <stax2-api.version>3.1.4</stax2-api.version>
         <javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
@@ -128,8 +126,8 @@
         <javax.batch-api.version>1.0.1</javax.batch-api.version>
         <com.ibm.jbatch.container.version>1.0.2</com.ibm.jbatch.container.version>
         <com.ibm.jbatch.spi.version>1.0.2</com.ibm.jbatch.spi.version>
-    	<javax.management.j2ee-api.version>1.1.2</javax.management.j2ee-api.version>
-	<jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
+        <javax.management.j2ee-api.version>1.1.2</javax.management.j2ee-api.version>
+	    <jboss.classfilewriter.version>1.2.1.Final</jboss.classfilewriter.version>
         <easymock.version>3.5</easymock.version>
 	<javax.resource-api.version>1.7.1</javax.resource-api.version>
 	<javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
@@ -141,8 +139,8 @@
 	
         <module>common</module>
         <module>libpam4j</module>
-	<module>jaxr-ra</module>
-	<module>ldapbp</module> 
+	    <module>jaxr-ra</module>
+	    <module>ldapbp</module>
         <module>ha</module>
         <module>deployment</module>
         <module>admin</module>
@@ -187,7 +185,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-	    <plugin>
+            <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>spec-version-maven-plugin</artifactId>
                 <version>1.2</version>
@@ -573,11 +571,11 @@
                 <artifactId>javax.inject</artifactId>
                 <version>${javax.inject.version}</version>
             </dependency>
-	    <dependency>
-		<groupId>javax.resource</groupId>
-		<artifactId>javax.resource-api</artifactId>
-		<version>${javax.resource-api.version}</version>
-	    </dependency>
+            <dependency>
+                <groupId>javax.resource</groupId>
+                <artifactId>javax.resource-api</artifactId>
+                <version>${javax.resource-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.enterprise.deploy</groupId>
                 <artifactId>javax.enterprise.deploy-api</artifactId>
@@ -678,20 +676,15 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
             </dependency>
-	    <dependency>
+	        <dependency>
             	<groupId>javax.xml.registry</groupId>
-	        <artifactId>javax.xml.registry-api</artifactId>
-		<version>${javax.xml.registry-api.version}</version>
+	            <artifactId>javax.xml.registry-api</artifactId>
+                <version>${javax.xml.registry-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>stax2-api</artifactId>
                 <version>${stax2-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.jbi</groupId>
-                <artifactId>jbi</artifactId>
-                <version>${jbi.version}</version>
             </dependency>
             <dependency>
                 <groupId>wsdl4j</groupId>
@@ -724,11 +717,7 @@
                 <artifactId>weld-se-shaded</artifactId>
                 <version>${weld.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.sun.pkg</groupId>
-                <artifactId>pkg-bootstrap</artifactId>
-                <version>${uc-pkg-bootstrap.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.glassfish.web</groupId>
                 <artifactId>javax.servlet.jsp</artifactId>
@@ -854,11 +843,6 @@
                 <groupId>javax.management.j2ee</groupId>
                 <artifactId>javax.management.j2ee-api</artifactId>
                 <version>${javax.management.j2ee-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>genericra</artifactId>
-                <version>2.0-20081121</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
