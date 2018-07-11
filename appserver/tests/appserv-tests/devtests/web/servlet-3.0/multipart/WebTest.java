@@ -199,7 +199,7 @@ public class WebTest {
    static String[][] expected = {
        {"1234567abcdefg"},
        {"myFile", "36", "text/plain", "content-disposition content-type" },
-       {"myFile2", "4134", "application/x-java-archive", 
+       {"myFile2", "13812", "application/x-java-archive", 
             "content-disposition content-type" },
        {"xyz", "14", "text/plain", "content-disposition content-type"}
    };
