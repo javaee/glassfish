@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+  <title>SOAP to JMS Sample Application</title>
+  <style TYPE="text/css">
+  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {
+    font-family:geneva,helvetica,arial,"lucida sans",sans-serif;
+    font-size:10pt
+  }
+  h1 {font-size:18pt}
+  h2 {font-size:14pt}
+  h3 {font-size:12pt}
+  code,kbd,tt,pre {
+    font-family:monaco,courier,"courier new";
+    font-size:10pt;
+  }
+  li {padding-bottom: 8px}
+  p.copy, p.copy a {
+    font-family:geneva,helvetica,arial,"lucida sans",sans-serif;
+    font-size:8pt
+    }
+  p.copy {text-align: center}
+
+  table.grey1,tr.grey1,td.grey1{background:#f1f1f1}
+  th {
+    color:#ffffff;
+    font-family:geneva,helvetica,arial,"lucida sans",sans-serif;
+    font-size:12pt
+  }
+  td.insidehead {
+    font-weight:bold;
+    background:white;
+    text-align: left;
+  }
+  a{text-decoration:none}
+  a:visited{color:#96C}
+  a:hover {text-decoration:underline}
+  </style>
+</head>
+
+  <body text="#000000" link="#594fbf" vlink="#1005fb" alink="#333366"  bgcolor="#ffffff" marginwidth="10">
+
+<table width="100%" border="0" cellspacing="4" cellpadding="2">
+  <tbody>
+    <tr>
+      <td valign="top" align="right" bgcolor="#587993">
+       <font color="#ffffff" size="-1"><b>Sun Java System Application Server</b></font>&nbsp;
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a href="../../../../../docs/list.html">Samples Index</a></p>
+<!---- Don't modify anything above this line, except for the title tag -------->
+
+<h1>SOAP to JMS Sample Application</h1>
+<p>
+The SOAP to JMS sample application contains one application client
+which can be used to invoke two simple Java objects:
+
+  <ul>
+ <li> <code>SendSOAPMessageWithJMS</code>
+constructs a SOAP message using the Soap with Attachments API for Java
+(SAAJ) API, converts it to a JMS message,
+and then uses JMS to publish the message to a JMS Topic destination. </li>
+
+ <li> <code>ReceiveSOAPMessageWithJMS</code>
+uses JMS to subscribe to a JMS Topic, retrieves a JMS-wrapped SOAP
+message, then converts the message to a SOAP message. </li>
+</ul>
+
+
+<h2>Building, Deploying, and Running the Application</h2>
+
+<p>
+The general instructions for building, deploying, and running sample applications are provided in
+<a href="../../../../../docs/common-procedures.html">Building, Deploying, and Running Sample Applications</a>.
+In reading this document, use the following application-specific variables for this application:
+</p>
+
+<ul>
+  <li><code><i>install_dir</i></code> is the directory where Application Server is installed.
+  <li><code><i>app_dir</i></code> is the application base directory:
+    <code><i>install_dir</i>/samples/jms/apps/soaptojms/simple</code>.
+  <li>The prebuilt client JAR file is <code><i>app_dir</i>/simple-client/SOAPtoJMSMessageSampleClient.jar</code>.
+</ul>
+
+<p>
+Follow this general procedure:
+<ol>
+    <li><a href="../../../../../docs/common-procedures.html#build">Build the Application</a>.
+      The build file, <code>build.xml</code>, is in the <code><i>app_dir</i></code> directory.
+      <p>
+       By default, the application creates an attachment that includes
+       the <code>index.html</code> file located at the URL <code>http://localhost:8080/</code>.
+       If you want to attach a file at a different URL, or if you have changed the Application
+       Server HTTP port from 8080 to some other value, change the
+       value of the <code>url</code> property in the <code>src/soaptojms.properties</code> file.
+<p>Before you deploy or run the application, you must ensure that the neccessary resources have been configured for
+Application Server.  The included <code>asant</code> deployment script automatically performs this step for you.
+But if you are using another deployment mechanism, you must perform it manually.
+See the instructions in <a href="#config">Configuring Resources</a>.
+<!--
+    <li><a href="../../../../../docs/common-procedures.html#deploy">Deploy the Application</a>
+      The EAR file is <code><i>install_dir</i>/samples/ejb/bmp/apps/simple/bmp-simple.ear</code>.
+-->
+    <li><a href="#run">Run the Application</a> as described below.
+</ol>
+
+<a name="config"> </a> <h2> Configuring Resources</h2>
+<p>
+If you deploy the application using <code>asant</code>, it will configure all the resources
+automatically.  Otherwise, you must do it manually.
+
+<h3>Configuring Resources with Admin Console</h3>
+<p>
+Follow these steps to configure resources with Admin Console:
+<ol>
+<li>Log on to the Admin Console.
+<li>In the left pane, click on&nbsp; Java Message Service
+<li>Click on Connection Factories.
+<li>Click New in the right pane.
+<li>Add the following:
+<pre>
+JNDI-Name: jms/TopicConnectionFactory
+Type: javax.jms.TopicConnectionFactory
+Resource: Select Enabled checkbox
+</pre>
+
+<li>Click on Destination Resources.
+<li>Click New in the right pane.
+
+<li>Add the following:
+<pre>
+JNDI-Name: jms/TestTopic
+Type: javax.jms.Topic
+Resource: Select Enabled checkbox
+</pre>
+   
+<li>Add a new property for this destination resource,
+with name-value pair as <code>Name=TestTopic</code>.
+</ol>
+
+<h3> Configuring resources with asadmin</h3>
+<p>
+To configure the resources using <code>asadmin</code>, use these commands:
+
+<p>
+Configure connection factory::
+
+<pre>
+asadmin create-jms-resource --user <i>username</i> --password <i>password</i>
+  --restype javax.jms.TopicConnectionFactory
+  jms/TopicConnectionFactory
+</pre>
+
+<p>
+Configure destination(topic):
+
+<pre>asadmin create-jms-resource --user <i>username</i> --password <i>password</i>
+  --restype javax.jms.Topic --property Name=TestTopic
+  jms/TestTopic
+</pre>
+
+
+<a name="run"></a><h3>Running the Sample Application</h3>
+<p>
+To run the sample application follow these steps:
+<ol>
+  <li>In a shell (console) window, change your working directory to <code><i>app_dir</i></code>
+   <pre>
+cd <i>install_dir</i>/samples/jms/apps/soaptojms/simple/
+</pre>
+
+  <li>Set the value of the environment variable APPCPATH to
+  <code><i>install_dir</i>/imq/lib/imqxm.jar</code>.
+
+  <li>Run the application client to invoke the <code>ReceiveSOAPMessageWithJMS</code> object:
+  <pre><i>install_dir</i>/bin/appclient -client SOAPtoJMSMessageSampleClient.jar Receive</pre>
+  
+  <li>Wait until you see the message "ready to receive SOAP messages ...".
+
+  <li>In another shell window, set the value of the environment variable APPCPATH to
+  <code><i>install_dir</i>/imq/lib/imqxm.jar</code>
+
+  <li>In this shell window, run the application
+  client to invoke <code>SendSOAPMessageWithJMS</code> object as follows:
+
+  <pre><i>install_dir</i>/bin/appclient -client SOAPtoJMSMessageSampleClient.jar Send</pre>
+
+  It displays the following messages:
+<pre>
+      [java] Create a SOAP message
+      [java] Attaching the file from URL: http://localhost:8080
+      [java] Convert the message to a JMS message
+      [java] Publish the message
+      [java] Finished
+</pre>
+
+When <code>SendSOAPMessageWithJMS</code> finishes publishing the message,
+<code>ReceiveSOAPMessageWithJMS</code> in the first command window displays the following messages,
+followed by the HTML content of the attached URL:
+<pre>
+      [java] Message received! Converting the JMS message to SOAP message
+      [java] Attachment counts: 1
+      [java] Content type: text/html
+      [java] Content Id: cid-001
+      [java] Attachment content:
+</pre>
+
+  <li>Exit the ReceiveSOAPMessageWithJMS and SendSOAPMessageWithJMS application client
+  programs by typing CTRL-C in the shell windows.
+</ol>
+
+<p>
+You can optionally pass in the name of the Topic that you want
+the application client to reference when running.  This optional paramater must
+match the value set to property  <code>queue.jndi.name</code>, which is
+located in <code>&lt;<i>install_dir</i>&gt;/samples/jms/apps/soaptojms/simple/build.xml</code> file.
+The value is set to <code>jms/TestTopic</code>  by default. If you choose to pass in this
+optional parameter, then you need to pass the Topic name to the appclient command, so that
+the application client runs using the correct Topic name.  Both the Send and Receive invocations
+of the application client must use the same Topic name, and it must match
+the <code>queue.jndi.name</code> property value, which again is located in
+<code><i>install_dir</i>/samples/jms/apps/soaptojms/simple/build.xml</code>  file.
+<p>
+For example, to run this example in the samples domain, using Topic
+name <code>jms/TestTopic</code>, use these commands:
+<pre><i>install_dir</i>&gt;/bin/appclient -client SOAPtoJMSMessageSampleClient.jar
+Receive jms/TestTopic -xml <i>install_dir</i>&gt;/domains/samples/config/sun-acc.xml .
+
+<i>install_dir</i>/bin/appclient -client SOAPtoJMSMessageSampleClient.jar
+Send jms/TestTopic -xml <i>install_dir</i>&gt;/domains/samples/config/sun-acc.xml .
+</pre>
+
+<h2>Troubleshooting</h2>
+
+<p>If you run the application in a different domain than the default,
+domain1, then you need to pass in the location of <code>sun-acc.xml</code> to the appclient
+command, so that the application
+client runs using the correct port for that particular domain.
+Use the <code>-xml</code> flag to pass in this location of this <code>sun-acc.xml</code> file.
+  For example, to run this example in the samples domain, use these commands:
+  
+<pre><i>install_dir</i>/bin/appclient -client SOAPtoJMSMessageSampleClient.jar
+Receive -xml <i>install_dir</i>/domains/samples/config/sun-acc.xml
+
+<i>install_dir</i>/bin/appclient -client SOAPtoJMSMessageSampleClient.jar
+Send -xml <i>install_dir</i>/domains/samples/config/sun-acc.xml
+</pre>
+
+<!--- Do not modify the rest of the document -->
+<hr noshade="noshade" size="1">
+<!-- start copyright -->
+<p class="copy"> Copyright &copy; 2006 <a href="http://sun.com">Sun Microsystems, Inc.</a>
+All rights reserved. </p>
+<!--  end copyright  -->
+
+</body>
+</html>

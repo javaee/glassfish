@@ -50,7 +50,6 @@ test_run(){
 	popd
 
 	# Workaround for JDK7 and OpenDS
-	cp $APS_HOME/devtests/security/ldap/opends/X500Signer.jar $OPENDS_HOME/lib
 	rm -rf $OPENDS_HOME/lib/set-java-home
 	export OPENDS_JAVA_HOME=/gf-hudson-tools/jdk/7/latest
 

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2017-2018 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,7 @@
 <property name="customtasks.src" value="${testsRoot}/util/customAntTasks"/>
 <property name="customtasks.dest" value="${testsRoot}/util/build/customAntTasks"/>
 <property name="customtasks.jar" value="${customtasks.dest}/customAntTasks.jar"/>
-<property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/extlib/junit-4.3.1.jar" />
+<property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" />
 <property name="annotation.report.dir" value="${testsRoot}/annotation/report"/> 
 <property name="testDomain" value="depltest-domain"/>
 <property name="testServer" value="depltest-server"/>
@@ -103,6 +103,7 @@
 
         
 <target name="init" depends="init.os,init.tools,setAsadminArgs">
+    <get src="http://central.maven.org/maven2/junit/junit/4.12/junit-4.12.jar" dest="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" usetimestamp="true"/>
     <property name="root" value="${basedir}"/>
 
     <available property="cluster.exists" file="${s1as.home}/domains/${testDomain}"/>

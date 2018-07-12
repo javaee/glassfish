@@ -1,7 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995-1997 IBM Corp. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,15 +50,6 @@
 // Author:      Simon Holdsworth
 //
 // Date:        March, 1997
-//
-// Copyright (c):   1995-1997 IBM Corp.
-//
-//   The source code for this program is not published or otherwise divested
-//   of its trade secrets, irrespective of what has been deposited with the
-//   U.S. Copyright Office.
-//
-//   This software contains confidential and proprietary information of
-//   IBM Corp.
 //----------------------------------------------------------------------------
 
 package com.sun.jts.CosTransactions;
