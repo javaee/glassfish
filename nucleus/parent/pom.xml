@@ -173,6 +173,7 @@
         <javaee.version.old>7</javaee.version.old>
         <javaee.version.new>8</javaee.version.new>
         <jmockit.version>1.36</jmockit.version>
+        <osgi-resource-locator.version>1.0.2</osgi-resource-locator.version>
     </properties>
 
     <build>
@@ -697,7 +698,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>1.0.1</version>
+                <version>${osgi-resource-locator.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>
