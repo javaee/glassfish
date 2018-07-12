@@ -131,7 +131,7 @@
     <dependency>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>osgi-resource-locator</artifactId>
-        <version>1.0.1</version>
+        <version>${osgi-resource-locator.version}</version>
         <optional>true</optional>
     </dependency>
     <dependency>
