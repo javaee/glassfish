@@ -254,7 +254,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
     private static String BACKUP_FILE;
-    private static final String NEW_BACKUP_FILE = "resources/backups/domain2_2012_04_26_v00001.zip";
-    private static final String OLD_BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
+    private static final String NEW_BACKUP_FILE = "resources/backups/domain2_v2.zip";
+    private static final String OLD_BACKUP_FILE = "resources/backups/domain2_v1.zip";
     private static final String BACKUP_DIR = System.getenv("APS_HOME") + "/devtests/admin/cli/backupdir";
 }
