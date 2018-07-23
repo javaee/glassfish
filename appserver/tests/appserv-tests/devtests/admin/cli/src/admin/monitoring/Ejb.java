@@ -53,21 +53,9 @@ public class Ejb extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from EJB Monitoring Tests!");
-        test21738();
         someTests();
         moreTests();
         testMyEjb();
-    }
-
-    void test21738() {
-        String prepend = "21738::";
-        report(asadmin("enable-monitoring", "--modules", "ejb-container=HIGH"));
-        deploy(sfsbear);
-        report(wget(8080, "StatefulBeansTest/MyServlet?count=600"), "hit StatefulBeansTest");
-        report(asadmin("stop-domain", DOMAIN_NAME));
-        report(asadmin("start-domain", DOMAIN_NAME));
-        AsadminReturn aar = asadminWithOutput("get", "-m", "server.applications.StatefulBeansEAR.StatefulEJB\\.jar.PassivationBean.passivecount-current");
-        report(checkForString(aar, "600"), prepend + "Verify monitoring data for passivecount");
     }
 
     void someTests() {
@@ -142,7 +130,6 @@ public class Ejb extends MonTest {
         AsadminReturn ret = asadminWithOutput("list", "-m", name);
         report(matchString(desiredValue, ret.outAndErr), "verify-list");
     }
-    private static final File sfsbear = new File(RESOURCES_DIR, "StatefulBeansEAR.ear");
     private static final File blackBoxRar = new File(RESOURCES_DIR, "blackbox-tx.rar");
     private static final File conApp1 = new File(RESOURCES_DIR, "conapp1.ear");
     private static final File ejbsfapp1 = new File(RESOURCES_DIR, "ejbsfapp1.ear");
