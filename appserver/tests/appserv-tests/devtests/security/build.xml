@@ -97,8 +97,10 @@
         <ant dir="jdbcrealm" target="all"/>
 <!--    <ant dir="pamrealm" target="all"/>-->                      <!-- DISABLED: Needs additional setup -->
 <!--    <ant dir="cert-realm-custom-loginmodule" target="all"/>--> <!-- DISABLED: Failure  -->
+<!--    DISABLED: Needs a running LDAP server
         <ant dir="ldap/simpleweb" target="all" />
         <ant dir="ldapRealmPerApp" target="all"/>
+-->
 <!--    <ant dir="solarisRealm" target="all"/>-->                  <!-- DISABLED -->
         <ant dir="jaccApi" target="all"/>
         <record name="security.output" action="stop" />
