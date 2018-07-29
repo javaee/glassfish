@@ -407,7 +407,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 appRegistry.add(appName, tempAppInfo);
 
                 try {
-                    notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.PREPARE, context);
+                    notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.PREPARE, context, null);
                 } catch(Throwable interceptorException) {
                     report.failure(logger, "Exception while invoking the lifecycle interceptor", null);
                     report.setFailureCause(interceptorException);
@@ -472,7 +472,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 appInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, appInfo);
 
-                notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.PREPARE, context);
+                notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.PREPARE, context, appInfo);
 
                 if (tracing!=null) {
                     tracing.addMark(DeploymentTracing.Mark.PREPARED);
@@ -492,13 +492,13 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 if (loadOnCurrentInstance(context)) {
                     appInfo.setLibraries(commandParams.libraries());
                     try {
-                        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.LOAD, context);
+                        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.LOAD, context, appInfo);
                         appInfo.load(context, tracker);
-                        notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.LOAD, context);
+                        notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.LOAD, context, appInfo);
                         
-                        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.START, context);
+                        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.START, context, appInfo);
                         appInfo.start(context, tracker);
-                        notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.START, context);
+                        notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.START, context, appInfo);
                     } catch(Throwable loadException) {
                         logger.log(Level.SEVERE, KernelLoggerInfo.lifecycleException, loadException);
                         report.failure(logger, "Exception while loading the app", null);
@@ -572,14 +572,24 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     }
 
     private void notifyLifecycleInterceptorsBefore(final ExtendedDeploymentContext.Phase phase,
-            final ExtendedDeploymentContext dc) {
+            final ExtendedDeploymentContext dc, final ApplicationInfo info) {
+        //notify the deployed application
+        if (info != null && info.getAppServiceLocator() != null) {
+            for (ApplicationLifecycleInterceptor i : info.getAppServiceLocator().getAllServices(ApplicationLifecycleInterceptor.class)) i.before(phase, dc);
+        }
+
         for (ApplicationLifecycleInterceptor i : alcInterceptors) {
             i.before(phase, dc);
         }
     }
     
     private void notifyLifecycleInterceptorsAfter(final ExtendedDeploymentContext.Phase phase,
-            final ExtendedDeploymentContext dc) {
+            final ExtendedDeploymentContext dc, final ApplicationInfo info) {
+        //notify the deployed application
+        if (info != null && info.getAppServiceLocator() != null) {
+            for (ApplicationLifecycleInterceptor i : info.getAppServiceLocator().getAllServices(ApplicationLifecycleInterceptor.class)) i.after(phase, dc);
+        }
+
         for (ApplicationLifecycleInterceptor i : alcInterceptors) {
             i.after(phase, dc);
         }
@@ -1053,23 +1063,23 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             return null;
         }
 
-        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.STOP, context);
+        notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.STOP, context, info);
 
         if (info.isLoaded()) {
             info.stop(context, context.getLogger());
-            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.STOP, context);
+            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.STOP, context, info);
             
-            notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.UNLOAD, context);
+            notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.UNLOAD, context, info);
             info.unload(context);
-            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.UNLOAD, context);
+            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.UNLOAD, context, info);
         }
 
         events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, info), false);
 
         try {
-            notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.CLEAN, context);
+            notifyLifecycleInterceptorsBefore(ExtendedDeploymentContext.Phase.CLEAN, context, info);
             info.clean(context);
-            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.CLEAN, context);
+            notifyLifecycleInterceptorsAfter(ExtendedDeploymentContext.Phase.CLEAN, context, info);
         } catch(Exception e) {
             report.failure(context.getLogger(), "Exception while cleaning", e);
             return info;
