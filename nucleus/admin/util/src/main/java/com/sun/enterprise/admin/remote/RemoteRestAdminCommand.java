@@ -602,6 +602,10 @@ public class RemoteRestAdminCommand extends AdminCommandEventBrokerImpl<GfSseInb
             for (ParamModel opt : commandModel.getParameters()) {
                 if (opt.getParam().primary()) {
                     operandParam = opt;
+
+                    // to solve the create-password-alias command sent by DAS without the aliasname paramter
+                    if (operands.isEmpty()) operands = options.get(opt.getName().toLowerCase(Locale.ENGLISH));
+
                     continue;
                 }
                 String paramName = opt.getName();
