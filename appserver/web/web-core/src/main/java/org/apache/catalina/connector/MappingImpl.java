@@ -82,6 +82,7 @@ public class MappingImpl implements HttpServletMapping, Serializable {
                 break;
             case MappingData.DEFAULT:
                 mappingMatch = MappingMatch.DEFAULT;
+                matchValue = "";
                 break;
             case MappingData.EXACT:
                 mappingMatch = MappingMatch.EXACT;
