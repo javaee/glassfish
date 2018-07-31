@@ -40,23 +40,6 @@
 #
 
 test_run(){
-	rm -rf opends-image
-	mkdir opends-image
-	pushd opends-image
-	
-	unzip -q /net/gf-hudson/scratch/java_re_node/OpenDS-2.2.1.zip
-
-	export OPENDS_HOME=$PWD/OpenDS-2.2.1
-	popd
-
-	# Workaround for JDK7 and OpenDS
-        cp $APS_HOME/devtests/security/ldap/opends/X500Signer.jar $OPENDS_HOME/lib
-	rm -rf $OPENDS_HOME/lib/set-java-home
-	export OPENDS_JAVA_HOME=/gf-hudson-tools/jdk/7/latest
-
-	# Configure and start OpenDS using the default ports
-	$OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanager -b "dc=sfbay,dc=sun,dc=com" -Z 1636 --useJavaKeystore $S1AS_HOME/domains/domain1/config/keystore.jks -W changeit -N s1as
-
 
 	$S1AS_HOME/bin/asadmin start-database
 	$S1AS_HOME/bin/asadmin start-domain
@@ -78,7 +61,6 @@ test_run(){
 
 	$S1AS_HOME/bin/asadmin stop-domain
 	$S1AS_HOME/bin/asadmin stop-database
-	$OPENDS_HOME/bin/stop-ds -p 4444 -D "cn=Directory Manager" -w dmanager -P $OPENDS_HOME/config/admin-truststore -U $OPENDS_HOME/config/admin-keystore.pin
 
 	egrep 'FAILED= *0' count.txt
 	egrep 'DID NOT RUN= *0' count.txt
