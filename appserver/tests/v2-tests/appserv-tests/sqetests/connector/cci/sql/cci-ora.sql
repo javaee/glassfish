@@ -1,7 +1,3 @@
-REM ========================================================
-REM Copyright © 2002 Sun Microsystems, Inc. All rights reserved.
-REM ========================================================
-
 
 
 drop table coffee;

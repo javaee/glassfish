@@ -42,11 +42,6 @@
  * $Id: ResultSetBean.java,v 1.1 2005/11/03 03:00:23 SherryShen Exp $
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 package demo.model;
 
 import com.sun.org.apache.commons.logging.Log;

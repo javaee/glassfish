@@ -44,14 +44,6 @@ import javax.ejb.EJBHome;
 import javax.ejb.FinderException;
 import java.util.Collection;
 import java.rmi.RemoteException;
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
 
 public interface CustomerRemoteHome extends javax.ejb.EJBHome
 {

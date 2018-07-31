@@ -123,28 +123,6 @@
     <echo message="${message1}"/>
 </target>
 
-<target name="jrubyHomeCon"  depends="setOSConditions,asenv-unix,asenv-windows">
- <echo message="asconf ${asenv_conf}"/>
-      <loadfile property="asconf_jruby" srcfile="${asenv_conf}" failonerror="false">
-          <filterchain>
-              <linecontainsregexp>
-                  <regexp pattern="JRUBY_HOME"/>
-              </linecontainsregexp>
-          </filterchain>
-      </loadfile>
- <echo message="asconf ${asconf_jruby}"/>
-</target>
-
-<target name="deploy-jruby-app" depends="setOSConditions,asenv-unix,asenv-windows">
-    <exec executable="${ASADMIN}" outputproperty="message1">
-		<arg value="deploy"/>
-		<arg value="--property"/>
-		<arg value="jruby.home='${JRUBY_HOME}'"/>
-		<arg value="${appName}"/>
-    </exec>
-    <echo message="${message1}"/>
-</target>
-
 <target name="start-server" depends="setOSConditions">
 
     <echo>+-----------------------------+</echo>

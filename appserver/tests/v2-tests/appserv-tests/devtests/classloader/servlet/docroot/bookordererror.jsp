@@ -64,6 +64,5 @@
 <c:url var="url" value="/bookstore" />
 <strong><a href="${url}"><fmt:message key="ContinueShopping"/></a>&nbsp;&nbsp;&nbsp;</strong>  
 
-<center><em>Copyright &copy; 2003 Sun Microsystems, Inc. </em></center>
 </body>
 </html>

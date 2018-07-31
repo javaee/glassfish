@@ -38,23 +38,6 @@
  * holder.
  */
 
-/*
- * $Header: /usr/local/cvsroot/DI3-Port187/scriptroot/di/187/WEB-INF/src/it/telecomitalia/di/utility/URLCaller.java,v 1.1.1.1 2005/03/03 09:25:51 cvs Exp $
- * $Revision: 1.1.1.1 $
- * $Date: 2005/03/03 09:25:51 $
- *
- * ====================================================================
- *
- * Copyright (c) 2002 <a href="http://www.telecomitalia.it/">Telecom Italia</a>.
- * All rights reserved.
- *
- * URLCaller.java
- *
-**/
-
-
-
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;

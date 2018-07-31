@@ -38,8 +38,6 @@
  * holder.
  */
 
-//Copyright (c) 1998, 2004, Oracle Corporation. All rights reserved.
-
 package pe.ejb.ejb30.persistence.toplinksample.ejb;
 
 import javax.persistence.*;
