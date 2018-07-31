@@ -437,7 +437,6 @@
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="threadPoolIdleTimeout" target="all"/>
-        <ant dir="useBundledJsf" target="all"/>
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
