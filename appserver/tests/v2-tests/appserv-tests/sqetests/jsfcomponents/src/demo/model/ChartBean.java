@@ -42,11 +42,6 @@
  * $Id: ChartBean.java,v 1.3 2004/11/14 07:33:17 tcfujii Exp $
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 package demo.model;
 
 import java.util.ArrayList;

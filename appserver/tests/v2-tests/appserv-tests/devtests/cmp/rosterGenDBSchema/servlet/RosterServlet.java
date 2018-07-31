@@ -58,17 +58,6 @@ import util.TeamDetails;
 import java.util.Iterator;
 import java.util.Set;
 
-
-
-/**
- *
- * <p>Überschrift: </p>
- * <p>Beschreibung: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Organisation: </p>
- * @author unbekannt
- * @version 1.0
- */
 public class RosterServlet extends HttpServlet{
 
     private PrintWriter out = null;

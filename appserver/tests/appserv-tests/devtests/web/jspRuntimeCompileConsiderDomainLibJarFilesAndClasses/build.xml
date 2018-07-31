@@ -63,7 +63,7 @@
        
     <target name="compile" depends="clean">
         <antcall target="compile-common">
-            <param name="src" value="servlet"/>
+            <param name="src" value="myclasses"/>
         </antcall>
     </target>
 

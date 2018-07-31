@@ -140,6 +140,3 @@ var rules = {
         elem.onclick = app.post;
     }
 };
-Behaviour.addLoadEvent(app.initialize);
-Behaviour.register(rules);
-

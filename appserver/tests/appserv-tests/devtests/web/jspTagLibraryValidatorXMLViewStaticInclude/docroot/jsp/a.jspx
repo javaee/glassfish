@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -40,5 +41,9 @@
 
 -->
 
-<h1>Mycontroller#testview</h1>
-<p>Find me in app/views/mycontroller/testview.rhtml</p>
+<jsp:root version="2.0"
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:x="http://some/tld" >
+    <jsp:directive.include file="b.jspx"/>
+</jsp:root>
+

@@ -47,7 +47,6 @@ Fx.Base.prototype = {
 		this.options = Object.extend({
 			onStart: function(){},
 			onComplete: function(){},
-			transition: Fx.Transitions.sineInOut,
 			duration: 500,
 			unit: 'px',
 			wait: true,
@@ -163,10 +162,3 @@ Fx.Styles.prototype = Object.extend(new Fx.Base(), {
 	}
 
 });
-
-//Transitions (c) 2003 Robert Penner (http://www.robertpenner.com/easing/), BSD License.
-
-Fx.Transitions = {
-	linear: function(t, b, c, d) { return c*t/d + b; },
-	sineInOut: function(t, b, c, d) { return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b; }
-};

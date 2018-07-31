@@ -46,10 +46,6 @@
     xmlns:define="jelly:define"
     xmlns:util="jelly:util"
     xmlns:ant="jelly:ant">
-<!--
- Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- Use is subject to license terms.
--->
     <extend>../bootstrap/maven.xml</extend>
 
     <goal name="runtest" description="Running Quicklook using maven/ant">
