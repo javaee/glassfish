@@ -111,7 +111,7 @@
         <dbschema.version>6.6</dbschema.version>
         <schema2beans.version>6.6</schema2beans.version>
         <mq.version>5.1.2-b01</mq.version>
-        <derby.version>10.13.1.1-SNAPSHOT</derby.version>
+        <derby.version>10.13.1.1</derby.version>
         <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
