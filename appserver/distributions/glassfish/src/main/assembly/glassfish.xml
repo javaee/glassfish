@@ -102,7 +102,7 @@
 
         <!-- javadb -->
         <fileSet>
-            <directory>${temp.dir}/derby-distribution/derby-distribution-${derby.version}-bin</directory>
+            <directory>${temp.dir}/derby/db-derby-${derby.version}-bin</directory>
             <excludes>
                 <exclude>demo/**</exclude>
                 <exclude>docs/**</exclude>
