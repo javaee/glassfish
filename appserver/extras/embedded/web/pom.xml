@@ -1379,7 +1379,7 @@
     <!-- derby -->
     <dependency>
         <groupId>org.glassfish.external</groupId>
-        <artifactId>derby-distribution</artifactId>
+        <artifactId>derby</artifactId>
         <version>${derby.version}</version>
         <type>zip</type>
         <optional>true</optional>
