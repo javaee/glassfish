@@ -54,7 +54,6 @@ test_run(){
   echo Running target: $TARGET
   time ant clean-all start-record $TARGET stop-record report | tee $TEST_RUN_LOG
   antStatus=$?
-  cp connector.output tests-run.log
   ant stopDomain stopDerby
   if [ $antStatus -ne 0 ]
   then
