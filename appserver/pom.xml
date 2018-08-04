@@ -61,8 +61,8 @@
 
     <properties>
         <jms-api.version>2.0.1</jms-api.version>
-        <jsp-api.version>2.3.2-b01</jsp-api.version>
-        <jsp-impl.version>2.3.3-b02</jsp-impl.version>
+        <jsp-api.version>2.3.3</jsp-api.version>
+        <jsp-impl.version>2.3.4</jsp-impl.version>
         <jstl-impl.version>1.2.5</jstl-impl.version>
         <jstl-api.version>1.2.2</jstl-api.version>
         <mojarra.version>2.3.3.102</mojarra.version>
@@ -982,7 +982,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>derby-distribution</artifactId>
+                <artifactId>derby</artifactId>
                 <version>${derby.version}</version>
                 <type>zip</type>
            </dependency>
