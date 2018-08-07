@@ -173,7 +173,7 @@ public abstract class Lister<T> {
         HashSet.class
     };
     public Type getItemGenericType() {
-      return this.itemGenericType
+      return this.itemGenericType;
     }
 
 }
