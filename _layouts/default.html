@@ -17,6 +17,7 @@
   </head>
 
   <body>
+    <div style="overflow-y: auto; height:96vh;">
     <header>
       <div class="inner">
         <a href="{{ '/' | absolute_url }}">
@@ -85,7 +86,12 @@
     </div>
 
     <div class="footer"><a id="copyright" class="oracle" href="https://www.oracle.com/legal/copyright.html">&copy; Oracle</a> | By contributing to this project, you are agreeing to the terms of use described <a href="CONTRIBUTING">here</a>.</div>
-
+      
+    </div>
+    
+<div id="archive-footer">This project is now part of the <a href="https://projects.eclipse.org/projects/ee4j">EE4J</a> initiative; its activity is temporarily paused until it has been effectively transferred to the Eclipse Foundation.<br/>See <a href="https://www.eclipse.org/ee4j/status.php">here</a> for the EE4J transition status.
+</div>
+    
     {% if site.google_analytics %}
       <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
