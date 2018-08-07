@@ -51,7 +51,7 @@ import java.lang.reflect.WildcardType;
 
 /**
  * Type arithmetic functions.
- * 
+ *
  * @author Kohsuke Kawaguchi
  */
 public class Types {
@@ -418,7 +418,7 @@ public class Types {
 
         while(base!=null) {
             try {
-                if(base.getDeclaredMethod(name,params)!=null)
+                if(null != base.getDeclaredMethod(name,params))
                     return true;
             } catch (NoSuchMethodException e) {
                 // recursively go into the base class

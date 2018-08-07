@@ -77,7 +77,7 @@ public abstract class Lister<T> {
     public void add(Object o) {
         r.add(o);
     }
-    
+
     public abstract T toCollection();
 
     /**
@@ -172,4 +172,8 @@ public abstract class Lister<T> {
         ArrayList.class,
         HashSet.class
     };
+    public Type getItemGenericType() {
+      return this.itemGenericType
+    }
+
 }
