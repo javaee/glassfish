@@ -75,6 +75,7 @@
         </plugins>
     </build>
     <modules>
+        <module>tiger-types</module>
         <module>hk2-config</module>
         <module>config-generator</module>
         <module>config-types</module>
