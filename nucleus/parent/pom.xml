@@ -157,7 +157,7 @@
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.52</shoal.version>
         <ha-api.version>3.1.11</ha-api.version>
-        <glassfishbuild.version>3.2.24</glassfishbuild.version>
+        <glassfishbuild.version>3.2.25</glassfishbuild.version>
         <logging-annotation-processor.version>1.8</logging-annotation-processor.version>
         <command-security-plugin.version>1.0.9</command-security-plugin.version>
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>
