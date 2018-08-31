@@ -137,7 +137,7 @@
         <javassist.version>3.22.0-GA</javassist.version>
         <javax.el.version>3.0.1-b10</javax.el.version>
         <javax.el-api.version>3.0.1-b06</javax.el-api.version>
-        <hk2.version>2.5.0-b60</hk2.version>
+        <hk2.version>2.5.0-b62</hk2.version>
         <hk2.plugin.version>2.5.0-b57</hk2.plugin.version>
         <jboss.logging.version>3.3.1.Final</jboss.logging.version>
         <fasterxml.classmate.version>1.3.3</fasterxml.classmate.version>
@@ -157,7 +157,7 @@
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.52</shoal.version>
         <ha-api.version>3.1.11</ha-api.version>
-        <glassfishbuild.version>3.2.24</glassfishbuild.version>
+        <glassfishbuild.version>3.2.26</glassfishbuild.version>
         <logging-annotation-processor.version>1.8</logging-annotation-processor.version>
         <command-security-plugin.version>1.0.9</command-security-plugin.version>
         <command.security.maven.plugin.isFailureFatal>false</command.security.maven.plugin.isFailureFatal>

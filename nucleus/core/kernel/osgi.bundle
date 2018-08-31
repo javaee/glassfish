@@ -55,10 +55,10 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
                        org.objectweb.asm.commons;password=GlassFish
 
 # Only in non-OSGi embedded mode, kernel depends on logging package, so
-# optionally depend on that pkg. This way, when GF is embedded in 
+# optionally depend on that pkg. This way, when GF is embedded in
 # OSGi environment, logging bundle need not be installed.
 Import-Package: \
     com.sun.enterprise.server.logging.*; resolution:=optional, \
+    org.jvnet.tiger_types;version="${project.version}", \
     org.hibernate.validator.*;resolution:=optional;version="${hibernate-validator.version}", \
     *
-
