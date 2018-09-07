@@ -1,0 +1,15 @@
+language: java
+sudo: false
+
+install: /bin/true
+
+jobs:
+  include:
+    - script: mvn --batch-mode install -DskipTests=true -Dmaven.javadoc.skip=true --show-version && mvn --batch-mode verify
+      jdk: oraclejdk8
+    - script: mvn --batch-mode install -Prelease-phase-all -DskipTests=true -Dmaven.javadoc.skip=true --show-version && mvn --batch-mode verify -Prelease-phase-all
+      jdk: oraclejdk8
+    - script: mvn --batch-mode install -DskipTests=true -Dmaven.javadoc.skip=true --show-version && mvn --batch-mode verify
+      jdk: openjdk8
+    - script: mvn --batch-mode install -Prelease-phase-all -DskipTests=true -Dmaven.javadoc.skip=true --show-version && mvn --batch-mode verify -Prelease-phase-all
+      jdk: openjdk8
