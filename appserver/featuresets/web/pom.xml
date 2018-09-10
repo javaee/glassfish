@@ -1894,7 +1894,7 @@
         <!-- derby -->
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>derby-distribution</artifactId>
+            <artifactId>derby</artifactId>
             <type>zip</type>
             <exclusions>
                 <exclusion>

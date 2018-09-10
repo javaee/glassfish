@@ -110,7 +110,6 @@
                     <pattern>/descriptor/web.xml</pattern>
                     <pattern>/jndi.properties.cosnaming</pattern>
                     <pattern>/jndi.properties.s1as8_default</pattern>
-                    <pattern>community/web/jruby/helloapp/public/javascripts/</pattern>
                     <pattern>.ini</pattern>
                     <pattern>.service</pattern>
                     <pattern>.Extension</pattern>

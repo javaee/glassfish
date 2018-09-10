@@ -52,16 +52,13 @@ import javax.rmi.PortableRemoteObject;
 import java.util.logging.*;
 import com.sun.ejte.ccl.reporter.*;
 
-
-
 /**
  * Title: BeanTestClient implementing RASClient interface
- * Description: J2EE test client for admincontroller session bean
- * Copyright: Copyright (c) 2002
- * Company: Sun Microsystems Inc
+ * Description: JavaEE test client for admincontroller session bean
  * @author Deepa Singh
  * @version 1.0
  */
+
 public class BeanTestClient 
 {
   private Properties beanprops=null;

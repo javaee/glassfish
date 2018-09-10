@@ -42,11 +42,6 @@
  * $Id: ChartItemComponent.java,v 1.4 2004/11/14 07:33:12 tcfujii Exp $
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 package components.components;
 
 

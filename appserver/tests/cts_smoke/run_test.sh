@@ -60,7 +60,6 @@ test_run_cts_smoke(){
 	else
 		CTS_SMOKE=${CTS_SMOKE_URL}
 	fi
-	CTS_SMOKE_BUNDLE=javaee-smoke-8.0_latest.zip
 	CTS_EXCLUDE_LIST=ts.jtx
 
 	# MACHINE CONFIGURATION
@@ -111,19 +110,17 @@ test_run_cts_smoke(){
 	mv ts.jte.new ts.jte
 	# End temp fix for javamail password
 	cd $TS_HOME/bin/xml
-	export ANT_HOME=$TS_HOME/tools/ant
-	export PATH=$ANT_HOME/bin:$PATH
         
 	# SECURITY MANAGER ON
 	$S1AS_HOME/bin/asadmin start-domain
 	$S1AS_HOME/bin/asadmin create-jvm-options "-Djava.security.manager"
 	$S1AS_HOME/bin/asadmin stop-domain
         if [[ -n $1 ]]; then
-		$TS_HOME/tools/ant/bin/ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
+		ant  -Dgroups.count=5 -Dgroup.id=$1 -Dgroups.work.dir=/tmp -f $TS_HOME/bin/xml/impl/glassfish/smoke-groups.xml smoke.split.groups
 		cat /tmp/javaee-smoke-group$1.properties
-		$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
+		ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -propertyfile /tmp/javaee-smoke-group$1.properties -f smoke.xml smoke
         else
-		$TS_HOME/tools/ant/bin/ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
+		ant -Dreport.dir=$WORKSPACE/$BUILD_NUMBER/JTReport -Dwork.dir=$WORKSPACE/$BUILD_NUMBER/JTWork -f smoke.xml smoke
 	fi
 
 	#POST CLEANUPS
@@ -149,7 +146,7 @@ test_run_servlet_tck(){
 	else
 		SERVELT_TCK=${SERVELT_TCK_URL}
 	fi
-	wget ${SERVELT_TCK}/servlettck-4.0_Latest.zip -O servlettck.zip
+	wget ${SERVELT_TCK}/${SERVELT_TCK_BUNDLE} -O servlettck.zip
 
 	unzip -q servlettck.zip
         if [[ -n $1 ]]; then

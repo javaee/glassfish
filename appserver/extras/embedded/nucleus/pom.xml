@@ -111,7 +111,7 @@
       </dependency>
       <dependency>
           <groupId>org.glassfish.hk2.external</groupId>
-          <artifactId>asm-all-repackaged</artifactId>
+          <artifactId>asm-repackaged</artifactId>
           <version>${hk2.version}</version>
           <optional>true</optional>
       </dependency>

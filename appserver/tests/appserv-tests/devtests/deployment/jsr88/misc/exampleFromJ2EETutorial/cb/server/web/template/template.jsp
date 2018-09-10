@@ -51,6 +51,5 @@
 </head>
         <tt:insert definition="coffeebreak" parameter="banner"/>
         <tt:insert definition="coffeebreak" parameter="body"/>
-<center><em>Copyright &copy; 2003 Sun Microsystems, Inc. </em></center>
 </body>
 </html>

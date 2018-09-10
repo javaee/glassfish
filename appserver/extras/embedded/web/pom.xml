@@ -113,7 +113,7 @@
     </dependency>
     <dependency>
         <groupId>org.glassfish.hk2.external</groupId>
-        <artifactId>asm-all-repackaged</artifactId>
+        <artifactId>asm-repackaged</artifactId>
         <version>${hk2.version}</version>
         <optional>true</optional>
     </dependency>
@@ -1379,7 +1379,7 @@
     <!-- derby -->
     <dependency>
         <groupId>org.glassfish.external</groupId>
-        <artifactId>derby-distribution</artifactId>
+        <artifactId>derby</artifactId>
         <version>${derby.version}</version>
         <type>zip</type>
         <optional>true</optional>
@@ -1393,6 +1393,12 @@
     <dependency>
         <groupId>org.shoal</groupId>
         <artifactId>shoal-gms-impl</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>tiger-types</artifactId>
+        <version>${project.version}</version>
         <optional>true</optional>
     </dependency>
     </dependencies>

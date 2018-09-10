@@ -42,11 +42,6 @@
  * $Id: PaneTabTag.java,v 1.1 2005/11/03 03:00:12 SherryShen Exp $
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 package components.taglib;
 
 
