@@ -104,7 +104,14 @@
      changeButtons(buttons,"$pageSession{tableId2}");  \
   }
 
+  " function initTable(tableId){  \
+     require(["webui/suntheme/table"], function(table) {  \
+	table.init(tableId);  \
+     });  \
+  }
+
   " function changeButtons(buttons,tableId){   \
+    initTable({"id": tableId});  \
     var table = document.getElementById(tableId);  \
     var selections = table.getAllSelectedRowsCount();  \
     var disabled = (selections > 0) ? false : true;  \
@@ -122,21 +129,25 @@
   }
 
   " function initAllRows() {  \
+    initTable({"id": tableId});  \
     var table = document.getElementById("$pageSession{tableId}");  \
     table.initAllRows();  \
   }
 
   " function initAllRows2() {  \
+    initTable({"id": tableId});  \
     var table = document.getElementById("$pageSession{tableId2}");  \
     table.initAllRows();  \
   }
 
   " function initAllRows3() {  \
+    initTable({"id": tableId});  \
     var table = document.getElementById("$pageSession{tableId3}");  \
     table.initAllRows();  \
   }
 
   " function initAllRows4() {  \
+    initTable({"id": tableId});  \
     var table = document.getElementById("$pageSession{tableId4}");  \
     table.initAllRows();  \
   }
