@@ -724,6 +724,7 @@ admingui.nav = {
      *	This function clears all treeNode selections.
      */
     clearTreeSelection: function(treeId) {
+        admingui.ajax.initTree({"id": treeId});
         var tree = document.getElementById(treeId);
         if (tree) {
             tree.clearAllHighlight(treeId);
@@ -2070,8 +2071,15 @@ admingui.table = {
         admingui.table.changeButtons(buttons,tableId);
     },
 
+    inittable : function(tableId) {
+      require(["webui/suntheme/table"], function(table) {
+         table.init(tableId);
+      });
+    },
+
     changeButtons : function (buttons,tableId){
         try {
+            admingui.table.inittable({"id": tableId});
             var table = document.getElementById(tableId);// + ":_table");
             var selections = table.getAllSelectedRowsCount();
             var disabled = (selections > 0) ? false : true;
@@ -2088,6 +2096,7 @@ admingui.table = {
     },
 
     initAllRows : function (tableId) {
+        admingui.table.inittable({"id": tableId});
         var table = document.getElementById(tableId);
         table.initAllRows();
     }
@@ -2220,7 +2229,14 @@ admingui.ajax = {
         return false;
     },
 
+    initTree : function(treeId) {
+        require(["webui/suntheme/tree"], function(tree) {
+           tree.init(treeId);
+        });
+    },
+
     processPageAjax : function (o) {
+        admingui.ajax.initTree({"id": admingui.nav.TREE_ID});
         var tree = document.getElementById(admingui.nav.TREE_ID);
         tree.clearAllHighlight(admingui.nav.TREE_ID);
         var selnode = tree.getSelectedTreeNode(admingui.nav.TREE_ID);
@@ -2232,8 +2248,8 @@ admingui.ajax = {
         }
         contentNode.innerHTML = o.responseText;
         // FIXME: These 2 functions only need to be replaced after a FPR...
-        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+//        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+//        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         admingui.ajax.processElement(o, contentNode, true);
         admingui.ajax.processScripts(o);
         // Restore cursor
@@ -2292,8 +2308,8 @@ admingui.ajax = {
 
         if (typeof(webui) !== 'undefined') {
             // FIXME: These 2 functions (should) only need be replaced after FPR...
-            webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-            webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+//            webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+//            webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         }
 
         contentNode.innerHTML = xmlReq.responseText;
@@ -2374,8 +2390,8 @@ admingui.ajax = {
         }
 
         // FIXME: These 2 functions (should) only need be replaced after FPR...
-        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+//        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+//        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         var contextObj = {};
         admingui.ajax.processElement(contextObj, contentNode, true);
         admingui.ajax.processScripts(contextObj);
@@ -2657,9 +2673,20 @@ admingui.woodstock = {
         return false;
     },
 
+    getSelectElement: function(elementId) {
+        var element = document.getElementById(elementId);
+            if(element !== null) {
+                if(element.tagName === "SELECT") {
+                    return element;
+                }
+            }
+            return document.getElementById(elementId + "_list");
+    },
+
     dropDownChanged: function(jumpDropdown) {
         if (typeof(jumpDropdown) === "string") {
-            jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
+//            jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
+            jumpDropdown = admingui.woodstock.getSelectElement(jumpDropdown);
         }
 
         // Force WS "submitter" flag to true
@@ -2679,21 +2706,19 @@ admingui.woodstock = {
         // FIXME: Not sure why the following is done...
         var listItem = jumpDropdown.options;
         for (var cntr=0; cntr < listItem.length; ++cntr) {
-            if (listItem[cntr].className ==
-                webui.suntheme.props.jumpDropDown.optionSeparatorClassName
-                || listItem[cntr].className ==
-                webui.suntheme.props.jumpDropDown.optionGroupClassName) {
+            if (listItem[cntr].className == "MnuStdOptSep@THEME_CSS@"
+                || listItem[cntr].className == "MnuStdOptGrp@THEME_CSS@") {
                 continue;
             } else if (listItem[cntr].disabled) {
                 // Regardless if the option is currently selected or not,
                 // the disabled option style should be used when the option
                 // is disabled. So, check for the disabled item first.
                 // See CR 6317842.
-                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
+                listItem[cntr].className = "MnuStdOptDis@THEME_CSS@";
             } else if (listItem[cntr].selected) {
-                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
+                listItem[cntr].className = "MnuStdOptSel@THEME_CSS@";
             } else {
-                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
+                listItem[cntr].className = "MnuStdOpt@THEME_CSS@";
             }
         }
         admingui.ajax.postAjaxRequest(jumpDropdown);
