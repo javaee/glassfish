@@ -988,6 +988,13 @@
       </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+              <id>ossrh-staging</id>
+              <url>https://oss.sonatype.org/content/groups/staging/</url>
+        </repository>
+    </repositories>
+
     <profiles>
          <profile>
             <id>javaee-api</id>
