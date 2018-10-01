@@ -96,6 +96,16 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>jvnet-nexus-staging</id>
+            <url>https://maven.java.net/content/repositories/staging/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -108,6 +118,17 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jvnet-nexus-staging-plugins</id>
+            <name>Java.net Staging Repositories</name>
+            <url>https://maven.java.net/content/repositories/staging/</url>
         </pluginRepository>
     </pluginRepositories>
 
