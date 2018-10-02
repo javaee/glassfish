@@ -429,6 +429,12 @@
 
       <dependency>
         <scope>runtime</scope>
+        <groupId>javax.json</groupId>
+        <artifactId>javax.json-api</artifactId>
+      </dependency>
+
+      <dependency>
+        <scope>runtime</scope>
         <groupId>org.eclipse</groupId>
         <artifactId>yasson</artifactId>
       </dependency>
