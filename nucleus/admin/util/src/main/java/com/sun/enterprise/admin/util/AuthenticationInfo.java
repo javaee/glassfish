@@ -52,7 +52,14 @@ public final class AuthenticationInfo {
     private final char[] password;
 
     /**
-     * The only way to construct the instances of this class.
+     * @param user      the user name for the connection
+     * @param password  the clear text password for the connection
+     */
+    public AuthenticationInfo(String user, String password) {
+        this(user, password.toCharArray());
+    }
+
+    /**
      * @param user      the user name for the connection
      * @param password  the clear text password for the connection
      */
