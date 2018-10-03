@@ -116,9 +116,9 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
         <tyrus.version>1.13.1</tyrus.version>
-        <jsonp-api.version>1.1</jsonp-api.version>
-        <jsonp-ri.version>1.1</jsonp-ri.version>
-        <jsonp-jaxrs.version>1.1.1</jsonp-jaxrs.version>
+        <jsonp-api.version>1.1.2</jsonp-api.version>
+        <jsonp-ri.version>1.1.2</jsonp-ri.version>
+        <jsonp-jaxrs.version>1.1.2</jsonp-jaxrs.version>
         <json.bind-api.version>1.0</json.bind-api.version>
         <yasson.version>1.0</yasson.version>
         <concurrent-api.version>1.1</concurrent-api.version>
@@ -206,13 +206,13 @@
                         </spec>
                         <spec>
                             <artifact>
-                                <groupId>org.glassfish</groupId>
-                                <artifactId>javax.json</artifactId>
-                                <version>${jsonp-ri.version}</version>
+                                <groupId>javax.json</groupId>
+                                <artifactId>javax.json-api</artifactId>
+                                <version>${jsonp-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>impl</jarType>
-                            <specVersion>1.0</specVersion>
+                            <jarType>api</jarType>
+                            <specVersion>1.1</specVersion>
                             <implVersion>${jsonp-ri.version}</implVersion>
                             <apiPackage>javax.json</apiPackage>
                             <implNamespace>org.glassfish</implNamespace>
