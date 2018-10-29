@@ -129,7 +129,7 @@
         <management-api.version>1.1-rev-1</management-api.version>
         <servlet-api.version>4.0.1</servlet-api.version>
         <grizzly.version>2.4.3</grizzly.version>
-        <grizzly.npn.version>1.8</grizzly.npn.version>
+        <grizzly.npn.version>1.8.1</grizzly.npn.version>
         <jboss.logging.annotation.version>2.1.0.Final</jboss.logging.annotation.version>
         <!-- Ensure that appserver/pom.xml's javax.validation property is of same value as the one below -->
         <javax.validation.version>2.0.1.Final</javax.validation.version>
