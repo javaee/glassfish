@@ -85,11 +85,13 @@
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
     </classes>
   </test>
+  <!--
   <test name="jsf_hello_world">
     <classes>
        <class name="test.jsf.astrologer.JSFWebTestNG" />
     </classes>
   </test>
+  -->
   <test name="jsf_injection">
     <classes>
        <class name="test.web.jsfinjection.JSFInjectionTestNG" />
