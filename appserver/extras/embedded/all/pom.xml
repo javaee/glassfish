@@ -1582,6 +1582,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jsonp-jaxrs</artifactId>
             <optional>true</optional>
@@ -1693,8 +1698,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>woodstox-core-asl</artifactId>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

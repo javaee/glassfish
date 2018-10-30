@@ -67,7 +67,7 @@
         <jstl-api.version>1.2.2</jstl-api.version>
         <mojarra.version>2.3.3.102</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.13</woodstock.version>
+        <woodstock.version>4.0.2.15</woodstock.version>
         <javax.ejb-api.version>3.2.2</javax.ejb-api.version>
         <javax.interceptor-api.version>1.2.2</javax.interceptor-api.version>
         <javax.xml.rpc-api.version>1.1.2</javax.xml.rpc-api.version>
@@ -101,10 +101,10 @@
         <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
 
         <jsftemplating.version>2.1.3</jsftemplating.version>
-        <webservices.version>2.4.1</webservices.version>
-        <woodstox.version>4.4.1</woodstox.version>
-        <jaxb.version>2.3.0.1</jaxb.version>
-        <stax2-api.version>3.1.4</stax2-api.version>
+        <webservices.version>2.4.2</webservices.version>
+        <woodstox.version>5.1.0</woodstox.version>
+        <jaxb.version>2.3.1</jaxb.version>
+        <stax2-api.version>4.1</stax2-api.version>
         <javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
         <eclipselink.version>2.7.0</eclipselink.version>
         <javax-persistence-api.version>2.2.0</javax-persistence-api.version>
@@ -115,12 +115,12 @@
         <weld.version>3.0.0.Final</weld.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <websocket-api.version>1.1</websocket-api.version>
-        <tyrus.version>1.13.1</tyrus.version>
-        <jsonp-api.version>1.1</jsonp-api.version>
-        <jsonp-ri.version>1.1</jsonp-ri.version>
-        <jsonp-jaxrs.version>1.1.1</jsonp-jaxrs.version>
+        <tyrus.version>1.14</tyrus.version>
+        <jsonp-api.version>1.1.3</jsonp-api.version>
+        <jsonp-ri.version>1.1.3</jsonp-ri.version>
+        <jsonp-jaxrs.version>1.1.3</jsonp-jaxrs.version>
         <json.bind-api.version>1.0</json.bind-api.version>
-        <yasson.version>1.0</yasson.version>
+        <yasson.version>1.0.2</yasson.version>
         <concurrent-api.version>1.1</concurrent-api.version>
         <concurrent.version>1.1</concurrent.version>
         <javax.batch-api.version>1.0.1</javax.batch-api.version>
@@ -187,7 +187,7 @@
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>spec-version-maven-plugin</artifactId>
-                <version>1.3</version>
+                <version>1.5</version>
                 <configuration>
                     <dir>${stage.dir}/${install.dir.name}/glassfish/modules</dir>
                     <excludes>javax.inject.jar,javax.servlet.jsp.jstl.jar,javax.servlet.jsp.jar,javax.enterprise.concurrent.jar, javax.persistence.jar</excludes>
@@ -206,13 +206,13 @@
                         </spec>
                         <spec>
                             <artifact>
-                                <groupId>org.glassfish</groupId>
-                                <artifactId>javax.json</artifactId>
-                                <version>${jsonp-ri.version}</version>
+                                <groupId>javax.json</groupId>
+                                <artifactId>javax.json-api</artifactId>
+                                <version>${jsonp-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>impl</jarType>
-                            <specVersion>1.0</specVersion>
+                            <jarType>api</jarType>
+                            <specVersion>1.1</specVersion>
                             <implVersion>${jsonp-ri.version}</implVersion>
                             <apiPackage>javax.json</apiPackage>
                             <implNamespace>org.glassfish</implNamespace>
@@ -646,8 +646,8 @@
                 <version>${eclipselink.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.woodstox</groupId>
-                <artifactId>woodstox-core-asl</artifactId>
+                <groupId>com.fasterxml.woodstox</groupId>
+                <artifactId>woodstox-core</artifactId>
                 <version>${woodstox.version}</version>
             </dependency>
             <dependency>
@@ -766,12 +766,12 @@
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>dojo-ajax-nodemo</artifactId>
-                <version>0.4.1</version>
+                <version>1.12.4</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
                 <artifactId>prototype</artifactId>
-                <version>1.5.0</version>
+                <version>1.7.3</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>

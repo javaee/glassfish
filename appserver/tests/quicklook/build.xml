@@ -238,7 +238,7 @@
         <ant dir="rest" target="build"/>
         <ant dir="osgitest/basicosgi" target="build"/>
         <ant dir="web/helloworld" target="build-deploy"/>
-        <ant dir="web/jsfastrologer" target="build-deploy"/>
+        <!--<ant dir="web/jsfastrologer" target="build-deploy"/>-->
         <ant dir="web/jsfinjection" target="build-deploy"/>
         <ant dir="jdbc/jdbcusertx" target="build-deploy"/>
         <ant dir="persistence/jpainjectemf" target="build-deploy"/>
@@ -269,7 +269,7 @@
     <target name="undeploy">
         <record name="${basedir}/undeploy.output" action="start"/>
         <ant dir="web/helloworld" target="undeploy"/>
-        <ant dir="web/jsfastrologer" target="undeploy"/>
+        <!--<ant dir="web/jsfastrologer" target="undeploy"/>-->
         <ant dir="web/jsfinjection" target="undeploy"/>
         <ant dir="jdbc/jdbcusertx" target="undeploy"/>
         <ant dir="persistence/jpainjectemf" target="undeploy"/>
