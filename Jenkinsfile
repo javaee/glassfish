@@ -1,10 +1,5 @@
 pipeline {
-    agent any
-    stages{
-        stage('build'){
-            steps{
-                sh "echo hi"
-            }
-        }
+    triggers {
+        issueCommentTrigger('.*test this please.*')
     }
 }
