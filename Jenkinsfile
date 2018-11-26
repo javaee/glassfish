@@ -1,4 +1,5 @@
 pipeline {
+    agent any
     triggers {
         githubPullRequest {
             admin('arindam-bandyopadhyay')
