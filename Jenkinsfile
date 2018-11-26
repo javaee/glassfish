@@ -1,13 +1,4 @@
-job('example') {
-    scm {
-        git {
-            remote {
-                github('arindam-bandyopadhyay/glassfish')
-                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
-            }
-            branch('${sha1}')
-        }
-    }
+pipeline {
     triggers {
         githubPullRequest {
             admin('arindam-bandyopadhyay')
@@ -26,6 +17,11 @@ job('example') {
                     completedStatus('ERROR', 'Something went really wrong. Investigate!')
                 }
             }
+        }
+    }
+    stages{
+        stage('build'){
+            sh "echo hi"
         }
     }
 }
