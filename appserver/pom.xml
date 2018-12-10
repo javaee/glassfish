@@ -98,7 +98,7 @@
 
         <javaee.major_version>8</javaee.major_version>
         <javaee.version_qualifier>-b${build.id}</javaee.version_qualifier>
-        <javaee.version>${javaee.major_version}.${minor_version}${javaee.version_qualifier}</javaee.version>
+        <javaee.version>${javaee.major_version}.${minor_version}.${update_version}${javaee.version_qualifier}</javaee.version>
 
         <jsftemplating.version>2.1.3</jsftemplating.version>
         <webservices.version>2.4.2</webservices.version>
