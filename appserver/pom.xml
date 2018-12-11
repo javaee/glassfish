@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.0.1-b04</version>
         <relativePath>../nucleus/pom.xml</relativePath>
     </parent>
     <artifactId>glassfish-parent</artifactId>
@@ -57,7 +57,8 @@
       <connection>scm:git:git://github.com/javaee/glassfish.git</connection>
       <developerConnection>scm:git:git://github.com/javaee/glassfish.git</developerConnection>
       <url>https://github.com/javaee/glassfish</url>
-    </scm>
+      <tag>5.0.1-b04</tag>
+  </scm>
 
     <properties>
         <jms-api.version>2.0.1</jms-api.version>

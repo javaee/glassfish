@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>nucleus-parent</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.0.1-b04</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.hk2</groupId>
@@ -62,13 +62,13 @@
                 <executions>
                     <execution>
                         <id>default-generate-test-injectors</id>
-                        <phase/>
-                        <goals/>
+                        <phase />
+                        <goals />
                     </execution>
                     <execution>
                         <id>default-generate-injectors</id>
-                        <phase/>
-                        <goals/>
+                        <phase />
+                        <goals />
                     </execution>
                 </executions>
             </plugin>
