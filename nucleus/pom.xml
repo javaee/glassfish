@@ -165,7 +165,7 @@
 
         <plugins>
             <plugin>
-                <groupId>org.glassfish.main.hk2</groupId>
+                <groupId>org.glassfish.hk2</groupId>
                 <artifactId>config-generator</artifactId>
                 <configuration>
                     <excludes>**/.ade_path/**</excludes>
