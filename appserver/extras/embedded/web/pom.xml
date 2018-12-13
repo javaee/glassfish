@@ -141,7 +141,7 @@
         <optional>true</optional>
     </dependency>
     <dependency>
-        <groupId>org.glassfish.hk2</groupId>
+        <groupId>org.glassfish.main.hk2</groupId>
         <artifactId>hk2-config</artifactId>
         <version>${project.version}</version>
         <optional>true</optional>
@@ -261,7 +261,7 @@
         <optional>true</optional>
     </dependency>
     <dependency>
-        <groupId>org.glassfish.hk2</groupId>
+        <groupId>org.glassfish.main.hk2</groupId>
         <artifactId>config-types</artifactId>
         <version>${project.version}</version>
         <optional>true</optional>
@@ -1396,7 +1396,7 @@
         <optional>true</optional>
     </dependency>
     <dependency>
-        <groupId>org.glassfish.hk2</groupId>
+        <groupId>org.glassfish.main.hk2</groupId>
         <artifactId>tiger-types</artifactId>
         <version>${project.version}</version>
         <optional>true</optional>

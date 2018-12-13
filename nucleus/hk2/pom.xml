@@ -49,7 +49,7 @@
         <version>5.0.1-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
-    <groupId>org.glassfish.hk2</groupId>
+    <groupId>org.glassfish.main.hk2</groupId>
     <artifactId>glassfish-nucleus-hk2</artifactId>
     <packaging>pom</packaging>
     <name>Glassfish Nucleus HK2 Modules</name>
