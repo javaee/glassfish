@@ -44,7 +44,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.glassfish.hk2</groupId>
+		<groupId>org.glassfish.main.hk2</groupId>
 		<artifactId>glassfish-nucleus-hk2</artifactId>
 		<version>5.0.1-SNAPSHOT</version>
 	</parent>

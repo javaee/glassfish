@@ -48,10 +48,10 @@
         <artifactId>nucleus-common</artifactId>
         <version>5.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>    
+    </parent>
     <artifactId>internal-api</artifactId>
     <packaging>glassfish-jar</packaging>
-    
+
     <name>Private APIs of Glassfish</name>
 
     <build>
@@ -92,7 +92,7 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
+            <groupId>org.glassfish.main.hk2</groupId>
             <artifactId>config-types</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -111,12 +111,12 @@
             <groupId>org.glassfish.main.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
-        </dependency> 
+        </dependency>
          <dependency>
             <groupId>org.glassfish.main.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.glassfish.main.grizzly</groupId>
             <artifactId>nucleus-grizzly-all</artifactId>
@@ -124,7 +124,7 @@
       	    <!-- grizzly was bringing in the following old hk2 jar that we don't want on the classpath -->
             <exclusions>
                <exclusion>
-                  <groupId>org.glassfish.hk2</groupId>
+                  <groupId>org.glassfish.main.hk2</groupId>
                   <artifactId>config-types</artifactId>
                </exclusion>
            </exclusions>
@@ -136,4 +136,3 @@
         </dependency>
     </dependencies>
 </project>
-

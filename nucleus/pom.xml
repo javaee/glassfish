@@ -136,7 +136,7 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
+                    <groupId>org.glassfish.main.hk2</groupId>
                     <artifactId>config-generator</artifactId>
                     <version>${project.version}</version>
                 </plugin>
