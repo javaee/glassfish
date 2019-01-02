@@ -52,6 +52,7 @@
 <target name="start-derby" depends="init-common">
     <echo message="Starting database"/>
     <echo message="${ASADMIN}"/>
+    <mkdir dir="${env.S1AS_HOME}/databases"/>
     <!-- spawn is added to prevent a hang on Windows -->
     <exec spawn="true" executable="${ASADMIN}" failonerror="false">
       <arg line="start-database"/>
@@ -193,4 +194,3 @@
       <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
     </antcall>
 </target>
-
