@@ -62,14 +62,14 @@ grant codeBase "file:${com.sun.aas.imqLib}/-" {
 grant codeBase "file:${com.sun.aas.derbyRoot}/lib/-" {
     permission java.lang.RuntimePermission "createClassLoader";
     permission java.io.FilePermission       "<<ALL FILES>>", "read,write";
-}; 
+};
 
 
 // permission for JDK's tools.jar to enable webservice annotation processing
-// at runtime by wsgen tool: 
+// at runtime by wsgen tool:
 //       permission java.lang.RuntimePermission "createClassLoader";
 //
-// permission for JDK's tools.jar to sign JARs at runtime for 
+// permission for JDK's tools.jar to sign JARs at runtime for
 // Java Web Start support:
 //       permissions java.security.AllPermission;
 // on the advice of the JDK tools folks.  Should be refined later.
@@ -102,7 +102,7 @@ grant {
     permission java.lang.RuntimePermission  "queuePrintJob";
     permission java.net.SocketPermission    "*", "connect";
 
-        // work-around for pointbase bug 4864405      
+        // work-around for pointbase bug 4864405
         permission java.io.FilePermission "${com.sun.aas.instanceRoot}${/}lib${/}databases${/}-", "delete";
         permission java.io.FilePermission "${java.io.tmpdir}${/}-", "delete";
 
@@ -111,12 +111,12 @@ grant {
     permission java.lang.RuntimePermission    "modifyThreadGroup";
     permission java.lang.RuntimePermission    "getClassLoader";
     permission java.lang.RuntimePermission    "setContextClassLoader";
-    permission javax.management.MBeanPermission "[com.sun.messaging.jms.*:*]", "*"; 
-   
-    // Following needed for CTS to pass with SM on, bug 16344201 
-    permission java.lang.RuntimePermission "closeClassLoader";                
-    permission java.io.SerializablePermission "enableSubstitution";            
-    permission java.security.SecurityPermission "getProperty.package.definition"; 
+    permission javax.management.MBeanPermission "[com.sun.messaging.jms.*:*]", "*";
+
+    // Following needed for CTS to pass with SM on, bug 16344201
+    permission java.lang.RuntimePermission "closeClassLoader";
+    permission java.io.SerializablePermission "enableSubstitution";
+    permission java.security.SecurityPermission "getProperty.package.definition";
 };
 
 // Following grant block is only required by Connectors. If Connectors
@@ -144,7 +144,9 @@ grant  codeBase "file:${com.sun.aas.instanceRoot}/applications/-"{
     permission java.io.FilePermission       "<<ALL FILES>>", "read,write";
     permission org.hibernate.validator.HibernateValidatorPermission "accessPrivateMembers";
 };
-//Added for changes proposed by Derby 10.12.1.1 (DERBY-6648)
+//Added for changes proposed by Derby 10.12.1.1 (DERBY-6648) and Derby 10.14.2.0
 grant {
      permission org.apache.derby.security.SystemPermission "engine", "usederbyinternals";
+     permission java.io.FilePermission       "<<ALL FILES>>", "write,read";
+     permission java.security.AllPermission;
 };

@@ -52,7 +52,6 @@
 <target name="start-derby" depends="init-common">
     <echo message="Starting database"/>
     <echo message="${ASADMIN}"/>
-    <mkdir dir="${env.S1AS_HOME}/databases"/>
     <!-- spawn is added to prevent a hang on Windows -->
     <exec spawn="true" executable="${ASADMIN}" failonerror="false">
       <arg line="start-database"/>
@@ -60,6 +59,8 @@
       <arg line="${env.S1AS_HOME}/databases"/>
       <arg line="--dbport"/>
       <arg line="${db.port}"/>
+      <arg line="--jvmoptions"/>
+      <arg line="'-Djava.security.manager -Djava.security.policy=${env.S1AS_HOME}/domains/domain1/config/server.policy'"/>
     </exec>
 </target>
 
