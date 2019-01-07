@@ -59,6 +59,8 @@
       <arg line="${env.S1AS_HOME}/databases"/>
       <arg line="--dbport"/>
       <arg line="${db.port}"/>
+      <arg line="--jvmoptions"/>
+      <arg line="'-Djava.security.manager -Djava.security.policy=${env.S1AS_HOME}/domains/domain1/config/server.policy'"/>
     </exec>
 </target>
 
@@ -193,4 +195,3 @@
       <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
     </antcall>
 </target>
-
