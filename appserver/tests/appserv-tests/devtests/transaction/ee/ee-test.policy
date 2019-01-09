@@ -39,6 +39,7 @@
  */
 
  grant {
+    permission org.apache.derby.security.SystemPermission "engine", "usederbyinternals";
     permission java.io.FilePermission       "<<ALL FILES>>", "read,write";
     permission java.security.AllPermission;
 };
