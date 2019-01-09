@@ -152,6 +152,5 @@ grant {
      permission java.net.SocketPermission "*", "listen";
      permission java.net.SocketPermission "*", "accept";
      permission java.io.FilePermission       "<<ALL FILES>>", "write,read";
-     permission java.security.AllPermission;
 
 };
