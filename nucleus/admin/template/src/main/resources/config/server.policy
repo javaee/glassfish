@@ -148,8 +148,10 @@ grant  codeBase "file:${com.sun.aas.instanceRoot}/applications/-"{
 //Added for changes proposed by Derby 10.12.1.1 (DERBY-6648) and Derby 10.14.2.0
 grant {
      permission org.apache.derby.security.SystemPermission "engine", "usederbyinternals";
-    
+
      permission java.net.SocketPermission "*", "listen";
      permission java.net.SocketPermission "*", "accept";
+     permission java.io.FilePermission       "<<ALL FILES>>", "write,read";
+     permission java.security.AllPermission;
 
 };
