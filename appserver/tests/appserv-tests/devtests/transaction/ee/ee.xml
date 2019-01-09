@@ -60,7 +60,7 @@
       <arg line="--dbport"/>
       <arg line="${db.port}"/>
       <arg line="--jvmoptions"/>
-      <arg line="'-Djava.security.manager -Djava.security.policy=ee-test.policy'"/>
+      <arg line="'-Djava.security.manager -Djava.security.policy=${env.APS_HOME}/devtests/transaction/ee/ee-test.policy'"/>
     </exec>
 </target>
 
