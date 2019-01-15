@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main.distributions</groupId>
         <artifactId>nucleus-distributions</artifactId>
-        <version>5.0.1-SNAPSHOT</version>
+        <version>5.0.1</version>
     </parent>
     <artifactId>nucleus-common</artifactId>
     <packaging>distribution-fragment</packaging>
