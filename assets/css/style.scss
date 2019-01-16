@@ -33,19 +33,8 @@ header h2 {
 }
 
 header a.button {
-  background: transparent url(../images/logo_gf.png) 0 0 no-repeat;
-  padding-left: 32px;
-}
-
-header a.buttonri {
   background: transparent url(../images/logo.png) 0 0 no-repeat;
   padding-left: 32px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 134px;
-  height: 58px;
-  padding-top: 22px;
 }
 
 header a:hover { 
@@ -223,8 +212,8 @@ blockquote {
 }
 
 .footer {
-  position: fixed; 
-  bottom: 0;
+  position: relative; 
+  bottom: 18px;
   left: 0;
   right: 0;
   height: 6px;
@@ -251,3 +240,28 @@ blockquote {
   color: FF0000;
   width: 900px;
 }
+
+#archive-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+#archive-footer {
+  background: #B45252;
+  line-height: 1.3;
+  text-align: center;
+  color: #FFF;
+  font-size: 15px;
+  font-family: sans-serif;
+  font-weight: 100;
+  text-shadow: 2px 2px 2px #8D0614;
+  box-shadow: 0 0 12px #424242;
+}
+
+#archive-footer a:link { color: white; font-weight: 700; }
+#archive-footer a:visited { color: white; font-weight: 700;}
+#archive-footer a:hover { color: white; font-weight: 700; text-decoration: underline;}
+#archive-footer a:active { color: white; font-weight: 700; text-decoration: underline;}
+
+
