@@ -23,6 +23,7 @@
 * [Security Guide](doc/5.0/security-guide.pdf)
 * [Reference Manual](doc/5.0/reference-manual.pdf)
 * [Error Messages Reference](doc/5.0/error-messages-reference.pdf)
+* [Third Party Licenses](3rd-party-readme)
 
 # Open MQ Documentation
 
