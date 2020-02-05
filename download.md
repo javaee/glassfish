@@ -1,10 +1,10 @@
 
 # Java EE 8 - GlassFish 5 Download
 
-* [GlassFish 5.0 - Web Profile](http://download.oracle.com/glassfish/5.0/release/glassfish-5.0-web.zip)
-* [GlassFish 5.0 - Full Platform](http://download.oracle.com/glassfish/5.0/release/glassfish-5.0.zip)
+* [GlassFish 5.0.1 - Web Profile](http://download.oracle.com/glassfish/5.0.1/release/glassfish-5.0.1-web.zip)
+* [GlassFish 5.0.1 - Full Platform](http://download.oracle.com/glassfish/5.0.1/release/glassfish-5.0.1.zip)
 
-As an open source project, GlassFish is being developed in an open manner. Development versions of ongoing work for the next GlassFish iteration, i.e. GlassFish 5.0.1, will be made available shortly [here](http://download.oracle.com/glassfish/5.0.1/nightly).
+Newer versions of GlassFish are now available from Eclipse Foundation, Jakarta EE project. Eclipse GlassFish downloads may be found [here](https://projects.eclipse.org/projects/ee4j.glassfish/downloads)
 
 # GlassFish Docker Images
 
@@ -16,6 +16,8 @@ The reference implementation [downloads for Java EE 8](downloads/ri/index.html)
 
 # Older GlassFish versions (archive) #
 
+* Java EE 8 - GlassFish 5.0
+    * [GlassFish 5.0 - downloads](https://download.oracle.com/glassfish/5.0/release/index.html)
 * Java EE 7 - GlassFish 4
     * [GlassFish 4.1.2 - Web Profile](http://download.java.net/glassfish/4.1.2/release/glassfish-4.1.2-web.zip) &#124; [GlassFish 4.1.2 - Full Platform](http://download.java.net/glassfish/4.1.2/release/glassfish-4.1.2.zip)
     * [GlassFish 4.1.1](http://download.oracle.com/glassfish/4.1.1)
