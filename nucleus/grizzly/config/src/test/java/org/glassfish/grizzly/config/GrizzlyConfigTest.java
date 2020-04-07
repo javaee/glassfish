@@ -42,7 +42,6 @@ package org.glassfish.grizzly.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -63,7 +62,10 @@ import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created Jan 5, 2009
@@ -310,9 +312,14 @@ public class GrizzlyConfigTest extends BaseTestGrizzlyConfig {
         assertFalse(validator.isValid("${SOME_PROP", null));
         assertFalse(validator.isValid("{SOME_PROP}", null));
         assertTrue(validator.isValid("127.0.0.1", null));
-        assertFalse(validator.isValid("1271.2.1.3", null));
+        if (!onMacOsX()) assertFalse(validator.isValid("1271.2.1.3", null));
         assertTrue(validator.isValid("::1", null));
         assertFalse(validator.isValid(":1", null));
+    }
+
+    private boolean onMacOsX() { // address MacOsX behaviors
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.startsWith("mac os x");
     }
     
     @Test
