@@ -55,7 +55,7 @@
     &commonRun;
 
 <property environment="env" />
-<get src="http://central.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar" dest="${env.APS_HOME}/lib/maven-ant-tasks-2.1.3.jar"/>
+<get src="https://repo1.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar" dest="${env.APS_HOME}/lib/maven-ant-tasks-2.1.3.jar"/>
 <path id="maven-ant-tasks.classpath" path="${env.APS_HOME}/lib/maven-ant-tasks-2.1.3.jar" />
 <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
            uri="antlib:org.apache.maven.artifact.ant"

@@ -103,7 +103,7 @@
 
         
 <target name="init" depends="init.os,init.tools,setAsadminArgs">
-    <get src="http://central.maven.org/maven2/junit/junit/4.12/junit-4.12.jar" dest="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" usetimestamp="true"/>
+    <get src="https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar" dest="${env.APS_HOME}/devtests/deployment/junit-4.12.jar" usetimestamp="true"/>
     <property name="root" value="${basedir}"/>
 
     <available property="cluster.exists" file="${s1as.home}/domains/${testDomain}"/>
