@@ -102,7 +102,7 @@
 
         <jsftemplating.version>2.1.3</jsftemplating.version>
         <webservices.version>2.4.2</webservices.version>
-        <woodstox.version>5.1.0</woodstox.version>
+        <woodstox.version>5.4.0</woodstox.version>
         <jaxb.version>2.3.1</jaxb.version>
         <stax2-api.version>4.1</stax2-api.version>
         <javax.xml.registry-api.version>1.0.8</javax.xml.registry-api.version>
